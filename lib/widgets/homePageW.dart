@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,7 +18,7 @@ Widget appBarW(context, navigateToSearchPage,
     ),
     leading: IconButton(
       icon: Icon(FontAwesomeIcons.alignLeft),
-      iconSize: 20.0,
+      iconSize: 22.0,
       onPressed: () {
         _homePageScaffoldKey.currentState.openDrawer();
       },
@@ -26,7 +27,7 @@ Widget appBarW(context, navigateToSearchPage,
       IconButton(
         icon: Icon(
           FontAwesomeIcons.search,
-          size: 20.0,
+          size: 22.0,
         ),
         onPressed: () {
           navigateToSearchPage();
@@ -169,5 +170,152 @@ Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
                     leading: Icon(Icons.favorite_border),
                   ))
             ]),
+  );
+}
+
+// holds the background for the bottom sheet
+Widget bottomSheetBGW(audioThumbnail) {
+  return Opacity(
+    child: Container(
+      height: 300.0,
+      color: Colors.black,
+      child: Image.network(
+        audioThumbnail,
+        fit: BoxFit.fitHeight,
+      ),
+    ),
+    opacity: 0.3,
+  );
+}
+
+// holds the title for the bottomSheet
+Widget bottomSheetTitleW(audioTitle) {
+  return Container(
+    alignment: Alignment.centerLeft,
+    margin: EdgeInsets.all(10.0),
+    child: Text(
+      audioTitle,
+      style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
+      overflow: TextOverflow.ellipsis,
+      maxLines: 2,
+    ),
+  );
+}
+
+// holds the playback control buttons
+Widget bNavPlayControlsW(context) {
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[bNavStopBtn(context), bNavPlayBtn()],
+  );
+}
+
+// button to hold the play and pause Button
+// mode 1 - music stopped, 2 - music playing
+Widget bNavPlayBtn() {
+  return IconButton(
+    onPressed: () {
+      if (AudioService.playbackState != null &&
+          AudioService.playbackState.basicState != BasicPlaybackState.playing)
+        AudioService.play();
+      else
+        AudioService.pause();
+    },
+    icon: (AudioService.playbackState != null &&
+            AudioService.playbackState.basicState != BasicPlaybackState.playing)
+        ? Icon(FontAwesomeIcons.play)
+        : Icon(FontAwesomeIcons.pause),
+  );
+}
+
+// button to hold the stopButton
+Widget bNavStopBtn(context) {
+  return IconButton(
+    onPressed: () {
+      AudioService.stop();
+      Navigator.pop(context);
+    },
+    icon: Icon(FontAwesomeIcons.stop),
+  );
+}
+
+Widget fabView(settingModalBottomSheet, scaffoldKey) {
+  return StreamBuilder(
+      stream: AudioService.playbackStateStream,
+      builder: (context, snapshot) {
+        PlaybackState state = snapshot.data;
+        if (state != null && state.basicState == BasicPlaybackState.error) {
+          // stopping audio playback if an error has been detected
+          AudioService.stop();
+        }
+        return (state != null &&
+                (state.basicState == BasicPlaybackState.connecting ||
+                    state.basicState == BasicPlaybackState.playing ||
+                    state.basicState == BasicPlaybackState.buffering ||
+                    state.basicState == BasicPlaybackState.paused))
+            ? (state.basicState == BasicPlaybackState.buffering ||
+                    state.basicState == BasicPlaybackState.connecting)
+                ? fabBtnW(
+                    settingModalBottomSheet, context, false, false, scaffoldKey)
+                : (state.basicState == BasicPlaybackState.paused)
+                    ? fabBtnW(settingModalBottomSheet, context, true, true,
+                        scaffoldKey)
+                    : fabBtnW(settingModalBottomSheet, context, true, false,
+                        scaffoldKey)
+            : Container();
+      });
+}
+
+// holds the floating action button
+Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
+    scaffoldKey) {
+  return FloatingActionButton(
+    onPressed: () {
+      settingModalBottomSheet(context);
+    },
+    child: (isPlaying)
+        ? FlareActor(
+            'assets/flareAssets/analysis_new.flr',
+            animation: (isPaused)
+                ? null
+                : 'ana'
+                    'lysis'
+                    '',
+            fit: BoxFit.scaleDown,
+          )
+        : CircularProgressIndicator(
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+    backgroundColor: Color(0xFFFF5C5C),
+    foregroundColor: Colors.white,
+  );
+}
+
+// holds the media timing widgets
+Widget mediaTimingW(state, getCurrentTimeStamp, context, audioDurationMin) {
+  return Container(
+    margin: EdgeInsets.only(left: 10.0, right: 10.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Container(
+          child: Text(
+              (state != null)
+                  ? getCurrentTimeStamp(state.currentPosition / 1000)
+                  : "00:00",
+              style: TextStyle(color: Colors.grey),
+              textAlign: TextAlign.start),
+          width: MediaQuery.of(context).size.width * 0.5,
+        ),
+        Container(
+          child: Text(
+            audioDurationMin,
+            style: TextStyle(color: Colors.grey),
+            textAlign: TextAlign.end,
+          ),
+          width: MediaQuery.of(context).size.width * 0.3,
+        )
+      ],
+    ),
   );
 }

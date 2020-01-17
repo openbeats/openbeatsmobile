@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
@@ -292,10 +294,10 @@ class _HomePageState extends State<HomePage> {
       prefs.setString(
           "nowPlayingDurationMin", videosResponseList[index]["duration"]);
       // getting the current mp3 duration in milliseconds
-      String audioDuration =
+      int audioDuration =
           getDurationMillis(videosResponseList[index]["duration"]);
       // setting the current mp3 duration in milliseconds
-      prefs.setString("nowPlayingDuration", audioDuration.toString());
+      prefs.setInt("nowPlayingDuration", audioDuration);
       // setting the current mp3 ID
       prefs.setString(
           "nowPlayingVideoID", videosResponseList[index]["videoId"]);
@@ -310,6 +312,7 @@ class _HomePageState extends State<HomePage> {
       MediaItem currMediaItem = MediaItem(
         id: responseJSON.data["link"].toString(),
         album: "OpenBeats Free Music",
+        duration: audioDuration,
         title: videosResponseList[index]["title"],
         artist: videosResponseList[index]["channelName"],
         artUri: videosResponseList[index]["thumbnail"].toString(),
@@ -328,7 +331,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // returns the max duration of the media in milliseconds
-  String getDurationMillis(String audioDuration) {
+  int getDurationMillis(String audioDuration) {
     // variable holding max value
     double maxVal = 0;
     // holds the integerDurationList
@@ -352,7 +355,130 @@ class _HomePageState extends State<HomePage> {
       else if (i == durationLst.length - 3)
         maxVal += (3600000 * durationLst[i]);
     }
-    return maxVal.toString();
+    return maxVal.toInt();
+  }
+
+  // return the current duration string in min:sec for bottomSheet slider
+  String getCurrentTimeStamp(double totalSeconds) {
+    // variables holding separated time
+    String min, sec, hour;
+    // check if it is greater than one hour
+    if (totalSeconds > 3600) {
+      // getting number of hours
+      hour = ((totalSeconds % (24 * 3600)) / 3600).floor().toString();
+      totalSeconds %= 3600;
+    }
+    // getting number of minutes
+    min = (totalSeconds / 60).floor().toString();
+    totalSeconds %= 60;
+    // getting number of seconds
+    sec = (totalSeconds).floor().toString();
+    // adding the necessary zeros
+    if (int.parse(sec) < 10) sec = "0" + sec;
+    // if the duration is greater than 1 hour, return with hour
+    if (totalSeconds > 3600)
+      return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
+    else
+      return (min.toString() + ":" + sec.toString());
+  }
+
+  // function that calls the bottomSheet
+  void settingModalBottomSheet(context) async {
+    // creating sharedPreferences instance to get media metadata values
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // getting thumbNail image
+    String audioThumbnail = prefs.getString("nowPlayingThumbnail");
+    // getting audioTitle set by getMp3URL()
+    String audioTitle = prefs.getString("nowPlayingTitle");
+    // getting audioDuration in Min set by getMp3URL()
+    String audioDurationMin = prefs.getString("nowPlayingDurationMin");
+    // getting audioDuration set by getMp3URL()
+    int audioDuration = prefs.getInt("nowPlayingDuration");
+    // getting audioViews set by getMp3URL()
+    String audioViews = prefs.getString("nowPlayingViews");
+    // getting audioChannel set by getMp3URL()
+    String audioChannel = prefs.getString("nowPlayingChannel");
+    // getting now playing video ID
+    String videoID = prefs.getString("nowPlayingVideoID");
+    // bottomSheet definition
+    showModalBottomSheet(
+        context: context,
+        elevation: 10.0,
+        builder: (BuildContext bc) {
+          return bottomSheet(audioTitle, audioDuration, audioViews,
+              audioChannel, audioThumbnail, audioDurationMin, videoID, context);
+        });
+  }
+
+  Widget bottomSheet(audioTitle, audioDuration, audioViews, audioChannel,
+      audioThumbnail, audioDurationMin, videoID, context) {
+    return Container(
+        height: 300.0,
+        child: StreamBuilder(
+            stream: AudioService.playbackStateStream,
+            builder: (context, snapshot) {
+              PlaybackState state = snapshot.data;
+              return Stack(
+                children: <Widget>[
+                  homePageW.bottomSheetBGW(audioThumbnail),
+                  Container(
+                    margin: EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        homePageW.bottomSheetTitleW(audioTitle),
+                        positionIndicator(
+                            audioDuration, state, audioDurationMin),
+                        homePageW.bNavPlayControlsW(context),
+                      ],
+                    ),
+                  )
+                ],
+              );
+            }));
+  }
+
+  Widget positionIndicator(
+      int audioDuration, PlaybackState state, String audioDurationMin) {
+    double seekPos;
+    return StreamBuilder(
+      stream: Rx.combineLatest2<double, double, double>(
+          _dragPositionSubject.stream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (dragPosition, _) => dragPosition),
+      builder: (context, snapshot) {
+        double position = (state != null)
+            ? snapshot.data ?? state.currentPosition.toDouble()
+            : 0.0;
+        double duration = audioDuration.toDouble();
+        return Column(
+          children: [
+            if (duration != null)
+              Slider(
+                min: 0.0,
+                max: duration,
+                value: seekPos ?? max(0.0, min(position, duration)),
+                onChanged: (value) {
+                  _dragPositionSubject.add(value);
+                },
+                onChangeEnd: (value) {
+                  AudioService.seekTo(value.toInt());
+                  // Due to a delay in platform channel communication, there is
+                  // a brief moment after releasing the Slider thumb before the
+                  // new position is broadcast from the platform side. This
+                  // hack is to hold onto seekPos until the next state update
+                  // comes through.
+                  // TODO: Improve this code.
+                  seekPos = value;
+                  _dragPositionSubject.add(null);
+                },
+              ),
+            homePageW.mediaTimingW(
+                state, getCurrentTimeStamp, context, audioDurationMin)
+          ],
+        );
+      },
+    );
   }
 
   // starts the audio service with notification
@@ -372,10 +498,10 @@ class _HomePageState extends State<HomePage> {
       'mediaID': currMediaItem.id,
       'mediaTitle': currMediaItem.title,
       'channelID': currMediaItem.artist,
+      'duration': currMediaItem.duration,
       'thumbnailURI': currMediaItem.artUri
     };
     await AudioService.customAction('playMedia', parameters);
-    
   }
 
   @override
@@ -406,6 +532,8 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         key: _homePageScaffoldKey,
         backgroundColor: globalVars.primaryDark,
+        floatingActionButton:
+            homePageW.fabView(settingModalBottomSheet, _homePageScaffoldKey),
         appBar: homePageW.appBarW(
             context, navigateToSearchPage, _homePageScaffoldKey),
         drawer: globalFun.drawerW(1, context),
@@ -586,19 +714,47 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  void onCustomAction(String action, var parameter) async{
+  void onAudioFocusLost() async {
+    onPause();
+  }
+
+  @override
+  void onAudioBecomingNoisy() {
+    onPause();
+  }
+
+  @override
+  void onAudioFocusLostTransient() async {
+    _audioPlayer.setVolume(0);
+  }
+
+  @override
+  void onAudioFocusLostTransientCanDuck() async {
+    _audioPlayer.setVolume(0);
+  }
+
+  @override
+  void onAudioFocusGained() async {
+    _audioPlayer.setVolume(1.0);
+  }
+
+  @override
+  void onCustomAction(String action, var parameter) async {
+    // if condition to play current media
     if (action == "playMedia") {
+      // setting the current mediaItem
       await AudioServiceBackground.setMediaItem(MediaItem(
         id: parameter['mediaID'],
         album: "OpenBeats Free Music",
         title: parameter['mediaTitle'],
         artist: parameter['channelID'],
+        duration: parameter['duration'],
         artUri: parameter['thumbnailURI'],
       ));
+      // setting URL for audio player
       await _audioPlayer.setUrl(parameter['mediaID']);
+      // playing audio
       onPlay();
-      // print("Hi there!");
-      // print(parameter['mediaID']);
     }
   }
 

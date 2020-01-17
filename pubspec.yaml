@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audio_service:
+  audio_service: ^0.5.7
   just_audio:
   rxdart:
   font_awesome_flutter:
@@ -53,6 +53,9 @@ flutter:
     - assets/images/logo/logoicon.png
     - assets/images/logo/logotext.png
     - assets/images/supplementary/mello.png
+    - assets/flareAssets/analysis_new.flr
+    - assets/flareAssets/minion.flr
+    - assets/flareAssets/searcchLoading.flr
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
