@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 
 // variables holding the color scheme for the application
@@ -9,6 +10,14 @@ Color accentRed = Color(0xFFDB5461);
 Color accentBlue = Color(0xFF386FA4);
 Color accentGreen = Color(0xFF20A39E);
 Color accentWhite = Color(0xFFfbfafd);
+
+// holds the color scheme for the drawer
+Color leadingIconColor = Colors.white;
+Color titleTextColor = Colors.white;
+Color subtitleTextColor = Colors.white;
+
+// holds the queue of audio to play
+List<MediaItem> audioQueue = <MediaItem>[];
 
 // holds the current searched text
 String currSearchText = "";

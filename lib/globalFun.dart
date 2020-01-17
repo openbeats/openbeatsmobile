@@ -29,7 +29,7 @@ Widget drawerW(int currPage, context) {
           drawerYourPlaylistsPageListTile(currPage, context),
           drawerLikedSongsPageListTile(currPage, context),
           drawerYourDownloadsPageListTile(currPage, context),
-          drawerappsettingsPageListTile(currPage,context),
+          drawerappsettingsPageListTile(currPage, context),
         ],
       ),
     ),
@@ -64,9 +64,12 @@ Widget drawerHomePageListTile(int currPage, context) {
   return Container(
     child: (currPage != 1)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.home),
-            title: Text('Home'),
-            subtitle: Text("Go back to the home page"),
+            leading:
+                Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
+            title: Text('Home',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Go back to the home page",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/homePage');
@@ -81,9 +84,12 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 2)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.chartLine),
-            title: Text('Top Charts'),
-            subtitle: Text("Listen to what's trending"),
+            leading: Icon(FontAwesomeIcons.chartLine,
+                color: globalVars.leadingIconColor),
+            title: Text('Top Charts',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Listen to what's trending",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/topChartsPage');
@@ -98,9 +104,12 @@ Widget drawerArtistsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 3)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.users),
-            title: Text('Artists'),
-            subtitle: Text("Songs from your favorite artists"),
+            leading: Icon(FontAwesomeIcons.users,
+                color: globalVars.leadingIconColor),
+            title: Text('Artists',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Songs from your favorite artists",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/artistsPage');
@@ -115,9 +124,12 @@ Widget drawerAlbumsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 4)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.solidClone),
-            title: Text('Albums'),
-            subtitle: Text("Browse the albums you love"),
+            leading: Icon(FontAwesomeIcons.solidClone,
+                color: globalVars.leadingIconColor),
+            title: Text('Albums',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Browse the albums you love",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/albumsPage');
@@ -132,9 +144,12 @@ Widget drawerHistoryPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 5)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.history),
-            title: Text('Recently Played'),
-            subtitle: Text("Your own music history"),
+            leading: Icon(FontAwesomeIcons.history,
+                color: globalVars.leadingIconColor),
+            title: Text('Recently Played',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Your own music history",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/historyPage');
@@ -149,9 +164,12 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 6)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.home),
-            title: Text('Your Playlists'),
-            subtitle: Text("Tune to your own collections"),
+            leading:
+                Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
+            title: Text('Your Playlists',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Tune to your own collections",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/yourPlaylistsPage');
@@ -166,9 +184,12 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 7)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.heart),
-            title: Text('Liked Songs'),
-            subtitle: Text("All your liked songs"),
+            leading: Icon(FontAwesomeIcons.heart,
+                color: globalVars.leadingIconColor),
+            title: Text('Liked Songs',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("All your liked songs",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/likedSongsPage');
@@ -183,9 +204,12 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 8)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.download),
-            title: Text('Your Donwloads'),
-            subtitle: Text("All songs on local device"),
+            leading: Icon(FontAwesomeIcons.download,
+                color: globalVars.leadingIconColor),
+            title: Text('Your Donwloads',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("All songs on local device",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
@@ -200,9 +224,12 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 9)
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.cogs),
-            title: Text('Settings'),
-            subtitle: Text("Application related settings"),
+            leading:
+                Icon(FontAwesomeIcons.cogs, color: globalVars.leadingIconColor),
+            title: Text('Settings',
+                style: TextStyle(color: globalVars.titleTextColor)),
+            subtitle: Text("Application related settings",
+                style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/appSettings');
