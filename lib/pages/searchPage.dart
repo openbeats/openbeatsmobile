@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../widgets/searchPageW.dart' as searchPageW;
-import '../globalVars.dart' as globalVars;
+import '../globalWids.dart' as globalWids;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -46,7 +46,7 @@ class _SearchPageState extends State<SearchPage> {
         // removing previous snackBar
         scaffoldKey.currentState.removeCurrentSnackBar();
         // showing snackBar to alert user about network status
-        scaffoldKey.currentState.showSnackBar(globalVars.networkErrorSBar);
+        scaffoldKey.currentState.showSnackBar(globalWids.networkErrorSBar);
       }
     }
   }

@@ -20,7 +20,7 @@ Widget drawerW(int currPage, context) {
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          drawerHeader(),
+          drawerHeader(context),
           drawerHomePageListTile(currPage, context),
           drawerTopChartsPageListTile(currPage, context),
           drawerArtistsPageListTile(currPage, context),
@@ -37,26 +37,44 @@ Widget drawerW(int currPage, context) {
 }
 
 // holds the drawerHeader
-Widget drawerHeader() {
-  return UserAccountsDrawerHeader(
-    accountName: Text(
-      "Username",
-      style: TextStyle(color: globalVars.primaryLight),
-    ),
-    accountEmail: Text(
-      "youremail@email.com",
-      style: TextStyle(color: globalVars.primaryLight),
-    ),
-    decoration: BoxDecoration(color: globalVars.primaryDark),
-    currentAccountPicture: CircleAvatar(
-      backgroundColor: globalVars.accentWhite,
-      foregroundColor: globalVars.accentRed,
-      child: Text(
-        "R",
-        style: TextStyle(fontSize: 40.0),
-      ),
-    ),
-  );
+Widget drawerHeader(context) {
+  return (globalVars.loginInfo["loginStatus"])
+      ? UserAccountsDrawerHeader(
+          accountName: Text(
+            "Username",
+            style: TextStyle(color: globalVars.primaryLight),
+          ),
+          accountEmail: Text(
+            "youremail@email.com",
+            style: TextStyle(color: globalVars.primaryLight),
+          ),
+          decoration: BoxDecoration(color: globalVars.primaryDark),
+          currentAccountPicture: CircleAvatar(
+            backgroundColor: globalVars.accentWhite,
+            foregroundColor: globalVars.accentRed,
+            child: Text(
+              "R",
+              style: TextStyle(fontSize: 40.0),
+            ),
+          ),
+        )
+      : SizedBox(
+          height: 150.0,
+          child: Container(
+            child: RaisedButton(
+              child: Text(
+                "Login/SignUp\nto access exciting features",
+                textAlign: TextAlign.center,
+              ),
+              padding: EdgeInsets.all(10.0),
+              onPressed: () {
+                Navigator.pushNamed(context, '/authPage');
+              },
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+            ),
+          ),
+        );
 }
 
 // holds the homePage listTile for the drawer

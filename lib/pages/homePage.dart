@@ -124,8 +124,9 @@ class _HomePageState extends State<HomePage> {
     Timer.periodic(
         Duration(milliseconds: 200),
         (Timer t) => {
-              if (AudioService.playbackState != null && AudioService.playbackState.basicState ==
-                  BasicPlaybackState.playing)
+              if (AudioService.playbackState != null &&
+                  AudioService.playbackState.basicState ==
+                      BasicPlaybackState.playing)
                 {
                   t.cancel(),
                   _homePageScaffoldKey.currentState.removeCurrentSnackBar()
@@ -419,6 +420,10 @@ class _HomePageState extends State<HomePage> {
     String videoID = prefs.getString("nowPlayingVideoID");
     // bottomSheet definition
     showModalBottomSheet(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+          Radius.circular(20.0),
+        )),
         context: context,
         elevation: 10.0,
         builder: (BuildContext bc) {
@@ -826,17 +831,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   List<MediaControl> getControls(BasicPlaybackState state) {
     if (_playing) {
       return [
-        skipToPreviousControl,
         pauseControl,
         stopControl,
-        skipToNextControl
       ];
     } else {
       return [
-        skipToPreviousControl,
         playControl,
         stopControl,
-        skipToNextControl
       ];
     }
   }

@@ -180,13 +180,15 @@ Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
 Widget bottomSheetBGW(audioThumbnail) {
   return Opacity(
     child: Container(
-      height: 300.0,
-      color: Colors.black,
-      child: Image.network(
-        audioThumbnail,
-        fit: BoxFit.fitHeight,
-      ),
-    ),
+        height: 300.0,
+        color: Colors.black,
+        child: ClipRRect(
+          borderRadius: new BorderRadius.circular(20.0),
+          child: Image.network(
+            audioThumbnail,
+            fit: BoxFit.cover,
+          ),
+        )),
     opacity: 0.3,
   );
 }

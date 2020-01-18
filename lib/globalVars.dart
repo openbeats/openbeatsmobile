@@ -16,18 +16,17 @@ Color leadingIconColor = Colors.white;
 Color titleTextColor = Colors.white;
 Color subtitleTextColor = Colors.white;
 
+// holds the login information of the user
+Map<String, dynamic> loginInfo = {
+  "loginStatus": false,
+  "userEmail": "example@examplemail.com",
+  "userName": "user_name",
+  "userId": "user_id",
+  "userToken":"user_token"
+};
+
 // holds the queue of audio to play
 List<MediaItem> audioQueue = <MediaItem>[];
 
 // holds the current searched text
 String currSearchText = "";
-
-// snackBar to show network error
-SnackBar networkErrorSBar = new SnackBar(
-  content: Text(
-    "Not able to connect to the internet",
-    style: TextStyle(color: Colors.white),
-  ),
-  backgroundColor: Colors.orange,
-  duration: Duration(seconds: 2),
-);
