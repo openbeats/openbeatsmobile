@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
 import 'package:rxdart/subjects.dart';
 import 'dart:async';
@@ -429,7 +430,7 @@ class _HomePageState extends State<HomePage> {
                         homePageW.bottomSheetTitleW(audioTitle),
                         positionIndicator(
                             audioDuration, state, audioDurationMin),
-                        homePageW.bNavPlayControlsW(context),
+                        homePageW.bNavPlayControlsW(context, state),
                       ],
                     ),
                   )
@@ -451,31 +452,33 @@ class _HomePageState extends State<HomePage> {
             ? snapshot.data ?? state.currentPosition.toDouble()
             : 0.0;
         double duration = audioDuration.toDouble();
-        return Column(
-          children: [
-            if (duration != null)
-              Slider(
-                min: 0.0,
-                max: duration,
-                value: seekPos ?? max(0.0, min(position, duration)),
-                onChanged: (value) {
-                  _dragPositionSubject.add(value);
-                },
-                onChangeEnd: (value) {
-                  AudioService.seekTo(value.toInt());
-                  // Due to a delay in platform channel communication, there is
-                  // a brief moment after releasing the Slider thumb before the
-                  // new position is broadcast from the platform side. This
-                  // hack is to hold onto seekPos until the next state update
-                  // comes through.
-                  // TODO: Improve this code.
-                  seekPos = value;
-                  _dragPositionSubject.add(null);
-                },
-              ),
-            homePageW.mediaTimingW(
-                state, getCurrentTimeStamp, context, audioDurationMin)
-          ],
+        return Container(
+          child:(state!=null)?Column(
+            children: [
+              if (duration != null)
+                Slider(
+                  min: 0.0,
+                  max: duration,
+                  value: seekPos ?? max(0.0, min(position, duration)),
+                  onChanged: (value) {
+                    _dragPositionSubject.add(value);
+                  },
+                  onChangeEnd: (value) {
+                    AudioService.seekTo(value.toInt());
+                    // Due to a delay in platform channel communication, there is
+                    // a brief moment after releasing the Slider thumb before the
+                    // new position is broadcast from the platform side. This
+                    // hack is to hold onto seekPos until the next state update
+                    // comes through.
+                    // TODO: Improve this code.
+                    seekPos = value;
+                    _dragPositionSubject.add(null);
+                  },
+                ),
+              homePageW.mediaTimingW(
+                  state, getCurrentTimeStamp, context, audioDurationMin)
+            ],
+          ):null,
         );
       },
     );
@@ -491,7 +494,8 @@ class _HomePageState extends State<HomePage> {
       androidNotificationChannelName: 'OpenBeats Notification Channel',
       notificationColor: 0xFF09090E,
       enableQueue: true,
-      androidNotificationIcon: 'mipmap/ic_launcher',
+      androidStopForegroundOnPause: true,
+      androidNotificationIcon: 'drawable/ic_stat_logoicon2',
     );
 
     Map<String, dynamic> parameters = {
@@ -504,10 +508,20 @@ class _HomePageState extends State<HomePage> {
     await AudioService.customAction('playMedia', parameters);
   }
 
+  // sets the status and navigation bar themes
+  void setStatusNaviThemes() async {
+    await FlutterStatusbarcolor.setStatusBarColor(globalVars.primaryDark);
+    await FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
+    await FlutterStatusbarcolor.setNavigationBarColor(globalVars.primaryDark);
+    await FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
+  }
+
   @override
   void initState() {
     super.initState();
     connect();
+    // sets the status and navigation bar themes
+    setStatusNaviThemes();
   }
 
   @override
@@ -546,7 +560,9 @@ class _HomePageState extends State<HomePage> {
     return Container(
       child: Center(
           child: (searchResultLoading)
-              ? CircularProgressIndicator()
+              ? CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+                )
               : (videosResponseList.length == 0)
                   ? homePageW.homePageView()
                   : videoListView()),

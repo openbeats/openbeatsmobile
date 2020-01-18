@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
-
-import './globalVars.dart' as globalVars;
 
 void main() => runApp(MyApp());
 
@@ -17,16 +14,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    // sets the status and navigation bar themes
-    setStatusNaviThemes();
-  }
-
-  // sets the status and navigation bar themes
-  void setStatusNaviThemes() async {
-    await FlutterStatusbarcolor.setStatusBarColor(globalVars.primaryDark);
-    await FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-    await FlutterStatusbarcolor.setNavigationBarColor(globalVars.primaryDark);
-    await FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
   }
 
   @override
@@ -37,6 +24,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         brightness: Brightness.dark,
         fontFamily: "montserrat",
+        primarySwatch: Colors.red,
       ),
       routes: {'/searchPage': (context) => SearchPage()},
     );

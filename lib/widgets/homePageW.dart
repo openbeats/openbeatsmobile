@@ -50,10 +50,13 @@ Widget hiText() {
 }
 
 Widget welcomeText() {
-  return Text(
-    "Try searching for any \nsong, podcast or audiobook you like",
-    textAlign: TextAlign.center,
-    style: TextStyle(color: Colors.grey, fontSize: 20.0),
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 15.0),
+    child: Text(
+      "Try searching for any \nsong, podcast or audiobook you like",
+      textAlign: TextAlign.center,
+      style: TextStyle(color: Colors.grey, fontSize: 20.0),
+    ),
   );
 }
 
@@ -203,40 +206,59 @@ Widget bottomSheetTitleW(audioTitle) {
 }
 
 // holds the playback control buttons
-Widget bNavPlayControlsW(context) {
+Widget bNavPlayControlsW(context, state) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[bNavStopBtn(context), bNavPlayBtn()],
+    children: <Widget>[bNavPlayBtn(state), bNavStopBtn(context, state)],
   );
 }
 
 // button to hold the play and pause Button
 // mode 1 - music stopped, 2 - music playing
-Widget bNavPlayBtn() {
-  return IconButton(
-    onPressed: () {
-      if (AudioService.playbackState != null &&
-          AudioService.playbackState.basicState != BasicPlaybackState.playing)
-        AudioService.play();
-      else
-        AudioService.pause();
-    },
-    icon: (AudioService.playbackState != null &&
-            AudioService.playbackState.basicState != BasicPlaybackState.playing)
-        ? Icon(FontAwesomeIcons.play)
-        : Icon(FontAwesomeIcons.pause),
+Widget bNavPlayBtn(state) {
+  return Container(
+    child: (state != null)
+        ? (state != BasicPlaybackState.connecting &&
+                state != BasicPlaybackState.buffering)
+            ? IconButton(
+                onPressed: () {
+                  if (AudioService.playbackState != null &&
+                      AudioService.playbackState.basicState !=
+                          BasicPlaybackState.playing)
+                    AudioService.play();
+                  else
+                    AudioService.pause();
+                },
+                iconSize: 42.0,
+                icon: (AudioService.playbackState != null &&
+                        AudioService.playbackState.basicState !=
+                            BasicPlaybackState.playing)
+                    ? Icon(FontAwesomeIcons.play)
+                    : Icon(FontAwesomeIcons.pause),
+              )
+            : SizedBox(
+                height: 42.0,
+                width: 42.0,
+                child: CircularProgressIndicator(
+                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+        : null,
   );
 }
 
 // button to hold the stopButton
-Widget bNavStopBtn(context) {
-  return IconButton(
-    onPressed: () {
-      AudioService.stop();
-      Navigator.pop(context);
-    },
-    icon: Icon(FontAwesomeIcons.stop),
-  );
+Widget bNavStopBtn(context, state) {
+  return Container(
+      child: (state != null)
+          ? IconButton(
+              onPressed: () {
+                AudioService.stop();
+                Navigator.pop(context);
+              },
+              icon: Icon(FontAwesomeIcons.stop),
+            )
+          : null);
 }
 
 Widget fabView(settingModalBottomSheet, scaffoldKey) {
