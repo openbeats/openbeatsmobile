@@ -119,6 +119,20 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // function to monitor the playback start point to remove snackbar
+  void monitorPlaybackStart() async {
+    Timer.periodic(
+        Duration(milliseconds: 200),
+        (Timer t) => {
+              if (AudioService.playbackState != null && AudioService.playbackState.basicState ==
+                  BasicPlaybackState.playing)
+                {
+                  t.cancel(),
+                  _homePageScaffoldKey.currentState.removeCurrentSnackBar()
+                }
+            });
+  }
+
   // shows status snackBars
   // 0 - Getting Mp3 link | 1 - validating link | 2 - invalid link
   // 3 - playback start
@@ -148,7 +162,9 @@ class _HomePageState extends State<HomePage> {
       case 3:
         snackBarMessage = "Initializing playback...";
         snackBarColor = Colors.green;
-        snackBarDuration = Duration(seconds: 5);
+        snackBarDuration = Duration(seconds: 30);
+        // calling function to monitor the playback start point to remove snackbar
+        monitorPlaybackStart();
         break;
       case 4:
         snackBarMessage = "Under development 😄";
@@ -430,6 +446,7 @@ class _HomePageState extends State<HomePage> {
                         homePageW.bottomSheetTitleW(audioTitle),
                         positionIndicator(
                             audioDuration, state, audioDurationMin),
+                        homePageW.bufferingIndicator(),
                         homePageW.bNavPlayControlsW(context, state),
                       ],
                     ),
@@ -453,32 +470,34 @@ class _HomePageState extends State<HomePage> {
             : 0.0;
         double duration = audioDuration.toDouble();
         return Container(
-          child:(state!=null)?Column(
-            children: [
-              if (duration != null)
-                Slider(
-                  min: 0.0,
-                  max: duration,
-                  value: seekPos ?? max(0.0, min(position, duration)),
-                  onChanged: (value) {
-                    _dragPositionSubject.add(value);
-                  },
-                  onChangeEnd: (value) {
-                    AudioService.seekTo(value.toInt());
-                    // Due to a delay in platform channel communication, there is
-                    // a brief moment after releasing the Slider thumb before the
-                    // new position is broadcast from the platform side. This
-                    // hack is to hold onto seekPos until the next state update
-                    // comes through.
-                    // TODO: Improve this code.
-                    seekPos = value;
-                    _dragPositionSubject.add(null);
-                  },
-                ),
-              homePageW.mediaTimingW(
-                  state, getCurrentTimeStamp, context, audioDurationMin)
-            ],
-          ):null,
+          child: (state != null)
+              ? Column(
+                  children: [
+                    if (duration != null)
+                      Slider(
+                        min: 0.0,
+                        max: duration,
+                        value: seekPos ?? max(0.0, min(position, duration)),
+                        onChanged: (value) {
+                          _dragPositionSubject.add(value);
+                        },
+                        onChangeEnd: (value) {
+                          AudioService.seekTo(value.toInt());
+                          // Due to a delay in platform channel communication, there is
+                          // a brief moment after releasing the Slider thumb before the
+                          // new position is broadcast from the platform side. This
+                          // hack is to hold onto seekPos until the next state update
+                          // comes through.
+                          // TODO: Improve this code.
+                          seekPos = value;
+                          _dragPositionSubject.add(null);
+                        },
+                      ),
+                    homePageW.mediaTimingW(
+                        state, getCurrentTimeStamp, context, audioDurationMin)
+                  ],
+                )
+              : null,
         );
       },
     );

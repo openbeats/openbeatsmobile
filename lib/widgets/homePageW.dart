@@ -217,9 +217,11 @@ Widget bNavPlayControlsW(context, state) {
 // mode 1 - music stopped, 2 - music playing
 Widget bNavPlayBtn(state) {
   return Container(
-    child: (state != null)
-        ? (state != BasicPlaybackState.connecting &&
-                state != BasicPlaybackState.buffering)
+    child: (AudioService.playbackState != null)
+        ? (AudioService.playbackState.basicState ==
+                    BasicPlaybackState.playing ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.paused)
             ? IconButton(
                 onPressed: () {
                   if (AudioService.playbackState != null &&
@@ -230,20 +232,31 @@ Widget bNavPlayBtn(state) {
                     AudioService.pause();
                 },
                 iconSize: 42.0,
-                icon: (AudioService.playbackState != null &&
-                        AudioService.playbackState.basicState !=
-                            BasicPlaybackState.playing)
+                icon: (AudioService.playbackState.basicState !=
+                        BasicPlaybackState.playing)
                     ? Icon(FontAwesomeIcons.play)
                     : Icon(FontAwesomeIcons.pause),
               )
-            : SizedBox(
-                height: 42.0,
-                width: 42.0,
-                child: CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
+            : null
         : null,
+  );
+}
+
+// holds the buffering indicator
+Widget bufferingIndicator() {
+  return SizedBox(
+    height: 20.0,
+    child: Container(
+      child: (AudioService.playbackState != null)
+          ? (AudioService.playbackState.basicState ==
+                  BasicPlaybackState.buffering)
+              ? Text(
+                  "Buffering...",
+                  style: TextStyle(color: Colors.grey),
+                )
+              : null
+          : null,
+    ),
   );
 }
 
