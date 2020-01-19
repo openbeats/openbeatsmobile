@@ -1,4 +1,5 @@
 import 'package:audio_service/audio_service.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -113,9 +114,13 @@ Widget vidResultThumbnail(context, thumbnail) {
     ], borderRadius: BorderRadius.circular(5.0)),
     child: ClipRRect(
       borderRadius: BorderRadius.circular(5.0),
-      child: Image.network(
-        thumbnail,
+      child: CachedNetworkImage(
+        imageUrl: thumbnail,
         fit: BoxFit.cover,
+        placeholder: (context, url) => CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+        ),
+        errorWidget: (context, url, error) => Icon(Icons.error),
       ),
     ),
   );
@@ -159,15 +164,12 @@ Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
           size: 30.0,
         ),
         onSelected: (choice) {
-          if(globalVars.loginInfo["loginStatus"] == true){
-            if (choice == "addToPlayList") {
-
-            }
+          if (globalVars.loginInfo["loginStatus"] == true) {
+            if (choice == "addToPlayList") {}
           } else {
             globalFun.showToastMessage("Please login to use feature");
             Navigator.pushNamed(context, '/authPage');
           }
-          
         },
         itemBuilder: (context) => [
               PopupMenuItem(

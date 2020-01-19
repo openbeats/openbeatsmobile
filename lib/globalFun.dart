@@ -62,7 +62,9 @@ Widget drawerHeader(context) {
             backgroundColor: globalVars.accentWhite,
             child: CachedNetworkImage(
               imageUrl: userAvatar,
-              placeholder: (context, url) => CircularProgressIndicator(),
+              placeholder: (context, url) => CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(globalVars.accentRed)),
               errorWidget: (context, url, error) => Icon(Icons.error),
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
@@ -207,7 +209,7 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
     child: (currPage != 6)
         ? ListTile(
             leading:
-                Icon(FontAwesomeIcons.list , color: globalVars.leadingIconColor),
+                Icon(FontAwesomeIcons.list, color: globalVars.leadingIconColor),
             title: Text('Your Playlists',
                 style: TextStyle(color: globalVars.titleTextColor)),
             subtitle: Text("Tune to your own collections",
