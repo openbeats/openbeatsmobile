@@ -68,6 +68,7 @@ Widget drawerHeader(context) {
               ),
               padding: EdgeInsets.all(10.0),
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.pushNamed(context, '/authPage');
               },
               shape: RoundedRectangleBorder(

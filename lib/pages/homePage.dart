@@ -135,8 +135,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   // shows status snackBars
-  // 0 - Getting Mp3 link | 1 - validating link | 2 - invalid link
-  // 3 - playback start
   void showSnackBarMessage(int mode) {
     // holds the message to display
     String snackBarMessage;
@@ -793,8 +791,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
       ));
       // setting URL for audio player
       await _audioPlayer.setUrl(parameter['mediaID']);
+      if (_playing == null) {
+        // First time, we want to start playing
+        _playing = true;
+      }
       // playing audio
       onPlay();
+      
     }
   }
 
@@ -829,7 +832,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_playing) {
+    if (_playing != null && _playing) {
       return [
         pauseControl,
         stopControl,

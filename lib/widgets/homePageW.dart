@@ -63,7 +63,7 @@ Widget welcomeText() {
 // widget to hold each container of video results
 Widget vidResultContainerW(
     context, videosResponseItem, index, getMp3URL, showSnackBarMessage) {
-  return GestureDetector(
+  return InkWell(
       onTap: () async {
         await getMp3URL(videosResponseItem["videoId"], index);
       },

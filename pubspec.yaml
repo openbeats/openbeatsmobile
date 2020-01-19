@@ -27,6 +27,8 @@ dependencies:
   dio:
   flutter_statusbarcolor:
   flare_flutter:
+  simple_animations:
+  http:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -57,7 +59,7 @@ flutter:
   assets:
     - assets/images/logo/logoicon.png
     - assets/images/logo/logotext.png
-    - assets/images/supplementary/mello.png
+    - assets/images/supplementary/authpage1.png
     - assets/flareAssets/analysis_new.flr
     - assets/flareAssets/minion.flr
     - assets/flareAssets/searcchLoading.flr
