@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // variables holding the color scheme for the application
 // holds the background colors for the themes
@@ -22,6 +23,7 @@ Map<String, dynamic> loginInfo = {
   "userEmail": "example@examplemail.com",
   "userName": "user_name",
   "userId": "user_id",
+  "userAvatar":"user_avatar",
   "userToken":"user_token"
 };
 
@@ -30,3 +32,6 @@ List<MediaItem> audioQueue = <MediaItem>[];
 
 // holds the current searched text
 String currSearchText = "";
+
+// holds the method channel variable
+const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');

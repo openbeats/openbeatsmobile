@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import './globalVars.dart' as globalVars;
+import './actions/globalVarsA.dart' as globalVarsA;
 
 // holds the drawer for the application
 // currPage
@@ -30,6 +31,7 @@ Widget drawerW(int currPage, context) {
           drawerLikedSongsPageListTile(currPage, context),
           drawerYourDownloadsPageListTile(currPage, context),
           drawerappsettingsPageListTile(currPage, context),
+          drawerLogoutPageListTile(context),
         ],
       ),
     ),
@@ -38,24 +40,25 @@ Widget drawerW(int currPage, context) {
 
 // holds the drawerHeader
 Widget drawerHeader(context) {
+  String userAvatar = globalVars.loginInfo["userAvatar"];
+  if (userAvatar != "user_avatar")
+    userAvatar = "http://" + userAvatar.substring(2, userAvatar.length);
+  else
+    userAvatar = "https://picsum.photos/200";
   return (globalVars.loginInfo["loginStatus"])
       ? UserAccountsDrawerHeader(
           accountName: Text(
-            "Username",
+            globalVars.loginInfo["userName"],
             style: TextStyle(color: globalVars.primaryLight),
           ),
           accountEmail: Text(
-            "youremail@email.com",
+            globalVars.loginInfo["userEmail"],
             style: TextStyle(color: globalVars.primaryLight),
           ),
           decoration: BoxDecoration(color: globalVars.primaryDark),
           currentAccountPicture: CircleAvatar(
             backgroundColor: globalVars.accentWhite,
-            foregroundColor: globalVars.accentRed,
-            child: Text(
-              "R",
-              style: TextStyle(fontSize: 40.0),
-            ),
+            backgroundImage: NetworkImage(userAvatar),
           ),
         )
       : SizedBox(
@@ -252,6 +255,61 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/appSettings');
+            },
+          )
+        : null,
+  );
+}
+
+// holds the logout listTile for the drawer
+Widget drawerLogoutPageListTile(context) {
+  return Container(
+    child: (globalVars.loginInfo["loginStatus"])
+        ? ListTile(
+            leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.orange),
+            title: Text('Logout', style: TextStyle(color: Colors.orange)),
+            subtitle: Text("Sign out of your account",
+                style: TextStyle(color: Colors.orange)),
+            onTap: () {
+              
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      backgroundColor: globalVars.primaryDark,
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(5.0))),
+                      title: Text("Are you sure?"),
+                      content:
+                          Text("This action will sign you out of your account"),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text("Logout"),
+                          onPressed: () {
+                            Map<String, dynamic> loginParameters = {
+                              "loginStatus": false,
+                            };
+                            globalVarsA.modifyLoginInfo(loginParameters, true);
+                            Navigator.pop(context);
+                            Navigator.pushReplacementNamed(
+                                context, '/homePage');
+                            globalVars.platformMethodChannel.invokeMethod("showToast",{"message":"Logged out successfully"});
+                          },
+                          color: Colors.transparent,
+                          textColor: globalVars.accentRed,
+                        ),
+                        FlatButton(
+                          child: Text("Cancel"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          color: Colors.transparent,
+                          textColor: globalVars.accentGreen,
+                        )
+                      ],
+                    );
+                  });
             },
           )
         : null,

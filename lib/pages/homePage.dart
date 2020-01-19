@@ -538,9 +538,21 @@ class _HomePageState extends State<HomePage> {
     await FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
   }
 
+  void getAuthStatus() async {
+    // creating sharedPreferences instance
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool loginStatus = prefs.getBool("loginStatus");
+    if (loginStatus) {
+      
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    // getting authStatus to refresh app after restart
+    getAuthStatus();
     connect();
     // sets the status and navigation bar themes
     setStatusNaviThemes();
@@ -797,7 +809,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
       // playing audio
       onPlay();
-      
     }
   }
 

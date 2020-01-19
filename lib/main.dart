@@ -22,15 +22,17 @@ class _MyAppState extends State<MyApp> {
       String userEmail = prefs.getString("userEmail");
       String userName = prefs.getString("userName");
       String userId = prefs.getString("userId"); 
+      String userAvatar = prefs.getString("userAvatar");
       String userToken = prefs.getString("userToken");
       Map<String, dynamic> loginParameters = {
         "loginStatus": true,
         "userEmail": userEmail,
         "userName": userName,
         "userId": userId,
+        "userAvatar": userAvatar,
         "userToken":userToken,
       };
-      globalVarsA.modifyLoginInfo(loginParameters);
+      globalVarsA.modifyLoginInfo(loginParameters, false);
     } else {
       prefs.setBool("loginStatus", false);
     }
@@ -55,6 +57,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.red,
       ),
       routes: {
+        '/homePage': (context) => HomePage(),
         '/authPage': (context) => AuthPage()
       },
     );

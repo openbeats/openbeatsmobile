@@ -7,6 +7,7 @@ import 'package:simple_animations/simple_animations/multi_track_tween.dart';
 import '../widgets/authPageW.dart' as authPageW;
 import '../globalVars.dart' as globalVars;
 import '../actions/globalVarsA.dart' as globalVarsA;
+import '../globalWids.dart' as globalWids;
 
 class AuthPage extends StatefulWidget {
   @override
@@ -20,8 +21,12 @@ class _AuthPageState extends State<AuthPage>
       _signUpFormKey = GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> _authPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
-  bool _autoValidateLogin = false, _autoValidateSignUp = false;
-  String _emailID, _name, _password, _passwordConfirm;
+  bool _autoValidateLogin = false,
+      _autoValidateSignUp = false,
+      _isAuthenticating = false,
+      _isSigningUp = false;
+  String _emailID, _name, _password;
+  final TextEditingController _passwordController = TextEditingController();
 
   void setLoginParmeters(body) {
     Map<String, dynamic> loginParameters = {
@@ -29,10 +34,11 @@ class _AuthPageState extends State<AuthPage>
       "userEmail": body["email"],
       "userName": body["name"],
       "userId": body["id"],
+      "userAvatar": body["avatar"],
       "userToken": body["token"],
     };
-    globalVarsA.modifyLoginInfo(loginParameters);
-    
+    // true to alert the function to update the sharedPreferences
+    globalVarsA.modifyLoginInfo(loginParameters, true);
   }
 
   void _attemptLogin() async {
@@ -42,19 +48,50 @@ class _AuthPageState extends State<AuthPage>
     try {
       var response = await http.post("https://api.openbeats.live/auth/login",
           body: {"email": "$_emailID", "password": "$_password"});
-
       final body = json.decode(response.body);
-      print(body.toString());
       if (body["error"] == null) {
         _authPageScaffoldKey.currentState.removeCurrentSnackBar();
         setLoginParmeters(body);
         Navigator.pop(context);
-        Navigator.pop(context);
+        globalVars.platformMethodChannel
+            .invokeMethod("showToast", {"message": "Welcome to OpenBeats"});
       } else {
         showSnackBarMessage(1);
+        setState(() {
+          _isAuthenticating = false;
+        });
       }
     } catch (err) {
       print(err);
+      showSnackBarMessage(5);
+    }
+  }
+
+  void _attemptSignUp() async {
+    showSnackBarMessage(2);
+    try {
+      var response = await http.post("https://api.openbeats.live/auth/register",
+          body: {
+            "email": "$_emailID",
+            "password": "$_password",
+            "name": "$_name"
+          });
+      final body = json.decode(response.body);
+      if (body["error"] == null) {
+        _authPageScaffoldKey.currentState.removeCurrentSnackBar();
+        showSnackBarMessage(3);
+        setState(() {
+          _isSigningUp = false;
+        });
+      } else {
+        showSnackBarMessage(4);
+        setState(() {
+          _isSigningUp = false;
+        });
+      }
+    } catch (err) {
+      print(err);
+      showSnackBarMessage(5);
     }
   }
 
@@ -63,15 +100,24 @@ class _AuthPageState extends State<AuthPage>
       _loginFormKey.currentState.save();
       _attemptLogin();
     } else {
-      _autoValidateLogin = true;
+      setState(() {
+        _autoValidateLogin = true;
+        _isAuthenticating = false;
+      });
     }
   }
 
   void _validateSignUpInputs() {
     if (_signUpFormKey.currentState.validate()) {
       _signUpFormKey.currentState.save();
+      _attemptSignUp();
     } else {
-      _autoValidateSignUp = true;
+      setState(() {
+        setState(() {
+          _autoValidateSignUp = true;
+          _isSigningUp = false;
+        });
+      });
     }
   }
 
@@ -98,46 +144,73 @@ class _AuthPageState extends State<AuthPage>
         showLoadingAnim = false;
         snackBarDuration = Duration(seconds: 5);
         break;
+      case 2:
+        snackBarMessage = "Signing you up...";
+        snackBarColor = Colors.orange;
+        snackBarDuration = Duration(seconds: 30);
+        break;
+      case 3:
+        snackBarMessage = "Success! Please login with your credentials";
+        snackBarColor = globalVars.accentGreen;
+        showLoadingAnim = false;
+        snackBarDuration = Duration(seconds: 5);
+        break;
+      case 4:
+        snackBarMessage =
+            "Apologies, we already have an account with that email Id";
+        snackBarColor = Colors.orange;
+        showLoadingAnim = false;
+        snackBarDuration = Duration(seconds: 5);
+        break;
     }
-    // constructing snackBar
-    SnackBar statusSnackBar = SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-              child: (showLoadingAnim)
-                  ? Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: 20.0,
-                          height: 20.0,
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                new AlwaysStoppedAnimation<Color>(Colors.white),
+    SnackBar statusSnackBar;
+    if (mode != 5) {
+      // constructing snackBar
+      statusSnackBar = SnackBar(
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Container(
+                child: (showLoadingAnim)
+                    ? Row(
+                        children: <Widget>[
+                          SizedBox(
+                            width: 20.0,
+                            height: 20.0,
+                            child: CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                      ],
-                    )
-                  : SizedBox(
-                      child: null,
-                    )),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.50,
-            child: Text(
-              snackBarMessage,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      ),
-      backgroundColor: snackBarColor,
-      duration: snackBarDuration,
-    );
+                          SizedBox(
+                            width: 10.0,
+                          ),
+                        ],
+                      )
+                    : SizedBox(
+                        child: null,
+                      )),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.50,
+              child: Text(
+                snackBarMessage,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 3,
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          ],
+        ),
+        backgroundColor: snackBarColor,
+        duration: snackBarDuration,
+      );
+    } else {
+      statusSnackBar = globalWids.networkErrorSBar;
+      setState(() {
+        _isAuthenticating = false;
+        _isSigningUp = false;
+      });
+    }
     // removing any previous snackBar
     _authPageScaffoldKey.currentState.removeCurrentSnackBar();
     // showing new snackBar
@@ -203,7 +276,7 @@ class _AuthPageState extends State<AuthPage>
                         SizedBox(
                           height: 20.0,
                         ),
-                        passwordField(),
+                        passwordField(false),
                         SizedBox(
                           height: 30.0,
                         ),
@@ -238,7 +311,7 @@ class _AuthPageState extends State<AuthPage>
               SizedBox(
                 height: 10.0,
               ),
-              passwordField(),
+              passwordField(true),
               SizedBox(
                 height: 10.0,
               ),
@@ -280,9 +353,10 @@ class _AuthPageState extends State<AuthPage>
     );
   }
 
-  Widget passwordField() {
+  Widget passwordField(haveController) {
     return Container(
       child: TextFormField(
+        controller: (haveController) ? _passwordController : null,
         obscureText: true,
         textInputAction: TextInputAction.done,
         style: TextStyle(fontSize: 18.0),
@@ -308,17 +382,31 @@ class _AuthPageState extends State<AuthPage>
   Widget loginBtn() {
     return Container(
       child: RaisedButton(
-        onPressed: () {
-          _validateLoginInputs();
-        },
+        onPressed: (_isAuthenticating)
+            ? null
+            : () {
+                setState(() {
+                  _isAuthenticating = true;
+                });
+                _validateLoginInputs();
+              },
         shape: StadiumBorder(),
         padding: EdgeInsets.all(20.0),
         color: globalVars.accentWhite,
         textColor: globalVars.accentRed,
-        child: Text(
-          "Proceed to Login",
-          style: TextStyle(fontSize: 18.0),
-        ),
+        disabledColor: globalVars.accentWhite,
+        child: (_isAuthenticating)
+            ? SizedBox(
+                height: 22.0,
+                width: 22.0,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(globalVars.accentRed)),
+              )
+            : Text(
+                "Proceed to Login",
+                style: TextStyle(fontSize: 18.0),
+              ),
       ),
     );
   }
@@ -326,17 +414,31 @@ class _AuthPageState extends State<AuthPage>
   Widget signUpBtn() {
     return Container(
       child: RaisedButton(
-        onPressed: () {
-          _validateSignUpInputs();
-        },
+        onPressed: (_isSigningUp)
+            ? null
+            : () {
+                setState(() {
+                  _isSigningUp = true;
+                });
+                _validateSignUpInputs();
+              },
         shape: StadiumBorder(),
         padding: EdgeInsets.all(20.0),
         color: globalVars.accentWhite,
         textColor: globalVars.accentRed,
-        child: Text(
-          "Sign Me Up!",
-          style: TextStyle(fontSize: 18.0),
-        ),
+        disabledColor: globalVars.accentWhite,
+        child: (_isSigningUp)
+            ? SizedBox(
+                height: 22.0,
+                width: 22.0,
+                child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(globalVars.accentRed)),
+              )
+            : Text(
+                "Sign Me Up!",
+                style: TextStyle(fontSize: 18.0),
+              ),
       ),
     );
   }
@@ -379,11 +481,10 @@ class _AuthPageState extends State<AuthPage>
         validator: (String arg) {
           if (arg.length == 0)
             return 'Please confirm your password';
+          else if (_passwordController.text != arg)
+            return 'Passwords do not match';
           else
             return null;
-        },
-        onSaved: (String val) {
-          _passwordConfirm = val;
         },
       ),
     );
