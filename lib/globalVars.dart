@@ -1,4 +1,3 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -26,9 +25,6 @@ Map<String, dynamic> loginInfo = {
   "userAvatar":"user_avatar",
   "userToken":"user_token"
 };
-
-// holds the queue of audio to play
-List<MediaItem> audioQueue = <MediaItem>[];
 
 // NOT MAINTAINED BY ACTIONS
 // holds the current searched text

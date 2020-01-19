@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
 import 'package:rxdart/subjects.dart';
 import 'dart:async';
@@ -65,6 +67,8 @@ class _HomePageState extends State<HomePage> {
   var videosResponseList = new List();
   // holds the flag indicating that the media streaming is loading
   bool streamLoading = false;
+  // storing the thumbnail locally to help identify which media is playing now
+  String nowPlayingThumbNail;
 
   // navigates to the search page
   void navigateToSearchPage() async {
@@ -122,7 +126,7 @@ class _HomePageState extends State<HomePage> {
   // function to monitor the playback start point to remove snackbar
   void monitorPlaybackStart() async {
     Timer.periodic(
-        Duration(milliseconds: 200),
+        Duration(seconds: 1),
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
@@ -149,57 +153,11 @@ class _HomePageState extends State<HomePage> {
     Duration snackBarDuration = Duration(minutes: 1);
     switch (mode) {
       case 0:
-        snackBarMessage = "Fetching your song...";
-        snackBarColor = Colors.orange;
-        break;
-      case 2:
-        snackBarMessage = "Please try another link...";
-        snackBarColor = Colors.redAccent;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 3:
         snackBarMessage = "Initializing playback...";
         snackBarColor = Colors.green;
         snackBarDuration = Duration(seconds: 30);
         // calling function to monitor the playback start point to remove snackbar
         monitorPlaybackStart();
-        break;
-      case 4:
-        snackBarMessage = "Under development 😄";
-        snackBarColor = Colors.blueGrey;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 5:
-        snackBarMessage = "Getting your download ready";
-        snackBarColor = Colors.indigo;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 6:
-        snackBarMessage = "Initializing download...";
-        snackBarColor = Colors.indigo;
-        snackBarDuration = Duration(seconds: 3);
-        break;
-      case 7:
-        snackBarMessage = "Please allow storage permissions in settings";
-        snackBarColor = Colors.indigo;
-        showAction = 1;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 3);
-        break;
-      case 8:
-        snackBarMessage = "An error occurred. Please try again...";
-        snackBarColor = Colors.red;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 3);
-        break;
-      case 9:
-        snackBarMessage = "Please wait for the current download to complete...";
-        snackBarColor = Colors.teal;
-        showLoadingAnim = false;
-        showAction = 2;
-        snackBarDuration = Duration(seconds: 3);
         break;
     }
     // constructing snackBar
@@ -248,9 +206,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getMp3URL(String videoId, int index) async {
-    // holds the responseJSON for checking link validity
-    var responseJSON;
-    // checking for internet connectivity
+    // creating sharedPreferences instance to set media values
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    // show link-fetching snackBar
+    showSnackBarMessage(0);
+    // // holds the responseJSON for checking link validity
+    // var responseJSON;
+    // checking for internet connectivity to prevent network problems after audioservice
+    // is started
     String url = "https://www.google.com";
 
     try {
@@ -268,80 +232,47 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    // creating sharedPreferences instance to set media values
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    // show link-fetching snackBar
-    showSnackBarMessage(0);
+    // setting the thumbnail link in shared preferences
+    prefs.setString("nowPlayingThumbnail",
+        videosResponseList[index]["thumbnail"].toString());
+    // storing the thumbnail locally to help identify which media is playing now
+    nowPlayingThumbNail = videosResponseList[index]["thumbnail"].toString();
+    // setting the current mp3 title
+    prefs.setString("nowPlayingTitle", videosResponseList[index]["title"]);
+    // setting the current channel name
+    prefs.setString(
+        "nowPlayingChannel", videosResponseList[index]["channelName"]);
+    //   // setting the current mp3 duration in minutes
+    prefs.setString("nowPlayingDurationMin",
+        videosResponseList[index]["duration"].toString());
 
-    // checking if link is working
-    try {
-      // checking for link validity
-      String url = "https://api.openbeats.live/opencc/" + videoId.toString();
-      // sending GET request
-      responseJSON = await Dio().get(url);
-    } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        // removing previous snackBar
-        _homePageScaffoldKey.currentState.removeCurrentSnackBar();
-        // showing snackBar to alert user about network status
-        _homePageScaffoldKey.currentState
-            .showSnackBar(globalWids.networkErrorSBar);
-        return;
-      }
-    }
-
-    if (responseJSON.data["status"] == true) {
-      // setting the streamLoading flag to indicate start of stream loading
-      streamLoading = true;
-      // setting the thumbnail link in shared preferences
-      prefs.setString("nowPlayingThumbnail",
-          videosResponseList[index]["thumbnail"].toString());
-      // storing the thumbnail locally to help identify which media is playing now
-      //nowPlayingThumbNail = videosResponseList[index]["thumbnail"].toString();
-      // setting the url in shared preferences
-      prefs.setString("nowPlayingURL", responseJSON.data["link"].toString());
-      // setting the current mp3 URL
-      prefs.setString("nowPlayingTitle", videosResponseList[index]["title"]);
-      // setting the current channel name
-      prefs.setString(
-          "nowPlayingChannel", videosResponseList[index]["channelName"]);
-      // setting the current mp3 duration in minutes
-      prefs.setString(
-          "nowPlayingDurationMin", videosResponseList[index]["duration"]);
-      // getting the current mp3 duration in milliseconds
-      int audioDuration =
-          getDurationMillis(videosResponseList[index]["duration"]);
-      // setting the current mp3 duration in milliseconds
-      prefs.setInt("nowPlayingDuration", audioDuration);
-      // setting the current mp3 ID
-      prefs.setString(
-          "nowPlayingVideoID", videosResponseList[index]["videoId"]);
-      // setting that isPlaying flag for showing playback after app closes
-      prefs.setBool("isPlaying", true);
-      // setting that isStopped flag
-      prefs.setBool("isStopped", false);
-      // show link obtained snackBar
-      showSnackBarMessage(3);
-      // stopping previous audio service
-      AudioService.stop();
-      MediaItem currMediaItem = MediaItem(
-        id: responseJSON.data["link"].toString(),
-        album: "OpenBeats Free Music",
-        duration: audioDuration,
-        title: videosResponseList[index]["title"],
-        artist: videosResponseList[index]["channelName"],
-        artUri: videosResponseList[index]["thumbnail"].toString(),
-      );
-      // starting new service after some delay to let the previous player stop
-      Timer(Duration(seconds: 1), () {
-        audioServiceStart(currMediaItem);
-        streamLoading = true;
-      });
-    } else {
-      // showing snackbar indicating error in link
-      showSnackBarMessage(2);
-    }
+    // getting the current mp3 duration in milliseconds
+    int audioDuration =
+        getDurationMillis(videosResponseList[index]["duration"]);
+    // setting the duration shared preferences
+    prefs.setInt("nowPlayingDuration", audioDuration);
+    // setting the current mp3 ID
+    prefs.setString("nowPlayingVideoID", videosResponseList[index]["videoId"]);
+    // setting that isPlaying flag for showing playback after app closes
+    prefs.setBool("isPlaying", true);
+    // setting that isStopped flag
+    prefs.setBool("isStopped", false);
+    //   // show link obtained snackBar
+    //   showSnackBarMessage(3);
+    // stopping previous audio service
+    AudioService.stop();
+    MediaItem currMediaItem = MediaItem(
+      id: videoId,
+      album: "OpenBeats Free Music",
+      duration: audioDuration,
+      title: videosResponseList[index]["title"],
+      artist: videosResponseList[index]["channelName"],
+      artUri: videosResponseList[index]["thumbnail"].toString(),
+    );
+    //   // starting new service after some delay to let the previous player stop
+    Timer(Duration(seconds: 1), () {
+      audioServiceStart(currMediaItem);
+    });
     // refreshing the UI build to update the thumbnail for now platying music
     setState(() {});
   }
@@ -527,7 +458,7 @@ class _HomePageState extends State<HomePage> {
       'duration': currMediaItem.duration,
       'thumbnailURI': currMediaItem.artUri
     };
-    await AudioService.customAction('playMedia', parameters);
+    await AudioService.customAction('playMedia2', parameters);
   }
 
   // sets the status and navigation bar themes
@@ -542,8 +473,7 @@ class _HomePageState extends State<HomePage> {
     // creating sharedPreferences instance
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool loginStatus = prefs.getBool("loginStatus");
-    if (loginStatus) {
-      
+    if (loginStatus != null && loginStatus) {
       setState(() {});
     }
   }
@@ -643,6 +573,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Completer _completer = Completer();
   BasicPlaybackState _skipState;
   bool _playing;
+
+  Map<String, dynamic> mediaIdParameters = {
+    'mediaID': null,
+    'mediaTitle': null,
+    'channelID': null,
+    'duration': null,
+    'thumbnailURI': null,
+  };
 
   bool get hasNext => _queueIndex + 1 < _queue.length;
 
@@ -809,6 +747,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
       // playing audio
       onPlay();
+    } else if (action == "playMedia2") {
+      getMp3URL(parameter['mediaID'], parameter);
     }
   }
 
@@ -854,5 +794,59 @@ class AudioPlayerTask extends BackgroundAudioTask {
         stopControl,
       ];
     }
+  }
+
+  // gets the mp3URL using videoID
+  void getMp3URL(videoId, parameter) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" + videoId.toString();
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        Fluttertoast.showToast(
+            msg: "Cannot connect to the internet",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.grey,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        return;
+      }
+    }
+    if (responseJSON.data["status"] == true) {
+      // setting the current mediaItem
+      await AudioServiceBackground.setMediaItem(MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Free Music",
+        title: parameter['mediaTitle'],
+        artist: parameter['channelID'],
+        duration: parameter['duration'],
+        artUri: parameter['thumbnailURI'],
+      ));
+      // setting URL for audio player
+      await _audioPlayer.setUrl(responseJSON.data["link"]);
+      if (_playing == null) {
+        // First time, we want to start playing
+        _playing = true;
+      }
+      // playing audio
+      onPlay();
+      // setting sharedPreferences values
+      settingSharedPrefs(parameter, responseJSON.data["link"]);
+    }
+  }
+
+  void settingSharedPrefs(parameter, String link) async {
+    // creating sharedPreferences instance to set media values
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // setting the url in shared preferences
+    prefs.setString("nowPlayingURL", link.toString());
   }
 }
