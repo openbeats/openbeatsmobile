@@ -65,7 +65,8 @@ Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
     showSnackBarMessage, nowPlayingThumbNail, settingModalBottomSheet) {
   return InkWell(
       onTap: () async {
-        if (videosResponseItem["thumbnail"] == nowPlayingThumbNail) {
+        if (AudioService.playbackState != null &&
+            videosResponseItem["thumbnail"] == nowPlayingThumbNail) {
           settingModalBottomSheet(context);
         } else {
           await getMp3URL(videosResponseItem["videoId"], index);
