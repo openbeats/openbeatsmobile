@@ -9,3 +9,4 @@ SnackBar networkErrorSBar = new SnackBar(
   backgroundColor: Colors.orange,
   duration: Duration(seconds: 2),
 );
+

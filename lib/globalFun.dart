@@ -1,4 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import './globalVars.dart' as globalVars;
@@ -58,7 +60,20 @@ Widget drawerHeader(context) {
           decoration: BoxDecoration(color: globalVars.primaryDark),
           currentAccountPicture: CircleAvatar(
             backgroundColor: globalVars.accentWhite,
-            backgroundImage: NetworkImage(userAvatar),
+            child: CachedNetworkImage(
+              imageUrl: userAvatar,
+              placeholder: (context, url) => CircularProgressIndicator(),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100.0),
+                  image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
           ),
         )
       : SizedBox(
@@ -173,8 +188,13 @@ Widget drawerHistoryPageListTile(int currPage, context) {
             subtitle: Text("Your own music history",
                 style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/historyPage');
+              if (globalVars.loginInfo["loginStatus"] == true) {
+                // navigating to homePage
+                Navigator.pushReplacementNamed(context, '/historyPage');
+              } else {
+                showToastMessage("Please login to use feature");
+                Navigator.pushNamed(context, '/authPage');
+              }
             },
           )
         : null,
@@ -187,14 +207,19 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
     child: (currPage != 6)
         ? ListTile(
             leading:
-                Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
+                Icon(FontAwesomeIcons.list , color: globalVars.leadingIconColor),
             title: Text('Your Playlists',
                 style: TextStyle(color: globalVars.titleTextColor)),
             subtitle: Text("Tune to your own collections",
                 style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/yourPlaylistsPage');
+              if (globalVars.loginInfo["loginStatus"] == true) {
+                // navigating to homePage
+                Navigator.pushReplacementNamed(context, '/yourPlaylistsPage');
+              } else {
+                showToastMessage("Please login to use feature");
+                Navigator.pushNamed(context, '/authPage');
+              }
             },
           )
         : null,
@@ -213,8 +238,13 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
             subtitle: Text("All your liked songs",
                 style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/likedSongsPage');
+              if (globalVars.loginInfo["loginStatus"] == true) {
+                // navigating to homePage
+                Navigator.pushReplacementNamed(context, '/likedSongsPage');
+              } else {
+                showToastMessage("Please login to use feature");
+                Navigator.pushNamed(context, '/authPage');
+              }
             },
           )
         : null,
@@ -233,8 +263,13 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
             subtitle: Text("All songs on local device",
                 style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
+              if (globalVars.loginInfo["loginStatus"] == true) {
+                // navigating to homePage
+                Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
+              } else {
+                showToastMessage("Please login to use feature");
+                Navigator.pushNamed(context, '/authPage');
+              }
             },
           )
         : null,
@@ -271,15 +306,13 @@ Widget drawerLogoutPageListTile(context) {
             subtitle: Text("Sign out of your account",
                 style: TextStyle(color: Colors.orange)),
             onTap: () {
-              
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
                       backgroundColor: globalVars.primaryDark,
                       shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(5.0))),
+                          borderRadius: BorderRadius.all(Radius.circular(5.0))),
                       title: Text("Are you sure?"),
                       content:
                           Text("This action will sign you out of your account"),
@@ -294,7 +327,7 @@ Widget drawerLogoutPageListTile(context) {
                             Navigator.pop(context);
                             Navigator.pushReplacementNamed(
                                 context, '/homePage');
-                            globalVars.platformMethodChannel.invokeMethod("showToast",{"message":"Logged out successfully"});
+                            showToastMessage("Logged out Successfully");
                           },
                           color: Colors.transparent,
                           textColor: globalVars.accentRed,
@@ -314,4 +347,15 @@ Widget drawerLogoutPageListTile(context) {
           )
         : null,
   );
+}
+
+// function to show ToastMessage
+void showToastMessage(String message) {
+  Fluttertoast.showToast(
+      msg: message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      backgroundColor: Colors.grey,
+      textColor: Colors.white,
+      fontSize: 16.0);
 }

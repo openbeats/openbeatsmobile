@@ -3,6 +3,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../globalFun.dart' as globalFun;
 import '../globalVars.dart' as globalVars;
 
 // holds the appBar for the homePage
@@ -157,7 +158,17 @@ Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
           Icons.more_vert,
           size: 30.0,
         ),
-        onSelected: (choice) {},
+        onSelected: (choice) {
+          if(globalVars.loginInfo["loginStatus"] == true){
+            if (choice == "addToPlayList") {
+
+            }
+          } else {
+            globalFun.showToastMessage("Please login to use feature");
+            Navigator.pushNamed(context, '/authPage');
+          }
+          
+        },
         itemBuilder: (context) => [
               PopupMenuItem(
                   value: "download",
@@ -166,7 +177,7 @@ Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
                     leading: Icon(Icons.file_download),
                   )),
               PopupMenuItem(
-                  value: "playList",
+                  value: "addToPlayList",
                   child: ListTile(
                     title: Text("Add to Playlist"),
                     leading: Icon(Icons.playlist_add),

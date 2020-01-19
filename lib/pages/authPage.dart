@@ -8,6 +8,7 @@ import '../widgets/authPageW.dart' as authPageW;
 import '../globalVars.dart' as globalVars;
 import '../actions/globalVarsA.dart' as globalVarsA;
 import '../globalWids.dart' as globalWids;
+import '../globalFun.dart' as globalFun;
 
 class AuthPage extends StatefulWidget {
   @override
@@ -53,8 +54,7 @@ class _AuthPageState extends State<AuthPage>
         _authPageScaffoldKey.currentState.removeCurrentSnackBar();
         setLoginParmeters(body);
         Navigator.pop(context);
-        globalVars.platformMethodChannel
-            .invokeMethod("showToast", {"message": "Welcome to OpenBeats"});
+        globalFun.showToastMessage("Welcome to OpenBeats");
       } else {
         showSnackBarMessage(1);
         setState(() {

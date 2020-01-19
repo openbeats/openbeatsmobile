@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'dart:math' as math;
 
 import '../widgets/searchPageW.dart' as searchPageW;
 import '../globalWids.dart' as globalWids;
@@ -57,14 +58,14 @@ class _SearchPageState extends State<SearchPage> {
   void addListenerToSearchTextField() {
     // adding listener to textField
     queryFieldController.addListener(() {
-      
       if (queryFieldController.text.length == 0) {
         // to check if the global value exsists to be inserted
         if (globalVars.currSearchText.length > 1) {
           // inserting persistent text into the field
           queryFieldController.text = globalVars.currSearchText;
           // setting cursor to end of the inserted text
-          queryFieldController.selection = TextSelection.fromPosition(TextPosition(offset: queryFieldController.text.length));
+          queryFieldController.selection = TextSelection.fromPosition(
+              TextPosition(offset: queryFieldController.text.length));
         }
         setState(() {
           // setting delay flag to block till the field has value again
@@ -138,17 +139,19 @@ class _SearchPageState extends State<SearchPage> {
         suggestionResponseList[index][0],
         style: TextStyle(color: Colors.grey),
       ),
-      trailing: IconButton(
-        tooltip: "Update query",
-        icon: Icon(FontAwesomeIcons.angleUp),
-        onPressed: () {
-          // setting global variable to persist search
-          globalVars.currSearchText = suggestionResponseList[index][0];
-          // sending the current text to the search field
-          sendSuggestionToField(suggestionResponseList[index][0]);
-        },
-        color: Colors.blueGrey,
-      ),
+      trailing: Transform.rotate(
+          angle: -50 * math.pi / 180,
+          child: IconButton(
+            tooltip: "Update query",
+            icon: Icon(Icons.arrow_upward),
+            onPressed: () {
+              // setting global variable to persist search
+              globalVars.currSearchText = suggestionResponseList[index][0];
+              // sending the current text to the search field
+              sendSuggestionToField(suggestionResponseList[index][0]);
+            },
+            color: Colors.grey,
+          )),
       onTap: () {
         // setting global variable to persist search
         globalVars.currSearchText = suggestionResponseList[index][0];
