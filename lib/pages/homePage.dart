@@ -539,7 +539,7 @@ class _HomePageState extends State<HomePage> {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return homePageW.vidResultContainerW(context, videosResponseList[index],
-            index, getMp3URL, showSnackBarMessage);
+            index, getMp3URL, showSnackBarMessage, nowPlayingThumbNail, settingModalBottomSheet);
       },
       itemCount: videosResponseList.length,
     );

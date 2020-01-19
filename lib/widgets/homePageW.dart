@@ -61,11 +61,15 @@ Widget welcomeText() {
 }
 
 // widget to hold each container of video results
-Widget vidResultContainerW(
-    context, videosResponseItem, index, getMp3URL, showSnackBarMessage) {
+Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
+    showSnackBarMessage, nowPlayingThumbNail, settingModalBottomSheet) {
   return InkWell(
       onTap: () async {
-        await getMp3URL(videosResponseItem["videoId"], index);
+        if (videosResponseItem["thumbnail"] == nowPlayingThumbNail) {
+          settingModalBottomSheet(context);
+        } else {
+          await getMp3URL(videosResponseItem["videoId"], index);
+        }
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
