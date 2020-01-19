@@ -30,6 +30,7 @@ Map<String, dynamic> loginInfo = {
 // holds the queue of audio to play
 List<MediaItem> audioQueue = <MediaItem>[];
 
+// NOT MAINTAINED BY ACTIONS
 // holds the current searched text
 String currSearchText = "";
 

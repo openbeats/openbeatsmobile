@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../widgets/searchPageW.dart' as searchPageW;
 import '../globalWids.dart' as globalWids;
+import '../globalVars.dart' as globalVars;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -56,7 +57,15 @@ class _SearchPageState extends State<SearchPage> {
   void addListenerToSearchTextField() {
     // adding listener to textField
     queryFieldController.addListener(() {
+      
       if (queryFieldController.text.length == 0) {
+        // to check if the global value exsists to be inserted
+        if (globalVars.currSearchText.length > 1) {
+          // inserting persistent text into the field
+          queryFieldController.text = globalVars.currSearchText;
+          // setting cursor to end of the inserted text
+          queryFieldController.selection = TextSelection.fromPosition(TextPosition(offset: queryFieldController.text.length));
+        }
         setState(() {
           // setting delay flag to block till the field has value again
           delayCallFlag = true;
@@ -133,12 +142,16 @@ class _SearchPageState extends State<SearchPage> {
         tooltip: "Update query",
         icon: Icon(FontAwesomeIcons.angleUp),
         onPressed: () {
+          // setting global variable to persist search
+          globalVars.currSearchText = suggestionResponseList[index][0];
           // sending the current text to the search field
           sendSuggestionToField(suggestionResponseList[index][0]);
         },
         color: Colors.blueGrey,
       ),
       onTap: () {
+        // setting global variable to persist search
+        globalVars.currSearchText = suggestionResponseList[index][0];
         // going back to previous screen with the suggestion data
         Navigator.pop(context, suggestionResponseList[index][0]);
       },

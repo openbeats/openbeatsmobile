@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../globalVars.dart' as globalVars;
 
 // holds the searchPage appbar
-Widget appBarSearchPageW(TextEditingController queryFieldController,
+Widget appBarSearchPageW(queryFieldController,
     getImmediateSuggestions, BuildContext context) {
   return AppBar(
     elevation: 0.0,
@@ -9,6 +12,8 @@ Widget appBarSearchPageW(TextEditingController queryFieldController,
       style: TextStyle(color: Colors.white),
       controller: queryFieldController,
       onChanged: (String value) {
+        // updating the global variable for search text persistance
+        globalVars.currSearchText = value;
         // getting length of input
         int valueLen = value.length;
         // checking if the input is not empty and if it is
@@ -24,6 +29,15 @@ Widget appBarSearchPageW(TextEditingController queryFieldController,
       textInputAction: TextInputAction.search,
       autofocus: true,
       decoration: InputDecoration(
+        suffixIcon: (queryFieldController.text.length == 0)?null:IconButton(
+          onPressed: (){
+            globalVars.currSearchText = "";
+            WidgetsBinding.instance.addPostFrameCallback( (_) => queryFieldController.clear());
+            
+          },
+          icon: Icon(Icons.clear),
+          color: globalVars.accentWhite,
+        ),
         border: InputBorder.none,
         hintText: "Search for songs, artists, audio books...",
         hintStyle: TextStyle(color: Colors.white70),

@@ -43,8 +43,8 @@ class _AuthPageState extends State<AuthPage>
 
   void _attemptLogin() async {
     showSnackBarMessage(0);
-    _emailID.trim();
-    _password.trim();
+    _emailID = _emailID.trim();
+    _password = _password.trim();
     try {
       var response = await http.post("https://api.openbeats.live/auth/login",
           body: {"email": "$_emailID", "password": "$_password"});
@@ -68,6 +68,10 @@ class _AuthPageState extends State<AuthPage>
   }
 
   void _attemptSignUp() async {
+    _emailID = _emailID.trim();
+    _password = _password.trim();
+    _name = _name.trim();
+    _password = _password.trim();
     showSnackBarMessage(2);
     try {
       var response = await http.post("https://api.openbeats.live/auth/register",
