@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:openbeatsmobile/pages/AddSongsToPlaylistPage.dart';
 
 import '../globalFun.dart' as globalFun;
 import '../globalVars.dart' as globalVars;
@@ -90,8 +91,8 @@ Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"]),
-                  vidResultExtraOptions(context, videosResponseItem["videoId"],
-                      videosResponseItem["title"], showSnackBarMessage)
+                  vidResultExtraOptions(
+                      context, videosResponseItem, showSnackBarMessage)
                 ],
               ),
             ),
@@ -153,7 +154,7 @@ Widget vidResultVidDetails(context, title, duration) {
 }
 
 // holds the extra options of video result list
-Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
+Widget vidResultExtraOptions(context, videosResponseItem, showSnackBarMessage) {
   return Container(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
@@ -165,7 +166,13 @@ Widget vidResultExtraOptions(context, videoID, vidTitle, showSnackBarMessage) {
         ),
         onSelected: (choice) {
           if (globalVars.loginInfo["loginStatus"] == true) {
-            if (choice == "addToPlayList") {}
+            if (choice == "addToPlayList") {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddSongsToPlaylistPage(videosResponseItem),
+                  ));
+            }
           } else {
             globalFun.showToastMessage("Please login to use feature");
             Navigator.pushNamed(context, '/authPage');

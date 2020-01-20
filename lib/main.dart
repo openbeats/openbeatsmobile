@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:openbeatsmobile/pages/AddSongsToPlaylistPage.dart';
 import 'package:openbeatsmobile/pages/authPage.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,16 +13,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   // recovers login information from sharedPreferences
-  void getLoginInfo() async{
+  void getLoginInfo() async {
     // creating sharedPreferences instance
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool loginStatus = prefs.getBool("loginStatus");
-    if(loginStatus!=null && loginStatus == true){
+    if (loginStatus != null && loginStatus == true) {
       String userEmail = prefs.getString("userEmail");
       String userName = prefs.getString("userName");
-      String userId = prefs.getString("userId"); 
+      String userId = prefs.getString("userId");
       String userAvatar = prefs.getString("userAvatar");
       String userToken = prefs.getString("userToken");
       Map<String, dynamic> loginParameters = {
@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
         "userName": userName,
         "userId": userId,
         "userAvatar": userAvatar,
-        "userToken":userToken,
+        "userToken": userToken,
       };
       globalVarsA.modifyLoginInfo(loginParameters, false);
     } else {
@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     super.initState();
     getLoginInfo();
   }
@@ -58,7 +58,7 @@ class _MyAppState extends State<MyApp> {
       ),
       routes: {
         '/homePage': (context) => HomePage(),
-        '/authPage': (context) => AuthPage()
+        '/authPage': (context) => AuthPage(),
       },
     );
   }

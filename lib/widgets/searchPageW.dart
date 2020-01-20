@@ -8,6 +8,7 @@ Widget appBarSearchPageW(queryFieldController,
     getImmediateSuggestions, BuildContext context) {
   return AppBar(
     elevation: 0.0,
+    backgroundColor: globalVars.primaryDark,
     title: TextField(
       style: TextStyle(color: Colors.white),
       controller: queryFieldController,

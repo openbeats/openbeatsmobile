@@ -59,14 +59,6 @@ class _SearchPageState extends State<SearchPage> {
     // adding listener to textField
     queryFieldController.addListener(() {
       if (queryFieldController.text.length == 0) {
-        // to check if the global value exsists to be inserted
-        if (globalVars.currSearchText.length > 1) {
-          // inserting persistent text into the field
-          queryFieldController.text = globalVars.currSearchText;
-          // setting cursor to end of the inserted text
-          queryFieldController.selection = TextSelection.fromPosition(
-              TextPosition(offset: queryFieldController.text.length));
-        }
         setState(() {
           // setting delay flag to block till the field has value again
           delayCallFlag = true;
@@ -99,6 +91,14 @@ class _SearchPageState extends State<SearchPage> {
     // calling function to monitor the textField to handle delayed responses
     // and empty textField edge cases
     addListenerToSearchTextField();
+    // to check if the global value exsists to be inserted
+    if (globalVars.currSearchText.length > 1) {
+      // inserting persistent text into the field
+      queryFieldController.text = globalVars.currSearchText;
+      // setting cursor to end of the inserted text
+      queryFieldController.selection = TextSelection.fromPosition(
+          TextPosition(offset: queryFieldController.text.length));
+    }
   }
 
   @override
@@ -114,7 +114,7 @@ class _SearchPageState extends State<SearchPage> {
     return SafeArea(
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: Color(0xFF09090E),
+        backgroundColor: globalVars.primaryDark,
         appBar: searchPageW.appBarSearchPageW(
             queryFieldController, getImmediateSuggestions, context),
         body: (suggestionResponseList.length != 0)
