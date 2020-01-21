@@ -79,7 +79,7 @@ Widget drawerHeader(context) {
           ),
         )
       : SizedBox(
-          height: 100.0,
+          height: 70.0,
           child: Container(
             child: RaisedButton(
               child: Text(

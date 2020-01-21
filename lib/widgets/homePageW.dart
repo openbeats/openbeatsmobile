@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
@@ -123,7 +125,12 @@ Widget vidResultThumbnail(context, thumbnail) {
       child: CachedNetworkImage(
         imageUrl: thumbnail,
         fit: BoxFit.cover,
-        placeholder: (context, url) => Text("Loading Image..."),
+        placeholder: (context, url) => Container(
+          margin: EdgeInsets.all(20.0),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+          ),
+        ),
         errorWidget: (context, url, error) => Icon(Icons.error),
       ),
     ),
