@@ -79,7 +79,7 @@ Widget drawerHeader(context) {
           ),
         )
       : SizedBox(
-          height: 150.0,
+          height: 100.0,
           child: Container(
             child: RaisedButton(
               child: Text(
@@ -194,7 +194,7 @@ Widget drawerHistoryPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/historyPage');
               } else {
-                showToastMessage("Please login to use feature");
+                showToastMessage("Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -219,7 +219,7 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/yourPlaylistsPage');
               } else {
-                showToastMessage("Please login to use feature");
+                showToastMessage("Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -244,7 +244,7 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/likedSongsPage');
               } else {
-                showToastMessage("Please login to use feature");
+                showToastMessage("Please login to use feature",Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -269,7 +269,7 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
               } else {
-                showToastMessage("Please login to use feature");
+                showToastMessage("Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -329,7 +329,7 @@ Widget drawerLogoutPageListTile(context) {
                             Navigator.pop(context);
                             Navigator.pushReplacementNamed(
                                 context, '/homePage');
-                            showToastMessage("Logged out Successfully");
+                            showToastMessage("Logged out Successfully", Colors.black, Colors.white);
                           },
                           color: Colors.transparent,
                           textColor: globalVars.accentRed,
@@ -352,12 +352,84 @@ Widget drawerLogoutPageListTile(context) {
 }
 
 // function to show ToastMessage
-void showToastMessage(String message) {
+void showToastMessage(String message, Color bgColor, Color txtColor) {
   Fluttertoast.showToast(
       msg: message,
       toastLength: Toast.LENGTH_LONG,
       gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.grey,
-      textColor: Colors.white,
+      backgroundColor: bgColor,
+      textColor: txtColor,
       fontSize: 16.0);
+}
+
+// function to show snackBars
+void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, monitorPlaybackStart, context){
+  // holds the message to display
+    String snackBarMessage;
+    // flag to indicate if snackbar action has to be shown
+    // 1 - permission action / 2 - download cancel
+    int showAction = 0;
+    // flag to indicate if CircularProgressIndicatior must be shown
+    bool showLoadingAnim = true;
+    // holds color of snackBar
+    Color snackBarColor;
+    // duration of snackBar
+    Duration snackBarDuration = Duration(minutes: 1);
+    switch (mode) {
+      case 0:
+        snackBarMessage = "Initializing playback...";
+        snackBarColor = Colors.green;
+        snackBarDuration = Duration(seconds: 30);
+        // calling function to monitor the playback start point to remove snackbar
+        monitorPlaybackStart();
+        break;
+      case 1:
+        snackBarMessage = "Adding song to playlist...";
+        snackBarColor = Colors.orange;
+        snackBarDuration = Duration(seconds: 30);
+        break;
+    }
+    // constructing snackBar
+    SnackBar statusSnackBar = SnackBar(
+      content: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Container(
+              child: (showLoadingAnim)
+                  ? Row(
+                      children: <Widget>[
+                        SizedBox(
+                          width: 20.0,
+                          height: 20.0,
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                new AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                      ],
+                    )
+                  : SizedBox(
+                      child: null,
+                    )),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.50,
+            child: Text(
+              snackBarMessage,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
+      ),
+      backgroundColor: snackBarColor,
+      duration: snackBarDuration,
+    );
+    // removing any previous snackBar
+    scaffoldKey.currentState.removeCurrentSnackBar();
+    // showing new snackBar
+    scaffoldKey.currentState.showSnackBar(statusSnackBar);
 }

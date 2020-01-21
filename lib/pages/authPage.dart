@@ -54,7 +54,7 @@ class _AuthPageState extends State<AuthPage>
         _authPageScaffoldKey.currentState.removeCurrentSnackBar();
         setLoginParmeters(body);
         Navigator.pop(context);
-        globalFun.showToastMessage("Welcome to OpenBeats");
+        globalFun.showToastMessage("Welcome to OpenBeats",Colors.green, Colors.white);
       } else {
         showSnackBarMessage(1);
         setState(() {
@@ -245,9 +245,9 @@ class _AuthPageState extends State<AuthPage>
 
   Widget loginPageBody() {
     final tween = MultiTrackTween([
-      Track("color1").add(Duration(seconds: 4),
+      Track("color1").add(Duration(seconds: 3),
           ColorTween(begin: Color(0xff396afc), end: Color(0xFF000428))),
-      Track("color2").add(Duration(seconds: 4),
+      Track("color2").add(Duration(seconds: 3),
           ColorTween(begin: Color(0xff2948ff), end: Color(0xFF004e92)))
     ]);
     return ControlledAnimation(

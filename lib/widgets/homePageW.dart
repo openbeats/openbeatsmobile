@@ -65,11 +65,17 @@ Widget welcomeText() {
 
 // widget to hold each container of video results
 Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
-    showSnackBarMessage, nowPlayingThumbNail, settingModalBottomSheet) {
+    nowPlayingThumbNail, settingModalBottomSheet) {
   return InkWell(
       onTap: () async {
         if (AudioService.playbackState != null &&
-            videosResponseItem["thumbnail"] == nowPlayingThumbNail) {
+            videosResponseItem["thumbnail"] == nowPlayingThumbNail &&
+            (AudioService.playbackState.basicState ==
+                    BasicPlaybackState.playing ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.buffering ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.paused)) {
           settingModalBottomSheet(context);
         } else {
           await getMp3URL(videosResponseItem["videoId"], index);
@@ -91,8 +97,7 @@ Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"]),
-                  vidResultExtraOptions(
-                      context, videosResponseItem, showSnackBarMessage)
+                  vidResultExtraOptions(context, videosResponseItem)
                 ],
               ),
             ),
@@ -118,9 +123,7 @@ Widget vidResultThumbnail(context, thumbnail) {
       child: CachedNetworkImage(
         imageUrl: thumbnail,
         fit: BoxFit.cover,
-        placeholder: (context, url) => CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
-        ),
+        placeholder: (context, url) => Text("Loading Image..."),
         errorWidget: (context, url, error) => Icon(Icons.error),
       ),
     ),
@@ -154,7 +157,7 @@ Widget vidResultVidDetails(context, title, duration) {
 }
 
 // holds the extra options of video result list
-Widget vidResultExtraOptions(context, videosResponseItem, showSnackBarMessage) {
+Widget vidResultExtraOptions(context, videosResponseItem) {
   return Container(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
@@ -170,11 +173,13 @@ Widget vidResultExtraOptions(context, videosResponseItem, showSnackBarMessage) {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddSongsToPlaylistPage(videosResponseItem),
+                    builder: (context) =>
+                        AddSongsToPlaylistPage(videosResponseItem),
                   ));
             }
           } else {
-            globalFun.showToastMessage("Please login to use feature");
+            globalFun.showToastMessage(
+                "Please login to use feature", Colors.black, Colors.white);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -209,9 +214,11 @@ Widget bottomSheetBGW(audioThumbnail) {
         color: Colors.black,
         child: ClipRRect(
           borderRadius: new BorderRadius.circular(20.0),
-          child: Image.network(
-            audioThumbnail,
+          child: CachedNetworkImage(
+            imageUrl: audioThumbnail,
             fit: BoxFit.cover,
+            placeholder: (context, url) => null,
+            errorWidget: (context, url, error) => Icon(Icons.error),
           ),
         )),
     opacity: 0.3,
@@ -277,9 +284,25 @@ Widget bufferingIndicator() {
       child: (AudioService.playbackState != null)
           ? (AudioService.playbackState.basicState ==
                   BasicPlaybackState.buffering)
-              ? Text(
-                  "Buffering...",
-                  style: TextStyle(color: Colors.grey),
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 10.0,
+                      width: 10.0,
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    Text(
+                      "Buffering...",
+                      style: TextStyle(color: Colors.grey),
+                    )
+                  ],
                 )
               : null
           : null,

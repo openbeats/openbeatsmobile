@@ -97,6 +97,8 @@ class _HomePageState extends State<HomePage> {
       var response = await Dio().get(url);
       // decoding to json
       var responseJSON = response.data;
+      // get nowPlaying thumbnail from sharedPreferences
+      setNowPlayingURL();
       // checking if proper response is received
       if (responseJSON["status"] == true) {
         setState(() {
@@ -138,79 +140,47 @@ class _HomePageState extends State<HomePage> {
             });
   }
 
-  // shows status snackBars
-  void showSnackBarMessage(int mode) {
-    // holds the message to display
-    String snackBarMessage;
-    // flag to indicate if snackbar action has to be shown
-    // 1 - permission action / 2 - download cancel
-    int showAction = 0;
-    // flag to indicate if CircularProgressIndicatior must be shown
-    bool showLoadingAnim = true;
-    // holds color of snackBar
-    Color snackBarColor;
-    // duration of snackBar
-    Duration snackBarDuration = Duration(minutes: 1);
-    switch (mode) {
-      case 0:
-        snackBarMessage = "Initializing playback...";
-        snackBarColor = Colors.green;
-        snackBarDuration = Duration(seconds: 30);
-        // calling function to monitor the playback start point to remove snackbar
-        monitorPlaybackStart();
-        break;
-    }
-    // constructing snackBar
-    SnackBar statusSnackBar = SnackBar(
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Container(
-              child: (showLoadingAnim)
-                  ? Row(
-                      children: <Widget>[
-                        SizedBox(
-                          width: 20.0,
-                          height: 20.0,
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                new AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                      ],
-                    )
-                  : SizedBox(
-                      child: null,
-                    )),
-          Container(
-            width: MediaQuery.of(context).size.width * 0.50,
-            child: Text(
-              snackBarMessage,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 3,
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
-      ),
-      backgroundColor: snackBarColor,
-      duration: snackBarDuration,
-    );
-    // removing any previous snackBar
-    _homePageScaffoldKey.currentState.removeCurrentSnackBar();
-    // showing new snackBar
-    _homePageScaffoldKey.currentState.showSnackBar(statusSnackBar);
+  // sets the nowPlaying URL to help ensure that the value is kept updated even after the app is not in foreground
+  void setNowPlayingURL() async {
+    // creating sharedPreferences instance to set media values
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    nowPlayingThumbNail = prefs.getString("nowPlayingThumbnail");
+    setState(() {});
   }
 
-  void getMp3URL(String videoId, int index) async {
+  // sets the sharedPreferences values
+  void setSharedPrefs(index, audioDuration) async {
     // creating sharedPreferences instance to set media values
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.clear();
+    // setting the thumbnail link in shared preferences
+    prefs.setString("nowPlayingThumbnail",
+        videosResponseList[index]["thumbnail"].toString());
+    // storing the thumbnail locally to help identify which media is playing now
+    nowPlayingThumbNail = videosResponseList[index]["thumbnail"].toString();
+    // setting the current mp3 title
+    prefs.setString("nowPlayingTitle", videosResponseList[index]["title"]);
+    // setting the current channel name
+    prefs.setString(
+        "nowPlayingChannel", videosResponseList[index]["channelName"]);
+    //   // setting the current mp3 duration in minutes
+    prefs.setString("nowPlayingDurationMin",
+        videosResponseList[index]["duration"].toString());
+
+    // setting the duration shared preferences
+    prefs.setInt("nowPlayingDuration", audioDuration);
+    // setting the current mp3 ID
+    prefs.setString("nowPlayingVideoID", videosResponseList[index]["videoId"]);
+    // setting that isPlaying flag for showing playback after app closes
+    prefs.setBool("isPlaying", true);
+    // setting that isStopped flag
+    prefs.setBool("isStopped", false);
+  }
+
+  void getMp3URL(String videoId, int index) async {
     // show link-fetching snackBar
-    showSnackBarMessage(0);
+    globalFun.showSnackBars(
+        0, _homePageScaffoldKey, monitorPlaybackStart, context);
     // // holds the responseJSON for checking link validity
     // var responseJSON;
     // checking for internet connectivity to prevent network problems after audioservice
@@ -232,31 +202,11 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    // setting the thumbnail link in shared preferences
-    prefs.setString("nowPlayingThumbnail",
-        videosResponseList[index]["thumbnail"].toString());
-    // storing the thumbnail locally to help identify which media is playing now
-    nowPlayingThumbNail = videosResponseList[index]["thumbnail"].toString();
-    // setting the current mp3 title
-    prefs.setString("nowPlayingTitle", videosResponseList[index]["title"]);
-    // setting the current channel name
-    prefs.setString(
-        "nowPlayingChannel", videosResponseList[index]["channelName"]);
-    //   // setting the current mp3 duration in minutes
-    prefs.setString("nowPlayingDurationMin",
-        videosResponseList[index]["duration"].toString());
-
     // getting the current mp3 duration in milliseconds
     int audioDuration =
         getDurationMillis(videosResponseList[index]["duration"]);
-    // setting the duration shared preferences
-    prefs.setInt("nowPlayingDuration", audioDuration);
-    // setting the current mp3 ID
-    prefs.setString("nowPlayingVideoID", videosResponseList[index]["videoId"]);
-    // setting that isPlaying flag for showing playback after app closes
-    prefs.setBool("isPlaying", true);
-    // setting that isStopped flag
-    prefs.setBool("isStopped", false);
+    // sets the sharedPreferences values
+    setSharedPrefs(index, audioDuration);
     //   // show link obtained snackBar
     //   showSnackBarMessage(3);
     // stopping previous audio service
@@ -484,6 +434,7 @@ class _HomePageState extends State<HomePage> {
     // getting authStatus to refresh app after restart
     getAuthStatus();
     connect();
+
     // sets the status and navigation bar themes
     setStatusNaviThemes();
   }
@@ -539,7 +490,7 @@ class _HomePageState extends State<HomePage> {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return homePageW.vidResultContainerW(context, videosResponseList[index],
-            index, getMp3URL, showSnackBarMessage, nowPlayingThumbNail, settingModalBottomSheet);
+            index, getMp3URL, nowPlayingThumbNail, settingModalBottomSheet);
       },
       itemCount: videosResponseList.length,
     );
