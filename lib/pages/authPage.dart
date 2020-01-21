@@ -43,7 +43,7 @@ class _AuthPageState extends State<AuthPage>
   }
 
   void _attemptLogin() async {
-    showSnackBarMessage(0);
+    globalFun.showSnackBars(2, _authPageScaffoldKey, context);
     _emailID = _emailID.trim();
     _password = _password.trim();
     try {
@@ -54,16 +54,21 @@ class _AuthPageState extends State<AuthPage>
         _authPageScaffoldKey.currentState.removeCurrentSnackBar();
         setLoginParmeters(body);
         Navigator.pop(context);
-        globalFun.showToastMessage("Welcome to OpenBeats",Colors.green, Colors.white);
+        globalFun.showToastMessage(
+            "Welcome to OpenBeats", Colors.green, Colors.white);
       } else {
-        showSnackBarMessage(1);
+        globalFun.showSnackBars(3, _authPageScaffoldKey, context);
         setState(() {
           _isAuthenticating = false;
         });
       }
     } catch (err) {
       print(err);
-      showSnackBarMessage(5);
+      globalFun.showSnackBars(10, _authPageScaffoldKey, context);
+      setState(() {
+        _isAuthenticating = false;
+        _isSigningUp = false;
+      });
     }
   }
 
@@ -72,7 +77,7 @@ class _AuthPageState extends State<AuthPage>
     _password = _password.trim();
     _name = _name.trim();
     _password = _password.trim();
-    showSnackBarMessage(2);
+    globalFun.showSnackBars(4, _authPageScaffoldKey, context);
     try {
       var response = await http.post("https://api.openbeats.live/auth/register",
           body: {
@@ -83,19 +88,23 @@ class _AuthPageState extends State<AuthPage>
       final body = json.decode(response.body);
       if (body["error"] == null) {
         _authPageScaffoldKey.currentState.removeCurrentSnackBar();
-        showSnackBarMessage(3);
+        globalFun.showSnackBars(5, _authPageScaffoldKey, context);
         setState(() {
           _isSigningUp = false;
         });
       } else {
-        showSnackBarMessage(4);
+        globalFun.showSnackBars(6, _authPageScaffoldKey, context);
         setState(() {
           _isSigningUp = false;
         });
       }
     } catch (err) {
       print(err);
-      showSnackBarMessage(5);
+      globalFun.showSnackBars(10, _authPageScaffoldKey, context);
+      setState(() {
+        _isAuthenticating = false;
+        _isSigningUp = false;
+      });
     }
   }
 
@@ -123,102 +132,6 @@ class _AuthPageState extends State<AuthPage>
         });
       });
     }
-  }
-
-  // shows status snackBars
-  void showSnackBarMessage(int mode) {
-    // holds the message to display
-    String snackBarMessage;
-    // flag to indicate if snackbar action has to be shown
-    // flag to indicate if CircularProgressIndicatior must be shown
-    bool showLoadingAnim = true;
-    // holds color of snackBar
-    Color snackBarColor;
-    // duration of snackBar
-    Duration snackBarDuration = Duration(minutes: 1);
-    switch (mode) {
-      case 0:
-        snackBarMessage = "Authenticating user...";
-        snackBarColor = Colors.orange;
-        snackBarDuration = Duration(seconds: 30);
-        break;
-      case 1:
-        snackBarMessage = "Aplogies. Invalid Credentials";
-        snackBarColor = Colors.red;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 2:
-        snackBarMessage = "Signing you up...";
-        snackBarColor = Colors.orange;
-        snackBarDuration = Duration(seconds: 30);
-        break;
-      case 3:
-        snackBarMessage = "Success! Please login with your credentials";
-        snackBarColor = globalVars.accentGreen;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 4:
-        snackBarMessage =
-            "Apologies, we already have an account with that email Id";
-        snackBarColor = Colors.orange;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-    }
-    SnackBar statusSnackBar;
-    if (mode != 5) {
-      // constructing snackBar
-      statusSnackBar = SnackBar(
-        content: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-                child: (showLoadingAnim)
-                    ? Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: 20.0,
-                            height: 20.0,
-                            child: CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10.0,
-                          ),
-                        ],
-                      )
-                    : SizedBox(
-                        child: null,
-                      )),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.50,
-              child: Text(
-                snackBarMessage,
-                overflow: TextOverflow.ellipsis,
-                maxLines: 3,
-                style: TextStyle(color: Colors.white),
-              ),
-            )
-          ],
-        ),
-        backgroundColor: snackBarColor,
-        duration: snackBarDuration,
-      );
-    } else {
-      statusSnackBar = globalWids.networkErrorSBar;
-      setState(() {
-        _isAuthenticating = false;
-        _isSigningUp = false;
-      });
-    }
-    // removing any previous snackBar
-    _authPageScaffoldKey.currentState.removeCurrentSnackBar();
-    // showing new snackBar
-    _authPageScaffoldKey.currentState.showSnackBar(statusSnackBar);
   }
 
   @override

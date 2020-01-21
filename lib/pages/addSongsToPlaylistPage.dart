@@ -96,14 +96,12 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
   // sends createPlaylist request
   void sendCreatePlaylistReq() async {
     try {
-      print("Reached");
       var response = await http.post(
           "https://api.openbeats.live/playlist/userplaylist/create",
           body: {
             "name": "$newPlaylistName",
             "userId": "${globalVars.loginInfo["userId"]}"
           });
-      print(response.body);
       var responseJSON = json.decode(response.body);
       if (responseJSON["status"] == true) {
         getListofPlayLists();
@@ -112,7 +110,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
             "Created playlist " + newPlaylistName, Colors.green, Colors.white);
       } else {
         globalFun.showToastMessage(
-          "Apologies, response error", Colors.red, Colors.white);
+            "Apologies, response error", Colors.red, Colors.white);
       }
     } catch (err) {
       print(err);
@@ -125,11 +123,9 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
   void addSongToPlayList(playListId, playListName, videoResponseItem) async {
     List<dynamic> songsList = new List();
     songsList.add(videoResponseItem);
-    print(songsList.toString());
     setState(() {
       _addingSongFlag = true;
-      globalFun.showSnackBars(
-          1, _addSongsToPlaylistPageScaffoldKey, null, context);
+      globalFun.showSnackBars(1, _addSongsToPlaylistPageScaffoldKey, context);
     });
     try {
       var response = await http.post(
@@ -280,7 +276,6 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
           style: TextStyle(color: Colors.white),
         ),
         onTap: () {
-          print("hi");
           addSongToPlayList(dataResponse["data"][index]["playlistId"],
               dataResponse["data"][index]["name"], widget.videosResponseItem);
         },

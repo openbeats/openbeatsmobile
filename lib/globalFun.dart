@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import './globalVars.dart' as globalVars;
 import './actions/globalVarsA.dart' as globalVarsA;
+import './globalWids.dart' as globalWids;
 
 // holds the drawer for the application
 // currPage
@@ -363,7 +364,7 @@ void showToastMessage(String message, Color bgColor, Color txtColor) {
 }
 
 // function to show snackBars
-void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, monitorPlaybackStart, context){
+void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context){
   // holds the message to display
     String snackBarMessage;
     // flag to indicate if snackbar action has to be shown
@@ -380,17 +381,46 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, monitorPlayba
         snackBarMessage = "Initializing playback...";
         snackBarColor = Colors.green;
         snackBarDuration = Duration(seconds: 30);
-        // calling function to monitor the playback start point to remove snackbar
-        monitorPlaybackStart();
         break;
       case 1:
         snackBarMessage = "Adding song to playlist...";
         snackBarColor = Colors.orange;
         snackBarDuration = Duration(seconds: 30);
         break;
+      case 20:
+        snackBarMessage = "Authenticating user...";
+        snackBarColor = Colors.orange;
+        snackBarDuration = Duration(seconds: 30);
+        break;
+      case 31:
+        snackBarMessage = "Aplogies. Invalid Credentials";
+        snackBarColor = Colors.red;
+        showLoadingAnim = false;
+        snackBarDuration = Duration(seconds: 5);
+        break;
+      case 42:
+        snackBarMessage = "Signing you up...";
+        snackBarColor = Colors.orange;
+        snackBarDuration = Duration(seconds: 30);
+        break;
+      case 53:
+        snackBarMessage = "Success! Please login with your credentials";
+        snackBarColor = globalVars.accentGreen;
+        showLoadingAnim = false;
+        snackBarDuration = Duration(seconds: 5);
+        break;
+      case 64:
+        snackBarMessage =
+            "Apologies, we already have an account with that email Id";
+        snackBarColor = Colors.orange;
+        showLoadingAnim = false;
+        snackBarDuration = Duration(seconds: 5);
+        break;
     }
+    SnackBar statusSnackBar;
+    if (mode != 10) {
     // constructing snackBar
-    SnackBar statusSnackBar = SnackBar(
+    statusSnackBar = SnackBar(
       content: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -428,6 +458,10 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, monitorPlayba
       backgroundColor: snackBarColor,
       duration: snackBarDuration,
     );
+    }
+    else {
+      statusSnackBar = globalWids.networkErrorSBar; 
+    }
     // removing any previous snackBar
     scaffoldKey.currentState.removeCurrentSnackBar();
     // showing new snackBar

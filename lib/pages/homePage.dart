@@ -178,9 +178,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void getMp3URL(String videoId, int index) async {
+    // monitoring playback state to close the snackbar when playback starts
+    monitorPlaybackStart();
     // show link-fetching snackBar
-    globalFun.showSnackBars(
-        0, _homePageScaffoldKey, monitorPlaybackStart, context);
+    globalFun.showSnackBars(0, _homePageScaffoldKey, context);
     // // holds the responseJSON for checking link validity
     // var responseJSON;
     // checking for internet connectivity to prevent network problems after audioservice

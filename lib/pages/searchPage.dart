@@ -6,6 +6,7 @@ import 'dart:math' as math;
 import '../widgets/searchPageW.dart' as searchPageW;
 import '../globalWids.dart' as globalWids;
 import '../globalVars.dart' as globalVars;
+import '../globalFun.dart' as globalFun;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -16,7 +17,8 @@ class _SearchPageState extends State<SearchPage> {
   // holds the list of suggestions
   List suggestionResponseList = new List();
   // scaffold key for snackBar
-  var scaffoldKey = new GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _searcPageScaffoldKey =
+      new GlobalKey<ScaffoldState>();
 
   // flag variable to solve the problem of delayed api calls
   // true - add suggestions to list
@@ -45,10 +47,7 @@ class _SearchPageState extends State<SearchPage> {
     } catch (e) {
       // catching dio error
       if (e is DioError) {
-        // removing previous snackBar
-        scaffoldKey.currentState.removeCurrentSnackBar();
-        // showing snackBar to alert user about network status
-        scaffoldKey.currentState.showSnackBar(globalWids.networkErrorSBar);
+        globalFun.showSnackBars(10, _searcPageScaffoldKey, context);
       }
     }
   }
@@ -113,7 +112,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        key: scaffoldKey,
+        key: _searcPageScaffoldKey,
         backgroundColor: globalVars.primaryDark,
         appBar: searchPageW.appBarSearchPageW(
             queryFieldController, getImmediateSuggestions, context),
