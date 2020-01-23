@@ -108,8 +108,8 @@ Widget drawerHomePageListTile(int currPage, context) {
                 Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
             title: Text('Home',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Go back to the home page",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Go back to the home page",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/homePage');
@@ -128,8 +128,8 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
                 color: globalVars.leadingIconColor),
             title: Text('Top Charts',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Listen to what's trending",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Listen to what's trending",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/topChartsPage');
@@ -148,8 +148,8 @@ Widget drawerArtistsPageListTile(int currPage, context) {
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Songs from your favorite artists",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Songs from your favorite artists",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/artistsPage');
@@ -168,8 +168,8 @@ Widget drawerAlbumsPageListTile(int currPage, context) {
                 color: globalVars.leadingIconColor),
             title: Text('Albums',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Browse the albums you love",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Browse the albums you love",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/albumsPage');
@@ -188,8 +188,8 @@ Widget drawerHistoryPageListTile(int currPage, context) {
                 color: globalVars.leadingIconColor),
             title: Text('Recently Played',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Your own music history",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Your own music history",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
@@ -213,8 +213,8 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
                 Icon(FontAwesomeIcons.list, color: globalVars.leadingIconColor),
             title: Text('Your Playlists',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Tune to your own collections",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Tune to your own collections",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
@@ -236,10 +236,10 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
         ? ListTile(
             leading: Icon(FontAwesomeIcons.heart,
                 color: globalVars.leadingIconColor),
-            title: Text('Liked Songs',
+            title: Text('Favorites',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("All your liked songs",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("All your liked songs",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
@@ -261,10 +261,10 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
         ? ListTile(
             leading: Icon(FontAwesomeIcons.download,
                 color: globalVars.leadingIconColor),
-            title: Text('Your Donwloads',
+            title: Text('Your Downloads',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("All songs on local device",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("All songs on local device",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
@@ -288,8 +288,8 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
                 Icon(FontAwesomeIcons.cogs, color: globalVars.leadingIconColor),
             title: Text('Settings',
                 style: TextStyle(color: globalVars.titleTextColor)),
-            subtitle: Text("Application related settings",
-                style: TextStyle(color: globalVars.subtitleTextColor)),
+            // subtitle: Text("Application related settings",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
               Navigator.pushReplacementNamed(context, '/appSettings');
@@ -304,8 +304,8 @@ Widget drawerLogoutPageListTile(context) {
   return Container(
     child: (globalVars.loginInfo["loginStatus"])
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.orange),
-            title: Text('Logout', style: TextStyle(color: Colors.orange)),
+            leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.amber),
+            title: Text('Logout', style: TextStyle(color: Colors.amber)),
             subtitle: Text("Sign out of your account",
                 style: TextStyle(color: Colors.orange)),
             onTap: () {
@@ -315,11 +315,19 @@ Widget drawerLogoutPageListTile(context) {
                     return AlertDialog(
                       backgroundColor: globalVars.primaryDark,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                          borderRadius: BorderRadius.all(Radius.circular(10.0))),
                       title: Text("Are you sure?"),
                       content:
                           Text("This action will sign you out of your account"),
-                      actions: <Widget>[
+                      actions: <Widget>[                        
+                        FlatButton(
+                          child: Text("Cancel"),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          color: Colors.transparent,
+                          textColor: globalVars.accentGreen,
+                        ),
                         FlatButton(
                           child: Text("Logout"),
                           onPressed: () {
@@ -335,14 +343,6 @@ Widget drawerLogoutPageListTile(context) {
                           color: Colors.transparent,
                           textColor: globalVars.accentRed,
                         ),
-                        FlatButton(
-                          child: Text("Cancel"),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          color: Colors.transparent,
-                          textColor: globalVars.accentGreen,
-                        )
                       ],
                     );
                   });
@@ -387,29 +387,29 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context){
         snackBarColor = Colors.orange;
         snackBarDuration = Duration(seconds: 30);
         break;
-      case 20:
+      case 2:
         snackBarMessage = "Authenticating user...";
         snackBarColor = Colors.orange;
         snackBarDuration = Duration(seconds: 30);
         break;
-      case 31:
+      case 3:
         snackBarMessage = "Aplogies. Invalid Credentials";
         snackBarColor = Colors.red;
         showLoadingAnim = false;
         snackBarDuration = Duration(seconds: 5);
         break;
-      case 42:
+      case 4:
         snackBarMessage = "Signing you up...";
         snackBarColor = Colors.orange;
         snackBarDuration = Duration(seconds: 30);
         break;
-      case 53:
+      case 5:
         snackBarMessage = "Success! Please login with your credentials";
         snackBarColor = globalVars.accentGreen;
         showLoadingAnim = false;
         snackBarDuration = Duration(seconds: 5);
         break;
-      case 64:
+      case 6:
         snackBarMessage =
             "Apologies, we already have an account with that email Id";
         snackBarColor = Colors.orange;

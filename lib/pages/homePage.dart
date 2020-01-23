@@ -761,13 +761,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } catch (e) {
       // catching dio error
       if (e is DioError) {
-        Fluttertoast.showToast(
-            msg: "Cannot connect to the internet",
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            backgroundColor: Colors.grey,
-            textColor: Colors.white,
-            fontSize: 16.0);
+        globalFun.showToastMessage(
+            "Cannot connect to the internet", Colors.black, Colors.white);
         return;
       }
     }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/AddSongsToPlaylistPage.dart';
 import 'package:openbeatsmobile/pages/authPage.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './actions/globalVarsA.dart' as globalVarsA;
 
@@ -59,6 +60,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/homePage': (context) => HomePage(),
         '/authPage': (context) => AuthPage(),
+        '/yourPlaylistsPage': (context) => YourPlaylistsPage(),
       },
     );
   }
