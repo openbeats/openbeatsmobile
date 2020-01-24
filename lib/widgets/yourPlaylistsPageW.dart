@@ -41,9 +41,16 @@ Widget createPlaylistsBtn(showCreateOrRenamePlayListBox) {
       shape: StadiumBorder(),
       textColor: globalVars.accentRed,
       color: globalVars.accentWhite,
-      child: Text(
-        "Create Playlist",
-        style: TextStyle(fontSize: 18.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(FontAwesomeIcons.plus),
+          SizedBox(width: 10.0,),
+          Text(
+            "Create Playlist",
+            style: TextStyle(fontSize: 18.0),
+          )
+        ],
       ),
       padding: EdgeInsets.all(20.0),
     ),

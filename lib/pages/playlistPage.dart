@@ -52,33 +52,34 @@ class _PlaylistPageState extends State<PlaylistPage> {
   @override
   void initState() {
     super.initState();
+    getPlaylistContents();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      key: _playlistsPageScaffoldKey,
-      child: Scaffold(
-        appBar: playlistPageW.appBarW(
-            context, _playlistsPageScaffoldKey, widget.playlistName),
-        backgroundColor: globalVars.primaryDark,
-        body: Container(
-          child: (_isLoading) ? playlistPageW.playlistsLoading() : playlistPageBody(),
-        ),
-      ),
-    );
+          key: _playlistsPageScaffoldKey,
+          child: Scaffold(
+            appBar: playlistPageW.appBarW(
+                context, _playlistsPageScaffoldKey, widget.playlistName),
+            backgroundColor: globalVars.primaryDark,
+            body: Container(
+              margin: EdgeInsets.only(top: 20.0),
+              child: (_isLoading)
+                  ? playlistPageW.playlistsLoading()
+                  : playlistPageBody(),
+            ),
+          ),
+        );
   }
 
-  Widget playlistPageBody(){
+  Widget playlistPageBody() {
     return ListView.builder(
       itemCount: dataResponse["data"]["songs"].length,
-      itemBuilder: (context, index) => playlistPageListView(context, index), 
-    );
-  }
-
-  Widget playlistPageListView(context, index){
-    return ListTile(
-      
+      itemBuilder: (context, index) {
+        return playlistPageW.vidResultContainerW(
+            context, dataResponse["data"]["songs"][index], index);
+      },
     );
   }
 }

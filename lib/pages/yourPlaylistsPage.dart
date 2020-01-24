@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/playlistPage.dart';
 import '../globalFun.dart' as globalFun;
 import '../globalVars.dart' as globalVars;
 import '../globalWids.dart' as globalWids;
@@ -20,7 +22,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
   final GlobalKey<FormState> _newPlaylistFormKey = GlobalKey<FormState>();
 
   // holds value regarding if the page is loading content
-  bool _isLoading = true, createPlaylistValidate = false;
+  bool _isLoading = true, createPlaylistValidate = false, _noInternet = false;
   // holds the list of playlists
   var dataResponse;
   // holds the new playlist name
@@ -142,7 +144,9 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
     } catch (err) {
       print(err);
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "Apologies, some error occurred\nPlease make sure internet connectivity is available",
+          Colors.red,
+          Colors.white);
     }
     setState(() {
       _isLoading = false;
@@ -165,6 +169,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
   void sendRenamePlaylistReq(index) async {
     setState(() {
       _isLoading = true;
+      _noInternet = false;
     });
     try {
       var response = await http.post(
@@ -184,8 +189,11 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
       }
     } catch (err) {
       print(err);
+      setState(() {
+        _noInternet = true;
+      });
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white);
     }
   }
 
@@ -193,6 +201,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
   void sendCreatePlaylistReq() async {
     setState(() {
       _isLoading = true;
+      _noInternet = false;
     });
     try {
       var response = await http.post(
@@ -212,8 +221,11 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
       }
     } catch (err) {
       print(err);
+      setState(() {
+        _noInternet = true;
+      });
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white);
     }
   }
 
@@ -221,6 +233,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
   void getListofPlayLists() async {
     setState(() {
       _isLoading = true;
+      _noInternet = false;
     });
     try {
       var response = await http.get(
@@ -233,9 +246,12 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
         });
       }
     } catch (err) {
+      setState(() {
+        _noInternet = true;
+      });
       print(err);
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white);
     }
     setState(() {
       _isLoading = false;
@@ -252,37 +268,46 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        key: _yourPlaylistsPageScaffoldKey,
-        backgroundColor: globalVars.primaryDark,
-        appBar:
-            yourPlaylistsPageW.appBarW(context, _yourPlaylistsPageScaffoldKey),
-        drawer: globalFun.drawerW(6, context),
-        body: yourPlayListPageBody(),
-      ),
-    );
+    return WillPopScope(
+        onWillPop: () {
+          Navigator.of(context).push(globalWids.FadeRouteBuilder(page: HomePage()));
+
+          //we need to return a future
+          return Future.value(false);
+        },
+        child: SafeArea(
+          child: Scaffold(
+            key: _yourPlaylistsPageScaffoldKey,
+            backgroundColor: globalVars.primaryDark,
+            appBar: yourPlaylistsPageW.appBarW(
+                context, _yourPlaylistsPageScaffoldKey),
+            drawer: globalFun.drawerW(6, context),
+            body: yourPlayListPageBody(),
+          ),
+        ));
   }
 
   Widget yourPlayListPageBody() {
     return Container(
-      child: (_isLoading)
-          ? yourPlaylistsPageW.playlistsLoading()
-          : ListView(
-              children: <Widget>[
-                SizedBox(
-                  height: 20.0,
+      child: (_noInternet)
+          ? globalWids.noInternetView(getListofPlayLists)
+          : (_isLoading)
+              ? yourPlaylistsPageW.playlistsLoading()
+              : ListView(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 20.0,
+                    ),
+                    yourPlaylistsPageW
+                        .createPlaylistsBtn(showCreateOrRenamePlayListBox),
+                    SizedBox(
+                      height: 40.0,
+                    ),
+                    (dataResponse != null && dataResponse["data"].length != 0)
+                        ? playListsListView()
+                        : yourPlaylistsPageW.noPlaylistsMessage()
+                  ],
                 ),
-                yourPlaylistsPageW
-                    .createPlaylistsBtn(showCreateOrRenamePlayListBox),
-                SizedBox(
-                  height: 40.0,
-                ),
-                (dataResponse["data"].length != 0)
-                    ? playListsListView()
-                    : yourPlaylistsPageW.noPlaylistsMessage()
-              ],
-            ),
     );
   }
 
@@ -305,7 +330,15 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
             dataResponse["data"][index]["name"],
             style: TextStyle(color: Colors.white),
           ),
-          onTap: () {},
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PlaylistPage(
+                      dataResponse["data"][index]["name"],
+                      dataResponse["data"][index]["playlistId"])),
+            );
+          },
           trailing: Container(
             alignment: Alignment.centerRight,
             width: MediaQuery.of(context).size.width * 0.1,

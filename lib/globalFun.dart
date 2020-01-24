@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 
 import './globalVars.dart' as globalVars;
 import './actions/globalVarsA.dart' as globalVarsA;
@@ -112,7 +114,7 @@ Widget drawerHomePageListTile(int currPage, context) {
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/homePage');
+              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: HomePage()));
             },
           )
         : null,
@@ -195,7 +197,8 @@ Widget drawerHistoryPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/historyPage');
               } else {
-                showToastMessage("Please login to use feature", Colors.black, Colors.white);
+                showToastMessage(
+                    "Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -218,9 +221,10 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
-                Navigator.pushReplacementNamed(context, '/yourPlaylistsPage');
+                Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
               } else {
-                showToastMessage("Please login to use feature", Colors.black, Colors.white);
+                showToastMessage(
+                    "Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -245,7 +249,8 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/likedSongsPage');
               } else {
-                showToastMessage("Please login to use feature",Colors.black, Colors.white);
+                showToastMessage(
+                    "Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -270,7 +275,8 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
                 // navigating to homePage
                 Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
               } else {
-                showToastMessage("Please login to use feature", Colors.black, Colors.white);
+                showToastMessage(
+                    "Please login to use feature", Colors.black, Colors.white);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -315,11 +321,12 @@ Widget drawerLogoutPageListTile(context) {
                     return AlertDialog(
                       backgroundColor: globalVars.primaryDark,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(10.0))),
                       title: Text("Are you sure?"),
                       content:
                           Text("This action will sign you out of your account"),
-                      actions: <Widget>[                        
+                      actions: <Widget>[
                         FlatButton(
                           child: Text("Cancel"),
                           onPressed: () {
@@ -336,9 +343,10 @@ Widget drawerLogoutPageListTile(context) {
                             };
                             globalVarsA.modifyLoginInfo(loginParameters, true);
                             Navigator.pop(context);
-                            Navigator.pushReplacementNamed(
-                                context, '/homePage');
-                            showToastMessage("Logged out Successfully", Colors.black, Colors.white);
+                            Navigator.of(context).pushReplacement(
+                                globalWids.FadeRouteBuilder(page: HomePage()));
+                            showToastMessage("Logged out Successfully",
+                                Colors.black, Colors.white);
                           },
                           color: Colors.transparent,
                           textColor: globalVars.accentRed,
@@ -364,61 +372,61 @@ void showToastMessage(String message, Color bgColor, Color txtColor) {
 }
 
 // function to show snackBars
-void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context){
+void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
   // holds the message to display
-    String snackBarMessage;
-    // flag to indicate if snackbar action has to be shown
-    // 1 - permission action / 2 - download cancel
-    int showAction = 0;
-    // flag to indicate if CircularProgressIndicatior must be shown
-    bool showLoadingAnim = true;
-    // holds color of snackBar
-    Color snackBarColor;
-    // duration of snackBar
-    Duration snackBarDuration = Duration(minutes: 1);
-    switch (mode) {
-      case 0:
-        snackBarMessage = "Initializing playback...";
-        snackBarColor = Colors.green;
-        snackBarDuration = Duration(seconds: 30);
-        break;
-      case 1:
-        snackBarMessage = "Adding song to playlist...";
-        snackBarColor = Colors.orange;
-        snackBarDuration = Duration(seconds: 30);
-        break;
-      case 2:
-        snackBarMessage = "Authenticating user...";
-        snackBarColor = Colors.orange;
-        snackBarDuration = Duration(seconds: 30);
-        break;
-      case 3:
-        snackBarMessage = "Aplogies. Invalid Credentials";
-        snackBarColor = Colors.red;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 4:
-        snackBarMessage = "Signing you up...";
-        snackBarColor = Colors.orange;
-        snackBarDuration = Duration(seconds: 30);
-        break;
-      case 5:
-        snackBarMessage = "Success! Please login with your credentials";
-        snackBarColor = globalVars.accentGreen;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-      case 6:
-        snackBarMessage =
-            "Apologies, we already have an account with that email Id";
-        snackBarColor = Colors.orange;
-        showLoadingAnim = false;
-        snackBarDuration = Duration(seconds: 5);
-        break;
-    }
-    SnackBar statusSnackBar;
-    if (mode != 10) {
+  String snackBarMessage;
+  // flag to indicate if snackbar action has to be shown
+  // 1 - permission action / 2 - download cancel
+  int showAction = 0;
+  // flag to indicate if CircularProgressIndicatior must be shown
+  bool showLoadingAnim = true;
+  // holds color of snackBar
+  Color snackBarColor;
+  // duration of snackBar
+  Duration snackBarDuration = Duration(minutes: 1);
+  switch (mode) {
+    case 0:
+      snackBarMessage = "Initializing playback...";
+      snackBarColor = Colors.green;
+      snackBarDuration = Duration(seconds: 30);
+      break;
+    case 1:
+      snackBarMessage = "Adding song to playlist...";
+      snackBarColor = Colors.orange;
+      snackBarDuration = Duration(seconds: 30);
+      break;
+    case 2:
+      snackBarMessage = "Authenticating user...";
+      snackBarColor = Colors.orange;
+      snackBarDuration = Duration(seconds: 30);
+      break;
+    case 3:
+      snackBarMessage = "Aplogies. Invalid Credentials";
+      snackBarColor = Colors.red;
+      showLoadingAnim = false;
+      snackBarDuration = Duration(seconds: 5);
+      break;
+    case 4:
+      snackBarMessage = "Signing you up...";
+      snackBarColor = Colors.orange;
+      snackBarDuration = Duration(seconds: 30);
+      break;
+    case 5:
+      snackBarMessage = "Success! Please login with your credentials";
+      snackBarColor = globalVars.accentGreen;
+      showLoadingAnim = false;
+      snackBarDuration = Duration(seconds: 5);
+      break;
+    case 6:
+      snackBarMessage =
+          "Apologies, we already have an account with that email Id";
+      snackBarColor = Colors.orange;
+      showLoadingAnim = false;
+      snackBarDuration = Duration(seconds: 5);
+      break;
+  }
+  SnackBar statusSnackBar;
+  if (mode != 10) {
     // constructing snackBar
     statusSnackBar = SnackBar(
       content: Row(
@@ -458,12 +466,11 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context){
       backgroundColor: snackBarColor,
       duration: snackBarDuration,
     );
-    }
-    else {
-      statusSnackBar = globalWids.networkErrorSBar; 
-    }
-    // removing any previous snackBar
-    scaffoldKey.currentState.removeCurrentSnackBar();
-    // showing new snackBar
-    scaffoldKey.currentState.showSnackBar(statusSnackBar);
+  } else {
+    statusSnackBar = globalWids.networkErrorSBar;
+  }
+  // removing any previous snackBar
+  scaffoldKey.currentState.removeCurrentSnackBar();
+  // showing new snackBar
+  scaffoldKey.currentState.showSnackBar(statusSnackBar);
 }

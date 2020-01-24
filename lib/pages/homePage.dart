@@ -76,7 +76,7 @@ class _HomePageState extends State<HomePage> {
     String selectedSearchResult = "";
     // Navigate to the search page and wait for response
     selectedSearchResult =
-        await Navigator.of(context).push(FadeRouteBuilder(page: SearchPage()));
+        await Navigator.of(context).push(globalWids.FadeRouteBuilder(page: SearchPage()));
     // checking if the user has returned something
     if (selectedSearchResult != null && selectedSearchResult.length > 0) {
       // set the page to loading animation
@@ -429,6 +429,34 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // handles the back button press from exiting the app
+  Future<bool> _onWillPop() {
+    return showDialog(
+          context: context,
+          builder: (context) => new AlertDialog(
+            backgroundColor: globalVars.primaryDark,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
+            title: new Text('Are you sure?'),
+            content: new Text('This action will exit OpenBeats'),
+            actions: <Widget>[
+              new FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: new Text('Return to app'),
+              ),
+              new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop(true);
+                },
+                child: new Text('Exit app', style: TextStyle(color: Colors.red),),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -458,18 +486,20 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        key: _homePageScaffoldKey,
-        backgroundColor: globalVars.primaryDark,
-        floatingActionButton:
-            homePageW.fabView(settingModalBottomSheet, _homePageScaffoldKey),
-        appBar: homePageW.appBarW(
-            context, navigateToSearchPage, _homePageScaffoldKey),
-        drawer: globalFun.drawerW(1, context),
-        body: homePageBody(),
-      ),
-    );
+    return WillPopScope(
+        onWillPop: _onWillPop,
+        child: SafeArea(
+          child: Scaffold(
+            key: _homePageScaffoldKey,
+            backgroundColor: globalVars.primaryDark,
+            floatingActionButton: homePageW.fabView(
+                settingModalBottomSheet, _homePageScaffoldKey),
+            appBar: homePageW.appBarW(
+                context, navigateToSearchPage, _homePageScaffoldKey),
+            drawer: globalFun.drawerW(1, context),
+            body: homePageBody(),
+          ),
+        ));
   }
 
   Widget homePageBody() {
@@ -497,19 +527,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-// used to fade transition to search page
-class FadeRouteBuilder<T> extends PageRouteBuilder<T> {
-  final Widget page;
-  FadeRouteBuilder({@required this.page})
-      : super(
-          pageBuilder: (context, animation1, animation2) => page,
-          transitionsBuilder: (context, animation1, animation2, child) {
-            return FadeTransition(opacity: animation1, child: child);
-          },
-        );
-}
-
 /* --------------------------
 Audio Service implementation
 -----------------------------*/
