@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:openbeatsmobile/pages/addSongsToPlaylistPage.dart';
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
+import '../globalWids.dart' as globalWids;
 import '../widgets/addSongsToPlaylistW.dart' as addSongsToPlaylistW;
 
 class AddSongsToPlaylistPage extends StatefulWidget {
@@ -20,7 +21,8 @@ class AddSongsToPlaylistPage extends StatefulWidget {
 class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
   bool _isLoading = true,
       _addingSongFlag = false,
-      createPlaylistValidate = false;
+      createPlaylistValidate = false,
+      _noInternet = false;
   final GlobalKey<ScaffoldState> _addSongsToPlaylistPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
   final GlobalKey<FormState> _newPlaylistFormKey = GlobalKey<FormState>();
@@ -95,6 +97,9 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
 
   // sends createPlaylist request
   void sendCreatePlaylistReq() async {
+    setState(() {
+      _noInternet = false;
+    });
     try {
       var response = await http.post(
           "https://api.openbeats.live/playlist/userplaylist/create",
@@ -114,13 +119,19 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
       }
     } catch (err) {
       print(err);
+      setState(() {
+        _noInternet = true;
+      });
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "No able to connect to server", Colors.red, Colors.white);
     }
   }
 
   // adds the song to the playlist
   void addSongToPlayList(playListId, playListName, videoResponseItem) async {
+    setState(() {
+      _noInternet = false;
+    });
     List<dynamic> songsList = new List();
     songsList.add(videoResponseItem);
     setState(() {
@@ -146,9 +157,12 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
             "Added to " + playListName, Colors.green, Colors.white);
       }
     } catch (err) {
+      setState(() {
+        _noInternet = true;
+      });
       print(err);
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white);
     }
   }
 
@@ -156,6 +170,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
   void getListofPlayLists() async {
     setState(() {
       _isLoading = true;
+      _noInternet = false;
     });
     try {
       var response = await http.get(
@@ -168,9 +183,12 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
         });
       }
     } catch (err) {
+      setState(() {
+        _noInternet = true;
+      });
       print(err);
       globalFun.showToastMessage(
-          "Apologies, some error occurred", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white);
     }
     setState(() {
       _isLoading = false;
@@ -197,36 +215,38 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
   }
 
   Widget addSongsToPlaylistPageBody() {
-    return Container(
-      color: globalVars.primaryDark,
-      padding: EdgeInsets.all(20.0),
-      child: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          SizedBox(
-            height: 20.0,
-          ),
-          createPlaylistsBtn(),
-          SizedBox(
-            height: 40.0,
-          ),
-          Center(
-            child: Container(
-                child:
-                    (dataResponse != null && dataResponse["data"].length != 0)
-                        ? Text(
-                            "Your Playlists",
-                            style: TextStyle(color: Colors.grey),
-                          )
-                        : null),
-          ),
-          SizedBox(
-            height: 10.0,
-          ),
-          playListsView()
-        ],
-      ),
-    );
+    return (_noInternet)
+        ? globalWids.noInternetView(getListofPlayLists)
+        : Container(
+            color: globalVars.primaryDark,
+            padding: EdgeInsets.all(20.0),
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                SizedBox(
+                  height: 20.0,
+                ),
+                createPlaylistsBtn(),
+                SizedBox(
+                  height: 40.0,
+                ),
+                Center(
+                  child: Container(
+                      child: (dataResponse != null &&
+                              dataResponse["data"].length != 0)
+                          ? Text(
+                              "Your Playlists",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          : null),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                playListsView()
+              ],
+            ),
+          );
   }
 
   Widget playListsView() {

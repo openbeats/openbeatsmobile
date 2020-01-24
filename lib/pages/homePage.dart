@@ -75,8 +75,8 @@ class _HomePageState extends State<HomePage> {
     // setting navResult value to know if it has changed
     String selectedSearchResult = "";
     // Navigate to the search page and wait for response
-    selectedSearchResult =
-        await Navigator.of(context).push(globalWids.FadeRouteBuilder(page: SearchPage()));
+    selectedSearchResult = await Navigator.of(context)
+        .push(globalWids.FadeRouteBuilder(page: SearchPage()));
     // checking if the user has returned something
     if (selectedSearchResult != null && selectedSearchResult.length > 0) {
       // set the page to loading animation
@@ -431,30 +431,37 @@ class _HomePageState extends State<HomePage> {
 
   // handles the back button press from exiting the app
   Future<bool> _onWillPop() {
-    return showDialog(
-          context: context,
-          builder: (context) => new AlertDialog(
-            backgroundColor: globalVars.primaryDark,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
-            title: new Text('Are you sure?'),
-            content: new Text('This action will exit OpenBeats'),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: new Text('Return to app'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop(true);
-                  Navigator.of(context).pop(true);
-                },
-                child: new Text('Exit app', style: TextStyle(color: Colors.red),),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+    if (videosResponseList.length == 0)
+      return showDialog(
+            context: context,
+            builder: (context) => new AlertDialog(
+              backgroundColor: globalVars.primaryDark,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0)),
+              title: new Text('Are you sure?'),
+              content: new Text('This action will exit OpenBeats'),
+              actions: <Widget>[
+                new FlatButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: new Text('Return to app'),
+                ),
+                new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop(true);
+                  },
+                  child: new Text(
+                    'Exit app',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ) ??
+          false;
+    else
+      Navigator.of(context)
+          .pushReplacement(globalWids.FadeRouteBuilder(page: HomePage()));
   }
 
   @override
