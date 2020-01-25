@@ -30,5 +30,8 @@ Map<String, dynamic> loginInfo = {
 // holds the current searched text
 String currSearchText = "";
 
+// holds the current playling thumbnail
+String currThumbnail = "";
+
 // holds the method channel variable
 const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');

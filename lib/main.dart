@@ -37,6 +37,8 @@ class _MyAppState extends State<MyApp> {
     } else {
       prefs.setBool("loginStatus", false);
     }
+    // also getting now playing thumbnail URL
+    globalVarsA.modifyCurrPlayingThumbnailURL(prefs.getString("nowPlayingThumbnail"));
   }
 
   @override

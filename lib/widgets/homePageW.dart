@@ -66,12 +66,12 @@ Widget welcomeText() {
 }
 
 // widget to hold each container of video results
-Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
-    nowPlayingThumbNail, settingModalBottomSheet) {
+Widget vidResultContainerW(
+    context, videosResponseItem, index, getMp3URL, settingModalBottomSheet) {
   return InkWell(
       onTap: () async {
-        if (AudioService.playbackState != null &&
-            videosResponseItem["thumbnail"] == nowPlayingThumbNail &&
+        if (videosResponseItem["thumbnail"] == globalVars.currThumbnail &&
+            AudioService.playbackState != null &&
             (AudioService.playbackState.basicState ==
                     BasicPlaybackState.playing ||
                 AudioService.playbackState.basicState ==
@@ -108,33 +108,77 @@ Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
       ));
 }
 
+// holds the flutterActor for showing the current playing media
+Widget nowPlayingFlutterActor(bool isPlaying) {
+  return FlareActor(
+    'assets/flareAssets/analysis_new.flr',
+    animation: isPlaying
+        ? null
+        : 'ana'
+            'lysis'
+            '',
+    fit: BoxFit.scaleDown,
+  );
+}
+
+// holds the loadingAnimation for the current playing media file
+Widget nowPlayingLoadingAnimation() {
+  return Container(
+      margin: EdgeInsets.all(20.0),
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+      ));
+}
+
+// shows the actual thumbnail of the media
+Widget showActualThumbnail(String thumbnail) {
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(5.0),
+    child: CachedNetworkImage(
+      imageUrl: thumbnail,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => Container(
+        margin: EdgeInsets.all(20.0),
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+        ),
+      ),
+      errorWidget: (context, url, error) => Icon(Icons.error),
+    ),
+  );
+}
+
 // holds the thumbnail of results list
 Widget vidResultThumbnail(context, thumbnail) {
   return Container(
-    width: MediaQuery.of(context).size.width * 0.15,
-    height: MediaQuery.of(context).size.width * 0.15,
-    decoration: BoxDecoration(boxShadow: [
-      new BoxShadow(
-        color: Colors.black,
-        blurRadius: 2.0,
-        offset: new Offset(1.0, 1.0),
-      ),
-    ], borderRadius: BorderRadius.circular(5.0)),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: CachedNetworkImage(
-        imageUrl: thumbnail,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          margin: EdgeInsets.all(20.0),
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
-          ),
+      width: MediaQuery.of(context).size.width * 0.15,
+      height: MediaQuery.of(context).size.width * 0.15,
+      decoration: BoxDecoration(boxShadow: [
+        new BoxShadow(
+          color: Colors.black,
+          blurRadius: 2.0,
+          offset: new Offset(1.0, 1.0),
         ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
-    ),
-  );
+      ], borderRadius: BorderRadius.circular(5.0)),
+      child: StreamBuilder(
+          stream: AudioService.playbackStateStream,
+          builder: (context, snapshot) {
+            PlaybackState state = snapshot.data;
+            return (globalVars.currThumbnail == thumbnail)
+                ? (state != null &&
+                        (state.basicState == BasicPlaybackState.connecting ||
+                            state.basicState == BasicPlaybackState.playing ||
+                            state.basicState == BasicPlaybackState.buffering ||
+                            state.basicState == BasicPlaybackState.paused))
+                    ? (state.basicState == BasicPlaybackState.buffering ||
+                            state.basicState == BasicPlaybackState.connecting)
+                        ? nowPlayingLoadingAnimation()
+                        : (state.basicState == BasicPlaybackState.paused)
+                            ? nowPlayingFlutterActor(true)
+                            : nowPlayingFlutterActor(false)
+                    : nowPlayingLoadingAnimation()
+                : showActualThumbnail(thumbnail);
+          }));
 }
 
 // holds the video details of video list

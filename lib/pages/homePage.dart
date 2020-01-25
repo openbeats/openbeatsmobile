@@ -67,8 +67,6 @@ class _HomePageState extends State<HomePage> {
   var videosResponseList = new List();
   // holds the flag indicating that the media streaming is loading
   bool streamLoading = false;
-  // storing the thumbnail locally to help identify which media is playing now
-  String nowPlayingThumbNail;
 
   // navigates to the search page
   void navigateToSearchPage() async {
@@ -97,8 +95,6 @@ class _HomePageState extends State<HomePage> {
       var response = await Dio().get(url);
       // decoding to json
       var responseJSON = response.data;
-      // get nowPlaying thumbnail from sharedPreferences
-      setNowPlayingURL();
       // checking if proper response is received
       if (responseJSON["status"] == true) {
         setState(() {
@@ -128,7 +124,7 @@ class _HomePageState extends State<HomePage> {
   // function to monitor the playback start point to remove snackbar
   void monitorPlaybackStart() async {
     Timer.periodic(
-        Duration(seconds: 1),
+        Duration(seconds: 4),
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
@@ -140,14 +136,6 @@ class _HomePageState extends State<HomePage> {
             });
   }
 
-  // sets the nowPlaying URL to help ensure that the value is kept updated even after the app is not in foreground
-  void setNowPlayingURL() async {
-    // creating sharedPreferences instance to set media values
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    nowPlayingThumbNail = prefs.getString("nowPlayingThumbnail");
-    setState(() {});
-  }
-
   // sets the sharedPreferences values
   void setSharedPrefs(index, audioDuration) async {
     // creating sharedPreferences instance to set media values
@@ -156,8 +144,7 @@ class _HomePageState extends State<HomePage> {
     // setting the thumbnail link in shared preferences
     prefs.setString("nowPlayingThumbnail",
         videosResponseList[index]["thumbnail"].toString());
-    // storing the thumbnail locally to help identify which media is playing now
-    nowPlayingThumbNail = videosResponseList[index]["thumbnail"].toString();
+
     // setting the current mp3 title
     prefs.setString("nowPlayingTitle", videosResponseList[index]["title"]);
     // setting the current channel name
@@ -186,22 +173,22 @@ class _HomePageState extends State<HomePage> {
     // var responseJSON;
     // checking for internet connectivity to prevent network problems after audioservice
     // is started
-    String url = "https://www.google.com";
+    // String url = "https://www.google.com";
 
-    try {
-      // sending GET request
-      await Dio().get(url);
-    } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        // removing previous snackBar
-        _homePageScaffoldKey.currentState.removeCurrentSnackBar();
-        // showing snackBar to alert user about network status
-        _homePageScaffoldKey.currentState
-            .showSnackBar(globalWids.networkErrorSBar);
-        return;
-      }
-    }
+    // try {
+    //   // sending GET request
+    //   await Dio().get(url);
+    // } catch (e) {
+    //   // catching dio error
+    //   if (e is DioError) {
+    //     // removing previous snackBar
+    //     _homePageScaffoldKey.currentState.removeCurrentSnackBar();
+    //     // showing snackBar to alert user about network status
+    //     _homePageScaffoldKey.currentState
+    //         .showSnackBar(globalWids.networkErrorSBar);
+    //     return;
+    //   }
+    // }
 
     // getting the current mp3 duration in milliseconds
     int audioDuration =
@@ -210,6 +197,8 @@ class _HomePageState extends State<HomePage> {
     setSharedPrefs(index, audioDuration);
     //   // show link obtained snackBar
     //   showSnackBarMessage(3);
+    // setting now playing thumbnail
+    globalVars.currThumbnail = videosResponseList[index]["thumbnail"];
     // stopping previous audio service
     AudioService.stop();
     MediaItem currMediaItem = MediaItem(
@@ -220,8 +209,8 @@ class _HomePageState extends State<HomePage> {
       artist: videosResponseList[index]["channelName"],
       artUri: videosResponseList[index]["thumbnail"].toString(),
     );
-    //   // starting new service after some delay to let the previous player stop
-    Timer(Duration(seconds: 1), () {
+    // starting new service after some delay to let the previous player stop
+    Timer(Duration(milliseconds: 200), () {
       audioServiceStart(currMediaItem);
     });
     // refreshing the UI build to update the thumbnail for now platying music
@@ -528,7 +517,7 @@ class _HomePageState extends State<HomePage> {
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
         return homePageW.vidResultContainerW(context, videosResponseList[index],
-            index, getMp3URL, nowPlayingThumbNail, settingModalBottomSheet);
+            index, getMp3URL, settingModalBottomSheet);
       },
       itemCount: videosResponseList.length,
     );
