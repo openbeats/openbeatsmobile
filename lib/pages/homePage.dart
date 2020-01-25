@@ -164,6 +164,7 @@ class _HomePageState extends State<HomePage> {
     prefs.setBool("isStopped", false);
   }
 
+  // sets the shared preferences and starts the audio service after stopping previous one
   void getMp3URL(String videoId, int index) async {
     // monitoring playback state to close the snackbar when playback starts
     monitorPlaybackStart();
@@ -694,25 +695,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   void onCustomAction(String action, var parameter) async {
     // if condition to play current media
-    if (action == "playMedia") {
-      // setting the current mediaItem
-      await AudioServiceBackground.setMediaItem(MediaItem(
-        id: parameter['mediaID'],
-        album: "OpenBeats Free Music",
-        title: parameter['mediaTitle'],
-        artist: parameter['channelID'],
-        duration: parameter['duration'],
-        artUri: parameter['thumbnailURI'],
-      ));
-      // setting URL for audio player
-      await _audioPlayer.setUrl(parameter['mediaID']);
-      if (_playing == null) {
-        // First time, we want to start playing
-        _playing = true;
-      }
-      // playing audio
-      onPlay();
-    } else if (action == "playMedia2") {
+    if (action == "playMedia2") {
       getMp3URL(parameter['mediaID'], parameter);
     }
   }
@@ -775,7 +758,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the internet", Colors.black, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white);
         return;
       }
     }

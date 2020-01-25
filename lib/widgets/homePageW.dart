@@ -126,7 +126,7 @@ Widget nowPlayingLoadingAnimation() {
   return Container(
       margin: EdgeInsets.all(20.0),
       child: CircularProgressIndicator(
-        valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+        valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentWhite),
       ));
 }
 
@@ -176,7 +176,7 @@ Widget vidResultThumbnail(context, thumbnail) {
                         : (state.basicState == BasicPlaybackState.paused)
                             ? nowPlayingFlutterActor(true)
                             : nowPlayingFlutterActor(false)
-                    : nowPlayingLoadingAnimation()
+                    : showActualThumbnail(thumbnail)
                 : showActualThumbnail(thumbnail);
           }));
 }
