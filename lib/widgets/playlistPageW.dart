@@ -14,7 +14,6 @@ Widget appBarW(context, GlobalKey<ScaffoldState> _playlistsPageScaffoldKey,
     centerTitle: true,
     backgroundColor: globalVars.primaryDark,
     title: Text(playlistName),
-    
   );
 }
 
@@ -27,12 +26,13 @@ Widget playlistsLoading() {
   );
 }
 
-
-
 // widget to hold each container of video results
-Widget vidResultContainerW(context, videosResponseItem, index) {
+Widget vidResultContainerW(
+    context, videosResponseItem, index, startPlaylistFromMusic) {
   return InkWell(
-      onTap: () async {},
+      onTap: () async {
+        startPlaylistFromMusic(index);
+      },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
         child: Row(

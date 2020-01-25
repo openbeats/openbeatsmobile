@@ -70,8 +70,9 @@ Widget vidResultContainerW(
     context, videosResponseItem, index, getMp3URL, settingModalBottomSheet) {
   return InkWell(
       onTap: () async {
-        if (videosResponseItem["thumbnail"] == globalVars.currThumbnail &&
-            AudioService.playbackState != null &&
+        if (AudioService.playbackState != null &&
+            AudioService.currentMediaItem.artUri ==
+                videosResponseItem["thumbnail"] &&
             (AudioService.playbackState.basicState ==
                     BasicPlaybackState.playing ||
                 AudioService.playbackState.basicState ==
@@ -164,19 +165,19 @@ Widget vidResultThumbnail(context, thumbnail) {
           stream: AudioService.playbackStateStream,
           builder: (context, snapshot) {
             PlaybackState state = snapshot.data;
-            return (globalVars.currThumbnail == thumbnail)
-                ? (state != null &&
-                        (state.basicState == BasicPlaybackState.connecting ||
-                            state.basicState == BasicPlaybackState.playing ||
-                            state.basicState == BasicPlaybackState.buffering ||
-                            state.basicState == BasicPlaybackState.paused))
-                    ? (state.basicState == BasicPlaybackState.buffering ||
-                            state.basicState == BasicPlaybackState.connecting)
-                        ? nowPlayingLoadingAnimation()
-                        : (state.basicState == BasicPlaybackState.paused)
-                            ? nowPlayingFlutterActor(true)
-                            : nowPlayingFlutterActor(false)
-                    : showActualThumbnail(thumbnail)
+            return ((state != null) &&
+                    AudioService.currentMediaItem != null &&
+                    AudioService.currentMediaItem.artUri == thumbnail &&
+                    (state.basicState == BasicPlaybackState.connecting ||
+                        state.basicState == BasicPlaybackState.playing ||
+                        state.basicState == BasicPlaybackState.buffering ||
+                        state.basicState == BasicPlaybackState.paused))
+                ? (state.basicState == BasicPlaybackState.buffering ||
+                        state.basicState == BasicPlaybackState.connecting)
+                    ? nowPlayingLoadingAnimation()
+                    : (state.basicState == BasicPlaybackState.paused)
+                        ? nowPlayingFlutterActor(true)
+                        : nowPlayingFlutterActor(false)
                 : showActualThumbnail(thumbnail);
           }));
 }

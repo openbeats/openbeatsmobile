@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -83,14 +84,29 @@ class _PlaylistPageState extends State<PlaylistPage> {
     });
   }
 
-  void startAudioService() {
-    AudioService.start(
+  Future startAudioService() async {
+    await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       resumeOnClick: true,
       androidNotificationChannelName: 'OpenBeats Notification Channel',
-      notificationColor: 0xFF2196f3,
-      androidNotificationIcon: 'mipmap/ic_launcher',
+      notificationColor: 0xFF000000,
+      enableQueue: true,
+      androidStopForegroundOnPause: true,
+      androidNotificationIcon: 'drawable/ic_stat_logoicon2',
     );
+  }
+
+  // function to start selected music and add the rest to playlist
+  // index is the index of the clicked item
+  Future startPlaylistFromMusic(index) async {
+    await AudioService.stop();
+    await startAudioService();
+    var parameters = {
+      "currIndex": index,
+      "allSongs": dataResponse["data"]["songs"]
+    };
+    await AudioService.customAction(
+        "startMusicPlaybackAndCreateQueue", parameters);
   }
 
   void connect() async {
@@ -139,13 +155,12 @@ class _PlaylistPageState extends State<PlaylistPage> {
         Container(
           margin: EdgeInsets.symmetric(horizontal: 10.0),
           child: RaisedButton(
-            onPressed: () {
-              // stopping previous audio service
-              AudioService.stop();
-              // starting new service after some delay to let the previous player stop
-              Timer(Duration(milliseconds: 200), () {
-                startAudioService();
-              });
+            onPressed: () async {
+              await AudioService.stop();
+              await startAudioService();
+              // calling method to add songs to the background list
+              await AudioService.customAction(
+                  "addSongsToList", dataResponse["data"]["songs"]);
             },
             padding: EdgeInsets.all(20.0),
             shape: StadiumBorder(),
@@ -162,7 +177,10 @@ class _PlaylistPageState extends State<PlaylistPage> {
           itemCount: dataResponse["data"]["songs"].length,
           itemBuilder: (context, index) {
             return playlistPageW.vidResultContainerW(
-                context, dataResponse["data"]["songs"][index], index);
+                context,
+                dataResponse["data"]["songs"][index],
+                index,
+                startPlaylistFromMusic);
           },
         )
       ],
@@ -175,9 +193,7 @@ void _audioPlayerTaskEntrypoint() async {
 }
 
 class AudioPlayerTask extends BackgroundAudioTask {
-  final _queue = <MediaItem>[
-    
-  ];
+  final _queue = <MediaItem>[];
   int _queueIndex = -1;
   AudioPlayer _audioPlayer = new AudioPlayer();
   Completer _completer = Completer();
@@ -298,7 +314,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-   @override
+  @override
   void onAudioFocusLost() async {
     onPause();
   }
@@ -324,31 +340,58 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  void onCustomAction(String action, var parameter) async {
-    // if condition to play current media
-    if (action == "playMedia") {
-      // setting the current mediaItem
-      await AudioServiceBackground.setMediaItem(MediaItem(
-        id: parameter['mediaID'],
-        album: "OpenBeats Free Music",
-        title: parameter['mediaTitle'],
-        artist: parameter['channelID'],
-        duration: parameter['duration'],
-        artUri: parameter['thumbnailURI'],
-      ));
-      // setting URL for audio player
-      await _audioPlayer.setUrl(parameter['mediaID']);
-      if (_playing == null) {
-        // First time, we want to start playing
-        _playing = true;
+  void onCustomAction(String action, var parameters) async {
+    // if condition to add all songs to the list
+    if (action == "addSongsToList") {
+      List<dynamic> songsList = parameters;
+      for (int i = 0; i < songsList.length; i++) {
+        await getMp3URL(songsList[i], true);
       }
-      // playing audio
-      onPlay();
-    } else if (action == "playMedia2") {
-      //getMp3URL(parameter['mediaID'], parameter);
+    } else if (action == "startMusicPlaybackAndCreateQueue") {
+      var passedParameters = parameters;
+      await getMp3URL(
+          passedParameters["allSongs"][passedParameters["currIndex"]], true);
+      for (int i = 0; i < passedParameters["allSongs"].length; i++) {
+        if (i == passedParameters["currIndex"]) continue;
+        await getMp3URL(passedParameters["allSongs"][i], false);
+      }
     }
   }
 
+  // gets the mp3URL using videoID and i parameter to start playback on true
+  Future getMp3URL(parameter, bool shouldPlay) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" +
+          parameter["videoId"].toString();
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        globalFun.showToastMessage(
+            "Cannot connect to the server", Colors.red, Colors.white);
+        return;
+      }
+    }
+    if (responseJSON.data["status"] == true) {
+      MediaItem mediaItem = MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Free Music",
+        title: parameter['title'],
+        artist: parameter['channelName'],
+        artUri: parameter['thumbnail'],
+      );
+      _queue.add(mediaItem);
+      AudioServiceBackground.setQueue(_queue);
+      if (shouldPlay) {
+        await onSkipToNext();
+      }
+    }
+  }
 
   @override
   void onSeekTo(int position) {

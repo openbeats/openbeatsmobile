@@ -124,11 +124,12 @@ class _HomePageState extends State<HomePage> {
   // function to monitor the playback start point to remove snackbar
   void monitorPlaybackStart() async {
     Timer.periodic(
-        Duration(seconds: 4),
+        Duration(seconds: 1),
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing)
+                      BasicPlaybackState.playing &&
+                  _homePageScaffoldKey.currentState.hasFloatingActionButton)
                 {
                   t.cancel(),
                   _homePageScaffoldKey.currentState.removeCurrentSnackBar()
@@ -171,25 +172,6 @@ class _HomePageState extends State<HomePage> {
     // show link-fetching snackBar
     globalFun.showSnackBars(0, _homePageScaffoldKey, context);
     // // holds the responseJSON for checking link validity
-    // var responseJSON;
-    // checking for internet connectivity to prevent network problems after audioservice
-    // is started
-    // String url = "https://www.google.com";
-
-    // try {
-    //   // sending GET request
-    //   await Dio().get(url);
-    // } catch (e) {
-    //   // catching dio error
-    //   if (e is DioError) {
-    //     // removing previous snackBar
-    //     _homePageScaffoldKey.currentState.removeCurrentSnackBar();
-    //     // showing snackBar to alert user about network status
-    //     _homePageScaffoldKey.currentState
-    //         .showSnackBar(globalWids.networkErrorSBar);
-    //     return;
-    //   }
-    // }
 
     // getting the current mp3 duration in milliseconds
     int audioDuration =
@@ -198,10 +180,11 @@ class _HomePageState extends State<HomePage> {
     setSharedPrefs(index, audioDuration);
     //   // show link obtained snackBar
     //   showSnackBarMessage(3);
-    // setting now playing thumbnail
-    globalVars.currThumbnail = videosResponseList[index]["thumbnail"];
-    // stopping previous audio service
-    AudioService.stop();
+    if (AudioService.playbackState != null) {
+      // stopping previous audio service
+      await AudioService.stop();
+    }
+
     MediaItem currMediaItem = MediaItem(
       id: videoId,
       album: "OpenBeats Free Music",
@@ -210,9 +193,10 @@ class _HomePageState extends State<HomePage> {
       artist: videosResponseList[index]["channelName"],
       artUri: videosResponseList[index]["thumbnail"].toString(),
     );
-    // starting new service after some delay to let the previous player stop
-    Timer(Duration(milliseconds: 200), () {
+
+    Timer(Duration(seconds: 1), () {
       audioServiceStart(currMediaItem);
+      
     });
     // refreshing the UI build to update the thumbnail for now platying music
     setState(() {});
@@ -379,7 +363,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // starts the audio service with notification
-  void audioServiceStart(MediaItem currMediaItem) async {
+  Future audioServiceStart(MediaItem currMediaItem) async {
     // start the AudioService
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
@@ -450,8 +434,9 @@ class _HomePageState extends State<HomePage> {
           ) ??
           false;
     else
-      Navigator.of(context)
-          .pushReplacement(globalWids.FadeRouteBuilder(page: HomePage()));
+      setState(() {
+        videosResponseList = [];
+      });
   }
 
   @override

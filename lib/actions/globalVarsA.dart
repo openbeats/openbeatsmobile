@@ -44,8 +44,3 @@ void modifyLoginInfo(loginParameters, shouldUpdateSharedPreferences) async {
     }
   }
 }
-
-// to modify the current playing thumbnail after restart of app
-void modifyCurrPlayingThumbnailURL(String url){
-  globalVars.currThumbnail = url;
-}
