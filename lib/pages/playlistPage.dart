@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/playlistPageW.dart' as playlistPageW;
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
@@ -382,6 +383,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         id: responseJSON.data["link"],
         album: "OpenBeats Free Music",
         title: parameter['title'],
+        duration: getDurationMillis(parameter["duration"]),
         artist: parameter['channelName'],
         artUri: parameter['thumbnail'],
       );
@@ -391,6 +393,34 @@ class AudioPlayerTask extends BackgroundAudioTask {
         await onSkipToNext();
       }
     }
+  }
+
+  // returns the max duration of the media in milliseconds
+  int getDurationMillis(String audioDuration) {
+    // variable holding max value
+    double maxVal = 0;
+    // holds the integerDurationList
+    List durationLst = new List();
+    // converting duration value into list
+    List durationStringLst = audioDuration.toString().split(':');
+    // converting list into integer
+    durationStringLst.forEach((f) {
+      durationLst.add(int.parse(f));
+    });
+    // creating seconds value based on the durationLst
+    // looping through each value from last value
+    for (int i = durationLst.length - 1; i > -1; i--) {
+      // add seconds just as they are
+      if (i == durationLst.length - 1)
+        maxVal += durationLst[i] * 1000;
+      // add minutes by multiplying with 60
+      else if (i == durationLst.length - 2)
+        maxVal += (60000 * durationLst[i]);
+      // add hours by multiplying twice with 60
+      else if (i == durationLst.length - 3)
+        maxVal += (3600000 * durationLst[i]);
+    }
+    return maxVal.toInt();
   }
 
   @override

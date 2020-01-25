@@ -196,7 +196,6 @@ class _HomePageState extends State<HomePage> {
 
     Timer(Duration(seconds: 1), () {
       audioServiceStart(currMediaItem);
-      
     });
     // refreshing the UI build to update the thumbnail for now platying music
     setState(() {});
@@ -256,45 +255,42 @@ class _HomePageState extends State<HomePage> {
 
   // function that calls the bottomSheet
   void settingModalBottomSheet(context) async {
-    // creating sharedPreferences instance to get media metadata values
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    // getting thumbNail image
-    String audioThumbnail = prefs.getString("nowPlayingThumbnail");
-    // getting audioTitle set by getMp3URL()
-    String audioTitle = prefs.getString("nowPlayingTitle");
-    // getting audioDuration in Min set by getMp3URL()
-    String audioDurationMin = prefs.getString("nowPlayingDurationMin");
-    // getting audioDuration set by getMp3URL()
-    int audioDuration = prefs.getInt("nowPlayingDuration");
-    // getting audioViews set by getMp3URL()
-    String audioViews = prefs.getString("nowPlayingViews");
-    // getting audioChannel set by getMp3URL()
-    String audioChannel = prefs.getString("nowPlayingChannel");
-    // getting now playing video ID
-    String videoID = prefs.getString("nowPlayingVideoID");
-    // bottomSheet definition
-    showModalBottomSheet(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(
-          Radius.circular(20.0),
-        )),
-        context: context,
-        elevation: 10.0,
-        builder: (BuildContext bc) {
-          return bottomSheet(audioTitle, audioDuration, audioViews,
-              audioChannel, audioThumbnail, audioDurationMin, videoID, context);
-        });
+    if (AudioService.currentMediaItem != null) {
+      // getting thumbNail image
+      String audioThumbnail = AudioService.currentMediaItem.artUri;
+      // getting audioTitle set by getMp3URL()
+      String audioTitle = AudioService.currentMediaItem.title;
+      // getting audioDuration in Min set by getMp3URL()
+      String audioDurationMin =
+          getCurrentTimeStamp(AudioService.currentMediaItem.duration / 1000);
+      // getting audioDuration set by getMp3URL()
+      int audioDuration = AudioService.currentMediaItem.duration;
+      // getting audioChannel set by getMp3URL()
+      String audioChannel = AudioService.currentMediaItem.artist;
+      // bottomSheet definition
+      showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+            Radius.circular(20.0),
+          )),
+          context: context,
+          elevation: 10.0,
+          builder: (BuildContext bc) {
+            return bottomSheet(audioTitle, audioDuration, audioChannel,
+                audioThumbnail, audioDurationMin, context);
+          });
+    } 
   }
 
-  Widget bottomSheet(audioTitle, audioDuration, audioViews, audioChannel,
-      audioThumbnail, audioDurationMin, videoID, context) {
+  Widget bottomSheet(audioTitle, audioDuration, audioChannel, audioThumbnail,
+      audioDurationMin, context) {
     return Container(
         height: 300.0,
         child: StreamBuilder(
             stream: AudioService.playbackStateStream,
             builder: (context, snapshot) {
               PlaybackState state = snapshot.data;
-              return Stack(
+              return (state.basicState != BasicPlaybackState.stopped)?Stack(
                 children: <Widget>[
                   homePageW.bottomSheetBGW(audioThumbnail),
                   Container(
@@ -311,6 +307,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   )
                 ],
+              ):Center(
+                child: Text("No Audio playing"),
               );
             }));
   }
