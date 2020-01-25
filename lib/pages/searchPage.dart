@@ -24,6 +24,8 @@ class _SearchPageState extends State<SearchPage> {
   // true - add suggestions to list
   // false - do not let suggestions to list
   bool delayCallFlag = true;
+  // holds data if the no internet snackbar is shown
+  bool noInternetSnackbarShown = false;
 
   // controller to monitor if the textField becomes empty
   final TextEditingController queryFieldController =
@@ -47,9 +49,17 @@ class _SearchPageState extends State<SearchPage> {
     } catch (e) {
       // catching dio error
       if (e is DioError) {
-        globalFun.showSnackBars(10, _searcPageScaffoldKey, context);
+        if (!noInternetSnackbarShown) {
+          globalFun.showSnackBars(10, _searcPageScaffoldKey, context);
+          setState(() {
+            noInternetSnackbarShown = true;
+          });
+        }
       }
+      return;
     }
+    // removing the noInternet snackbar when internet connection is returned
+    _searcPageScaffoldKey.currentState.removeCurrentSnackBar();
   }
 
   // calling function to monitor the textField to handle delayed responses

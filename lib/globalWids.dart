@@ -10,7 +10,7 @@ SnackBar networkErrorSBar = new SnackBar(
     style: TextStyle(color: Colors.white),
   ),
   backgroundColor: Colors.orange,
-  duration: Duration(seconds: 2),
+  duration: Duration(hours: 10),
 );
 
 Widget noInternetView(refreshFunction) {
@@ -18,28 +18,31 @@ Widget noInternetView(refreshFunction) {
       margin: EdgeInsets.all(20.0),
       child: Center(
         child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          FlatButton(
-            child: Icon(FontAwesomeIcons.redo, size: 40.0, color: globalVars.accentRed,),
-            onPressed: (){
-              refreshFunction();
-            },
-            color: Colors.transparent,
-            textColor: globalVars.accentBlue,
-          ),
-          SizedBox(
-            height: 20.0,
-          ),
-          Text("Not able to connect to\nserver",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 22.0)),
-        ],
-      ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            FlatButton(
+              child: Icon(
+                FontAwesomeIcons.redo,
+                size: 40.0,
+                color: globalVars.accentRed,
+              ),
+              onPressed: () {
+                refreshFunction();
+              },
+              color: Colors.transparent,
+              textColor: globalVars.accentBlue,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Text("Not able to connect to\nserver",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 22.0)),
+          ],
+        ),
       ));
 }
-
 
 // used to fade transition to search page
 class FadeRouteBuilder<T> extends PageRouteBuilder<T> {
