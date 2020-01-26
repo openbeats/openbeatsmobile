@@ -167,6 +167,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     int audioDuration;
     return Container(
         height: 300.0,
+        color: globalVars.primaryDark,
         child: StreamBuilder(
             stream: AudioService.playbackStateStream,
             builder: (context, snapshot) {
@@ -285,8 +286,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
         appBar: playlistPageW.appBarW(
             context, _playlistsPageScaffoldKey, widget.playlistName),
         backgroundColor: globalVars.primaryDark,
-        floatingActionButton: globalWids.fabView(
-            settingModalBottomSheet, _playlistsPageScaffoldKey),
+        // floatingActionButton: globalWids.fabView(
+        //     settingModalBottomSheet, _playlistsPageScaffoldKey),
         body: Container(
             child: (_noInternet)
                 ? globalWids.noInternetView(getPlaylistContents)

@@ -305,7 +305,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
                       children: <Widget>[
                         globalWids.bottomSheetBGW(audioThumbnail),
                         Container(
-                          margin: EdgeInsets.all(10.0),
+                          margin: EdgeInsets.all(10.0), 
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
