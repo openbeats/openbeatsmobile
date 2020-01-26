@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:openbeatsmobile/pages/playlistPage.dart';
+import 'package:rxdart/rxdart.dart';
 import '../globalFun.dart' as globalFun;
 import '../globalVars.dart' as globalVars;
 import '../globalWids.dart' as globalWids;
@@ -258,19 +261,145 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
     });
   }
 
+  // function that calls the bottomSheet
+  void settingModalBottomSheet(context) async {
+    if (AudioService.currentMediaItem != null) {
+      // bottomSheet definition
+      showModalBottomSheet(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+            Radius.circular(20.0),
+          )),
+          context: context,
+          elevation: 10.0,
+          builder: (BuildContext bc) {
+            return bottomSheet(context);
+          });
+    }
+  }
+
+  Widget bottomSheet(context) {
+    String audioThumbnail, audioTitle, audioDurationMin;
+    int audioDuration;
+    return Container(
+        height: 300.0,
+        child: StreamBuilder(
+            stream: AudioService.playbackStateStream,
+            builder: (context, snapshot) {
+              PlaybackState state = snapshot.data;
+              if (AudioService.currentMediaItem != null) {
+                // getting thumbNail image
+                audioThumbnail = AudioService.currentMediaItem.artUri;
+                // getting audioTitle
+                audioTitle = AudioService.currentMediaItem.title;
+                // getting audioDuration in Min
+                audioDurationMin = globalFun.getCurrentTimeStamp(
+                    AudioService.currentMediaItem.duration / 1000);
+                // getting audioDuration
+                audioDuration = AudioService.currentMediaItem.duration;
+              }
+              return (state != null &&
+                      AudioService.playbackState.basicState !=
+                          BasicPlaybackState.stopped)
+                  ? Stack(
+                      children: <Widget>[
+                        globalWids.bottomSheetBGW(audioThumbnail),
+                        Container(
+                          margin: EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              globalWids.bottomSheetTitleW(audioTitle),
+                              positionIndicator(
+                                  audioDuration, state, audioDurationMin),
+                              globalWids.bufferingIndicator(),
+                              globalWids.bNavPlayControlsW(context, state),
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                  : Center(
+                      child: Text("No Audio playing"),
+                    );
+            }));
+  }
+
+  Widget positionIndicator(
+      int audioDuration, PlaybackState state, String audioDurationMin) {
+    double seekPos;
+    return StreamBuilder(
+      stream: Rx.combineLatest2<double, double, double>(
+          globalVars.dragPositionSubject.stream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (dragPosition, _) => dragPosition),
+      builder: (context, snapshot) {
+        double position = (state != null)
+            ? snapshot.data ?? state.currentPosition.toDouble()
+            : 0.0;
+        double duration = audioDuration.toDouble();
+        return Container(
+          child: (state != null)
+              ? Column(
+                  children: [
+                    if (duration != null)
+                      Slider(
+                        min: 0.0,
+                        max: duration,
+                        value: seekPos ?? max(0.0, min(position, duration)),
+                        onChanged: (value) {
+                          globalVars.dragPositionSubject.add(value);
+                        },
+                        onChangeEnd: (value) {
+                          AudioService.seekTo(value.toInt());
+                          // Due to a delay in platform channel communication, there is
+                          // a brief moment after releasing the Slider thumb before the
+                          // new position is broadcast from the platform side. This
+                          // hack is to hold onto seekPos until the next state update
+                          // comes through.
+                          // TODO: Improve this code.
+                          seekPos = value;
+                          globalVars.dragPositionSubject.add(null);
+                        },
+                      ),
+                    globalWids.mediaTimingW(state, context, audioDurationMin)
+                  ],
+                )
+              : null,
+        );
+      },
+    );
+  }
+
+  void connect() async {
+    await AudioService.connect();
+  }
+
+  void disconnect() {
+    AudioService.disconnect();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    connect();
     // getting list of playlists
     getListofPlayLists();
+  }
+
+  @override
+  void dispose() {
+    disconnect();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         onWillPop: () {
-          Navigator.of(context).push(globalWids.FadeRouteBuilder(page: HomePage()));
+          Navigator.of(context)
+              .push(globalWids.FadeRouteBuilder(page: HomePage()));
 
           //we need to return a future
           return Future.value(false);
@@ -279,6 +408,8 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
           child: Scaffold(
             key: _yourPlaylistsPageScaffoldKey,
             backgroundColor: globalVars.primaryDark,
+            floatingActionButton: globalWids.fabView(
+            settingModalBottomSheet, _yourPlaylistsPageScaffoldKey),
             appBar: yourPlaylistsPageW.appBarW(
                 context, _yourPlaylistsPageScaffoldKey),
             drawer: globalFun.drawerW(6, context),

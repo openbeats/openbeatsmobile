@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import './globalVars.dart' as globalVars;
+import './globalFun.dart' as globalFun;
 
 // snackBar to show network error
 SnackBar networkErrorSBar = new SnackBar(
@@ -150,7 +151,6 @@ Widget bNavPlayControlsW(context, state) {
   );
 }
 
-
 // button to hold the play and pause Button
 // mode 1 - music stopped, 2 - music playing
 Widget bNavPlayBtn(state) {
@@ -209,7 +209,6 @@ Widget bNavSkipPrevious() {
 
 // holds the skip previous
 Widget bNavSkipNext() {
-
   return Container(
     child: (AudioService.playbackState != null && AudioService.queue.length > 0)
         ? (AudioService.playbackState.basicState ==
@@ -284,7 +283,7 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
 }
 
 // holds the media timing widgets
-Widget mediaTimingW(state, getCurrentTimeStamp, context, audioDurationMin) {
+Widget mediaTimingW(state, context, audioDurationMin) {
   return Container(
     margin: EdgeInsets.only(left: 10.0, right: 10.0),
     child: Row(
@@ -293,7 +292,7 @@ Widget mediaTimingW(state, getCurrentTimeStamp, context, audioDurationMin) {
         Container(
           child: Text(
               (state != null)
-                  ? getCurrentTimeStamp(state.currentPosition / 1000)
+                  ? globalFun.getCurrentTimeStamp(state.currentPosition / 1000)
                   : "00:00",
               style: TextStyle(color: Colors.grey),
               textAlign: TextAlign.start),
@@ -308,6 +307,40 @@ Widget mediaTimingW(state, getCurrentTimeStamp, context, audioDurationMin) {
           width: MediaQuery.of(context).size.width * 0.3,
         )
       ],
+    ),
+  );
+}
+
+// holds the buffering indicator
+Widget bufferingIndicator() {
+  return SizedBox(
+    height: 20.0,
+    child: Container(
+      child: (AudioService.playbackState != null)
+          ? (AudioService.playbackState.basicState ==
+                  BasicPlaybackState.buffering)
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(
+                      height: 10.0,
+                      width: 10.0,
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(globalVars.accentRed),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    Text(
+                      "Buffering...",
+                      style: TextStyle(color: Colors.grey),
+                    )
+                  ],
+                )
+              : null
+          : null,
     ),
   );
 }

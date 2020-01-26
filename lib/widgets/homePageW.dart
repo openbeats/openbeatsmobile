@@ -221,40 +221,6 @@ Widget vidResultExtraOptions(context, videosResponseItem) {
   );
 }
 
-// holds the buffering indicator
-Widget bufferingIndicator() {
-  return SizedBox(
-    height: 20.0,
-    child: Container(
-      child: (AudioService.playbackState != null)
-          ? (AudioService.playbackState.basicState ==
-                  BasicPlaybackState.buffering)
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: 10.0,
-                      width: 10.0,
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(globalVars.accentRed),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 5.0,
-                    ),
-                    Text(
-                      "Buffering...",
-                      style: TextStyle(color: Colors.grey),
-                    )
-                  ],
-                )
-              : null
-          : null,
-    ),
-  );
-}
-
 // button to hold the stopButton
 Widget bNavStopBtn(context, state) {
   return Container(
