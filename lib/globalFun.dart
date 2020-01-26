@@ -35,7 +35,7 @@ Widget drawerW(int currPage, context) {
           drawerYourPlaylistsPageListTile(currPage, context),
           drawerLikedSongsPageListTile(currPage, context),
           drawerYourDownloadsPageListTile(currPage, context),
-          drawerappsettingsPageListTile(currPage, context),
+          // drawerappsettingsPageListTile(currPage, context),
           drawerLogoutPageListTile(context),
         ],
       ),
@@ -109,7 +109,7 @@ Widget drawerHomePageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
             title: Text('Home',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Go back to the home page",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -129,7 +129,7 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.chartLine,
                 color: globalVars.leadingIconColor),
             title: Text('Top Charts',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Listen to what's trending",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -149,7 +149,7 @@ Widget drawerArtistsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.users,
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Songs from your favorite artists",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -169,7 +169,7 @@ Widget drawerAlbumsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.solidClone,
                 color: globalVars.leadingIconColor),
             title: Text('Albums',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Browse the albums you love",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -189,7 +189,7 @@ Widget drawerHistoryPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.history,
                 color: globalVars.leadingIconColor),
             title: Text('Recently Played',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Your own music history",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -215,7 +215,7 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.list, color: globalVars.leadingIconColor),
             title: Text('Your Playlists',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Tune to your own collections",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -241,7 +241,7 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.heart,
                 color: globalVars.leadingIconColor),
             title: Text('Favorites',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("All your liked songs",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -267,7 +267,7 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.download,
                 color: globalVars.leadingIconColor),
             title: Text('Your Downloads',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("All songs on local device",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -293,7 +293,7 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.cogs, color: globalVars.leadingIconColor),
             title: Text('Settings',
-                style: TextStyle(color: globalVars.titleTextColor)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Application related settings",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -310,10 +310,8 @@ Widget drawerLogoutPageListTile(context) {
   return Container(
     child: (globalVars.loginInfo["loginStatus"])
         ? ListTile(
-            leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.amber),
-            title: Text('Logout', style: TextStyle(color: Colors.amber)),
-            subtitle: Text("Sign out of your account",
-                style: TextStyle(color: Colors.orange)),
+            leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.redAccent),
+            title: Text('Logout', style: TextStyle(color: Colors.redAccent,fontWeight: FontWeight.bold),),
             onTap: () {
               showDialog(
                   context: context,

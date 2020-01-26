@@ -138,32 +138,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   // sets the sharedPreferences values
-  void setSharedPrefs(index, audioDuration) async {
-    // creating sharedPreferences instance to set media values
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    // setting the thumbnail link in shared preferences
-    prefs.setString("nowPlayingThumbnail",
-        videosResponseList[index]["thumbnail"].toString());
 
-    // setting the current mp3 title
-    prefs.setString("nowPlayingTitle", videosResponseList[index]["title"]);
-    // setting the current channel name
-    prefs.setString(
-        "nowPlayingChannel", videosResponseList[index]["channelName"]);
-    //   // setting the current mp3 duration in minutes
-    prefs.setString("nowPlayingDurationMin",
-        videosResponseList[index]["duration"].toString());
-
-    // setting the duration shared preferences
-    prefs.setInt("nowPlayingDuration", audioDuration);
-    // setting the current mp3 ID
-    prefs.setString("nowPlayingVideoID", videosResponseList[index]["videoId"]);
-    // setting that isPlaying flag for showing playback after app closes
-    prefs.setBool("isPlaying", true);
-    // setting that isStopped flag
-    prefs.setBool("isStopped", false);
-  }
 
   // sets the shared preferences and starts the audio service after stopping previous one
   void getMp3URL(String videoId, int index) async {
@@ -177,7 +152,7 @@ class _HomePageState extends State<HomePage> {
     int audioDuration =
         getDurationMillis(videosResponseList[index]["duration"]);
     // sets the sharedPreferences values
-    setSharedPrefs(index, audioDuration);
+    // setSharedPrefs(index, audioDuration);
 
     MediaItem currMediaItem = MediaItem(
       id: videoId,
@@ -187,11 +162,10 @@ class _HomePageState extends State<HomePage> {
       artist: videosResponseList[index]["channelName"],
       artUri: videosResponseList[index]["thumbnail"].toString(),
     );
-    //   showSnackBarMessage(3);
+
     if (AudioService.playbackState != null) {
-      // stopping previous audio service
       await AudioService.stop();
-      Timer(Duration(milliseconds: 500), () async{
+      Timer(Duration(milliseconds: 500), () async {
         await audioServiceStart(currMediaItem);
       });
     } else {
@@ -257,17 +231,6 @@ class _HomePageState extends State<HomePage> {
   // function that calls the bottomSheet
   void settingModalBottomSheet(context) async {
     if (AudioService.currentMediaItem != null) {
-      // // getting thumbNail image
-      // String audioThumbnail = AudioService.currentMediaItem.artUri;
-      // // getting audioTitle set by getMp3URL()
-      // String audioTitle = AudioService.currentMediaItem.title;
-      // // getting audioDuration in Min set by getMp3URL()
-      // String audioDurationMin =
-      //     getCurrentTimeStamp(AudioService.currentMediaItem.duration / 1000);
-      // // getting audioDuration set by getMp3URL()
-      // int audioDuration = AudioService.currentMediaItem.duration;
-      // // getting audioChannel set by getMp3URL()
-      // String audioChannel = AudioService.currentMediaItem.artist;
       // bottomSheet definition
       showModalBottomSheet(
           shape: RoundedRectangleBorder(

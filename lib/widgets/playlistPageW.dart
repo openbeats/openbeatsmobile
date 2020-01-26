@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
+import '../globalWids.dart' as globalWids;
 
 // holds the appBar for the plaistPage
 Widget appBarW(context, GlobalKey<ScaffoldState> _playlistsPageScaffoldKey,
@@ -61,32 +62,35 @@ Widget vidResultContainerW(
 // holds the thumbnail of results list
 Widget vidResultThumbnail(context, thumbnail) {
   return Container(
-    width: MediaQuery.of(context).size.width * 0.15,
-    height: MediaQuery.of(context).size.width * 0.15,
-    decoration: BoxDecoration(boxShadow: [
-      new BoxShadow(
-        color: Colors.black,
-        blurRadius: 2.0,
-        offset: new Offset(1.0, 1.0),
-      ),
-    ], borderRadius: BorderRadius.circular(5.0)),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(5.0),
-      child: CachedNetworkImage(
-        imageUrl: thumbnail,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          margin: EdgeInsets.all(20.0),
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
-          ),
+      width: MediaQuery.of(context).size.width * 0.15,
+      height: MediaQuery.of(context).size.width * 0.15,
+      decoration: BoxDecoration(boxShadow: [
+        new BoxShadow(
+          color: Colors.black,
+          blurRadius: 2.0,
+          offset: new Offset(1.0, 1.0),
         ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
-    ),
-  );
+      ], borderRadius: BorderRadius.circular(5.0)),
+      child: StreamBuilder(
+          stream: AudioService.playbackStateStream,
+          builder: (context, snapshot) {
+            PlaybackState state = snapshot.data;
+            return ((state != null) &&
+                    AudioService.currentMediaItem != null &&
+                    AudioService.currentMediaItem.artUri == thumbnail &&
+                    (state.basicState == BasicPlaybackState.connecting ||
+                        state.basicState == BasicPlaybackState.playing ||
+                        state.basicState == BasicPlaybackState.buffering ||
+                        state.basicState == BasicPlaybackState.paused))
+                ? (state.basicState == BasicPlaybackState.buffering ||
+                        state.basicState == BasicPlaybackState.connecting)
+                    ? globalWids.nowPlayingLoadingAnimation()
+                    : (state.basicState == BasicPlaybackState.paused)
+                        ? globalWids.nowPlayingFlutterActor(true)
+                        : globalWids.nowPlayingFlutterActor(false)
+                : globalWids.showActualThumbnail(thumbnail);
+          }));
 }
-
 // holds the video details of video list
 Widget vidResultVidDetails(context, title, duration) {
   return Column(
@@ -95,7 +99,7 @@ Widget vidResultVidDetails(context, title, duration) {
         width: MediaQuery.of(context).size.width * 0.60,
         child: Text(
           title,
-          textAlign: TextAlign.justify,
+          textAlign: TextAlign.start,
           style: TextStyle(fontSize: 16.0),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
@@ -119,6 +123,7 @@ Widget vidResultExtraOptions(context, videosResponseItem) {
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
     child: PopupMenuButton<String>(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         elevation: 30.0,
         icon: Icon(
           Icons.more_vert,
@@ -134,17 +139,11 @@ Widget vidResultExtraOptions(context, videosResponseItem) {
           }
         },
         itemBuilder: (context) => [
-              PopupMenuItem(
-                  value: "download",
+            PopupMenuItem(
+                  value: "delete",
                   child: ListTile(
-                    title: Text("Download"),
-                    leading: Icon(Icons.file_download),
-                  )),
-              PopupMenuItem(
-                  value: "addToPlayList",
-                  child: ListTile(
-                    title: Text("Add to Playlist"),
-                    leading: Icon(Icons.playlist_add),
+                    title: Text("Delete"),
+                    leading: Icon(Icons.delete),
                   )),
               PopupMenuItem(
                   value: "favorite",

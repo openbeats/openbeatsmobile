@@ -44,11 +44,11 @@ Widget createPlaylistsBtn(showCreateOrRenamePlayListBox) {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Icon(FontAwesomeIcons.plus),
+          Icon(FontAwesomeIcons.plus, size: 20.0,),
           SizedBox(width: 10.0,),
           Text(
             "Create Playlist",
-            style: TextStyle(fontSize: 18.0),
+            style: TextStyle(fontSize: 20.0),
           )
         ],
       ),

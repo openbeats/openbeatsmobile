@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
+import 'package:openbeatsmobile/widgets/addSongsToPlaylistW.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/playlistPageW.dart' as playlistPageW;
 import '../globalVars.dart' as globalVars;
@@ -152,7 +154,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
             context, _playlistsPageScaffoldKey, widget.playlistName),
         backgroundColor: globalVars.primaryDark,
         body: Container(
-            width: MediaQuery.of(context).size.height * 0.99,
             child: (_noInternet)
                 ? globalWids.noInternetView(getPlaylistContents)
                 : (_isLoading)
@@ -165,39 +166,63 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Widget playlistPageBody() {
     return ListView(
       children: <Widget>[
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 10.0),
-          child: RaisedButton(
-            onPressed: () async {
-              await AudioService.stop();
-              await startAudioService();
-              // calling method to add songs to the background list
-              await AudioService.customAction(
-                  "addSongsToList", dataResponse["data"]["songs"]);
-            },
-            padding: EdgeInsets.all(20.0),
-            shape: StadiumBorder(),
-            child: Text("Shuffle All"),
-            color: globalVars.accentGreen,
-            textColor: globalVars.accentWhite,
-          ),
+        SizedBox(
+          height: 10.0,
         ),
+        shuffleAllBtn(),
         SizedBox(
           height: 30.0,
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: ScrollPhysics(),
-          itemCount: dataResponse["data"]["songs"].length,
-          itemBuilder: (context, index) {
-            return playlistPageW.vidResultContainerW(
-                context,
-                dataResponse["data"]["songs"][index],
-                index,
-                startPlaylistFromMusic);
-          },
-        )
+        playlistPageListViewBody()
       ],
+    );
+  }
+
+  Widget playlistPageListViewBody() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+      itemCount: dataResponse["data"]["songs"].length,
+      itemBuilder: (context, index) {
+        return playlistPageW.vidResultContainerW(
+            context,
+            dataResponse["data"]["songs"][index],
+            index,
+            startPlaylistFromMusic);
+      },
+    );
+  }
+
+  Widget shuffleAllBtn() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.0),
+      child: RaisedButton(
+        onPressed: () async {
+          await AudioService.stop();
+          await startAudioService();
+          // calling method to add songs to the background list
+          await AudioService.customAction(
+              "addSongsToList", dataResponse["data"]["songs"]);
+        },
+        padding: EdgeInsets.all(20.0),
+        shape: StadiumBorder(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.shuffle,
+              size: 20.0,
+            ),
+            SizedBox(width: 10.0),
+            Text(
+              "Shuffle All",
+              style: TextStyle(fontSize: 20.0),
+            )
+          ],
+        ),
+        color: globalVars.accentGreen,
+        textColor: globalVars.accentWhite,
+      ),
     );
   }
 }
@@ -355,11 +380,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onCustomAction(String action, var parameters) async {
-    // if condition to add all songs to the list
+    // if condition to add all songs to the list and start playback
     if (action == "addSongsToList") {
       List<dynamic> songsList = parameters;
       for (int i = 0; i < songsList.length; i++) {
-        await getMp3URL(songsList[i], true);
+        if (i == 0)
+          getMp3URL(songsList[i], true);
+        else
+          getMp3URL(songsList[i], false);
       }
     } else if (action == "startMusicPlaybackAndCreateQueue") {
       var passedParameters = parameters;
