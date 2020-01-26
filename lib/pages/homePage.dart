@@ -178,12 +178,6 @@ class _HomePageState extends State<HomePage> {
         getDurationMillis(videosResponseList[index]["duration"]);
     // sets the sharedPreferences values
     setSharedPrefs(index, audioDuration);
-    //   // show link obtained snackBar
-    //   showSnackBarMessage(3);
-    if (AudioService.playbackState != null) {
-      // stopping previous audio service
-      await AudioService.stop();
-    }
 
     MediaItem currMediaItem = MediaItem(
       id: videoId,
@@ -193,10 +187,17 @@ class _HomePageState extends State<HomePage> {
       artist: videosResponseList[index]["channelName"],
       artUri: videosResponseList[index]["thumbnail"].toString(),
     );
+    //   showSnackBarMessage(3);
+    if (AudioService.playbackState != null) {
+      // stopping previous audio service
+      await AudioService.stop();
+      Timer(Duration(milliseconds: 500), () async{
+        await audioServiceStart(currMediaItem);
+      });
+    } else {
+      await audioServiceStart(currMediaItem);
+    }
 
-    Timer(Duration(milliseconds: 500), () {
-      audioServiceStart(currMediaItem);
-    });
     // refreshing the UI build to update the thumbnail for now platying music
     setState(() {});
   }

@@ -100,14 +100,26 @@ class _PlaylistPageState extends State<PlaylistPage> {
   // function to start selected music and add the rest to playlist
   // index is the index of the clicked item
   Future startPlaylistFromMusic(index) async {
-    await AudioService.stop();
-    await startAudioService();
-    var parameters = {
-      "currIndex": index,
-      "allSongs": dataResponse["data"]["songs"]
-    };
-    await AudioService.customAction(
-        "startMusicPlaybackAndCreateQueue", parameters);
+    if (AudioService.playbackState != null) {
+      await AudioService.stop();
+      Timer(Duration(milliseconds: 500), () async {
+        await startAudioService();
+        var parameters = {
+          "currIndex": index,
+          "allSongs": dataResponse["data"]["songs"]
+        };
+        await AudioService.customAction(
+            "startMusicPlaybackAndCreateQueue", parameters);
+      });
+    } else {
+      await startAudioService();
+      var parameters = {
+        "currIndex": index,
+        "allSongs": dataResponse["data"]["songs"]
+      };
+      await AudioService.customAction(
+          "startMusicPlaybackAndCreateQueue", parameters);
+    }
   }
 
   void connect() async {
