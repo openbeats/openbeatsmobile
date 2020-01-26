@@ -88,7 +88,7 @@ Widget vidResultThumbnail(context, thumbnail) {
                     : (state.basicState == BasicPlaybackState.paused)
                         ? globalWids.nowPlayingFlutterActor(true)
                         : globalWids.nowPlayingFlutterActor(false)
-                : globalWids.showActualThumbnail(thumbnail);
+                : globalWids. showActualThumbnail(thumbnail);
           }));
 }
 // holds the video details of video list

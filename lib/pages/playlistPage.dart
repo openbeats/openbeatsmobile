@@ -198,11 +198,21 @@ class _PlaylistPageState extends State<PlaylistPage> {
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: RaisedButton(
         onPressed: () async {
-          await AudioService.stop();
-          await startAudioService();
-          // calling method to add songs to the background list
-          await AudioService.customAction(
-              "addSongsToList", dataResponse["data"]["songs"]);
+          if (AudioService.playbackState != null) {
+            await AudioService.stop();
+            Timer(Duration(milliseconds: 500), () async {
+              await startAudioService();
+              // calling method to add songs to the background list
+              await AudioService.customAction(
+                  "addSongsToList", dataResponse["data"]["songs"]);
+            });
+          } else {
+            print("Gone in here");
+            await startAudioService();
+            // calling method to add songs to the background list
+            await AudioService.customAction(
+                "addSongsToList", dataResponse["data"]["songs"]);
+          }
         },
         padding: EdgeInsets.all(20.0),
         shape: StadiumBorder(),

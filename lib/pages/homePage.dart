@@ -55,8 +55,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final BehaviorSubject<double> _dragPositionSubject =
-      BehaviorSubject.seeded(null);
+ 
 
   final GlobalKey<ScaffoldState> _homePageScaffoldKey =
       new GlobalKey<ScaffoldState>();
@@ -89,7 +88,7 @@ class _HomePageState extends State<HomePage> {
   // gets list of videos for query
   void getVideosForQuery(String query) async {
     // constructing url to send request to to get list of videos
-    String url = "https://api.openbeats.live/ytcat?q=" + query;
+    String url = "https://api.openbeats.live/ytcat?q=" + query+" hq audio";
     try {
       // sending http get request
       var response = await Dio().get(url);
@@ -270,17 +269,17 @@ class _HomePageState extends State<HomePage> {
                           BasicPlaybackState.stopped)
                   ? Stack(
                       children: <Widget>[
-                        homePageW.bottomSheetBGW(audioThumbnail),
+                        globalWids.bottomSheetBGW(audioThumbnail),
                         Container(
                           margin: EdgeInsets.all(10.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              homePageW.bottomSheetTitleW(audioTitle),
+                              globalWids.bottomSheetTitleW(audioTitle),
                               positionIndicator(
                                   audioDuration, state, audioDurationMin),
                               homePageW.bufferingIndicator(),
-                              homePageW.bNavPlayControlsW(context, state),
+                              globalWids.bNavPlayControlsW(context, state),
                             ],
                           ),
                         )
@@ -297,7 +296,7 @@ class _HomePageState extends State<HomePage> {
     double seekPos;
     return StreamBuilder(
       stream: Rx.combineLatest2<double, double, double>(
-          _dragPositionSubject.stream,
+          globalVars.dragPositionSubject.stream,
           Stream.periodic(Duration(milliseconds: 200)),
           (dragPosition, _) => dragPosition),
       builder: (context, snapshot) {
@@ -315,7 +314,7 @@ class _HomePageState extends State<HomePage> {
                         max: duration,
                         value: seekPos ?? max(0.0, min(position, duration)),
                         onChanged: (value) {
-                          _dragPositionSubject.add(value);
+                          globalVars.dragPositionSubject.add(value);
                         },
                         onChangeEnd: (value) {
                           AudioService.seekTo(value.toInt());
@@ -326,10 +325,10 @@ class _HomePageState extends State<HomePage> {
                           // comes through.
                           // TODO: Improve this code.
                           seekPos = value;
-                          _dragPositionSubject.add(null);
+                          globalVars.dragPositionSubject.add(null);
                         },
                       ),
-                    homePageW.mediaTimingW(
+                    globalWids.mediaTimingW(
                         state, getCurrentTimeStamp, context, audioDurationMin)
                   ],
                 )
@@ -450,7 +449,7 @@ class _HomePageState extends State<HomePage> {
           child: Scaffold(
             key: _homePageScaffoldKey,
             backgroundColor: globalVars.primaryDark,
-            floatingActionButton: homePageW.fabView(
+            floatingActionButton: globalWids.fabView(
                 settingModalBottomSheet, _homePageScaffoldKey),
             appBar: homePageW.appBarW(
                 context, navigateToSearchPage, _homePageScaffoldKey),

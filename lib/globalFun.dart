@@ -472,3 +472,5 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
   // showing new snackBar
   scaffoldKey.currentState.showSnackBar(statusSnackBar);
 }
+
+

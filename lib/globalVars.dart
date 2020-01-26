@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:rxdart/rxdart.dart';
 
 // variables holding the color scheme for the application
 // holds the background colors for the themes
@@ -29,6 +30,8 @@ Map<String, dynamic> loginInfo = {
 // NOT MAINTAINED BY ACTIONS
 // holds the current searched text
 String currSearchText = "";
+final BehaviorSubject<double> dragPositionSubject =
+      BehaviorSubject.seeded(null);
 
 // holds the method channel variable
 const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');
