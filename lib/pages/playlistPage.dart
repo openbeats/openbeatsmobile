@@ -140,7 +140,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
             context, _playlistsPageScaffoldKey, widget.playlistName),
         backgroundColor: globalVars.primaryDark,
         body: Container(
-            margin: EdgeInsets.only(top: 20.0),
+            width: MediaQuery.of(context).size.height * 0.99,
             child: (_noInternet)
                 ? globalWids.noInternetView(getPlaylistContents)
                 : (_isLoading)
@@ -175,6 +175,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         ),
         ListView.builder(
           shrinkWrap: true,
+          physics: ScrollPhysics(),
           itemCount: dataResponse["data"]["songs"].length,
           itemBuilder: (context, index) {
             return playlistPageW.vidResultContainerW(

@@ -194,7 +194,7 @@ class _HomePageState extends State<HomePage> {
       artUri: videosResponseList[index]["thumbnail"].toString(),
     );
 
-    Timer(Duration(seconds: 1), () {
+    Timer(Duration(milliseconds: 500), () {
       audioServiceStart(currMediaItem);
     });
     // refreshing the UI build to update the thumbnail for now platying music
@@ -256,17 +256,17 @@ class _HomePageState extends State<HomePage> {
   // function that calls the bottomSheet
   void settingModalBottomSheet(context) async {
     if (AudioService.currentMediaItem != null) {
-      // getting thumbNail image
-      String audioThumbnail = AudioService.currentMediaItem.artUri;
-      // getting audioTitle set by getMp3URL()
-      String audioTitle = AudioService.currentMediaItem.title;
-      // getting audioDuration in Min set by getMp3URL()
-      String audioDurationMin =
-          getCurrentTimeStamp(AudioService.currentMediaItem.duration / 1000);
-      // getting audioDuration set by getMp3URL()
-      int audioDuration = AudioService.currentMediaItem.duration;
-      // getting audioChannel set by getMp3URL()
-      String audioChannel = AudioService.currentMediaItem.artist;
+      // // getting thumbNail image
+      // String audioThumbnail = AudioService.currentMediaItem.artUri;
+      // // getting audioTitle set by getMp3URL()
+      // String audioTitle = AudioService.currentMediaItem.title;
+      // // getting audioDuration in Min set by getMp3URL()
+      // String audioDurationMin =
+      //     getCurrentTimeStamp(AudioService.currentMediaItem.duration / 1000);
+      // // getting audioDuration set by getMp3URL()
+      // int audioDuration = AudioService.currentMediaItem.duration;
+      // // getting audioChannel set by getMp3URL()
+      // String audioChannel = AudioService.currentMediaItem.artist;
       // bottomSheet definition
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
@@ -276,40 +276,55 @@ class _HomePageState extends State<HomePage> {
           context: context,
           elevation: 10.0,
           builder: (BuildContext bc) {
-            return bottomSheet(audioTitle, audioDuration, audioChannel,
-                audioThumbnail, audioDurationMin, context);
+            return bottomSheet(context);
           });
-    } 
+    }
   }
 
-  Widget bottomSheet(audioTitle, audioDuration, audioChannel, audioThumbnail,
-      audioDurationMin, context) {
+  Widget bottomSheet(context) {
+    String audioThumbnail, audioTitle, audioDurationMin;
+    int audioDuration;
     return Container(
         height: 300.0,
         child: StreamBuilder(
             stream: AudioService.playbackStateStream,
             builder: (context, snapshot) {
               PlaybackState state = snapshot.data;
-              return (state.basicState != BasicPlaybackState.stopped)?Stack(
-                children: <Widget>[
-                  homePageW.bottomSheetBGW(audioThumbnail),
-                  Container(
-                    margin: EdgeInsets.all(10.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+              if (AudioService.currentMediaItem != null) {
+                // getting thumbNail image
+                audioThumbnail = AudioService.currentMediaItem.artUri;
+                // getting audioTitle
+                audioTitle = AudioService.currentMediaItem.title;
+                // getting audioDuration in Min
+                audioDurationMin = getCurrentTimeStamp(
+                    AudioService.currentMediaItem.duration / 1000);
+                // getting audioDuration
+                audioDuration = AudioService.currentMediaItem.duration;
+              }
+              return (state != null &&
+                      AudioService.playbackState.basicState !=
+                          BasicPlaybackState.stopped)
+                  ? Stack(
                       children: <Widget>[
-                        homePageW.bottomSheetTitleW(audioTitle),
-                        positionIndicator(
-                            audioDuration, state, audioDurationMin),
-                        homePageW.bufferingIndicator(),
-                        homePageW.bNavPlayControlsW(context, state),
+                        homePageW.bottomSheetBGW(audioThumbnail),
+                        Container(
+                          margin: EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              homePageW.bottomSheetTitleW(audioTitle),
+                              positionIndicator(
+                                  audioDuration, state, audioDurationMin),
+                              homePageW.bufferingIndicator(),
+                              homePageW.bNavPlayControlsW(context, state),
+                            ],
+                          ),
+                        )
                       ],
-                    ),
-                  )
-                ],
-              ):Center(
-                child: Text("No Audio playing"),
-              );
+                    )
+                  : Center(
+                      child: Text("No Audio playing"),
+                    );
             }));
   }
 
@@ -366,7 +381,6 @@ class _HomePageState extends State<HomePage> {
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       resumeOnClick: true,
-      androidNotificationOngoing: true,
       androidNotificationChannelName: 'OpenBeats Notification Channel',
       notificationColor: 0xFF09090E,
       enableQueue: true,

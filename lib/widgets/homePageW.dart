@@ -70,7 +70,7 @@ Widget vidResultContainerW(
     context, videosResponseItem, index, getMp3URL, settingModalBottomSheet) {
   return InkWell(
       onTap: () async {
-        if (AudioService.playbackState != null &&
+        if (AudioService.playbackState != null && AudioService.currentMediaItem != null &&
             AudioService.currentMediaItem.artUri ==
                 videosResponseItem["thumbnail"] &&
             (AudioService.playbackState.basicState ==
