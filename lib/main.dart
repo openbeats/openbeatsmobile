@@ -56,7 +56,6 @@ class _MyAppState extends State<MyApp> {
       home: HomePage(),
       theme: ThemeData(
         brightness: Brightness.dark,
-        fontFamily: "montserrat",
         primarySwatch: Colors.red,
       ),
       routes: {

@@ -76,11 +76,11 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: opensans
-      fonts:
-        - asset: assets/fonts/opensans/OpenSans-Regular.ttf
-          style: normal
+  # fonts:
+  #   - family: roboto
+  #     fonts:
+  #       - asset: assets/fonts/roboto/Roboto-Regular.ttf
+  #         style: normal
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

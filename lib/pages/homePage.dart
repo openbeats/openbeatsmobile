@@ -406,7 +406,7 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ) ??
-          false;
+          true;
     else
       setState(() {
         videosResponseList = [];
@@ -442,20 +442,18 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: _onWillPop,
-        child: SafeArea(
-          child: Scaffold(
-            key: _homePageScaffoldKey,
-            backgroundColor: globalVars.primaryDark,
-            floatingActionButton: homePageW.fabView(
-                settingModalBottomSheet, _homePageScaffoldKey),
-            appBar: homePageW.appBarW(
-                context, navigateToSearchPage, _homePageScaffoldKey),
-            drawer: globalFun.drawerW(1, context),
-            body: homePageBody(),
-          ),
-        ));
+    return SafeArea(
+      child: Scaffold(
+        key: _homePageScaffoldKey,
+        backgroundColor: globalVars.primaryDark,
+        floatingActionButton:
+            homePageW.fabView(settingModalBottomSheet, _homePageScaffoldKey),
+        appBar: homePageW.appBarW(
+            context, navigateToSearchPage, _homePageScaffoldKey),
+        drawer: globalFun.drawerW(1, context),
+        body: homePageBody(),
+      ),
+    );
   }
 
   Widget homePageBody() {
@@ -476,8 +474,13 @@ class _HomePageState extends State<HomePage> {
     return ListView.builder(
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
-        return homePageW.vidResultContainerW(context, videosResponseList[index],
-            index, getMp3URL, settingModalBottomSheet,videosResponseList.length);
+        return homePageW.vidResultContainerW(
+            context,
+            videosResponseList[index],
+            index,
+            getMp3URL,
+            settingModalBottomSheet,
+            videosResponseList.length);
       },
       itemCount: videosResponseList.length,
     );
