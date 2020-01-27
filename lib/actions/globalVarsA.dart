@@ -1,7 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../globalVars.dart' as globalVars;
 
-// to modify the loginInfo global variable 
+// to modify the loginInfo global variable
 void modifyLoginInfo(loginParameters, shouldUpdateSharedPreferences) async {
   if (loginParameters["loginStatus"] == true) {
     globalVars.loginInfo["loginStatus"] = true;

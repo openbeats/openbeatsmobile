@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:openbeatsmobile/pages/mainAppPage.dart';
+import 'package:openbeatsmobile/pages/AddSongsToPlaylistPage.dart';
+import 'package:openbeatsmobile/pages/authPage.dart';
+import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './actions/globalVarsA.dart' as globalVarsA;
 
@@ -12,31 +14,37 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // getting user authentication status information
+  // recovers login information from sharedPreferences
   void getLoginInfo() async {
-    // sharedPreferences instance
+    // creating sharedPreferences instance
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool loginStatus = prefs.getBool("loginStatus");
-    if (loginStatus != null && loginStatus) {
-      Map<String, dynamic> authParameters = {
+    if (loginStatus != null && loginStatus == true) {
+      String userEmail = prefs.getString("userEmail");
+      String userName = prefs.getString("userName");
+      String userId = prefs.getString("userId");
+      String userAvatar = prefs.getString("userAvatar");
+      String userToken = prefs.getString("userToken");
+      Map<String, dynamic> loginParameters = {
         "loginStatus": true,
-        "userEmail": prefs.getString("userEmail"),
-        "userName": prefs.getString("userName"),
-        "userId": prefs.getString("userId"),
-        "userAvatar": prefs.getString("userAvatar"),
-        "userToken": prefs.getString("userToken"),
+        "userEmail": userEmail,
+        "userName": userName,
+        "userId": userId,
+        "userAvatar": userAvatar,
+        "userToken": userToken,
       };
-
-      globalVarsA.modifyLoginInfo(authParameters, false);
+      globalVarsA.modifyLoginInfo(loginParameters, false);
     } else {
       prefs.setBool("loginStatus", false);
     }
+    // // also getting now playing thumbnail URL
+    // globalVarsA.modifyCurrPlayingThumbnailURL(prefs.getString("nowPlayingThumbnail"));
   }
 
   @override
   void initState() {
+    
     super.initState();
-    // getting user authentication status information
     getLoginInfo();
   }
 
@@ -44,14 +52,18 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "OpenBeats",
-      debugShowCheckedModeBanner: false,
-      home: MainAppPage(),
+      color: Colors.red,
+      home: HomePage(),
       theme: ThemeData(
         brightness: Brightness.dark,
-        fontFamily: "opensans",
+        fontFamily: "montserrat",
         primarySwatch: Colors.red,
       ),
-      routes: {},
+      routes: {
+        '/homePage': (context) => HomePage(),
+        '/authPage': (context) => AuthPage(),
+        '/yourPlaylistsPage': (context) => YourPlaylistsPage(),
+      },
     );
   }
 }

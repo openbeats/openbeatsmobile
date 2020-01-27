@@ -2,7 +2,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:openbeatsmobile/pages/mainAppPage.dart';
+import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
+
 import './globalVars.dart' as globalVars;
 import './actions/globalVarsA.dart' as globalVarsA;
 import './globalWids.dart' as globalWids;
@@ -107,15 +109,12 @@ Widget drawerHomePageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
             title: Text('Home',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Go back to the home page",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.of(context).pushReplacement(
-                  globalWids.FadeRouteBuilder(page: MainAppPage()));
+              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: HomePage()));
             },
           )
         : null,
@@ -130,14 +129,13 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.chartLine,
                 color: globalVars.leadingIconColor),
             title: Text('Top Charts',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Listen to what's trending",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/topChartsPage');
+              // // navigating to homePage
+              // Navigator.pushReplacementNamed(context, '/topChartsPage');
+              showUnderDevToast();
             },
           )
         : null,
@@ -152,14 +150,13 @@ Widget drawerArtistsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.users,
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Songs from your favorite artists",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/artistsPage');
+              // // navigating to homePage
+              // Navigator.pushReplacementNamed(context, '/artistsPage');
+              showUnderDevToast();
             },
           )
         : null,
@@ -174,14 +171,13 @@ Widget drawerAlbumsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.solidClone,
                 color: globalVars.leadingIconColor),
             title: Text('Albums',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Browse the albums you love",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/albumsPage');
+              // // navigating to homePage
+              // Navigator.pushReplacementNamed(context, '/albumsPage');
+              showUnderDevToast();
             },
           )
         : null,
@@ -196,20 +192,19 @@ Widget drawerHistoryPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.history,
                 color: globalVars.leadingIconColor),
             title: Text('Recently Played',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Your own music history",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              if (globalVars.loginInfo["loginStatus"] == true) {
-                // navigating to homePage
-                Navigator.pushReplacementNamed(context, '/historyPage');
-              } else {
-                showToastMessage(
-                    "Please login to use feature", Colors.black, Colors.white);
-                Navigator.pushNamed(context, '/authPage');
-              }
+              // if (globalVars.loginInfo["loginStatus"] == true) {
+              //   // navigating to homePage
+              //   Navigator.pushReplacementNamed(context, '/historyPage');
+              // } else {
+              //   showToastMessage(
+              //       "Please login to use feature", Colors.black, Colors.white);
+              //   Navigator.pushNamed(context, '/authPage');
+              // }
+              showUnderDevToast();
             },
           )
         : null,
@@ -224,16 +219,13 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.list, color: globalVars.leadingIconColor),
             title: Text('Your Playlists',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Tune to your own collections",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
-                Navigator.of(context).pushReplacement(
-                    globalWids.FadeRouteBuilder(page: MainAppPage()));
+                Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
               } else {
                 showToastMessage(
                     "Please login to use feature", Colors.black, Colors.white);
@@ -253,20 +245,19 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.heart,
                 color: globalVars.leadingIconColor),
             title: Text('Favorites',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("All your liked songs",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              if (globalVars.loginInfo["loginStatus"] == true) {
-                // navigating to homePage
-                Navigator.pushReplacementNamed(context, '/likedSongsPage');
-              } else {
-                showToastMessage(
-                    "Please login to use feature", Colors.black, Colors.white);
-                Navigator.pushNamed(context, '/authPage');
-              }
+              // if (globalVars.loginInfo["loginStatus"] == true) {
+              //   // navigating to homePage
+              //   Navigator.pushReplacementNamed(context, '/likedSongsPage');
+              // } else {
+              //   showToastMessage(
+              //       "Please login to use feature", Colors.black, Colors.white);
+              //   Navigator.pushNamed(context, '/authPage');
+              // }
+              showUnderDevToast();
             },
           )
         : null,
@@ -281,20 +272,19 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.download,
                 color: globalVars.leadingIconColor),
             title: Text('Your Downloads',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("All songs on local device",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              if (globalVars.loginInfo["loginStatus"] == true) {
-                // navigating to homePage
-                Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
-              } else {
-                showToastMessage(
-                    "Please login to use feature", Colors.black, Colors.white);
-                Navigator.pushNamed(context, '/authPage');
-              }
+              // if (globalVars.loginInfo["loginStatus"] == true) {
+              //   // navigating to homePage
+              //   Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
+              // } else {
+              //   showToastMessage(
+              //       "Please login to use feature", Colors.black, Colors.white);
+              //   Navigator.pushNamed(context, '/authPage');
+              // }
+              showUnderDevToast();
             },
           )
         : null,
@@ -309,9 +299,7 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.cogs, color: globalVars.leadingIconColor),
             title: Text('Settings',
-                style: TextStyle(
-                    color: globalVars.titleTextColor,
-                    fontWeight: FontWeight.bold)),
+                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
             // subtitle: Text("Application related settings",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -329,11 +317,7 @@ Widget drawerLogoutPageListTile(context) {
     child: (globalVars.loginInfo["loginStatus"])
         ? ListTile(
             leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.redAccent),
-            title: Text(
-              'Logout',
-              style: TextStyle(
-                  color: Colors.redAccent, fontWeight: FontWeight.bold),
-            ),
+            title: Text('Logout', style: TextStyle(color: Colors.redAccent,fontWeight: FontWeight.bold),),
             onTap: () {
               showDialog(
                   context: context,
@@ -364,8 +348,7 @@ Widget drawerLogoutPageListTile(context) {
                             globalVarsA.modifyLoginInfo(loginParameters, true);
                             Navigator.pop(context);
                             Navigator.of(context).pushReplacement(
-                                globalWids.FadeRouteBuilder(
-                                    page: MainAppPage()));
+                                globalWids.FadeRouteBuilder(page: HomePage()));
                             showToastMessage("Logged out Successfully",
                                 Colors.black, Colors.white);
                           },
@@ -445,6 +428,11 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
       showLoadingAnim = false;
       snackBarDuration = Duration(seconds: 5);
       break;
+    case 7:
+      snackBarMessage = "Please wait, initializing playlist...";
+      snackBarColor = Colors.orange;
+      snackBarDuration = Duration(seconds: 30);
+      break;
   }
   SnackBar statusSnackBar;
   if (mode != 10) {
@@ -496,53 +484,7 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
   scaffoldKey.currentState.showSnackBar(statusSnackBar);
 }
 
-// returns the max duration of the media in milliseconds
-int getDurationMillis(String audioDuration) {
-  // variable holding max value
-  double maxVal = 0;
-  // holds the integerDurationList
-  List durationLst = new List();
-  // converting duration value into list
-  List durationStringLst = audioDuration.toString().split(':');
-  // converting list into integer
-  durationStringLst.forEach((f) {
-    durationLst.add(int.parse(f));
-  });
-  // creating seconds value based on the durationLst
-  // looping through each value from last value
-  for (int i = durationLst.length - 1; i > -1; i--) {
-    // add seconds just as they are
-    if (i == durationLst.length - 1)
-      maxVal += durationLst[i] * 1000;
-    // add minutes by multiplying with 60
-    else if (i == durationLst.length - 2)
-      maxVal += (60000 * durationLst[i]);
-    // add hours by multiplying twice with 60
-    else if (i == durationLst.length - 3) maxVal += (3600000 * durationLst[i]);
-  }
-  return maxVal.toInt();
-}
-
-// return the current duration string in min:sec for bottomSheet slider
-String getCurrentTimeStamp(double totalSeconds) {
-  // variables holding separated time
-  String min, sec, hour;
-  // check if it is greater than one hour
-  if (totalSeconds > 3600) {
-    // getting number of hours
-    hour = ((totalSeconds % (24 * 3600)) / 3600).floor().toString();
-    totalSeconds %= 3600;
-  }
-  // getting number of minutes
-  min = (totalSeconds / 60).floor().toString();
-  totalSeconds %= 60;
-  // getting number of seconds
-  sec = (totalSeconds).floor().toString();
-  // adding the necessary zeros
-  if (int.parse(sec) < 10) sec = "0" + sec;
-  // if the duration is greater than 1 hour, return with hour
-  if (totalSeconds > 3600)
-    return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
-  else
-    return (min.toString() + ":" + sec.toString());
+// shows the under developement toast
+void showUnderDevToast(){
+  showToastMessage("Feature under development\nBut hey, we appreciate your interest! 😃", Colors.blue, Colors.white);
 }

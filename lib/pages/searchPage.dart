@@ -146,7 +146,7 @@ class _SearchPageState extends State<SearchPage> {
     return ListTile(
       title: Text(
         suggestionResponseList[index][0],
-        style: TextStyle(color:globalVars.accentGrey),
+        style: TextStyle(color: Colors.grey),
       ),
       trailing: Transform.rotate(
           angle: -50 * math.pi / 180,
@@ -159,7 +159,7 @@ class _SearchPageState extends State<SearchPage> {
               // sending the current text to the search field
               sendSuggestionToField(suggestionResponseList[index][0]);
             },
-            color: globalVars.accentGrey,
+            color: Colors.grey,
           )),
       onTap: () {
         // setting global variable to persist search

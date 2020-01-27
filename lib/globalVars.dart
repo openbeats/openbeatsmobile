@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 // variables holding the color scheme for the application
 // holds the background colors for the themes
@@ -9,8 +10,6 @@ Color accentRed = Color(0xFFDB5461);
 Color accentBlue = Color(0xFF386FA4);
 Color accentGreen = Color(0xFF20A39E);
 Color accentWhite = Color(0xFFfbfafd);
-Color accentGrey = Colors.grey;
-Color accentOrange = Colors.orange;
 
 // holds the color scheme for the drawer
 Color leadingIconColor = Colors.white;
@@ -30,3 +29,6 @@ Map<String, dynamic> loginInfo = {
 // NOT MAINTAINED BY ACTIONS
 // holds the current searched text
 String currSearchText = "";
+
+// holds the method channel variable
+const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');

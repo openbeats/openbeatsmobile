@@ -10,7 +10,7 @@ Widget appBarSearchPageW(queryFieldController,
     elevation: 0.0,
     backgroundColor: globalVars.primaryDark,
     title: TextField(
-      style: TextStyle(color: globalVars.accentWhite),
+      style: TextStyle(color: Colors.white),
       controller: queryFieldController,
       onChanged: (String value) {
         // updating the global variable for search text persistance

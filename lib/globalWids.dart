@@ -1,19 +1,17 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import './globalVars.dart' as globalVars;
-import './globalFun.dart' as globalFun;
 
 // snackBar to show network error
 SnackBar networkErrorSBar = new SnackBar(
   content: Text(
     "Not able to connect to the internet",
-    style: TextStyle(color: globalVars.accentGrey),
+    style: TextStyle(color: Colors.white),
   ),
-  backgroundColor: globalVars.accentOrange,
+  backgroundColor: Colors.orange,
   duration: Duration(hours: 10),
 );
 
@@ -42,7 +40,7 @@ Widget noInternetView(refreshFunction) {
             ),
             Text("Not able to connect to\nserver",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: globalVars.accentGrey, fontSize: 22.0)),
+                style: TextStyle(color: Colors.grey, fontSize: 22.0)),
           ],
         ),
       ));
