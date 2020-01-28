@@ -80,7 +80,7 @@ Widget vidResultContainerW(context, videosResponseItem, index, getMp3URL,
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.buffering ||
                 AudioService.playbackState.basicState ==
-                    BasicPlaybackState.paused)) {
+                    BasicPlaybackState.paused) && AudioService.queue.length == 0) {
           settingModalBottomSheet(context);
         } else {
           await getMp3URL(videosResponseItem["videoId"], index);
@@ -137,11 +137,11 @@ Widget vidResultThumbnail(context, thumbnail) {
                     (state.basicState == BasicPlaybackState.connecting ||
                         state.basicState == BasicPlaybackState.playing ||
                         state.basicState == BasicPlaybackState.buffering ||
-                        state.basicState == BasicPlaybackState.paused))
+                        state.basicState == BasicPlaybackState.paused) && AudioService.queue.length == 0)
                 ? (state.basicState == BasicPlaybackState.buffering ||
-                        state.basicState == BasicPlaybackState.connecting)
+                        state.basicState == BasicPlaybackState.connecting && AudioService.queue.length == 0)
                     ? globalWids.nowPlayingLoadingAnimation()
-                    : (state.basicState == BasicPlaybackState.paused)
+                    : (state.basicState == BasicPlaybackState.paused && AudioService.queue.length == 0)
                         ? globalWids.nowPlayingFlutterActor(true)
                         : globalWids.nowPlayingFlutterActor(false)
                 : globalWids.showActualThumbnail(thumbnail);

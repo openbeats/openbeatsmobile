@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
   // gets list of videos for query
   void getVideosForQuery(String query) async {
     // constructing url to send request to to get list of videos
-    String url = "https://api.openbeats.live/ytcat?q=" + query;
+    String url = "https://api.openbeats.live/ytcat?q=" + query+" audio";
     try {
       // sending http get request
       var response = await Dio().get(url);
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing &&
+                      BasicPlaybackState.playing && _homePageScaffoldKey.currentState != null && 
                   _homePageScaffoldKey.currentState.hasFloatingActionButton)
                 {
                   t.cancel(),

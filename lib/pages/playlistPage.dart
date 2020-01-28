@@ -234,7 +234,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing &&
+                      BasicPlaybackState.playing && _playlistsPageScaffoldKey.currentState != null && 
                   _playlistsPageScaffoldKey
                       .currentState.hasFloatingActionButton)
                 {

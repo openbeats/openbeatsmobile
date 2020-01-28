@@ -23,14 +23,16 @@ Widget appBarW(context, GlobalKey<ScaffoldState> _playlistsPageScaffoldKey,
       background: Opacity(
         opacity: 0.5,
         child: CachedNetworkImage(
-        imageUrl: playlistThumbnail,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(
-          color: globalVars.primaryDark,
-          child: Center(child: Text("Loading Thumbnail..."),),
+          imageUrl: playlistThumbnail,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => Container(
+            color: globalVars.primaryDark,
+            child: Center(
+              child: Text("Loading Thumbnail..."),
+            ),
+          ),
+          errorWidget: (context, url, error) => Icon(Icons.error),
         ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
       ),
     ),
   );
@@ -46,8 +48,8 @@ Widget playlistsLoading() {
 }
 
 // widget to hold each container of video results
-Widget vidResultContainerW(
-    context, videosResponseItem, index, startPlaylistFromMusic,showRemoveSongConfirmationBox) {
+Widget vidResultContainerW(context, videosResponseItem, index,
+    startPlaylistFromMusic, showRemoveSongConfirmationBox) {
   return InkWell(
       onTap: () async {
         startPlaylistFromMusic(index);
@@ -68,7 +70,8 @@ Widget vidResultContainerW(
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"]),
-                  vidResultExtraOptions(context, videosResponseItem, index,showRemoveSongConfirmationBox)
+                  vidResultExtraOptions(context, videosResponseItem, index,
+                      showRemoveSongConfirmationBox)
                 ],
               ),
             ),
@@ -99,11 +102,12 @@ Widget vidResultThumbnail(context, thumbnail) {
                     (state.basicState == BasicPlaybackState.connecting ||
                         state.basicState == BasicPlaybackState.playing ||
                         state.basicState == BasicPlaybackState.buffering ||
-                        state.basicState == BasicPlaybackState.paused))
+                        state.basicState == BasicPlaybackState.paused) &&
+                    AudioService.queue.length > 0)
                 ? (state.basicState == BasicPlaybackState.buffering ||
-                        state.basicState == BasicPlaybackState.connecting)
+                        state.basicState == BasicPlaybackState.connecting && AudioService.queue.length > 0)
                     ? globalWids.nowPlayingLoadingAnimation()
-                    : (state.basicState == BasicPlaybackState.paused)
+                    : (state.basicState == BasicPlaybackState.paused && AudioService.queue.length > 0)
                         ? globalWids.nowPlayingFlutterActor(true)
                         : globalWids.nowPlayingFlutterActor(false)
                 : globalWids.showActualThumbnail(thumbnail);
@@ -137,7 +141,8 @@ Widget vidResultVidDetails(context, title, duration) {
 }
 
 // holds the extra options of video result list
-Widget vidResultExtraOptions(context, videosResponseItem, index,showRemoveSongConfirmationBox) {
+Widget vidResultExtraOptions(
+    context, videosResponseItem, index, showRemoveSongConfirmationBox) {
   return Container(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
@@ -150,9 +155,9 @@ Widget vidResultExtraOptions(context, videosResponseItem, index,showRemoveSongCo
           size: 30.0,
         ),
         onSelected: (choice) {
-          if(choice == "deleteSong"){
+          if (choice == "deleteSong") {
             showRemoveSongConfirmationBox(index);
-          } else if(choice == "favorite") {
+          } else if (choice == "favorite") {
             globalFun.showUnderDevToast();
           }
         },
