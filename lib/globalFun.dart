@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/topChartsPage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -135,7 +136,7 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
+              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: TopChartsPage()));
             },
           )
         : null,

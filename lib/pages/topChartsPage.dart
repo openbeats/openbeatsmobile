@@ -30,6 +30,7 @@ class _TopChartsPageState extends State<TopChartsPage> {
           key: _topChartsPageScaffoldKey,
           appBar: topChartsPageW.appBarW(context, _topChartsPageScaffoldKey),
           backgroundColor: globalVars.primaryDark,
+          drawer: globalFun.drawerW(2, context),
           body: topChartsPageBody(),
         ),
       ),
