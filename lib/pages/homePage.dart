@@ -231,9 +231,10 @@ class _HomePageState extends State<HomePage> {
       // bottomSheet definition
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-            Radius.circular(20.0),
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0),
           )),
+          backgroundColor: globalVars.primaryDark,
           context: context,
           elevation: 10.0,
           builder: (BuildContext bc) {
