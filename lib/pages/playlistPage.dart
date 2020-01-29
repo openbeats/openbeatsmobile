@@ -121,8 +121,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
       // bottomSheet definition
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(
-            Radius.circular(20.0),
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0),
           )),
           context: context,
           elevation: 10.0,

@@ -88,21 +88,33 @@ class _HomePageState extends State<HomePage> {
 
   // gets list of videos for query
   void getVideosForQuery(String query) async {
+    // sanitizing query
+    query = query.replaceAll(new RegExp(r'[^\w\s]+'),'');
+    print(query);
     // constructing url to send request to to get list of videos
-    String url = "https://api.openbeats.live/ytcat?q=" + query+" audio";
+    String url = "https://api.openbeats.live/ytcat?q=" + query + " audio";
     try {
       // sending http get request
       var response = await Dio().get(url);
       // decoding to json
       var responseJSON = response.data;
       // checking if proper response is received
-      if (responseJSON["status"] == true) {
+      if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
         setState(() {
           // response as list to iterate over
           videosResponseList = responseJSON["data"] as List;
           // removing loading animation from screen
           searchResultLoading = false;
         });
+      } else {
+        setState(() {
+          // removing loading animation from screen
+          searchResultLoading = false;
+        });
+        globalFun.showToastMessage(
+            "Could not get proper response from server. Please try another query",
+            Colors.orange,
+            Colors.white);
       }
     } catch (e) {
       // catching dio error
@@ -128,7 +140,8 @@ class _HomePageState extends State<HomePage> {
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing && _homePageScaffoldKey.currentState != null && 
+                      BasicPlaybackState.playing &&
+                  _homePageScaffoldKey.currentState != null &&
                   _homePageScaffoldKey.currentState.hasFloatingActionButton)
                 {
                   t.cancel(),
@@ -232,7 +245,8 @@ class _HomePageState extends State<HomePage> {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0),
+            topLeft: Radius.circular(30.0),
+            topRight: Radius.circular(30.0),
           )),
           backgroundColor: globalVars.primaryDark,
           context: context,

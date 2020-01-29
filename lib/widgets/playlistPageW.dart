@@ -185,7 +185,7 @@ Widget bottomSheetBGW(audioThumbnail) {
         height: 300.0,
         color: Colors.black,
         child: ClipRRect(
-          borderRadius: new BorderRadius.circular(20.0),
+          borderRadius: new BorderRadius.only(topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0),),
           child: CachedNetworkImage(
             imageUrl: audioThumbnail,
             fit: BoxFit.cover,
