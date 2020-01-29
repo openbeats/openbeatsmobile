@@ -89,8 +89,7 @@ class _HomePageState extends State<HomePage> {
   // gets list of videos for query
   void getVideosForQuery(String query) async {
     // sanitizing query
-    query = query.replaceAll(new RegExp(r'[^\w\s]+'),'');
-    print(query);
+    query = query.replaceAll(new RegExp(r'[^\w\s]+'), '');
     // constructing url to send request to to get list of videos
     String url = "https://api.openbeats.live/ytcat?q=" + query + " audio";
     try {
@@ -411,7 +410,7 @@ class _HomePageState extends State<HomePage> {
                 new FlatButton(
                   onPressed: () {
                     Navigator.of(context).pop(true);
-                    Navigator.of(context).pop(true);
+                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                   child: new Text(
                     'Exit app',
@@ -457,16 +456,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        key: _homePageScaffoldKey,
-        backgroundColor: globalVars.primaryDark,
-        floatingActionButton:
-            homePageW.fabView(settingModalBottomSheet, _homePageScaffoldKey),
-        appBar: homePageW.appBarW(
-            context, navigateToSearchPage, _homePageScaffoldKey),
-        drawer: globalFun.drawerW(1, context),
-        body: homePageBody(),
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: SafeArea(
+        child: Scaffold(
+          key: _homePageScaffoldKey,
+          backgroundColor: globalVars.primaryDark,
+          floatingActionButton:
+              homePageW.fabView(settingModalBottomSheet, _homePageScaffoldKey),
+          appBar: homePageW.appBarW(
+              context, navigateToSearchPage, _homePageScaffoldKey),
+          drawer: globalFun.drawerW(1, context),
+          body: homePageBody(),
+        ),
       ),
     );
   }
