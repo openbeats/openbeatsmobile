@@ -134,9 +134,8 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             // subtitle: Text("Listen to what's trending",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // // navigating to homePage
-              // Navigator.pushReplacementNamed(context, '/topChartsPage');
-              showUnderDevToast();
+              // navigating to homePage
+              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
             },
           )
         : null,
@@ -507,5 +506,12 @@ void addToSearchHistory(String query) async{
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   globalVars.searchHistory.insert(0, query);
+  prefs.setStringList("searchStrings", globalVars.searchHistory);
+}
+
+// updates the search history sharedPrefs value
+void updateSearchHistorySharedPrefs() async{
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList("searchStrings", globalVars.searchHistory);
 }

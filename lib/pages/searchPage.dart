@@ -128,7 +128,9 @@ class _SearchPageState extends State<SearchPage> {
             queryFieldController, getImmediateSuggestions, context),
         body: (suggestionResponseList.length != 0)
             ? searchResultListView(false)
-            : (globalVars.searchHistory.length!=0)?searchResultListView(true):Container(),
+            : (globalVars.searchHistory.length != 0)
+                ? searchResultListView(true)
+                : Container(),
       ),
     );
   }
@@ -136,37 +138,94 @@ class _SearchPageState extends State<SearchPage> {
   // holds the list view builder responsible for showing the suggestions
   Widget searchResultListView(bool showHistory) {
     return ListView.builder(
-      itemBuilder: (context, index)=> suggestionsListBuilder(context, index, showHistory),
-      itemCount: (showHistory)?(globalVars.searchHistory.length<10)?globalVars.searchHistory.length:10:suggestionResponseList.length,
+      itemBuilder: (context, index) =>
+          suggestionsListBuilder(context, index, showHistory),
+      itemCount: (showHistory)
+          ? (globalVars.searchHistory.length < 10)
+              ? globalVars.searchHistory.length
+              : 10
+          : suggestionResponseList.length,
     );
   }
 
   // builds the suggestions listView
-  Widget suggestionsListBuilder(BuildContext context, int index, bool showHistory) {
+  Widget suggestionsListBuilder(
+      BuildContext context, int index, bool showHistory) {
     return ListTile(
-      title: Text(
-        (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0],
-        style: TextStyle(color: Colors.grey),
+      title: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: Text(
+          (showHistory)
+              ? globalVars.searchHistory[index]
+              : suggestionResponseList[index][0],
+          style: TextStyle(color: Colors.grey),
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
-      trailing: Transform.rotate(
-          angle: -50 * math.pi / 180,
-          child: IconButton(
-            tooltip: "Update query",
-            icon: Icon(Icons.arrow_upward),
-            onPressed: () {
-              // setting global variable to persist search
-              globalVars.currSearchText = (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0];
-              // sending the current text to the search field
-              sendSuggestionToField((showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0]);
-            },
-            color: Colors.grey,
-          )),
+      trailing: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.3,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            updateQueryBtn(showHistory, index),
+            SizedBox(
+              width: 5.0,
+            ),
+            deleteSearchResultBtn(showHistory, index),
+          ],
+        ),
+      ),
       onTap: () {
         // setting global variable to persist search
-        globalVars.currSearchText = (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0];
+        globalVars.currSearchText = (showHistory)
+            ? globalVars.searchHistory[index]
+            : suggestionResponseList[index][0];
         // going back to previous screen with the suggestion data
-        Navigator.pop(context, (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0]);
+        Navigator.pop(
+            context,
+            (showHistory)
+                ? globalVars.searchHistory[index]
+                : suggestionResponseList[index][0]);
       },
+    );
+  }
+
+  Widget updateQueryBtn(bool showHistory, int index) {
+    return Transform.rotate(
+        angle: -50 * math.pi / 180,
+        child: IconButton(
+          tooltip: "Update query",
+          icon: Icon(Icons.arrow_upward),
+          onPressed: () {
+            // setting global variable to persist search
+            globalVars.currSearchText = (showHistory)
+                ? globalVars.searchHistory[index]
+                : suggestionResponseList[index][0];
+            // sending the current text to the search field
+            sendSuggestionToField((showHistory)
+                ? globalVars.searchHistory[index]
+                : suggestionResponseList[index][0]);
+          },
+          color: Colors.grey,
+        ));
+  }
+
+  Widget deleteSearchResultBtn(bool showHistory, int index) {
+    return Container(
+      child: (showHistory)
+          ? IconButton(
+              tooltip: "Delete Search Result",
+              icon: Icon(Icons.clear),
+              onPressed: () {
+                setState(() {
+                  // removing search histoy listing
+                  globalVars.searchHistory.removeAt(index);
+                });
+                globalFun.updateSearchHistorySharedPrefs();
+              },
+              color: Colors.grey,
+            )
+          : null,
     );
   }
 }
