@@ -127,25 +127,25 @@ class _SearchPageState extends State<SearchPage> {
         appBar: searchPageW.appBarSearchPageW(
             queryFieldController, getImmediateSuggestions, context),
         body: (suggestionResponseList.length != 0)
-            ? searchResultListView()
-            : Container(),
+            ? searchResultListView(false)
+            : (globalVars.searchHistory.length!=0)?searchResultListView(true):Container(),
       ),
     );
   }
 
   // holds the list view builder responsible for showing the suggestions
-  Widget searchResultListView() {
+  Widget searchResultListView(bool showHistory) {
     return ListView.builder(
-      itemBuilder: suggestionsListBuilder,
-      itemCount: suggestionResponseList.length,
+      itemBuilder: (context, index)=> suggestionsListBuilder(context, index, showHistory),
+      itemCount: (showHistory)?(globalVars.searchHistory.length<10)?globalVars.searchHistory.length:10:suggestionResponseList.length,
     );
   }
 
   // builds the suggestions listView
-  Widget suggestionsListBuilder(BuildContext context, int index) {
+  Widget suggestionsListBuilder(BuildContext context, int index, bool showHistory) {
     return ListTile(
       title: Text(
-        suggestionResponseList[index][0],
+        (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0],
         style: TextStyle(color: Colors.grey),
       ),
       trailing: Transform.rotate(
@@ -155,17 +155,17 @@ class _SearchPageState extends State<SearchPage> {
             icon: Icon(Icons.arrow_upward),
             onPressed: () {
               // setting global variable to persist search
-              globalVars.currSearchText = suggestionResponseList[index][0];
+              globalVars.currSearchText = (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0];
               // sending the current text to the search field
-              sendSuggestionToField(suggestionResponseList[index][0]);
+              sendSuggestionToField((showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0]);
             },
             color: Colors.grey,
           )),
       onTap: () {
         // setting global variable to persist search
-        globalVars.currSearchText = suggestionResponseList[index][0];
+        globalVars.currSearchText = (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0];
         // going back to previous screen with the suggestion data
-        Navigator.pop(context, suggestionResponseList[index][0]);
+        Navigator.pop(context, (showHistory)?globalVars.searchHistory[index]:suggestionResponseList[index][0]);
       },
     );
   }

@@ -5,6 +5,7 @@ import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './actions/globalVarsA.dart' as globalVarsA;
+import './globalFun.dart' as globalFun;
 
 void main() => runApp(MyApp());
 
@@ -37,15 +38,13 @@ class _MyAppState extends State<MyApp> {
     } else {
       prefs.setBool("loginStatus", false);
     }
-    // // also getting now playing thumbnail URL
-    // globalVarsA.modifyCurrPlayingThumbnailURL(prefs.getString("nowPlayingThumbnail"));
   }
 
   @override
   void initState() {
-    
     super.initState();
     getLoginInfo();
+    globalFun.getSearchHistory();
   }
 
   @override

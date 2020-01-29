@@ -1,18 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
-
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
-import 'package:openbeatsmobile/widgets/addSongsToPlaylistW.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/playlistPageW.dart' as playlistPageW;
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;

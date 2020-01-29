@@ -29,6 +29,8 @@ Map<String, dynamic> loginInfo = {
 // NOT MAINTAINED BY ACTIONS
 // holds the current searched text
 String currSearchText = "";
+List<String> searchHistory = new List();
 
 // holds the method channel variable
 const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');
+

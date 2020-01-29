@@ -1,18 +1,14 @@
 import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
 import 'package:rxdart/subjects.dart';
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flare_flutter/flare_actor.dart';
-
 import 'package:openbeatsmobile/widgets/homePageW.dart' as homePageW;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../globalVars.dart' as globalVars;
@@ -70,6 +66,8 @@ class _HomePageState extends State<HomePage> {
 
   // navigates to the search page
   void navigateToSearchPage() async {
+    // getting the search result history
+    globalFun.getSearchHistory();
     // setting navResult value to know if it has changed
     String selectedSearchResult = "";
     // Navigate to the search page and wait for response
@@ -81,6 +79,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         searchResultLoading = true;
       });
+      // adding the query to the search results history
+      globalFun.addToSearchHistory(selectedSearchResult);
       // calling function to get videos for query
       getVideosForQuery(selectedSearchResult);
     }
