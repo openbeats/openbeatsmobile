@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import './globalVars.dart' as globalVars;
 import './actions/globalVarsA.dart' as globalVarsA;
@@ -486,5 +487,25 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
 
 // shows the under developement toast
 void showUnderDevToast(){
+
+
   showToastMessage("Feature under development\nBut hey, we appreciate your interest! 😃", Colors.blue, Colors.white);
+}
+
+// gets the search history from sharedPreferences
+void getSearchHistory() async{
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  List<String> searchHistory = prefs.getStringList("searchStrings");
+  if(searchHistory != null){
+    globalVars.searchHistory = searchHistory;
+  }
+}
+
+// adds value to search history
+void addToSearchHistory(String query) async{
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  globalVars.searchHistory.insert(0, query);
+  prefs.setStringList("searchStrings", globalVars.searchHistory);
 }
