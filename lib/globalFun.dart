@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/topChartsPage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -134,9 +135,8 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             // subtitle: Text("Listen to what's trending",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // // navigating to homePage
-              // Navigator.pushReplacementNamed(context, '/topChartsPage');
-              showUnderDevToast();
+              // navigating to homePage
+              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: TopChartsPage()));
             },
           )
         : null,
@@ -507,5 +507,12 @@ void addToSearchHistory(String query) async{
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   globalVars.searchHistory.insert(0, query);
+  prefs.setStringList("searchStrings", globalVars.searchHistory);
+}
+
+// updates the search history sharedPrefs value
+void updateSearchHistorySharedPrefs() async{
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList("searchStrings", globalVars.searchHistory);
 }

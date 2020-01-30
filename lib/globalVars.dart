@@ -16,6 +16,30 @@ Color leadingIconColor = Colors.white;
 Color titleTextColor = Colors.white;
 Color subtitleTextColor = Colors.white;
 
+// holds the gradient information for the TopCharts page
+List<Color> gradientListPrimary = [
+  Color(0xFFee0979),
+  Color(0xFF8E2DE2),
+  Color(0xFFF7971E),
+   Color(0xFFf12711),
+  Color(0xFF0575E6),
+  Color(0xFF00b09b),
+  Color(0xFFec008c),
+  Color(0xFF757F9A),
+];
+List<Color> gradientListSec = [
+  
+  Color(0xFFff6a00),
+  Color(0xFF4A00E0),
+  Color(0xFFFFD200),
+  Color(0xFFf5af19),
+  Color(0xFF021B79),
+  Color(0xFF96c93d),
+ 
+  Color(0xFFfc6767),
+  Color(0xFFD7DDE8),
+];
+
 // holds the login information of the user
 Map<String, dynamic> loginInfo = {
   "loginStatus": false,
