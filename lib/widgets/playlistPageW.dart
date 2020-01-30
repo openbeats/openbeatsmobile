@@ -123,7 +123,7 @@ Widget vidResultVidDetails(context, title, duration) {
         child: Text(
           title,
           textAlign: TextAlign.start,
-          style: TextStyle(fontSize: 16.0),
+          style: TextStyle(fontSize: 18.0),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
         ),

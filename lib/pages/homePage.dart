@@ -738,6 +738,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (e is DioError) {
         globalFun.showToastMessage(
             "Cannot connect to the server", Colors.red, Colors.white);
+        onStop();
         return;
       }
     }

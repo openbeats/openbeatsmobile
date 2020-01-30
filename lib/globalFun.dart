@@ -406,7 +406,7 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
       snackBarDuration = Duration(seconds: 30);
       break;
     case 3:
-      snackBarMessage = "Aplogies. Invalid Credentials";
+      snackBarMessage = "Apologies. Invalid Credentials";
       snackBarColor = Colors.red;
       showLoadingAnim = false;
       snackBarDuration = Duration(seconds: 5);
