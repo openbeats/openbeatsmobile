@@ -39,7 +39,6 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
     margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
     padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
     decoration: BoxDecoration(
-        color: Colors.red,
         borderRadius: new BorderRadius.all(Radius.circular(10.0)),
         gradient: LinearGradient(
             begin: Alignment.bottomRight,
@@ -49,18 +48,18 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
               globalVars.gradientListSec[index]
             ])),
     child: GestureDetector(
-      onTap: (){
+      onTap: () {
         
       },
       child: Stack(
-      children: <Widget>[
-        Positioned(
-          bottom: 0.5,
-          child: gridViewTitle(
-              chartLang, dataResponse["allcharts"][index]["totalSongs"], context),
-        ),
-      ],
-    ),
+        children: <Widget>[
+          Positioned(
+            bottom: 0.5,
+            child: gridViewTitle(chartLang,
+                dataResponse["allcharts"][index]["totalSongs"], context),
+          ),
+        ],
+      ),
     ),
   );
 }
@@ -71,13 +70,18 @@ Widget gridViewTitle(String chartName, int totalSongs, context) {
     text: TextSpan(
         text: "Top " + totalSongs.toString() + "\n",
         style: TextStyle(
+          fontFamily: "Comfortaa-Bold",
           fontSize: 16.0,
+  
           fontWeight: FontWeight.bold,
         ),
         children: <TextSpan>[
           TextSpan(
               text: chartName,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.08)),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Comfortaa-Bold",
+                  fontSize: MediaQuery.of(context).size.width * 0.065)),
         ]),
   ));
 }

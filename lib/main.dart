@@ -54,6 +54,7 @@ class _MyAppState extends State<MyApp> {
       color: Colors.red,
       home: HomePage(),
       theme: ThemeData(
+        fontFamily: "lineto-circular-pro-medium",
         brightness: Brightness.dark, 
         primarySwatch: Colors.red,
       ),

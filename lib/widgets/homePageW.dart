@@ -156,8 +156,8 @@ Widget vidResultVidDetails(context, title, duration) {
         width: MediaQuery.of(context).size.width * 0.60,
         child: Text(
           title,
-          textAlign: TextAlign.justify,
-          style: TextStyle(fontSize: 16.0),
+          textAlign: TextAlign.start,
+          style: TextStyle(fontSize: 18.0,),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
         ),

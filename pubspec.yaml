@@ -76,11 +76,20 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: roboto
-  #     fonts:
-  #       - asset: assets/fonts/roboto/Roboto-Regular.ttf
-  #         style: normal
+  fonts:
+    - family: Helvetica-Normal
+      fonts:
+        - asset: assets/fonts/Helvetica-Normal.ttf
+          style: normal
+    - family: Comfortaa-Medium
+      fonts:
+        - asset: assets/fonts/Comfortaa-Medium.ttf
+          style: normal
+    - family: Comfortaa-Bold
+      fonts:
+        - asset: assets/fonts/Comfortaa-Bold.ttf
+          style: normal
+
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
