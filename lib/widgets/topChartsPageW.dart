@@ -48,7 +48,11 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
               globalVars.gradientListPrimary[index],
               globalVars.gradientListSec[index]
             ])),
-    child: Stack(
+    child: GestureDetector(
+      onTap: (){
+        
+      },
+      child: Stack(
       children: <Widget>[
         Positioned(
           bottom: 0.5,
@@ -56,6 +60,7 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
               chartLang, dataResponse["allcharts"][index]["totalSongs"], context),
         ),
       ],
+    ),
     ),
   );
 }
