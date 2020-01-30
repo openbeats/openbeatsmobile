@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../globalVars.dart' as globalVars;
@@ -27,4 +28,51 @@ Widget loadingPageAnimation() {
       valueColor: AlwaysStoppedAnimation<Color>(globalVars.accentRed),
     ),
   );
+}
+
+Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
+  // setting proper names for all charts
+  String chartLang = dataResponse["allcharts"][index]["language"];
+  chartLang = "${chartLang[0].toUpperCase()}${chartLang.substring(1)}";
+
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+    decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: new BorderRadius.all(Radius.circular(10.0)),
+        gradient: LinearGradient(
+            begin: Alignment.bottomRight,
+            end: Alignment.topLeft,
+            colors: [
+              globalVars.gradientListPrimary[index],
+              globalVars.gradientListSec[index]
+            ])),
+    child: Stack(
+      children: <Widget>[
+        Positioned(
+          bottom: 0.5,
+          child: gridViewTitle(
+              chartLang, dataResponse["allcharts"][index]["totalSongs"], context),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget gridViewTitle(String chartName, int totalSongs, context) {
+  return Container(
+      child: RichText(
+    text: TextSpan(
+        text: "Top " + totalSongs.toString() + "\n",
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+        ),
+        children: <TextSpan>[
+          TextSpan(
+              text: chartName,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: MediaQuery.of(context).size.width*0.08)),
+        ]),
+  ));
 }
