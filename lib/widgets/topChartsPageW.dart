@@ -39,7 +39,6 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
     margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
     padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
     decoration: BoxDecoration(
-        color: Colors.red,
         borderRadius: new BorderRadius.all(Radius.circular(10.0)),
         gradient: LinearGradient(
             begin: Alignment.bottomRight,
@@ -49,7 +48,9 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
               globalVars.gradientListSec[index]
             ])),
     child: GestureDetector(
-      onTap: () {},
+      onTap: () {
+        
+      },
       child: Stack(
         children: <Widget>[
           Positioned(
