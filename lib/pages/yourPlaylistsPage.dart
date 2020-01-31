@@ -41,7 +41,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
             title:
                 (mode == 1) ? Text("Create Playlist") : Text("Rename Playlist"),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0)),
+                borderRadius: BorderRadius.circular(globalVars.borderRadius)),
             content: Form(
               key: _newPlaylistFormKey,
               child: TextFormField(
@@ -97,7 +97,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
               content: Text(
                   "This action will delete the playlist from your account"),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
+                  borderRadius: BorderRadius.circular(globalVars.borderRadius)),
               actions: <Widget>[
                 FlatButton(
                   child: Text("Cancel"),
