@@ -106,7 +106,7 @@ Widget showActualThumbnail(String thumbnail) {
 
 // widget to hold each container of video results
 Widget homePageVidResultContainerW(context, videosResponseItem, index,
-    startPlaylistFromMusic, settingModalBottomSheet, videosResponseListLength) {
+    getMp3URL, settingModalBottomSheet, videosResponseListLength) {
   return InkWell(
       onTap: () async {
         if (AudioService.playbackState != null &&
@@ -122,7 +122,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
             AudioService.queue.length == 0) {
           settingModalBottomSheet(context);
         } else {
-          await startPlaylistFromMusic(index);
+          await getMp3URL(videosResponseItem["videoId"],index);
         }
       },
       child: Container(
@@ -175,8 +175,11 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
                     builder: (context) =>
                         AddSongsToPlaylistPage(videosResponseItem),
                   ));
-            } else if (choice == "addToPlaylist") {
-              globalFun.showUnderDevToast();
+            } else if (choice == "download") {
+              globalVars.platformMethodChannel.invokeMethod("startDownload", {
+                "videoId": videosResponseItem["videoId"],
+                "videoTitle": videosResponseItem["title"]
+              });
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
             }

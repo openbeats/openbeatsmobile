@@ -144,8 +144,8 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.of(context).pushReplacement(
-                  globalWids.FadeRouteBuilder(page: TopChartsPage()));
+              // Navigator.of(context).pushReplacement(
+              //     globalWids.FadeRouteBuilder(page: TopChartsPage()));
             },
           )
         : null,
