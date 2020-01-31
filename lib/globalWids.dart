@@ -178,7 +178,8 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
             } else if (choice == "download") {
               globalVars.platformMethodChannel.invokeMethod("startDownload", {
                 "videoId": videosResponseItem["videoId"],
-                "videoTitle": videosResponseItem["title"]
+                "videoTitle": videosResponseItem["title"],
+                "showRational": false,
               });
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();

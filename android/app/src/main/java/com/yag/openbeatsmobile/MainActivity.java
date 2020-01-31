@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import java.util.ArrayList;
+
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -26,11 +28,14 @@ import io.flutter.plugins.GeneratedPluginRegistrant;
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.yag.openbeatsmobile";
     private int STORAGE_PERMISSION_CODE = 1;
+    String videoId, videoTitle;
+    private static MethodChannel backwardMChannel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GeneratedPluginRegistrant.registerWith(this);
+        backwardMChannel = new MethodChannel(MainActivity.this.getFlutterView(), CHANNEL);
         new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
                 new MethodChannel.MethodCallHandler() {
                     @Override
@@ -39,47 +44,40 @@ public class MainActivity extends FlutterActivity {
                             String message = call.argument("message");
                             Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                         } else if (call.method.equals("startDownload")) {
-                            String videoID = call.argument("videoId");
-                            String videoTitle = call.argument("videoTitle");
-                            checkPermAccessAndStartDownload(videoID,videoTitle);
+                            videoId = call.argument("videoId");
+                            videoTitle = call.argument("videoTitle");
+                            boolean showRational = call.argument("showRational");
+                            checkPermAccessAndStartDownload(showRational);
                         }
                     }
                 }
         );
     }
 
-    void checkPermAccessAndStartDownload(String videoId, String videoTitle){
+    // showRational variable to check if the rational message should be shown after the user clicks OK
+    // on the previous rational message
+    void checkPermAccessAndStartDownload(boolean showRational){
         // declaring the permission we need to request
         String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
         // checking if the permission was already granted
         if(ContextCompat.checkSelfPermission(MainActivity.this,permission) == PackageManager.PERMISSION_GRANTED){
-            Toast.makeText(MainActivity.this, "Permission is already granted", Toast.LENGTH_LONG).show();
-            startDownload(videoId, videoTitle);
+            Toast.makeText(MainActivity.this, "Download Initiated", Toast.LENGTH_LONG).show();
+            startDownload();
         } else {
-            requestStoragePermission(permission);
+            requestStoragePermission(permission, showRational);
         }
 
     }
 
-    private void requestStoragePermission(String permission){
+    private void requestStoragePermission(String permission, boolean showRational){
         // checks if we should show the dialog to the user
-        if(ActivityCompat.shouldShowRequestPermissionRationale(this,permission)) {
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this,permission) && showRational == false) {
             // showing explanation to the user as to why the app needs the permission
-            new AlertDialog.Builder(this)
-                    .setTitle("Permission Required")
-                    .setMessage("OpenBeats requires storage access permission to download and save the songs you would like to listen offline")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(MainActivity.this, new String[] {permission}, STORAGE_PERMISSION_CODE);
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    }).create().show();
+            ArrayList<String> parameters = new ArrayList<String>();
+            parameters.add(videoId);
+            parameters.add(videoTitle);
+            backwardMChannel.invokeMethod("showRational",parameters);
+
         } else {
             ActivityCompat.requestPermissions(this, new String[] {permission}, STORAGE_PERMISSION_CODE);
         }
@@ -90,25 +88,25 @@ public class MainActivity extends FlutterActivity {
         // checking if the required permission is granted
         if(requestCode == STORAGE_PERMISSION_CODE){
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                startDownload();
             } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please grant permission to download file", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    void startDownload(String videoId, String videoTitle){
+    void startDownload(){
         String downloadURL = "https://api.openbeats.live/downcc/"+videoId;
         // creating download manager instance
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadURL));
-        Log.d("DonwloadLogs",downloadURL);
         request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
         request.allowScanningByMediaScanner();
         request.setTitle("Downloading");
-        request.setDescription("Downloading "+videoTitle);
+        request.setDescription(videoTitle);
         request.setMimeType("audio/mpeg");
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, videoTitle);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, videoTitle+"@OpenBeats.mp3");
 
         // get download service and enqueue file
         DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);

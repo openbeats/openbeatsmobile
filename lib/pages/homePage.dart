@@ -203,7 +203,7 @@ class _HomePageState extends State<HomePage> {
           });
     }
   }
- 
+
   // starts the audio service with notification
   Future audioServiceStart(MediaItem currMediaItem) async {
     // start the AudioService
@@ -286,7 +286,9 @@ class _HomePageState extends State<HomePage> {
     // getting authStatus to refresh app after restart
     getAuthStatus();
     connect();
-
+    // setting callHandler to show rational dialog to get storage permissions
+    globalVars.platformMethodChannel
+        .setMethodCallHandler((MethodCall methodCall)=>globalFun.nativeMethodCallHandler(methodCall, context));
     // sets the status and navigation bar themes
     setStatusNaviThemes();
   }
