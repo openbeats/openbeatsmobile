@@ -445,7 +445,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       physics: ScrollPhysics(),
       itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
-        return playlistPageW.vidResultContainerW(
+        return globalWids.playlistPageVidResultContainerW(
             context,
             dataResponse["data"]["songs"][index],
             index,
