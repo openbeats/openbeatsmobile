@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:openbeatsmobile/pages/settingsPage.dart';
 import 'package:openbeatsmobile/pages/topChartsPage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,6 +22,7 @@ import './globalWids.dart' as globalWids;
 // 6 - yourPlaylistsPage
 // 7 - likedSongsPage
 // 8 - yourDownloadsPage
+// 9 - settingsPage
 Widget drawerW(int currPage, context) {
   return Drawer(
     child: Container(
@@ -37,7 +39,7 @@ Widget drawerW(int currPage, context) {
           drawerYourPlaylistsPageListTile(currPage, context),
           drawerLikedSongsPageListTile(currPage, context),
           drawerYourDownloadsPageListTile(currPage, context),
-          // drawerappsettingsPageListTile(currPage, context),
+          drawerappsettingsPageListTile(currPage, context),
           drawerLogoutPageListTile(context),
         ],
       ),
@@ -111,12 +113,15 @@ Widget drawerHomePageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.home, color: globalVars.leadingIconColor),
             title: Text('Home',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Go back to the home page",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: HomePage()));
+              Navigator.of(context).pushReplacement(
+                  globalWids.FadeRouteBuilder(page: HomePage()));
             },
           )
         : null,
@@ -131,12 +136,15 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.chartLine,
                 color: globalVars.leadingIconColor),
             title: Text('Top Charts',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Listen to what's trending",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: TopChartsPage()));
+              Navigator.of(context).pushReplacement(
+                  globalWids.FadeRouteBuilder(page: TopChartsPage()));
             },
           )
         : null,
@@ -151,7 +159,9 @@ Widget drawerArtistsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.users,
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Songs from your favorite artists",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -172,7 +182,9 @@ Widget drawerAlbumsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.solidClone,
                 color: globalVars.leadingIconColor),
             title: Text('Albums',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Browse the albums you love",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -193,7 +205,9 @@ Widget drawerHistoryPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.history,
                 color: globalVars.leadingIconColor),
             title: Text('Recently Played',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Your own music history",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -220,13 +234,16 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.list, color: globalVars.leadingIconColor),
             title: Text('Your Playlists',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Tune to your own collections",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               if (globalVars.loginInfo["loginStatus"] == true) {
                 // navigating to homePage
-                Navigator.of(context).pushReplacement(globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
+                Navigator.of(context).pushReplacement(
+                    globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
               } else {
                 showToastMessage(
                     "Please login to use feature", Colors.black, Colors.white);
@@ -246,7 +263,9 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.heart,
                 color: globalVars.leadingIconColor),
             title: Text('Favorites',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("All your liked songs",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -273,7 +292,9 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.download,
                 color: globalVars.leadingIconColor),
             title: Text('Your Downloads',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("All songs on local device",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
@@ -300,12 +321,14 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
             leading:
                 Icon(FontAwesomeIcons.cogs, color: globalVars.leadingIconColor),
             title: Text('Settings',
-                style: TextStyle(color: globalVars.titleTextColor,fontWeight: FontWeight.bold)),
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
             // subtitle: Text("Application related settings",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // navigating to homePage
-              Navigator.pushReplacementNamed(context, '/appSettings');
+              // navigating to settings Page
+              Navigator.of(context).pushNamed('/settingsPage');
             },
           )
         : null,
@@ -318,7 +341,11 @@ Widget drawerLogoutPageListTile(context) {
     child: (globalVars.loginInfo["loginStatus"])
         ? ListTile(
             leading: Icon(FontAwesomeIcons.signOutAlt, color: Colors.redAccent),
-            title: Text('Logout', style: TextStyle(color: Colors.redAccent,fontWeight: FontWeight.bold),),
+            title: Text(
+              'Logout',
+              style: TextStyle(
+                  color: Colors.redAccent, fontWeight: FontWeight.bold),
+            ),
             onTap: () {
               showDialog(
                   context: context,
@@ -369,7 +396,7 @@ Widget drawerLogoutPageListTile(context) {
 void showToastMessage(String message, Color bgColor, Color txtColor) {
   Fluttertoast.showToast(
       msg: message,
-      toastLength: Toast.LENGTH_LONG,
+      toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       backgroundColor: bgColor,
       textColor: txtColor,
@@ -486,24 +513,25 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
 }
 
 // shows the under developement toast
-void showUnderDevToast(){
-
-
-  showToastMessage("Feature under development\nBut hey, we appreciate your interest! 😃", Colors.blue, Colors.white);
+void showUnderDevToast() {
+  showToastMessage(
+      "Feature under development\nBut hey, we appreciate your interest! 😃",
+      Colors.blue,
+      Colors.white);
 }
 
 // gets the search history from sharedPreferences
-void getSearchHistory() async{
+void getSearchHistory() async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   List<String> searchHistory = prefs.getStringList("searchStrings");
-  if(searchHistory != null){
+  if (searchHistory != null) {
     globalVars.searchHistory = searchHistory;
   }
 }
 
 // adds value to search history
-void addToSearchHistory(String query) async{
+void addToSearchHistory(String query) async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   globalVars.searchHistory.insert(0, query);
@@ -511,7 +539,7 @@ void addToSearchHistory(String query) async{
 }
 
 // updates the search history sharedPrefs value
-void updateSearchHistorySharedPrefs() async{
+void updateSearchHistorySharedPrefs() async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList("searchStrings", globalVars.searchHistory);

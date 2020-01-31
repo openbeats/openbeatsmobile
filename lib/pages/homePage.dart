@@ -491,7 +491,7 @@ class _HomePageState extends State<HomePage> {
     return ListView.builder(
       shrinkWrap: true,
       itemBuilder: (BuildContext context, int index) {
-        return homePageW.vidResultContainerW(
+        return globalWids.homePageVidResultContainerW(
             context,
             videosResponseList[index],
             index,
