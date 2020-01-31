@@ -122,7 +122,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
             AudioService.queue.length == 0) {
           settingModalBottomSheet(context);
         } else {
-          await getMp3URL(videosResponseItem["videoId"], index);
+          await getMp3URL(videosResponseItem["videoId"],index);
         }
       },
       child: Container(
@@ -144,7 +144,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
-                      videosResponseItem["duration"]),
+                      videosResponseItem["duration"], true),
                   homePageVidResultExtraOptions(context, videosResponseItem)
                 ],
               ),
@@ -175,8 +175,12 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
                     builder: (context) =>
                         AddSongsToPlaylistPage(videosResponseItem),
                   ));
-            } else if (choice == "addToPlaylist") {
-              globalFun.showUnderDevToast();
+            } else if (choice == "download") {
+              globalVars.platformMethodChannel.invokeMethod("startDownload", {
+                "videoId": videosResponseItem["videoId"],
+                "videoTitle": videosResponseItem["title"],
+                "showRational": false,
+              });
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
             }
@@ -231,7 +235,7 @@ Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
-                      videosResponseItem["duration"]),
+                      videosResponseItem["duration"], true),
                   playlistPageVidResultExtraOptions(context, videosResponseItem,
                       index, showRemoveSongConfirmationBox)
                 ],
@@ -280,9 +284,98 @@ Widget playlistPageVidResultExtraOptions(
   );
 }
 
+// widget to hold each container of video results
+Widget topChartsPlaylistPageVidResultContainerW(
+    context, videosResponseItem, index, startPlaylistFromMusic) {
+  return InkWell(
+      onTap: () async {
+        startPlaylistFromMusic(index);
+      },
+      child: Container(
+        margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            vidResultThumbnail(context, videosResponseItem["thumbnail"], 2),
+            SizedBox(
+              width: 15.0,
+            ),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.75,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  vidResultVidDetails(context, videosResponseItem["title"],
+                      videosResponseItem["duration"], false),
+                  topChartsPlaylistPageVidResultExtraOptions(
+                      context, videosResponseItem, index)
+                ],
+              ),
+            ),
+          ],
+        ),
+      ));
+}
+
+// holds the extra options of video result list
+Widget topChartsPlaylistPageVidResultExtraOptions(
+    context, videosResponseItem, index) {
+  return Container(
+    alignment: Alignment.centerRight,
+    width: MediaQuery.of(context).size.width * 0.1,
+    child: PopupMenuButton<String>(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+        icon: Icon(
+          Icons.more_vert,
+          size: 30.0,
+        ),
+        onSelected: (choice) {
+          if (globalVars.loginInfo["loginStatus"] == true) {
+            if (choice == "addToPlayList") {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        AddSongsToPlaylistPage(videosResponseItem),
+                  ));
+            } else if (choice == "addToPlaylist") {
+              globalFun.showUnderDevToast();
+            } else if (choice == "favorite") {
+              globalFun.showUnderDevToast();
+            }
+          } else {
+            globalFun.showToastMessage(
+                "Please login to use feature", Colors.black, Colors.white);
+            Navigator.pushNamed(context, '/authPage');
+          }
+        },
+        itemBuilder: (context) => [
+              PopupMenuItem(
+                  value: "download",
+                  child: ListTile(
+                    title: Text("Download"),
+                    leading: Icon(Icons.file_download),
+                  )),
+              PopupMenuItem(
+                  value: "addToPlayList",
+                  child: ListTile(
+                    title: Text("Add to Playlist"),
+                    leading: Icon(Icons.playlist_add),
+                  )),
+              PopupMenuItem(
+                  value: "favorite",
+                  child: ListTile(
+                    title: Text("Favorite"),
+                    leading: Icon(Icons.favorite_border),
+                  ))
+            ]),
+  );
+}
+
 // holds the thumbnail of results list
 // page mode 1 - homePage / 2 - playlistPage
-Widget vidResultThumbnail(context, thumbnail, pageMode) {
+Widget vidResultThumbnail(context, String thumbnail, int pageMode) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.15,
       height: MediaQuery.of(context).size.width * 0.15,
@@ -318,7 +411,8 @@ Widget vidResultThumbnail(context, thumbnail, pageMode) {
 }
 
 // holds the video details of video list
-Widget vidResultVidDetails(context, title, duration) {
+Widget vidResultVidDetails(
+    context, String title, String duration, bool hasDuration) {
   return Column(
     children: <Widget>[
       Container(
@@ -336,9 +430,13 @@ Widget vidResultVidDetails(context, title, duration) {
       SizedBox(
         height: 5.0,
       ),
-      Text(
-        duration,
-        style: TextStyle(color: Colors.grey, fontSize: 12.0),
+      Container(
+        child: (duration != null)
+            ? Text(
+                duration,
+                style: TextStyle(color: Colors.grey, fontSize: 12.0),
+              )
+            : null,
       )
     ],
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -628,97 +726,97 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
         );
 }
 
- Widget bottomSheet(context, _dragPositionSubject) {
-    String audioThumbnail, audioTitle, audioDurationMin;
-    int audioDuration;
-    return Container(
-        height: 300.0,
-        color: globalVars.primaryDark,
-        child: StreamBuilder(
-            stream: AudioService.playbackStateStream,
-            builder: (context, snapshot) {
-              PlaybackState state = snapshot.data;
-              if (AudioService.currentMediaItem != null) {
-                // getting thumbNail image
-                audioThumbnail = AudioService.currentMediaItem.artUri;
-                // getting audioTitle
-                audioTitle = AudioService.currentMediaItem.title;
-                // getting audioDuration in Min
-                audioDurationMin = globalFun.getCurrentTimeStamp(
-                    AudioService.currentMediaItem.duration / 1000);
-                // getting audioDuration
-                audioDuration = AudioService.currentMediaItem.duration;
-              }
-              return (state != null &&
-                      AudioService.playbackState.basicState !=
-                          BasicPlaybackState.stopped)
-                  ? Stack(
-                      children: <Widget>[
-                        bottomSheetBGW(audioThumbnail),
-                        Container(
-                          margin: EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              bottomSheetTitleW(audioTitle),
-                              positionIndicator(
-                                  audioDuration, state, audioDurationMin, _dragPositionSubject),
-                              bufferingIndicator(),
-                              bNavPlayControlsW(context, state),
-                            ],
-                          ),
-                        )
-                      ],
-                    )
-                  : Center(
-                      child: Text("No Audio playing"),
-                    );
-            }));
-  }
+Widget bottomSheet(context, _dragPositionSubject) {
+  String audioThumbnail, audioTitle, audioDurationMin;
+  int audioDuration;
+  return Container(
+      height: 300.0,
+      color: globalVars.primaryDark,
+      child: StreamBuilder(
+          stream: AudioService.playbackStateStream,
+          builder: (context, snapshot) {
+            PlaybackState state = snapshot.data;
+            if (AudioService.currentMediaItem != null) {
+              // getting thumbNail image
+              audioThumbnail = AudioService.currentMediaItem.artUri;
+              // getting audioTitle
+              audioTitle = AudioService.currentMediaItem.title;
+              // getting audioDuration in Min
+              audioDurationMin = globalFun.getCurrentTimeStamp(
+                  AudioService.currentMediaItem.duration / 1000);
+              // getting audioDuration
+              audioDuration = AudioService.currentMediaItem.duration;
+            }
+            return (state != null &&
+                    AudioService.playbackState.basicState !=
+                        BasicPlaybackState.stopped)
+                ? Stack(
+                    children: <Widget>[
+                      bottomSheetBGW(audioThumbnail),
+                      Container(
+                        margin: EdgeInsets.all(10.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            bottomSheetTitleW(audioTitle),
+                            positionIndicator(audioDuration, state,
+                                audioDurationMin, _dragPositionSubject),
+                            bufferingIndicator(),
+                            bNavPlayControlsW(context, state),
+                          ],
+                        ),
+                      )
+                    ],
+                  )
+                : Center(
+                    child: Text("No Audio playing"),
+                  );
+          }));
+}
 
-  Widget positionIndicator(
-      int audioDuration, PlaybackState state, String audioDurationMin, _dragPositionSubject) {
-    double seekPos;
-    return StreamBuilder(
-      stream: Rx.combineLatest2<double, double, double>(
-          _dragPositionSubject.stream,
-          Stream.periodic(Duration(milliseconds: 200)),
-          (dragPosition, _) => dragPosition),
-      builder: (context, snapshot) {
-        double position = (state != null)
-            ? snapshot.data ?? state.currentPosition.toDouble()
-            : 0.0;
-        double duration = audioDuration.toDouble();
-        return Container(
-          child: (state != null)
-              ? Column(
-                  children: [
-                    if (duration != null)
-                      Slider(
-                        min: 0.0,
-                        max: duration,
-                        value: seekPos ?? max(0.0, min(position, duration)),
-                        onChanged: (value) {
-                          _dragPositionSubject.add(value);
-                        },
-                        onChangeEnd: (value) {
-                          AudioService.seekTo(value.toInt());
-                          // Due to a delay in platform channel communication, there is
-                          // a brief moment after releasing the Slider thumb before the
-                          // new position is broadcast from the platform side. This
-                          // hack is to hold onto seekPos until the next state update
-                          // comes through.
-                          // TODO: Improve this code.
-                          seekPos = value;
-                          _dragPositionSubject.add(null);
-                        },
-                      ),
-                    mediaTimingW(
-                        state, globalFun.getCurrentTimeStamp, context, audioDurationMin)
-                  ],
-                )
-              : null,
-        );
-      },
-    );
-  }
+Widget positionIndicator(int audioDuration, PlaybackState state,
+    String audioDurationMin, _dragPositionSubject) {
+  double seekPos;
+  return StreamBuilder(
+    stream: Rx.combineLatest2<double, double, double>(
+        _dragPositionSubject.stream,
+        Stream.periodic(Duration(milliseconds: 200)),
+        (dragPosition, _) => dragPosition),
+    builder: (context, snapshot) {
+      double position = (state != null)
+          ? snapshot.data ?? state.currentPosition.toDouble()
+          : 0.0;
+      double duration = audioDuration.toDouble();
+      return Container(
+        child: (state != null)
+            ? Column(
+                children: [
+                  if (duration != null)
+                    Slider(
+                      min: 0.0,
+                      max: duration,
+                      value: seekPos ?? max(0.0, min(position, duration)),
+                      onChanged: (value) {
+                        _dragPositionSubject.add(value);
+                      },
+                      onChangeEnd: (value) {
+                        AudioService.seekTo(value.toInt());
+                        // Due to a delay in platform channel communication, there is
+                        // a brief moment after releasing the Slider thumb before the
+                        // new position is broadcast from the platform side. This
+                        // hack is to hold onto seekPos until the next state update
+                        // comes through.
+                        // TODO: Improve this code.
+                        seekPos = value;
+                        _dragPositionSubject.add(null);
+                      },
+                    ),
+                  mediaTimingW(state, globalFun.getCurrentTimeStamp, context,
+                      audioDurationMin)
+                ],
+              )
+            : null,
+      );
+    },
+  );
+}

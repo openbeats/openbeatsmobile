@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
@@ -144,8 +145,8 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              Navigator.of(context).pushReplacement(
-                  globalWids.FadeRouteBuilder(page: TopChartsPage()));
+              // Navigator.of(context).pushReplacement(
+              //     globalWids.FadeRouteBuilder(page: TopChartsPage()));
             },
           )
         : null,
@@ -599,3 +600,46 @@ String getCurrentTimeStamp(double totalSeconds) {
   else
     return (min.toString() + ":" + sec.toString());
 }
+
+// method to show dialog 
+Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
+    if (methodCall.method == "showRational") {
+      var parameters = methodCall.arguments;
+      await showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+                title: Text("Permission Required"),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(globalVars.borderRadius))),
+                backgroundColor: globalVars.primaryDark,
+                content: Text(
+                    "OpenBeats requires storage access permission to download and save the songs you would like to listen offline"),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text("Cancel"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    color: Colors.transparent,
+                    textColor: globalVars.accentRed,
+                  ),
+                  FlatButton(
+                    child: Text("OK"),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      globalVars.platformMethodChannel
+                          .invokeMethod("startDownload", {
+                        "videoId": parameters[0],
+                        "videoTitle": parameters[1],
+                        "showRational": true,
+                      });
+                    },
+                    color: Colors.transparent,
+                    textColor: globalVars.accentGreen,
+                  ),
+                ],
+              ));
+      
+    }
+  }

@@ -297,6 +297,7 @@ class _AuthPageState extends State<AuthPage>
 
   Widget loginBtn() {
     return Container(
+      margin: EdgeInsets.only(bottom: 10.0),
       child: RaisedButton(
         onPressed: (_isAuthenticating)
             ? null
@@ -329,6 +330,7 @@ class _AuthPageState extends State<AuthPage>
 
   Widget signUpBtn() {
     return Container(
+      margin: EdgeInsets.only(bottom: 10.0),
       child: RaisedButton(
         onPressed: (_isSigningUp)
             ? null

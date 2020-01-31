@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:openbeatsmobile/pages/topChartsPlaylistPage.dart';
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
 import '../globalWids.dart' as globalWids;
@@ -46,10 +47,20 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
             colors: [
               globalVars.gradientListPrimary[index],
               globalVars.gradientListSec[index]
-            ])),
+            ])
+        
+            ),
     child: GestureDetector(
       onTap: () {
         
+        Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TopChartPlaylistPage(
+                      chartLang,
+                      dataResponse["allcharts"][index]["_id"],
+                      dataResponse["allcharts"][index]["thumbnail"])),
+            );
       },
       child: Stack(
         children: <Widget>[
