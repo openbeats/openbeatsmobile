@@ -397,7 +397,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
     return SafeArea(
       child: Scaffold(
         key: _playlistsPageScaffoldKey,
-        floatingActionButton: playlistPageW.fabView(
+        floatingActionButton: globalWids.fabView(
             settingModalBottomSheet, _playlistsPageScaffoldKey),
         backgroundColor: globalVars.primaryDark,
         body: NestedScrollView(

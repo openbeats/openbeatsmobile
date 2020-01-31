@@ -47,63 +47,6 @@ Widget playlistsLoading() {
   );
 }
 
-Widget fabView(settingModalBottomSheet, scaffoldKey) {
-  return StreamBuilder(
-      stream: AudioService.playbackStateStream,
-      builder: (context, snapshot) {
-        PlaybackState state = snapshot.data;
-        if (state != null && state.basicState == BasicPlaybackState.error) {
-          // stopping audio playback if an error has been detected
-          AudioService.stop();
-        }
-
-        return (state != null &&
-                (state.basicState == BasicPlaybackState.connecting ||
-                    state.basicState == BasicPlaybackState.playing ||
-                    state.basicState == BasicPlaybackState.buffering ||
-                    state.basicState == BasicPlaybackState.skippingToNext ||
-                    state.basicState == BasicPlaybackState.skippingToPrevious ||
-                    state.basicState == BasicPlaybackState.paused))
-            ? (state.basicState == BasicPlaybackState.buffering ||
-                    state.basicState == BasicPlaybackState.connecting ||
-                    state.basicState == BasicPlaybackState.skippingToNext ||
-                    state.basicState == BasicPlaybackState.skippingToPrevious)
-                ? fabBtnW(
-                    settingModalBottomSheet, context, false, false, scaffoldKey)
-                : (state.basicState == BasicPlaybackState.paused)
-                    ? fabBtnW(settingModalBottomSheet, context, true, true,
-                        scaffoldKey)
-                    : fabBtnW(settingModalBottomSheet, context, true, false,
-                        scaffoldKey)
-            : Container();
-      });
-}
-
-// holds the floating action button
-Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
-    scaffoldKey) {
-  return FloatingActionButton(
-    onPressed: () {
-      settingModalBottomSheet(context);
-    },
-    child: (isPlaying)
-        ? FlareActor(
-            'assets/flareAssets/analysis_new.flr',
-            animation: (isPaused)
-                ? null
-                : 'ana'
-                    'lysis'
-                    '',
-            fit: BoxFit.scaleDown,
-          )
-        : CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-    backgroundColor: Color(0xFFFF5C5C),
-    foregroundColor: Colors.white,
-  );
-}
-
 // holds the no playlists message
 Widget noSongsMessage() {
   return Container(

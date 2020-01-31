@@ -157,8 +157,8 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
     child: PopupMenuButton<String>(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(globalVars.borderRadius)),
         icon: Icon(
           Icons.more_vert,
           size: 30.0,
@@ -246,8 +246,8 @@ Widget playlistPageVidResultExtraOptions(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
     child: PopupMenuButton<String>(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(globalVars.borderRadius)),
         elevation: 30.0,
         icon: Icon(
           Icons.more_vert,
@@ -349,7 +349,10 @@ Widget bottomSheetBGW(audioThumbnail) {
         height: 300.0,
         color: Colors.black,
         child: ClipRRect(
-          borderRadius: new BorderRadius.only(topRight: Radius.circular(globalVars.borderRadius), topLeft: Radius.circular(globalVars.borderRadius),),
+          borderRadius: new BorderRadius.only(
+            topRight: Radius.circular(globalVars.borderRadius),
+            topLeft: Radius.circular(globalVars.borderRadius),
+          ),
           child: CachedNetworkImage(
             imageUrl: audioThumbnail,
             fit: BoxFit.cover,
@@ -588,24 +591,36 @@ Widget fabView(settingModalBottomSheet, scaffoldKey) {
 // holds the floating action button
 Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
     scaffoldKey) {
-  return FloatingActionButton(
-    onPressed: () {
-      settingModalBottomSheet(context);
-    },
-    child: (isPlaying)
-        ? FlareActor(
-            'assets/flareAssets/analysis_new.flr',
-            animation: (isPaused)
-                ? null
-                : 'ana'
-                    'lysis'
-                    '',
-            fit: BoxFit.scaleDown,
-          )
-        : CircularProgressIndicator(
+  return (isPlaying)
+      ? FloatingActionButton.extended(
+          onPressed: () {
+            settingModalBottomSheet(context);
+          },
+          label: Text("Now Playing"),
+          icon: SizedBox(
+            width: 40.0,
+            height: 40.0,
+            child: FlareActor(
+              'assets/flareAssets/analysis_new.flr',
+              animation: (isPaused)
+                  ? null
+                  : 'ana'
+                      'lysis'
+                      '',
+              fit: BoxFit.scaleDown,
+            ),
+          ),
+          backgroundColor: Color(0xFFFF5C5C),
+          foregroundColor: Colors.white,
+        )
+      : FloatingActionButton(
+          onPressed: () {
+            settingModalBottomSheet(context);
+          },
+          child: CircularProgressIndicator(
             valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
           ),
-    backgroundColor: Color(0xFFFF5C5C),
-    foregroundColor: Colors.white,
-  );
+          backgroundColor: Color(0xFFFF5C5C),
+          foregroundColor: Colors.white,
+        );
 }
