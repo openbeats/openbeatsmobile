@@ -99,7 +99,8 @@ Widget drawerHeader(context) {
                 Navigator.pushNamed(context, '/authPage');
               },
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(globalVars.borderRadius))),
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(globalVars.borderRadius))),
             ),
           ),
         );
@@ -353,8 +354,8 @@ Widget drawerLogoutPageListTile(context) {
                     return AlertDialog(
                       backgroundColor: globalVars.primaryDark,
                       shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(globalVars.borderRadius))),
+                          borderRadius: BorderRadius.all(
+                              Radius.circular(globalVars.borderRadius))),
                       title: Text("Are you sure?"),
                       content:
                           Text("This action will sign you out of your account"),
@@ -543,4 +544,55 @@ void updateSearchHistorySharedPrefs() async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList("searchStrings", globalVars.searchHistory);
+}
+
+// returns the max duration of the media in milliseconds
+int getDurationMillis(String audioDuration) {
+  // variable holding max value
+  double maxVal = 0;
+  // holds the integerDurationList
+  List durationLst = new List();
+  // converting duration value into list
+  List durationStringLst = audioDuration.toString().split(':');
+  // converting list into integer
+  durationStringLst.forEach((f) {
+    durationLst.add(int.parse(f));
+  });
+  // creating seconds value based on the durationLst
+  // looping through each value from last value
+  for (int i = durationLst.length - 1; i > -1; i--) {
+    // add seconds just as they are
+    if (i == durationLst.length - 1)
+      maxVal += durationLst[i] * 1000;
+    // add minutes by multiplying with 60
+    else if (i == durationLst.length - 2)
+      maxVal += (60000 * durationLst[i]);
+    // add hours by multiplying twice with 60
+    else if (i == durationLst.length - 3) maxVal += (3600000 * durationLst[i]);
+  }
+  return maxVal.toInt();
+}
+
+// return the current duration string in min:sec for bottomSheet slider
+String getCurrentTimeStamp(double totalSeconds) {
+  // variables holding separated time
+  String min, sec, hour;
+  // check if it is greater than one hour
+  if (totalSeconds > 3600) {
+    // getting number of hours
+    hour = ((totalSeconds % (24 * 3600)) / 3600).floor().toString();
+    totalSeconds %= 3600;
+  }
+  // getting number of minutes
+  min = (totalSeconds / 60).floor().toString();
+  totalSeconds %= 60;
+  // getting number of seconds
+  sec = (totalSeconds).floor().toString();
+  // adding the necessary zeros
+  if (int.parse(sec) < 10) sec = "0" + sec;
+  // if the duration is greater than 1 hour, return with hour
+  if (totalSeconds > 3600)
+    return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
+  else
+    return (min.toString() + ":" + sec.toString());
 }

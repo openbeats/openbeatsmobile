@@ -58,58 +58,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
   // holds the response data from playlist songs request
   var dataResponse;
 
-  // returns the max duration of the media in milliseconds
-  int getDurationMillis(String audioDuration) {
-    // variable holding max value
-    double maxVal = 0;
-    // holds the integerDurationList
-    List durationLst = new List();
-    // converting duration value into list
-    List durationStringLst = audioDuration.toString().split(':');
-    // converting list into integer
-    durationStringLst.forEach((f) {
-      durationLst.add(int.parse(f));
-    });
-    // creating seconds value based on the durationLst
-    // looping through each value from last value
-    for (int i = durationLst.length - 1; i > -1; i--) {
-      // add seconds just as they are
-      if (i == durationLst.length - 1)
-        maxVal += durationLst[i] * 1000;
-      // add minutes by multiplying with 60
-      else if (i == durationLst.length - 2)
-        maxVal += (60000 * durationLst[i]);
-      // add hours by multiplying twice with 60
-      else if (i == durationLst.length - 3)
-        maxVal += (3600000 * durationLst[i]);
-    }
-    return maxVal.toInt();
-  }
-
-  // return the current duration string in min:sec for bottomSheet slider
-  String getCurrentTimeStamp(double totalSeconds) {
-    // variables holding separated time
-    String min, sec, hour;
-    // check if it is greater than one hour
-    if (totalSeconds > 3600) {
-      // getting number of hours
-      hour = ((totalSeconds % (24 * 3600)) / 3600).floor().toString();
-      totalSeconds %= 3600;
-    }
-    // getting number of minutes
-    min = (totalSeconds / 60).floor().toString();
-    totalSeconds %= 60;
-    // getting number of seconds
-    sec = (totalSeconds).floor().toString();
-    // adding the necessary zeros
-    if (int.parse(sec) < 10) sec = "0" + sec;
-    // if the duration is greater than 1 hour, return with hour
-    if (totalSeconds > 3600)
-      return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
-    else
-      return (min.toString() + ":" + sec.toString());
-  }
-
   // function that calls the bottomSheet
   void settingModalBottomSheet(context) async {
     if (AudioService.currentMediaItem != null) {
@@ -122,104 +70,9 @@ class _PlaylistPageState extends State<PlaylistPage> {
           context: context,
           elevation: 10.0,
           builder: (BuildContext bc) {
-            return bottomSheet(context);
+            return globalWids.bottomSheet(context, _dragPositionSubject);
           });
     }
-  }
-
-  Widget bottomSheet(context) {
-    String audioThumbnail, audioTitle, audioDurationMin;
-    int audioDuration;
-    return Container(
-        height: 300.0,
-        color: globalVars.primaryDark,
-        child: StreamBuilder(
-            stream: AudioService.playbackStateStream,
-            builder: (context, snapshot) {
-              PlaybackState state = snapshot.data;
-              if (AudioService.currentMediaItem != null) {
-                // getting thumbNail image
-                audioThumbnail = AudioService.currentMediaItem.artUri;
-                // getting audioTitle
-                audioTitle = AudioService.currentMediaItem.title;
-                // getting audioDuration in Min
-                audioDurationMin = getCurrentTimeStamp(
-                    AudioService.currentMediaItem.duration / 1000);
-                // getting audioDuration
-                audioDuration = AudioService.currentMediaItem.duration;
-              }
-              return (state != null &&
-                      AudioService.playbackState.basicState !=
-                          BasicPlaybackState.stopped)
-                  ? Stack(
-                      children: <Widget>[
-                        globalWids.bottomSheetBGW(audioThumbnail),
-                        Container(
-                          margin: EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              globalWids.bottomSheetTitleW(audioTitle),
-                              positionIndicator(
-                                  audioDuration, state, audioDurationMin),
-                              globalWids.bufferingIndicator(),
-                              globalWids.bNavPlayControlsW(context, state),
-                            ],
-                          ),
-                        )
-                      ],
-                    )
-                  : Center(
-                      child: Text("No Audio playing"),
-                    );
-            }));
-  }
-
-  Widget positionIndicator(
-      int audioDuration, PlaybackState state, String audioDurationMin) {
-    double seekPos;
-    return StreamBuilder(
-      stream: Rx.combineLatest2<double, double, double>(
-          _dragPositionSubject.stream,
-          Stream.periodic(Duration(milliseconds: 200)),
-          (dragPosition, _) => dragPosition),
-      builder: (context, snapshot) {
-        double position = (state != null)
-            ? snapshot.data ?? state.currentPosition.toDouble()
-            : 0.0;
-        double duration = audioDuration.toDouble();
-        return Container(
-          child: (state != null)
-              ? Column(
-                  children: [
-                    if (duration != null)
-                      Slider(
-                        min: 0.0,
-                        max: duration,
-                        value: seekPos ?? max(0.0, min(position, duration)),
-                        onChanged: (value) {
-                          _dragPositionSubject.add(value);
-                        },
-                        onChangeEnd: (value) {
-                          AudioService.seekTo(value.toInt());
-                          // Due to a delay in platform channel communication, there is
-                          // a brief moment after releasing the Slider thumb before the
-                          // new position is broadcast from the platform side. This
-                          // hack is to hold onto seekPos until the next state update
-                          // comes through.
-                          // TODO: Improve this code.
-                          seekPos = value;
-                          _dragPositionSubject.add(null);
-                        },
-                      ),
-                    globalWids.mediaTimingW(
-                        state, getCurrentTimeStamp, context, audioDurationMin)
-                  ],
-                )
-              : null,
-        );
-      },
-    );
   }
 
   // function to monitor the playback start point to remove snackbar

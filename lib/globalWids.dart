@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/addSongsToPlaylistPage.dart';
+import 'package:rxdart/rxdart.dart';
 
 import './globalVars.dart' as globalVars;
 import './globalFun.dart' as globalFun;
@@ -624,3 +627,98 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
           foregroundColor: Colors.white,
         );
 }
+
+ Widget bottomSheet(context, _dragPositionSubject) {
+    String audioThumbnail, audioTitle, audioDurationMin;
+    int audioDuration;
+    return Container(
+        height: 300.0,
+        color: globalVars.primaryDark,
+        child: StreamBuilder(
+            stream: AudioService.playbackStateStream,
+            builder: (context, snapshot) {
+              PlaybackState state = snapshot.data;
+              if (AudioService.currentMediaItem != null) {
+                // getting thumbNail image
+                audioThumbnail = AudioService.currentMediaItem.artUri;
+                // getting audioTitle
+                audioTitle = AudioService.currentMediaItem.title;
+                // getting audioDuration in Min
+                audioDurationMin = globalFun.getCurrentTimeStamp(
+                    AudioService.currentMediaItem.duration / 1000);
+                // getting audioDuration
+                audioDuration = AudioService.currentMediaItem.duration;
+              }
+              return (state != null &&
+                      AudioService.playbackState.basicState !=
+                          BasicPlaybackState.stopped)
+                  ? Stack(
+                      children: <Widget>[
+                        bottomSheetBGW(audioThumbnail),
+                        Container(
+                          margin: EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              bottomSheetTitleW(audioTitle),
+                              positionIndicator(
+                                  audioDuration, state, audioDurationMin, _dragPositionSubject),
+                              bufferingIndicator(),
+                              bNavPlayControlsW(context, state),
+                            ],
+                          ),
+                        )
+                      ],
+                    )
+                  : Center(
+                      child: Text("No Audio playing"),
+                    );
+            }));
+  }
+
+  Widget positionIndicator(
+      int audioDuration, PlaybackState state, String audioDurationMin, _dragPositionSubject) {
+    double seekPos;
+    return StreamBuilder(
+      stream: Rx.combineLatest2<double, double, double>(
+          _dragPositionSubject.stream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (dragPosition, _) => dragPosition),
+      builder: (context, snapshot) {
+        double position = (state != null)
+            ? snapshot.data ?? state.currentPosition.toDouble()
+            : 0.0;
+        double duration = audioDuration.toDouble();
+        return Container(
+          child: (state != null)
+              ? Column(
+                  children: [
+                    if (duration != null)
+                      Slider(
+                        min: 0.0,
+                        max: duration,
+                        value: seekPos ?? max(0.0, min(position, duration)),
+                        onChanged: (value) {
+                          _dragPositionSubject.add(value);
+                        },
+                        onChangeEnd: (value) {
+                          AudioService.seekTo(value.toInt());
+                          // Due to a delay in platform channel communication, there is
+                          // a brief moment after releasing the Slider thumb before the
+                          // new position is broadcast from the platform side. This
+                          // hack is to hold onto seekPos until the next state update
+                          // comes through.
+                          // TODO: Improve this code.
+                          seekPos = value;
+                          _dragPositionSubject.add(null);
+                        },
+                      ),
+                    mediaTimingW(
+                        state, globalFun.getCurrentTimeStamp, context, audioDurationMin)
+                  ],
+                )
+              : null,
+        );
+      },
+    );
+  }
