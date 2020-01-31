@@ -244,8 +244,8 @@ class _HomePageState extends State<HomePage> {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0),
-            topRight: Radius.circular(30.0),
+            topLeft: Radius.circular(globalVars.borderRadius),
+            topRight: Radius.circular(globalVars.borderRadius),
           )),
           backgroundColor: globalVars.primaryDark,
           context: context,
@@ -399,7 +399,7 @@ class _HomePageState extends State<HomePage> {
             builder: (context) => new AlertDialog(
               backgroundColor: globalVars.primaryDark,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
+                  borderRadius: BorderRadius.circular(globalVars.borderRadius)),
               title: new Text('Are you sure?'),
               content: new Text('This action will exit OpenBeats'),
               actions: <Widget>[

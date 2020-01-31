@@ -117,7 +117,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0),
+            topLeft: Radius.circular(globalVars.borderRadius), topRight: Radius.circular(globalVars.borderRadius),
           )),
           context: context,
           elevation: 10.0,
@@ -278,7 +278,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
               content:
                   Text("This action will remove the song from this playlist"),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0)),
+                  borderRadius: BorderRadius.circular(globalVars.borderRadius)),
               actions: <Widget>[
                 FlatButton(
                   child: Text("Cancel"),

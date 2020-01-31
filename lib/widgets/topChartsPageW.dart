@@ -39,7 +39,7 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
     margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
     padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
     decoration: BoxDecoration(
-        borderRadius: new BorderRadius.all(Radius.circular(10.0)),
+        borderRadius: new BorderRadius.all(Radius.circular(globalVars.borderRadius)),
         gradient: LinearGradient(
             begin: Alignment.bottomRight,
             end: Alignment.topLeft,

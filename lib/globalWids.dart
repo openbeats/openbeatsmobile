@@ -85,9 +85,8 @@ Widget nowPlayingLoadingAnimation() {
 
 // shows the actual thumbnail of the media
 Widget showActualThumbnail(String thumbnail) {
-
   return ClipRRect(
-    borderRadius: BorderRadius.circular(5.0),
+    borderRadius: BorderRadius.circular(globalVars.borderRadius),
     child: CachedNetworkImage(
       imageUrl: thumbnail,
       fit: BoxFit.cover,
@@ -103,8 +102,8 @@ Widget showActualThumbnail(String thumbnail) {
 }
 
 // widget to hold each container of video results
-Widget homePageVidResultContainerW(context, videosResponseItem, index, getMp3URL,
-    settingModalBottomSheet, videosResponseListLength) {
+Widget homePageVidResultContainerW(context, videosResponseItem, index,
+    getMp3URL, settingModalBottomSheet, videosResponseListLength) {
   return InkWell(
       onTap: () async {
         if (AudioService.playbackState != null &&
@@ -116,7 +115,8 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index, getMp3URL
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.buffering ||
                 AudioService.playbackState.basicState ==
-                    BasicPlaybackState.paused) && AudioService.queue.length == 0) {
+                    BasicPlaybackState.paused) &&
+            AudioService.queue.length == 0) {
           settingModalBottomSheet(context);
         } else {
           await getMp3URL(videosResponseItem["videoId"], index);
@@ -158,7 +158,7 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
     width: MediaQuery.of(context).size.width * 0.1,
     child: PopupMenuButton<String>(
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(globalVars.borderRadius)),
         icon: Icon(
           Icons.more_vert,
           size: 30.0,
@@ -206,7 +206,6 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
   );
 }
 
-
 // widget to hold each container of video results
 Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
     startPlaylistFromMusic, showRemoveSongConfirmationBox) {
@@ -230,8 +229,8 @@ Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"]),
-                  playlistPageVidResultExtraOptions(context, videosResponseItem, index,
-                      showRemoveSongConfirmationBox)
+                  playlistPageVidResultExtraOptions(context, videosResponseItem,
+                      index, showRemoveSongConfirmationBox)
                 ],
               ),
             ),
@@ -248,7 +247,7 @@ Widget playlistPageVidResultExtraOptions(
     width: MediaQuery.of(context).size.width * 0.1,
     child: PopupMenuButton<String>(
         shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(globalVars.borderRadius)),
         elevation: 30.0,
         icon: Icon(
           Icons.more_vert,
@@ -290,25 +289,28 @@ Widget vidResultThumbnail(context, thumbnail, pageMode) {
           blurRadius: 2.0,
           offset: new Offset(1.0, 1.0),
         ),
-      ], borderRadius: BorderRadius.circular(5.0)),
+      ], borderRadius: BorderRadius.circular(globalVars.borderRadius)),
       child: StreamBuilder(
           stream: AudioService.playbackStateStream,
           builder: (context, snapshot) {
             PlaybackState state = snapshot.data;
-            return ((state != null) &&
-                    AudioService.currentMediaItem != null &&
-                    AudioService.currentMediaItem.artUri == thumbnail &&
-                    (state.basicState == BasicPlaybackState.connecting ||
-                        state.basicState == BasicPlaybackState.playing ||
-                        state.basicState == BasicPlaybackState.buffering ||
-                        state.basicState == BasicPlaybackState.paused) && (pageMode == 1 && AudioService.queue.length == 0) || (pageMode == 2 && AudioService.queue.length > 0) )
-                ? (state.basicState == BasicPlaybackState.buffering ||
-                        state.basicState == BasicPlaybackState.connecting && (pageMode == 1 && AudioService.queue.length == 0) || (pageMode == 2 && AudioService.queue.length > 0))
-                    ? nowPlayingLoadingAnimation()
-                    : (state.basicState == BasicPlaybackState.paused && (pageMode == 1 && AudioService.queue.length == 0) || (pageMode == 2 && AudioService.queue.length > 0))
-                        ? nowPlayingFlutterActor(true)
-                        : nowPlayingFlutterActor(false)
-                : showActualThumbnail(thumbnail);
+            if (state != null) {
+              if (AudioService.currentMediaItem != null &&
+                  AudioService.currentMediaItem.artUri == thumbnail &&
+                  ((AudioService.queue != null) &&
+                          (pageMode == 2 && AudioService.queue.length > 0) ||
+                      (pageMode == 1 && AudioService.queue.length == 0))) {
+                if (state.basicState == BasicPlaybackState.connecting ||
+                    state.basicState == BasicPlaybackState.buffering) {
+                  return nowPlayingLoadingAnimation();
+                } else if (state.basicState == BasicPlaybackState.playing) {
+                  return nowPlayingFlutterActor(false);
+                } else if (state.basicState == BasicPlaybackState.paused) {
+                  return nowPlayingFlutterActor(true);
+                }
+              }
+            }
+            return showActualThumbnail(thumbnail);
           }));
 }
 
@@ -321,7 +323,9 @@ Widget vidResultVidDetails(context, title, duration) {
         child: Text(
           title,
           textAlign: TextAlign.start,
-          style: TextStyle(fontSize: 18.0,),
+          style: TextStyle(
+            fontSize: 18.0,
+          ),
           overflow: TextOverflow.ellipsis,
           maxLines: 2,
         ),
@@ -337,4 +341,3 @@ Widget vidResultVidDetails(context, title, duration) {
     crossAxisAlignment: CrossAxisAlignment.start,
   );
 }
-

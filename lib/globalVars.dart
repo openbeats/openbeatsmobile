@@ -55,3 +55,6 @@ List<String> searchHistory = new List();
 
 // holds the method channel variable
 const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');
+
+// holds the borderRadius for widget
+double borderRadius = 10.0;

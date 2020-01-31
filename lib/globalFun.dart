@@ -99,7 +99,7 @@ Widget drawerHeader(context) {
                 Navigator.pushNamed(context, '/authPage');
               },
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
+                  borderRadius: BorderRadius.all(Radius.circular(globalVars.borderRadius))),
             ),
           ),
         );
@@ -354,7 +354,7 @@ Widget drawerLogoutPageListTile(context) {
                       backgroundColor: globalVars.primaryDark,
                       shape: RoundedRectangleBorder(
                           borderRadius:
-                              BorderRadius.all(Radius.circular(10.0))),
+                              BorderRadius.all(Radius.circular(globalVars.borderRadius))),
                       title: Text("Are you sure?"),
                       content:
                           Text("This action will sign you out of your account"),
