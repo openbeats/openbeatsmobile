@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
         '/homePage': (context) => HomePage(),
         '/authPage': (context) => AuthPage(),
         '/yourPlaylistsPage': (context) => YourPlaylistsPage(),
-        '/settingsPage': (context) => SettingsPage()
+        '/settingsPage': (context) => SettingsPage(),
       },
     );
   }
