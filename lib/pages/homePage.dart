@@ -463,7 +463,7 @@ class _HomePageState extends State<HomePage> {
           key: _homePageScaffoldKey,
           backgroundColor: globalVars.primaryDark,
           floatingActionButton:
-              homePageW.fabView(settingModalBottomSheet, _homePageScaffoldKey),
+              globalWids.fabView(settingModalBottomSheet, _homePageScaffoldKey),
           appBar: homePageW.appBarW(
               context, navigateToSearchPage, _homePageScaffoldKey),
           drawer: globalFun.drawerW(1, context),
