@@ -82,6 +82,7 @@ Widget nowPlayingLoadingAnimation() {
 
 // shows the actual thumbnail of the media
 Widget showActualThumbnail(String thumbnail) {
+
   return ClipRRect(
     borderRadius: BorderRadius.circular(5.0),
     child: CachedNetworkImage(
@@ -97,3 +98,4 @@ Widget showActualThumbnail(String thumbnail) {
     ),
   );
 }
+

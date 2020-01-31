@@ -371,7 +371,7 @@ class _HomePageState extends State<HomePage> {
       'duration': currMediaItem.duration,
       'thumbnailURI': currMediaItem.artUri
     };
-    await AudioService.customAction('playMedia2', parameters);
+    // await AudioService.customAction('playMedia2', parameters);
   }
 
   // sets the status and navigation bar themes
