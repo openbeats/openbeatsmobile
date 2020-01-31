@@ -153,17 +153,17 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           BasicPlaybackState.stopped)
                   ? Stack(
                       children: <Widget>[
-                        playlistPageW.bottomSheetBGW(audioThumbnail),
+                        globalWids.bottomSheetBGW(audioThumbnail),
                         Container(
                           margin: EdgeInsets.all(10.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              playlistPageW.bottomSheetTitleW(audioTitle),
+                              globalWids.bottomSheetTitleW(audioTitle),
                               positionIndicator(
                                   audioDuration, state, audioDurationMin),
-                              playlistPageW.bufferingIndicator(),
-                              playlistPageW.bNavPlayControlsW(context, state),
+                              globalWids.bufferingIndicator(),
+                              globalWids.bNavPlayControlsW(context, state),
                             ],
                           ),
                         )
@@ -212,7 +212,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
                           _dragPositionSubject.add(null);
                         },
                       ),
-                    playlistPageW.mediaTimingW(
+                    globalWids.mediaTimingW(
                         state, getCurrentTimeStamp, context, audioDurationMin)
                   ],
                 )

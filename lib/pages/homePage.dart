@@ -282,17 +282,17 @@ class _HomePageState extends State<HomePage> {
                           BasicPlaybackState.stopped)
                   ? Stack(
                       children: <Widget>[
-                        homePageW.bottomSheetBGW(audioThumbnail),
+                        globalWids.bottomSheetBGW(audioThumbnail),
                         Container(
                           margin: EdgeInsets.all(10.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              homePageW.bottomSheetTitleW(audioTitle),
+                              globalWids.bottomSheetTitleW(audioTitle),
                               positionIndicator(
                                   audioDuration, state, audioDurationMin),
-                              homePageW.bufferingIndicator(),
-                              homePageW.bNavPlayControlsW(context, state),
+                              globalWids.bufferingIndicator(),
+                              globalWids.bNavPlayControlsW(context, state),
                             ],
                           ),
                         )
@@ -341,7 +341,7 @@ class _HomePageState extends State<HomePage> {
                           _dragPositionSubject.add(null);
                         },
                       ),
-                    homePageW.mediaTimingW(
+                    globalWids.mediaTimingW(
                         state, getCurrentTimeStamp, context, audioDurationMin)
                   ],
                 )
