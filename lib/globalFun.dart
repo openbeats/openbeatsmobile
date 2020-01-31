@@ -535,8 +535,11 @@ void getSearchHistory() async {
 void addToSearchHistory(String query) async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  globalVars.searchHistory.insert(0, query);
-  prefs.setStringList("searchStrings", globalVars.searchHistory);
+  if((globalVars.searchHistory.length == 0) || (globalVars.searchHistory[0] != query)){
+    globalVars.searchHistory.insert(0, query);
+    prefs.setStringList("searchStrings", globalVars.searchHistory);
+  } 
+  
 }
 
 // updates the search history sharedPrefs value
