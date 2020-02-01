@@ -558,7 +558,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true) {
+    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
       MediaItem mediaItem = MediaItem(
         id: responseJSON.data["link"],
         album: "OpenBeats Free Music",
@@ -572,6 +572,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (shouldPlay) {
         await onSkipToNext();
       }
+    } else {
+      onStop();
     }
   }
 
