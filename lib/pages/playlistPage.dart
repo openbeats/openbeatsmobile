@@ -444,7 +444,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   Future<void> _skip(int offset) async {
     if(_queueIndex == (_queue.length-1) && offset == 1){
-      _queueIndex = 0;
+      _queueIndex = -1;
     } else if(_queueIndex == 0 && offset == -1){
       _queueIndex = _queue.length-1;
     }
