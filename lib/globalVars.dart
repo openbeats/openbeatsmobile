@@ -58,3 +58,6 @@ const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');
 
 // holds the borderRadius for widget
 double borderRadius = 10.0;
+
+// holds the videoList obtained after searching for persistent data 
+var videosResponseList = new List();
