@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
 import '../globalWids.dart' as globalWids;
+import '../actions/globalVarsA.dart' as globalVarsA;
 
 // media item to indicate the current playing audio
 MediaItem currMediaItem;
@@ -102,6 +103,8 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           // response as list to iterate over
           videosResponseList = responseJSON["data"] as List;
+          // calling function to set the videoResponseList globally for persistency
+          globalVarsA.setPersistentVideoList(videosResponseList);
           // removing loading animation from screen
           searchResultLoading = false;
         });
@@ -244,6 +247,15 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // checks if there is persistent video result values to be inserted and insert if there are
+  void checkForVidResultPersistency(){
+    if(globalVars.videosResponseList.length != 0){
+      setState(() {
+        videosResponseList = globalVars.videosResponseList;
+      });
+    }
+  }
+
   // handles the back button press from exiting the app
   Future<bool> _onWillPop() {
     if (videosResponseList.length == 0)
@@ -276,6 +288,7 @@ class _HomePageState extends State<HomePage> {
           true;
     else
       setState(() {
+        globalVarsA.setPersistentVideoList([]);
         videosResponseList = [];
       });
   }
@@ -283,6 +296,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    // checks if there is persistent video result values to be inserted and insert if there are
+    checkForVidResultPersistency();
     // getting authStatus to refresh app after restart
     getAuthStatus();
     connect();

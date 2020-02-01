@@ -44,3 +44,8 @@ void modifyLoginInfo(loginParameters, shouldUpdateSharedPreferences) async {
     }
   }
 }
+
+// used to set the videoList for persistency of search results
+void setPersistentVideoList(var videosResponseList){
+  globalVars.videosResponseList = videosResponseList;
+}
