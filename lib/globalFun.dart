@@ -145,8 +145,8 @@ Widget drawerTopChartsPageListTile(int currPage, context) {
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
               // navigating to homePage
-              // Navigator.of(context).pushReplacement(
-              //     globalWids.FadeRouteBuilder(page: TopChartsPage()));
+              Navigator.of(context).pushReplacement(
+                  globalWids.FadeRouteBuilder(page: TopChartsPage()));
             },
           )
         : null,
@@ -420,7 +420,7 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
   Duration snackBarDuration = Duration(minutes: 1);
   switch (mode) {
     case 0:
-      snackBarMessage = "Please wait, fetching your choice...";
+      snackBarMessage = "Fetching your choice...";
       snackBarColor = Colors.orange;
       snackBarDuration = Duration(seconds: 30);
       break;
@@ -459,7 +459,7 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
       snackBarDuration = Duration(seconds: 5);
       break;
     case 7:
-      snackBarMessage = "Please wait, initializing playlist...";
+      snackBarMessage = "Initializing playlist...";
       snackBarColor = Colors.orange;
       snackBarDuration = Duration(seconds: 30);
       break;
@@ -581,6 +581,8 @@ int getDurationMillis(String audioDuration) {
 String getCurrentTimeStamp(double totalSeconds) {
   // variables holding separated time
   String min, sec, hour;
+  // holds the total seconds to help decide if I need to send hours or not at the end
+  double totalSecondsPlaceHolder = totalSeconds;
   // check if it is greater than one hour
   if (totalSeconds > 3600) {
     // getting number of hours
@@ -595,10 +597,20 @@ String getCurrentTimeStamp(double totalSeconds) {
   // adding the necessary zeros
   if (int.parse(sec) < 10) sec = "0" + sec;
   // if the duration is greater than 1 hour, return with hour
-  if (totalSeconds > 3600)
-    return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
-  else
-    return (min.toString() + ":" + sec.toString());
+  if (totalSecondsPlaceHolder > 3600){
+    if(double.parse(min) < 10.0){
+      return (hour.toString() + ":0" + min.toString() + ":" + sec.toString());
+    } else {
+      return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
+    }
+  }
+  else {
+    if(double.parse(min) < 10.0){
+      return ("0"+min.toString() + ":" + sec.toString());
+    } else {
+      return (min.toString() + ":" + sec.toString());
+    }
+  }
 }
 
 // method to show dialog 

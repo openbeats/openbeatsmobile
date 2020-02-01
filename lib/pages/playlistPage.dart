@@ -65,7 +65,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(globalVars.borderRadius), topRight: Radius.circular(globalVars.borderRadius),
+            topLeft: Radius.circular(globalVars.borderRadius),
+            topRight: Radius.circular(globalVars.borderRadius),
           )),
           context: context,
           elevation: 10.0,
@@ -82,7 +83,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing && _playlistsPageScaffoldKey.currentState != null && 
+                      BasicPlaybackState.playing &&
+                  _playlistsPageScaffoldKey.currentState != null &&
                   _playlistsPageScaffoldKey
                       .currentState.hasFloatingActionButton)
                 {
@@ -310,7 +312,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget shuffleAllBtn() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: RaisedButton(
         onPressed: () async {
           // show link-fetching snackBar
@@ -339,11 +340,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
           children: <Widget>[
             Icon(
               Icons.shuffle,
-              size: 20.0,
+              size: 25.0,
             ),
             SizedBox(width: 10.0),
             Text(
-              "Shuffle All",
+              "SHUFFLE ALL",
               style: TextStyle(fontSize: 20.0),
             )
           ],
@@ -422,7 +423,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (hasNext) {
       onSkipToNext();
     } else {
-      onStop();
+      _queueIndex = -1;
+      onSkipToNext();
+      // onStop();
     }
   }
 
@@ -440,6 +443,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
+    if(_queueIndex == (_queue.length-1) && offset == 1){
+      _queueIndex = -1;
+    } else if(_queueIndex == 0 && offset == -1){
+      _queueIndex = _queue.length-1;
+    }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
     if (_playing == null) {
@@ -550,7 +558,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true) {
+    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
       MediaItem mediaItem = MediaItem(
         id: responseJSON.data["link"],
         album: "OpenBeats Free Music",
@@ -564,6 +572,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (shouldPlay) {
         await onSkipToNext();
       }
+    } else {
+      onStop();
     }
   }
 

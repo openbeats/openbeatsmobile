@@ -360,7 +360,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (hasNext) {
       onSkipToNext();
     } else {
-      onStop();
+      _queueIndex = -1;
+      onSkipToNext();
+      // onStop();
     }
   }
 
@@ -378,6 +380,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
+    if(_queueIndex == (_queue.length-1) && offset == 1){
+      _queueIndex = -1;
+    } else if(_queueIndex == 0 && offset == -1){
+      _queueIndex = _queue.length-1;
+    }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
     if (_playing == null) {
@@ -488,7 +495,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true) {
+    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
       MediaItem mediaItem = MediaItem(
         id: responseJSON.data["link"],
         album: "OpenBeats Free Music",
@@ -497,12 +504,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
         artist: parameter['channelName'],
         artUri: parameter['thumbnail'],
       );
-      print(responseJSON.data.toString());
-      // _queue.add(mediaItem);
-      // AudioServiceBackground.setQueue(_queue);
-      // if (shouldPlay) {
-      //   await onSkipToNext();
-      // }
+      
+      _queue.add(mediaItem);
+      AudioServiceBackground.setQueue(_queue);
+      if (shouldPlay) {
+        await onSkipToNext();
+      }
+    } else {
+      onStop();
     }
   }
 

@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop(true);
+                    
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                   child: new Text(
@@ -612,7 +612,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true) {
+    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
       // setting the current mediaItem
       await AudioServiceBackground.setMediaItem(MediaItem(
         id: responseJSON.data["link"],
@@ -632,6 +632,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       onPlay();
       // setting sharedPreferences values
       settingSharedPrefs(parameter, responseJSON.data["link"]);
+    } else {
+      onStop();
     }
   }
 
