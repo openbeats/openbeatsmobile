@@ -65,7 +65,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(globalVars.borderRadius), topRight: Radius.circular(globalVars.borderRadius),
+            topLeft: Radius.circular(globalVars.borderRadius),
+            topRight: Radius.circular(globalVars.borderRadius),
           )),
           context: context,
           elevation: 10.0,
@@ -82,7 +83,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing && _playlistsPageScaffoldKey.currentState != null && 
+                      BasicPlaybackState.playing &&
+                  _playlistsPageScaffoldKey.currentState != null &&
                   _playlistsPageScaffoldKey
                       .currentState.hasFloatingActionButton)
                 {
@@ -310,7 +312,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget shuffleAllBtn() {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: RaisedButton(
         onPressed: () async {
           // show link-fetching snackBar
@@ -339,11 +340,11 @@ class _PlaylistPageState extends State<PlaylistPage> {
           children: <Widget>[
             Icon(
               Icons.shuffle,
-              size: 20.0,
+              size: 25.0,
             ),
             SizedBox(width: 10.0),
             Text(
-              "Shuffle All",
+              "SHUFFLE ALL",
               style: TextStyle(fontSize: 20.0),
             )
           ],

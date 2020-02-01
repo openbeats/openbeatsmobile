@@ -497,12 +497,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
         artist: parameter['channelName'],
         artUri: parameter['thumbnail'],
       );
-      print(responseJSON.data.toString());
-      // _queue.add(mediaItem);
-      // AudioServiceBackground.setQueue(_queue);
-      // if (shouldPlay) {
-      //   await onSkipToNext();
-      // }
+      
+      _queue.add(mediaItem);
+      AudioServiceBackground.setQueue(_queue);
+      if (shouldPlay) {
+        await onSkipToNext();
+      }
     }
   }
 
@@ -531,6 +531,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       else if (i == durationLst.length - 3)
         maxVal += (3600000 * durationLst[i]);
     }
+    print(maxVal);
     return maxVal.toInt();
   }
 

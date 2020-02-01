@@ -122,7 +122,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
             AudioService.queue.length == 0) {
           settingModalBottomSheet(context);
         } else {
-          await getMp3URL(videosResponseItem["videoId"],index);
+          await getMp3URL(videosResponseItem["videoId"], index);
         }
       },
       child: Container(
@@ -296,7 +296,7 @@ Widget topChartsPlaylistPageVidResultContainerW(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            vidResultThumbnail(context, videosResponseItem["thumbnail"], 2),
+            vidResultThumbnail(context, videosResponseItem["thumbnail"], 3),
             SizedBox(
               width: 15.0,
             ),
@@ -339,8 +339,12 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                     builder: (context) =>
                         AddSongsToPlaylistPage(videosResponseItem),
                   ));
-            } else if (choice == "addToPlaylist") {
-              globalFun.showUnderDevToast();
+            } else if (choice == "download") {
+              globalVars.platformMethodChannel.invokeMethod("startDownload", {
+                "videoId": videosResponseItem["videoId"],
+                "videoTitle": videosResponseItem["title"],
+                "showRational": false,
+              });
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
             }
@@ -374,7 +378,7 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
 }
 
 // holds the thumbnail of results list
-// page mode 1 - homePage / 2 - playlistPage
+// page mode 1 - homePage / 2 - playlistPage / 3 - topChartsPlaylistPage
 Widget vidResultThumbnail(context, String thumbnail, int pageMode) {
   return Container(
       width: MediaQuery.of(context).size.width * 0.15,
@@ -395,7 +399,8 @@ Widget vidResultThumbnail(context, String thumbnail, int pageMode) {
                   AudioService.currentMediaItem.artUri == thumbnail &&
                   ((AudioService.queue != null) &&
                           (pageMode == 2 && AudioService.queue.length > 0) ||
-                      (pageMode == 1 && AudioService.queue.length == 0))) {
+                      (pageMode == 1 && AudioService.queue.length == 0) ||
+                      (pageMode == 3 && AudioService.queue.length > 0))) {
                 if (state.basicState == BasicPlaybackState.connecting ||
                     state.basicState == BasicPlaybackState.buffering) {
                   return nowPlayingLoadingAnimation();
@@ -714,11 +719,11 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
           backgroundColor: Color(0xFFFF5C5C),
           foregroundColor: Colors.white,
         )
-      : FloatingActionButton(
+      : FloatingActionButton.extended(
           onPressed: () {
             settingModalBottomSheet(context);
           },
-          child: CircularProgressIndicator(
+          icon: CircularProgressIndicator(
             valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
           ),
           backgroundColor: Color(0xFFFF5C5C),

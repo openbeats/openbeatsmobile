@@ -274,7 +274,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop(true);
+                    
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                   child: new Text(
