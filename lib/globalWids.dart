@@ -697,13 +697,16 @@ Widget fabView(settingModalBottomSheet, scaffoldKey) {
 // holds the floating action button
 Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
     scaffoldKey) {
-  return (isPlaying)
-      ? FloatingActionButton.extended(
-          onPressed: () {
-            settingModalBottomSheet(context);
-          },
-          label: Text("Now Playing"),
-          icon: SizedBox(
+  return FloatingActionButton.extended(
+    onPressed: () {
+      settingModalBottomSheet(context);
+    },
+    label: (isPlaying) ? Text("Playing"):Container(
+      margin: EdgeInsets.only(left: 11.0),
+      child: Text("Loading")
+    ),
+    icon: (isPlaying)
+        ? SizedBox(
             width: 40.0,
             height: 40.0,
             child: FlareActor(
@@ -714,21 +717,16 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
                       'lysis'
                       '',
               fit: BoxFit.scaleDown,
-            ),
-          ),
-          backgroundColor: Color(0xFFFF5C5C),
-          foregroundColor: Colors.white,
-        )
-      : FloatingActionButton.extended(
-          onPressed: () {
-            settingModalBottomSheet(context);
-          },
-          icon: CircularProgressIndicator(
-            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-          backgroundColor: Color(0xFFFF5C5C),
-          foregroundColor: Colors.white,
-        );
+            ))
+        : SizedBox(
+            width: 25.0,
+            height: 25.0,
+            child: CircularProgressIndicator(
+              valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+            )),
+    backgroundColor: Color(0xFFFF5C5C),
+    foregroundColor: Colors.white,
+  );
 }
 
 Widget bottomSheet(context, _dragPositionSubject) {

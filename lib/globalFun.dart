@@ -420,7 +420,7 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
   Duration snackBarDuration = Duration(minutes: 1);
   switch (mode) {
     case 0:
-      snackBarMessage = "Please wait, fetching your choice...";
+      snackBarMessage = "Fetching your choice...";
       snackBarColor = Colors.orange;
       snackBarDuration = Duration(seconds: 30);
       break;
@@ -459,7 +459,7 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
       snackBarDuration = Duration(seconds: 5);
       break;
     case 7:
-      snackBarMessage = "Please wait, initializing playlist...";
+      snackBarMessage = "Initializing playlist...";
       snackBarColor = Colors.orange;
       snackBarDuration = Duration(seconds: 30);
       break;

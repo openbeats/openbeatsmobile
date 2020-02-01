@@ -531,7 +531,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       else if (i == durationLst.length - 3)
         maxVal += (3600000 * durationLst[i]);
     }
-    print(maxVal);
     return maxVal.toInt();
   }
 
