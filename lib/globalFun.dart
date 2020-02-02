@@ -40,7 +40,7 @@ Widget drawerW(int currPage, context) {
           drawerYourPlaylistsPageListTile(currPage, context),
           drawerLikedSongsPageListTile(currPage, context),
           drawerYourDownloadsPageListTile(currPage, context),
-          drawerappsettingsPageListTile(currPage, context),
+          // drawerappsettingsPageListTile(currPage, context),
           drawerLogoutPageListTile(context),
         ],
       ),
