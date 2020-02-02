@@ -18,24 +18,24 @@ Color subtitleTextColor = Colors.white;
 
 // holds the gradient information for the TopCharts page
 List<Color> gradientListPrimary = [
-  Color(0xFFee0979),
-  Color(0xFF8E2DE2),
-  Color(0xFFF7971E),
-  Color(0xFFf12711),
-  Color(0xFF0575E6),
-  Color(0xFF00b09b),
-  Color(0xFFec008c),
-  Color(0xFF757F9A),
+  Color(0xFFff758c),
+  Color(0xFF00cdac),
+  Color(0xFFc79081),
+  Color(0xFFfa709a),
+  Color(0xFF209cff),
+  Color(0xFF50cc7f),
+  Color(0xFF1e3c72),
+  Color(0xFF243949),
 ];
 List<Color> gradientListSec = [
-  Color(0xFFff6a00),
-  Color(0xFF4A00E0),
-  Color(0xFFFFD200),
-  Color(0xFFf5af19),
-  Color(0xFF021B79),
-  Color(0xFF96c93d),
-  Color(0xFFfc6767),
-  Color(0xFFD7DDE8),
+  Color(0xFFff7eb3),
+  Color(0xFF8ddad5),
+  Color(0xFFdfa579),
+  Color(0xFFfee140),
+  Color(0xFF68e0cf),
+  Color(0xFFf5d100),
+  Color(0xFF2a5298),
+  Color(0xFF517fa4),
 ];
 
 // holds the login information of the user

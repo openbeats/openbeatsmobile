@@ -493,7 +493,7 @@ Widget bNavPlayControlsW(context, state) {
       SizedBox(
         width: 10.0,
       ),
-      bNavPlayBtn(state),
+      bNavPlayStopBtn(context, state),
       SizedBox(
         width: 10.0,
       ),
@@ -507,35 +507,46 @@ Widget bNavPlayControlsW(context, state) {
 }
 
 // button to hold the play and pause Button
-// mode 1 - music stopped, 2 - music playing
-Widget bNavPlayBtn(state) {
-  return Container(
-    child: (AudioService.playbackState != null)
-        ? (AudioService.playbackState.basicState ==
-                    BasicPlaybackState.playing ||
-                AudioService.playbackState.basicState ==
-                    BasicPlaybackState.paused ||
-                AudioService.playbackState.basicState ==
-                    BasicPlaybackState.skippingToNext ||
-                AudioService.playbackState.basicState ==
-                    BasicPlaybackState.skippingToPrevious)
-            ? IconButton(
-                onPressed: () {
-                  if (AudioService.playbackState != null &&
-                      AudioService.playbackState.basicState !=
-                          BasicPlaybackState.playing)
-                    AudioService.play();
-                  else
-                    AudioService.pause();
-                },
-                iconSize: 45.0,
-                icon: (AudioService.playbackState.basicState !=
-                        BasicPlaybackState.playing)
-                    ? Icon(FontAwesomeIcons.solidPlayCircle)
-                    : Icon(FontAwesomeIcons.solidPauseCircle),
-              )
-            : null
-        : null,
+Widget bNavPlayStopBtn(context, state) {
+  return SizedBox(
+    height: 75,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        Container(
+          child: (AudioService.playbackState != null)
+              ? (AudioService.playbackState.basicState ==
+                          BasicPlaybackState.playing ||
+                      AudioService.playbackState.basicState ==
+                          BasicPlaybackState.paused ||
+                      AudioService.playbackState.basicState ==
+                          BasicPlaybackState.skippingToNext ||
+                      AudioService.playbackState.basicState ==
+                          BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                          BasicPlaybackState.buffering)
+                  ? IconButton(
+                      onPressed: () {
+                        if (AudioService.playbackState != null &&
+                            AudioService.playbackState.basicState !=
+                                BasicPlaybackState.playing)
+                          AudioService.play();
+                        else
+                          AudioService.pause();
+                      },
+                      iconSize: 55.0,
+                      icon: (AudioService.playbackState.basicState !=
+                              BasicPlaybackState.playing)
+                          ? Icon(FontAwesomeIcons.solidPlayCircle)
+                          : Icon(FontAwesomeIcons.solidPauseCircle),
+                    )
+                  : SizedBox(
+                    child: CircularProgressIndicator(),
+                  )
+              : null,
+        ),
+       
+      ],
+    ),
   );
 }
 
@@ -550,7 +561,8 @@ Widget bNavSkipPrevious() {
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.skippingToNext ||
                 AudioService.playbackState.basicState ==
-                    BasicPlaybackState.skippingToPrevious)
+                    BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                    BasicPlaybackState.buffering)
             ? IconButton(
                 onPressed: () {
                   AudioService.skipToPrevious();
@@ -573,7 +585,8 @@ Widget bNavSkipNext() {
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.skippingToNext ||
                 AudioService.playbackState.basicState ==
-                    BasicPlaybackState.skippingToPrevious)
+                    BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                    BasicPlaybackState.buffering)
             ? IconButton(
                 onPressed: () {
                   AudioService.skipToNext();
@@ -585,6 +598,34 @@ Widget bNavSkipNext() {
   );
 }
 
+// // holds the addToPlaylistBtn
+// Widget bNavAddToPlaylist(context, videosResponseItem){
+//   return Container(
+//     child: (AudioService.playbackState != null && AudioService.queue.length > 0)
+//         ? (AudioService.playbackState.basicState ==
+//                     BasicPlaybackState.playing ||
+//                 AudioService.playbackState.basicState ==
+//                     BasicPlaybackState.paused ||
+//                 AudioService.playbackState.basicState ==
+//                     BasicPlaybackState.skippingToNext ||
+//                 AudioService.playbackState.basicState ==
+//                     BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+//                     BasicPlaybackState.buffering)
+//             ? IconButton(
+//                 onPressed: () {
+//                   Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) =>
+//                         AddSongsToPlaylistPage(videosResponseItem),
+//                 },
+//                 iconSize: 30.0,
+//                 icon: Icon(Icons.playlist_add))
+//             : null
+//         : null,
+//   );
+// }
+
 // holds the buffering indicator
 Widget bufferingIndicator() {
   return SizedBox(
@@ -592,7 +633,10 @@ Widget bufferingIndicator() {
     child: Container(
       child: (AudioService.playbackState != null)
           ? (AudioService.playbackState.basicState ==
-                  BasicPlaybackState.buffering)
+                      BasicPlaybackState.buffering ||
+                  AudioService.playbackState.basicState ==
+                      BasicPlaybackState.skippingToNext || AudioService.playbackState.basicState ==
+                      BasicPlaybackState.skippingToPrevious)
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
@@ -607,10 +651,20 @@ Widget bufferingIndicator() {
                     SizedBox(
                       width: 5.0,
                     ),
-                    Text(
-                      "Buffering...",
-                      style: TextStyle(color: Colors.grey),
-                    )
+                    Container(
+                      child: (AudioService.playbackState.basicState ==
+                              BasicPlaybackState.buffering)
+                          ? Text(
+                              "Buffering...",
+                              style: TextStyle(color: Colors.grey),
+                            )
+                          : (AudioService.playbackState.basicState ==
+                              BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                              BasicPlaybackState.skippingToNext)?Text(
+                              "Connecting...",
+                              style: TextStyle(color: Colors.grey),
+                            ):null,
+                    ),
                   ],
                 )
               : null
@@ -628,6 +682,7 @@ Widget bNavStopBtn(context, state) {
                 AudioService.stop();
                 Navigator.pop(context);
               },
+              iconSize: 20.0,
               icon: Icon(FontAwesomeIcons.stop),
             )
           : null);
@@ -701,10 +756,10 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
     onPressed: () {
       settingModalBottomSheet(context);
     },
-    label: (isPlaying) ? Text("Playing"):Container(
-      margin: EdgeInsets.only(left: 11.0),
-      child: Text("Loading")
-    ),
+    label: (isPlaying)
+        ? Text("Playing")
+        : Container(
+            margin: EdgeInsets.only(left: 11.0), child: Text("Loading")),
     icon: (isPlaying)
         ? SizedBox(
             width: 40.0,
