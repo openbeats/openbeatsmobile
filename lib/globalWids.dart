@@ -184,11 +184,18 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
               });
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
-            } else if (choice == "addtoqueue") {
-              var parameter = {"song": videosResponseItem};
-              AudioService.customAction(
-                "addItemToQueue", parameter
-              );
+            } else if (choice == "addToQueue") {
+              if (AudioService.playbackState != null &&
+                  AudioService.playbackState.basicState !=
+                      BasicPlaybackState.none &&
+                  AudioService.playbackState.basicState !=
+                      BasicPlaybackState.stopped) {
+                var parameter = {"song": videosResponseItem};
+                AudioService.customAction("addItemToQueue", parameter);
+              } else{
+                globalFun.showToastMessage("Please start a song to awail queue",
+                    Colors.orange, Colors.white);
+              }
             }
           } else {
             globalFun.showToastMessage(
@@ -216,11 +223,11 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
                     leading: Icon(Icons.favorite_border),
                   )),
               PopupMenuItem(
-                  value: "addtoqueue",
+                  value: "addToQueue",
                   child: ListTile(
                     title: Text("Add to Queue"),
                     leading: Icon(Icons.queue),
-                  ))
+                  )),
             ]),
   );
 }
@@ -408,11 +415,7 @@ Widget vidResultThumbnail(context, String thumbnail, int pageMode) {
             PlaybackState state = snapshot.data;
             if (state != null) {
               if (AudioService.currentMediaItem != null &&
-                  AudioService.currentMediaItem.artUri == thumbnail &&
-                  ((AudioService.queue != null) &&
-                          (pageMode == 2 && AudioService.queue.length > 1) ||
-                      (pageMode == 1 && AudioService.queue.length == 1) ||
-                      (pageMode == 3 && AudioService.queue.length > 1))) {
+                  AudioService.currentMediaItem.artUri == thumbnail) {
                 if (state.basicState == BasicPlaybackState.connecting ||
                     state.basicState == BasicPlaybackState.buffering) {
                   return nowPlayingLoadingAnimation();
