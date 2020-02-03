@@ -6,6 +6,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/addSongsToPlaylistPage.dart';
+import 'package:openbeatsmobile/pages/queuePage.dart';
 import 'package:rxdart/rxdart.dart';
 
 import './globalVars.dart' as globalVars;
@@ -183,6 +184,11 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
               });
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
+            } else if (choice == "addtoqueue") {
+              var parameter = {"song": videosResponseItem};
+              AudioService.customAction(
+                "addItemToQueue", parameter
+              );
             }
           } else {
             globalFun.showToastMessage(
@@ -208,6 +214,12 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+              PopupMenuItem(
+                  value: "addtoqueue",
+                  child: ListTile(
+                    title: Text("Add to Queue"),
+                    leading: Icon(Icons.queue),
                   ))
             ]),
   );
@@ -398,9 +410,9 @@ Widget vidResultThumbnail(context, String thumbnail, int pageMode) {
               if (AudioService.currentMediaItem != null &&
                   AudioService.currentMediaItem.artUri == thumbnail &&
                   ((AudioService.queue != null) &&
-                          (pageMode == 2 && AudioService.queue.length > 0) ||
-                      (pageMode == 1 && AudioService.queue.length == 0) ||
-                      (pageMode == 3 && AudioService.queue.length > 0))) {
+                          (pageMode == 2 && AudioService.queue.length > 1) ||
+                      (pageMode == 1 && AudioService.queue.length == 1) ||
+                      (pageMode == 3 && AudioService.queue.length > 1))) {
                 if (state.basicState == BasicPlaybackState.connecting ||
                     state.basicState == BasicPlaybackState.buffering) {
                   return nowPlayingLoadingAnimation();
@@ -501,7 +513,11 @@ Widget bNavPlayControlsW(context, state) {
       SizedBox(
         width: 10.0,
       ),
-      bNavSkipNext()
+      bNavSkipNext(),
+      SizedBox(
+        width: 10.0,
+      ),
+      viewQueueBtn(context)
     ],
   );
 }
@@ -522,7 +538,8 @@ Widget bNavPlayStopBtn(context, state) {
                       AudioService.playbackState.basicState ==
                           BasicPlaybackState.skippingToNext ||
                       AudioService.playbackState.basicState ==
-                          BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                          BasicPlaybackState.skippingToPrevious ||
+                      AudioService.playbackState.basicState ==
                           BasicPlaybackState.buffering)
                   ? IconButton(
                       onPressed: () {
@@ -540,11 +557,10 @@ Widget bNavPlayStopBtn(context, state) {
                           : Icon(FontAwesomeIcons.solidPauseCircle),
                     )
                   : SizedBox(
-                    child: CircularProgressIndicator(),
-                  )
+                      child: CircularProgressIndicator(),
+                    )
               : null,
         ),
-       
       ],
     ),
   );
@@ -553,7 +569,7 @@ Widget bNavPlayStopBtn(context, state) {
 // holds the skip previous
 Widget bNavSkipPrevious() {
   return Container(
-    child: (AudioService.playbackState != null && AudioService.queue.length > 0)
+    child: (AudioService.playbackState != null && AudioService.queue.length > 1)
         ? (AudioService.playbackState.basicState ==
                     BasicPlaybackState.playing ||
                 AudioService.playbackState.basicState ==
@@ -561,7 +577,8 @@ Widget bNavSkipPrevious() {
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.skippingToNext ||
                 AudioService.playbackState.basicState ==
-                    BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                    BasicPlaybackState.skippingToPrevious ||
+                AudioService.playbackState.basicState ==
                     BasicPlaybackState.buffering)
             ? IconButton(
                 onPressed: () {
@@ -577,7 +594,7 @@ Widget bNavSkipPrevious() {
 // holds the skip previous
 Widget bNavSkipNext() {
   return Container(
-    child: (AudioService.playbackState != null && AudioService.queue.length > 0)
+    child: (AudioService.playbackState != null && AudioService.queue.length > 1)
         ? (AudioService.playbackState.basicState ==
                     BasicPlaybackState.playing ||
                 AudioService.playbackState.basicState ==
@@ -585,7 +602,8 @@ Widget bNavSkipNext() {
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.skippingToNext ||
                 AudioService.playbackState.basicState ==
-                    BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
+                    BasicPlaybackState.skippingToPrevious ||
+                AudioService.playbackState.basicState ==
                     BasicPlaybackState.buffering)
             ? IconButton(
                 onPressed: () {
@@ -593,6 +611,32 @@ Widget bNavSkipNext() {
                 },
                 iconSize: 30.0,
                 icon: Icon(FontAwesomeIcons.stepForward))
+            : null
+        : null,
+  );
+}
+
+// holds the viewQueueBtn
+Widget viewQueueBtn(context) {
+  return Container(
+    child: (AudioService.playbackState != null && AudioService.queue.length > 1)
+        ? (AudioService.playbackState.basicState ==
+                    BasicPlaybackState.playing ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.paused ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.skippingToNext ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.skippingToPrevious ||
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.buffering)
+            ? IconButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => QueuePage()));
+                },
+                iconSize: 30.0,
+                icon: Icon(Icons.queue_music))
             : null
         : null,
   );
@@ -635,7 +679,8 @@ Widget bufferingIndicator() {
           ? (AudioService.playbackState.basicState ==
                       BasicPlaybackState.buffering ||
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.skippingToNext || AudioService.playbackState.basicState ==
+                      BasicPlaybackState.skippingToNext ||
+                  AudioService.playbackState.basicState ==
                       BasicPlaybackState.skippingToPrevious)
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -659,11 +704,14 @@ Widget bufferingIndicator() {
                               style: TextStyle(color: Colors.grey),
                             )
                           : (AudioService.playbackState.basicState ==
-                              BasicPlaybackState.skippingToPrevious || AudioService.playbackState.basicState ==
-                              BasicPlaybackState.skippingToNext)?Text(
-                              "Connecting...",
-                              style: TextStyle(color: Colors.grey),
-                            ):null,
+                                      BasicPlaybackState.skippingToPrevious ||
+                                  AudioService.playbackState.basicState ==
+                                      BasicPlaybackState.skippingToNext)
+                              ? Text(
+                                  "Connecting...",
+                                  style: TextStyle(color: Colors.grey),
+                                )
+                              : null,
                     ),
                   ],
                 )

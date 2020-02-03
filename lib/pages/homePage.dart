@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
 
     MediaItem currMediaItem = MediaItem(
       id: videoId,
-      album: "OpenBeats Free Music",
+      album: "OpenBeats Music",
       duration: audioDuration,
       title: videosResponseList[index]["title"],
       artist: videosResponseList[index]["channelName"],
@@ -546,6 +546,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // if condition to play current media
     if (action == "playMedia2") {
       getMp3URL(parameter['mediaID'], parameter);
+    } else if(action == "addItemToQueue"){
+      getMp3URLToQueue(parameter["song"]);
     }
   }
 
@@ -580,7 +582,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_playing != null && _playing) {
+    if(_queue.length == 0){
+      if (_playing != null && _playing) {
       return [
         pauseControl,
         stopControl,
@@ -590,6 +593,63 @@ class AudioPlayerTask extends BackgroundAudioTask {
         playControl,
         stopControl,
       ];
+    }
+    } else {
+      if (_playing != null && _playing) {
+      return [
+        skipToPreviousControl,
+        pauseControl,
+        stopControl,
+        skipToNextControl
+      ];
+    } else {
+      return [
+        skipToPreviousControl,
+        playControl,
+        stopControl,
+        skipToNextControl
+      ];
+    }
+    }
+    
+  }
+
+   // gets the mp3URL using videoID
+  void getMp3URLToQueue(parameter) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" + parameter["videoId"];
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        globalFun.showToastMessage(
+            "Cannot connect to the server", Colors.red, Colors.white);
+        onStop();
+        return;
+      }
+    }
+    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
+      // setting the current mediaItem
+      MediaItem temp = MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Music",
+        title: parameter['title'],
+        artist: parameter['channelName'],
+        duration: globalFun.getDurationMillis(parameter['duration']),
+        artUri: parameter['thumbnail'],
+      );
+      _queue.add(temp);
+      AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      AudioServiceBackground.setState(controls: getControls(state), basicState: state);
+      print("Queue Length"+_queue.length.toString());
+    } else {
+      onStop();
     }
   }
 
@@ -613,35 +673,30 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     }
     if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
-      // setting the current mediaItem
-      await AudioServiceBackground.setMediaItem(MediaItem(
+      MediaItem temp = MediaItem(
         id: responseJSON.data["link"],
-        album: "OpenBeats Free Music",
+        album: "OpenBeats Music",
         title: parameter['mediaTitle'],
         artist: parameter['channelID'],
         duration: parameter['duration'],
         artUri: parameter['thumbnailURI'],
-      ));
+      );
+      // setting the current mediaItem
+      await AudioServiceBackground.setMediaItem(temp);
       // setting URL for audio player
       await _audioPlayer.setUrl(responseJSON.data["link"]);
+      _queue.add(temp);
+      print("Queue Length"+_queue.length.toString());
+      AudioServiceBackground.setQueue(_queue);
       if (_playing == null) {
         // First time, we want to start playing
         _playing = true;
       }
       // playing audio
       onPlay();
-      // setting sharedPreferences values
-      settingSharedPrefs(parameter, responseJSON.data["link"]);
     } else {
       onStop();
     }
   }
 
-  void settingSharedPrefs(parameter, String link) async {
-    // creating sharedPreferences instance to set media values
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // setting the url in shared preferences
-    prefs.setString("nowPlayingURL", link.toString());
-  }
 }

@@ -527,6 +527,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     } else if (action == "startMusicPlaybackAndCreateQueue") {
       var passedParameters = parameters;
+      // current index to identify which song to start playing with
       int currIndex = passedParameters["currIndex"];
       await getMp3URL(
           passedParameters["allSongs"][passedParameters["currIndex"]], true);
@@ -561,7 +562,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
       MediaItem mediaItem = MediaItem(
         id: responseJSON.data["link"],
-        album: "OpenBeats Free Music",
+        album: "OpenBeats Music",
         title: parameter['title'],
         duration: getDurationMillis(parameter["duration"]),
         artist: parameter['channelName'],
