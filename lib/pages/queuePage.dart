@@ -26,30 +26,40 @@ class _QueuePageState extends State<QueuePage> {
 
   // updates the queue list according to user arrangement
   void updateQueue(int oldIndex, int newIndex) {
-    if(queueList[oldIndex].artUri != AudioService.currentMediaItem.artUri && queueList[newIndex].artUri != AudioService.currentMediaItem.artUri){
+    if (queueList[oldIndex].artUri != AudioService.currentMediaItem.artUri &&
+        queueList[newIndex].artUri != AudioService.currentMediaItem.artUri) {
       setState(() {
-      queueList.insert(newIndex, queueList[oldIndex]);
-      queueList.removeAt(oldIndex + 1);
-    });
-    Map<String, int> parameters = {"oldIndex": oldIndex, "newIndex": newIndex};
-    AudioService.customAction("updateQueueOrder", parameters);
+        queueList.insert(newIndex, queueList[oldIndex]);
+        queueList.removeAt(oldIndex + 1);
+      });
+      Map<String, int> parameters = {
+        "oldIndex": oldIndex,
+        "newIndex": newIndex
+      };
+      AudioService.customAction("updateQueueOrder", parameters);
     } else {
-      globalFun.showToastMessage("Please do not modify currently playing media", Colors.orange, Colors.white);
+      globalFun.showToastMessage("Please do not modify currently playing media",
+          Colors.orange, Colors.white);
     }
   }
 
   // deletes the item from queue
   void deleteItemFromQueue(int index) {
-    if(queueList[index].artUri != AudioService.currentMediaItem.artUri){
+    if (queueList[index].artUri != AudioService.currentMediaItem.artUri) {
       setState(() {
-      queueList.removeAt(index);
-      Map<String, int> parameters = {"index": index};
-      AudioService.customAction("removeItemFromQueue", parameters);
-    });
+        queueList.removeAt(index);
+        Map<String, dynamic> parameters = {
+          "index": index,
+          "currentArtURI": AudioService.currentMediaItem.artUri
+        };
+        AudioService.customAction("removeItemFromQueue", parameters);
+      });
     } else {
-      globalFun.showToastMessage("Current playing media cannot be deleted from queue", Colors.orange, Colors.white);
+      globalFun.showToastMessage(
+          "Current playing media cannot be deleted from queue",
+          Colors.orange,
+          Colors.white);
     }
-    
   }
 
   // connects to the audio service

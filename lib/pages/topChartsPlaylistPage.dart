@@ -492,6 +492,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else if (action == "removeItemFromQueue") {
       _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+      // correcting the queue index of the current playing song
+      for (int i = 0; i < _queue.length; i++) {
+        if (parameters["currArtURI"] == _queue[i].artUri) {
+          _queueIndex = i;
+        }
+      }
     } else if (action == "updateQueueOrder") {
       _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
       _queue.removeAt(parameters["oldIndex"] + 1);
@@ -611,20 +621,34 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_playing) {
-      return [
-        skipToPreviousControl,
-        pauseControl,
-        skipToNextControl,
-        stopControl
-      ];
+    if (_queue.length == 1) {
+      if (_playing != null && _playing) {
+        return [
+          pauseControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          playControl,
+          stopControl,
+        ];
+      }
     } else {
-      return [
-        skipToPreviousControl,
-        playControl,
-        skipToNextControl,
-        stopControl,
-      ];
+      if (_playing != null && _playing) {
+        return [
+          skipToPreviousControl,
+          pauseControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          skipToPreviousControl,
+          playControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      }
     }
   }
 }
