@@ -612,15 +612,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return [
           skipToPreviousControl,
           pauseControl,
+          skipToNextControl,
           stopControl,
-          skipToNextControl
         ];
       } else {
         return [
           skipToPreviousControl,
           playControl,
+          skipToNextControl,
           stopControl,
-          skipToNextControl
         ];
       }
     }

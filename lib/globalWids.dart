@@ -120,8 +120,21 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                     BasicPlaybackState.buffering ||
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.paused) &&
-            AudioService.queue.length == 0) {
+            AudioService.queue.length == 1) {
           settingModalBottomSheet(context);
+        } else if (AudioService.playbackState != null &&
+                AudioService.playbackState.basicState != null &&
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.buffering ||
+            AudioService.playbackState.basicState ==
+                BasicPlaybackState.connecting ||
+            AudioService.playbackState.basicState ==
+                BasicPlaybackState.playing ||
+            AudioService.playbackState.basicState ==
+                BasicPlaybackState.paused) {
+          // showing the dialog to check if user wants to start playback or add song to queue
+          globalFun.showStopAndPlayChoice(
+              context, getMp3URL, videosResponseItem, index);
         } else {
           await getMp3URL(videosResponseItem["videoId"], index);
         }
@@ -286,13 +299,12 @@ Widget playlistPageVidResultExtraOptions(
           } else if (choice == "favorite") {
             globalFun.showUnderDevToast();
           } else if (choice == "addToQueue") {
-            
             if (AudioService.playbackState != null &&
                 AudioService.playbackState.basicState !=
                     BasicPlaybackState.none &&
                 AudioService.playbackState.basicState !=
                     BasicPlaybackState.stopped) {
-                      globalFun.showQueueBasedToasts(0);
+              globalFun.showQueueBasedToasts(0);
               var parameter = {"song": videosResponseItem};
               AudioService.customAction("addItemToQueue", parameter);
             } else {
@@ -388,13 +400,12 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
             } else if (choice == "addToQueue") {
-              
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState !=
                       BasicPlaybackState.none &&
                   AudioService.playbackState.basicState !=
                       BasicPlaybackState.stopped) {
-                        globalFun.showQueueBasedToasts(0);
+                globalFun.showQueueBasedToasts(0);
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
@@ -569,8 +580,8 @@ Widget bNavPlayControlsW(context, state) {
             onSelected: (choice) {
               if (choice == "viewQueue") {
                 Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => QueuePage()));
-              } else if(choice == "stopService"){
+                    MaterialPageRoute(builder: (context) => QueuePage()));
+              } else if (choice == "stopService") {
                 Navigator.pop(context);
                 AudioService.stop();
               }
