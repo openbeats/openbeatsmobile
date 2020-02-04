@@ -113,29 +113,29 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
       onTap: () async {
         if (AudioService.playbackState != null &&
             AudioService.currentMediaItem != null &&
-            AudioService.currentMediaItem.artUri ==
-                videosResponseItem["thumbnail"] &&
-            (AudioService.playbackState.basicState ==
-                    BasicPlaybackState.playing ||
-                AudioService.playbackState.basicState ==
-                    BasicPlaybackState.buffering ||
-                AudioService.playbackState.basicState ==
-                    BasicPlaybackState.paused) &&
-            AudioService.queue.length == 1) {
-          settingModalBottomSheet(context);
-        } else if (AudioService.playbackState != null &&
-                AudioService.playbackState.basicState != null &&
-                AudioService.playbackState.basicState ==
-                    BasicPlaybackState.buffering ||
-            AudioService.playbackState.basicState ==
-                BasicPlaybackState.connecting ||
-            AudioService.playbackState.basicState ==
-                BasicPlaybackState.playing ||
-            AudioService.playbackState.basicState ==
-                BasicPlaybackState.paused) {
-          // showing the dialog to check if user wants to start playback or add song to queue
-          globalFun.showStopAndPlayChoice(
-              context, getMp3URL, videosResponseItem, index);
+            AudioService.playbackState.basicState != null) {
+          if (AudioService.currentMediaItem.artUri ==
+                  videosResponseItem["thumbnail"] &&
+              (AudioService.playbackState.basicState ==
+                      BasicPlaybackState.playing ||
+                  AudioService.playbackState.basicState ==
+                      BasicPlaybackState.buffering ||
+                  AudioService.playbackState.basicState ==
+                      BasicPlaybackState.paused) &&
+              AudioService.queue.length == 1) {
+            settingModalBottomSheet(context);
+          } else if (AudioService.playbackState.basicState ==
+                  BasicPlaybackState.buffering ||
+              AudioService.playbackState.basicState ==
+                  BasicPlaybackState.connecting ||
+              AudioService.playbackState.basicState ==
+                  BasicPlaybackState.playing ||
+              AudioService.playbackState.basicState ==
+                  BasicPlaybackState.paused) {
+            // showing the dialog to check if user wants to start playback or add song to queue
+            globalFun.showStopAndPlayChoice(
+                context, getMp3URL, videosResponseItem, index);
+          }
         } else {
           try {
             final result = await InternetAddress.lookup('example.com');
@@ -215,8 +215,7 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
-                globalFun.showToastMessage("Please start a song to awail queue",
-                    Colors.orange, Colors.white);
+                globalFun.showAvailQueueToast();
               }
             }
           } else {
@@ -323,8 +322,7 @@ Widget playlistPageVidResultExtraOptions(
               var parameter = {"song": videosResponseItem};
               AudioService.customAction("addItemToQueue", parameter);
             } else {
-              globalFun.showToastMessage("Please start a song to awail queue",
-                  Colors.orange, Colors.white);
+              globalFun.showAvailQueueToast();
             }
           }
         },
@@ -431,8 +429,7 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
-                globalFun.showToastMessage("Please start a song to awail queue",
-                    Colors.orange, Colors.white);
+                globalFun.showAvailQueueToast();
               }
             }
           } else {

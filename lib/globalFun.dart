@@ -541,6 +541,12 @@ void showNoInternetToast(){
   showToastMessage("Not able to connect to the internet", Colors.red, Colors.white);
 }
 
+// show toast to tell users to start playback to avail queue
+void showAvailQueueToast(){
+  showToastMessage("Please start a song to avail queue",
+                  Colors.orange, Colors.white);
+}
+
 // gets the search history from sharedPreferences
 void getSearchHistory() async {
   // creating sharedPreferences instance
@@ -702,8 +708,7 @@ void showStopAndPlayChoice(context, getMp3URL, videosResponseItem, index) {
                       var parameter = {"song": videosResponseItem};
                       AudioService.customAction("addItemToQueue", parameter);
                     } else {
-                      showToastMessage("Please start a song to awail queue",
-                          Colors.orange, Colors.white);
+                      showAvailQueueToast();
                     }
                   },
                   color: globalVars.primaryDark,
