@@ -49,7 +49,7 @@ Widget noSongsInQueue() {
   );
 }
 
-Widget queueListTile(context, queueList, index){
+Widget queueListTile(context, queueList, index, deleteItemFromQueue){
   return ListTile(
         leading: Container(
             width: MediaQuery.of(context).size.width * 0.15,
@@ -65,7 +65,12 @@ Widget queueListTile(context, queueList, index){
                     queueList[index].artUri)
                 ? nowPlayingAnimation()
                 : thumbNailView(queueList[index].artUri)),
-        trailing: Icon(Icons.menu),
+        trailing: IconButton(
+          icon: Icon(Icons.remove_circle),
+          onPressed: (){
+            deleteItemFromQueue(index);
+          },
+        ),
         title: Text(queueList[index].title),
       );
 }

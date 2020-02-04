@@ -480,6 +480,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     } else if (action == "addItemToQueue") {
       getMp3URLToQueue(parameters["song"]);
+    } else if(action == "removeItemFromQueue"){
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+    } else if( action == "updateQueueOrder"){
+      MediaItem oldOne = _queue[parameters["oldIndex"]];
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"]+1);
+      AudioServiceBackground.setQueue(_queue);
     }
   }
 

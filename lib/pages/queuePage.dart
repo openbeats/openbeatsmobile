@@ -24,7 +24,28 @@ class _QueuePageState extends State<QueuePage> {
   }
 
   // updates the queue list according to user arrangement
-  void updateQueue(int oldIndex, int newIndex) {}
+  void updateQueue(int oldIndex, int newIndex) {
+    setState(() {
+      // storing the exsisting on
+      MediaItem oldOne = queueList[oldIndex];
+      queueList.insert(newIndex, queueList[oldIndex]);
+      queueList.removeAt(oldIndex+1);
+    });
+    Map<String, int> parameters = {
+      "oldIndex":oldIndex,
+      "newIndex":newIndex
+    };
+     AudioService.customAction("updateQueueOrder", parameters);
+  }
+
+  // deletes the item from queue
+  void deleteItemFromQueue(int index) {
+    setState(() {
+      queueList.removeAt(index);
+      Map<String, int> parameters = {"index": index};
+      AudioService.customAction("removeItemFromQueue", parameters);
+    });
+  }
 
   // connects to the audio service
   void connect() async {
@@ -58,31 +79,22 @@ class _QueuePageState extends State<QueuePage> {
 
   Widget queuePageBody() {
     return Container(
-      child: (AudioService.queue != null && AudioService.playbackState!=null)
+      child: (AudioService.queue != null && AudioService.playbackState != null)
           ? StreamBuilder(
               stream: AudioService.queueStream,
               builder: (context, snapshot) {
                 queueList = snapshot.data;
                 return StreamBuilder(
-                        stream: AudioService.playbackStateStream,
-                        builder: (context, snapshot) {
-                          PlaybackState state = snapshot.data;
-                          return (queueList != null)?ReorderableListView(
+                    stream: AudioService.playbackStateStream,
+                    builder: (context, snapshot) {
+                      PlaybackState state = snapshot.data;
+                      return (queueList != null)
+                          ? ReorderableListView(
                               children: List.generate(queueList.length,
                                   (index) => queueListTile(index, state)),
-                              onReorder: (int oldIndex, int newIndex) {
-                                setState(() {
-                                  // removing and storing the exsisting on
-                                  MediaItem oldOne =
-                                      queueList.removeAt(oldIndex);
-                                  MediaItem newOne =
-                                      queueList.removeAt(newIndex);
-                                  // adding the new one at the old spot
-                                  queueList.insert(oldIndex, newOne);
-                                  queueList.insert(newIndex, oldOne);
-                                });
-                              }):Container(width: 0.0, height: 0.0);
-                        });
+                              onReorder: updateQueue)
+                          : Container(width: 0.0, height: 0.0);
+                    });
               })
           : queuePageW.noSongsInQueue(),
     );
@@ -92,7 +104,8 @@ class _QueuePageState extends State<QueuePage> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 10.0),
       key: ValueKey("value$index"),
-      child: queuePageW.queueListTile(context, queueList, index),
+      child: queuePageW.queueListTile(
+          context, queueList, index, deleteItemFromQueue),
     );
   }
 }
