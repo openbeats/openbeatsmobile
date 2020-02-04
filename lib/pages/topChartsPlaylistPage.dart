@@ -484,7 +484,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
         _queue.removeAt(parameters["index"]);
         AudioServiceBackground.setQueue(_queue);
     } else if( action == "updateQueueOrder"){
-      MediaItem oldOne = _queue[parameters["oldIndex"]];
       _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
       _queue.removeAt(parameters["oldIndex"]+1);
       AudioServiceBackground.setQueue(_queue);

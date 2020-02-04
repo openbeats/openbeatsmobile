@@ -26,8 +26,7 @@ class _QueuePageState extends State<QueuePage> {
   // updates the queue list according to user arrangement
   void updateQueue(int oldIndex, int newIndex) {
     setState(() {
-      // storing the exsisting on
-      MediaItem oldOne = queueList[oldIndex];
+      
       queueList.insert(newIndex, queueList[oldIndex]);
       queueList.removeAt(oldIndex+1);
     });

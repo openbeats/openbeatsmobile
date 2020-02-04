@@ -548,12 +548,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  void onCustomAction(String action, var parameter) async {
+  void onCustomAction(String action, var parameters) async {
     // if condition to play current media
     if (action == "playMedia2") {
-      getMp3URL(parameter['mediaID'], parameter);
+      getMp3URL(parameters['mediaID'], parameters);
     } else if (action == "addItemToQueue") {
-      getMp3URLToQueue(parameter["song"]);
+      getMp3URLToQueue(parameters["song"]);
+    } else if(action == "removeItemFromQueue"){
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+    } else if( action == "updateQueueOrder"){
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"]+1);
+      AudioServiceBackground.setQueue(_queue);
     }
   }
 

@@ -571,6 +571,7 @@ Widget bNavPlayControlsW(context, state) {
                 Navigator.push(context,
                       MaterialPageRoute(builder: (context) => QueuePage()));
               } else if(choice == "stopService"){
+                Navigator.pop(context);
                 AudioService.stop();
               }
             },
