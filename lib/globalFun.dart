@@ -159,6 +159,7 @@ Widget drawerArtistsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 3)
         ? ListTile(
+          
             leading: Icon(FontAwesomeIcons.users,
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
