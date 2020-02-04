@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -158,6 +159,7 @@ Widget drawerArtistsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 3)
         ? ListTile(
+          
             leading: Icon(FontAwesomeIcons.users,
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
@@ -534,6 +536,11 @@ void showQueueBasedToasts(int toastId) {
   }
 }
 
+// shows the no internet toasts
+void showNoInternetToast(){
+  showToastMessage("Not able to connect to the internet", Colors.red, Colors.white);
+}
+
 // gets the search history from sharedPreferences
 void getSearchHistory() async {
   // creating sharedPreferences instance
@@ -664,4 +671,52 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
               ],
             ));
   }
+}
+
+// showing the dialog to check if user wants to start playback or add song to queue
+void showStopAndPlayChoice(context, getMp3URL, videosResponseItem, index) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+            backgroundColor: globalVars.primaryDark,
+            title: Text("Are you sure?"),
+            content: Text("This action will end the current media playback"),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(globalVars.borderRadius))),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  color: globalVars.primaryDark,
+                  textColor: Colors.grey,
+                  child: Text("Cancel")),
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    if (AudioService.playbackState != null &&
+                        AudioService.playbackState.basicState !=
+                            BasicPlaybackState.none &&
+                        AudioService.playbackState.basicState !=
+                            BasicPlaybackState.stopped) {
+                      showQueueBasedToasts(0);
+                      var parameter = {"song": videosResponseItem};
+                      AudioService.customAction("addItemToQueue", parameter);
+                    } else {
+                      showToastMessage("Please start a song to awail queue",
+                          Colors.orange, Colors.white);
+                    }
+                  },
+                  color: globalVars.primaryDark,
+                  textColor: Colors.green,
+                  child: Text("Add to Queue")),
+              FlatButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await getMp3URL(videosResponseItem["videoId"], index);
+                  },
+                  color: globalVars.primaryDark,
+                  textColor: Colors.orange,
+                  child: Text("Continue")),
+            ],
+          ));
 }

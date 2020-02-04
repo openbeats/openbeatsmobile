@@ -4,6 +4,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import '../globalVars.dart' as globalVars;
 import '../widgets/queuePageW.dart' as queuePageW;
+import '../globalFun.dart' as globalFun;
 
 class QueuePage extends StatefulWidget {
   @override
@@ -25,25 +26,30 @@ class _QueuePageState extends State<QueuePage> {
 
   // updates the queue list according to user arrangement
   void updateQueue(int oldIndex, int newIndex) {
-    setState(() {
-      
+    if(queueList[oldIndex].artUri != AudioService.currentMediaItem.artUri && queueList[newIndex].artUri != AudioService.currentMediaItem.artUri){
+      setState(() {
       queueList.insert(newIndex, queueList[oldIndex]);
-      queueList.removeAt(oldIndex+1);
+      queueList.removeAt(oldIndex + 1);
     });
-    Map<String, int> parameters = {
-      "oldIndex":oldIndex,
-      "newIndex":newIndex
-    };
-     AudioService.customAction("updateQueueOrder", parameters);
+    Map<String, int> parameters = {"oldIndex": oldIndex, "newIndex": newIndex};
+    AudioService.customAction("updateQueueOrder", parameters);
+    } else {
+      globalFun.showToastMessage("Please do not modify currently playing media", Colors.orange, Colors.white);
+    }
   }
 
   // deletes the item from queue
   void deleteItemFromQueue(int index) {
-    setState(() {
+    if(queueList[index].artUri != AudioService.currentMediaItem.artUri){
+      setState(() {
       queueList.removeAt(index);
       Map<String, int> parameters = {"index": index};
       AudioService.customAction("removeItemFromQueue", parameters);
     });
+    } else {
+      globalFun.showToastMessage("Current playing media cannot be deleted from queue", Colors.orange, Colors.white);
+    }
+    
   }
 
   // connects to the audio service

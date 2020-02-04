@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
@@ -312,25 +313,33 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget shuffleAllBtn() {
     return Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: RaisedButton(
         onPressed: () async {
-          // show link-fetching snackBar
-          globalFun.showSnackBars(7, _playlistsPageScaffoldKey, context);
-          // monitoring playback state to close the snackbar when playback starts
-          monitorPlaybackStart();
-          if (AudioService.playbackState != null) {
-            await AudioService.stop();
-            Timer(Duration(milliseconds: 500), () async {
-              await startAudioService();
-              // calling method to add songs to the background list
-              await AudioService.customAction(
-                  "addSongsToList", dataResponse["data"]["songs"]);
-            });
-          } else {
-            await startAudioService();
-            // calling method to add songs to the background list
-            await AudioService.customAction(
-                "addSongsToList", dataResponse["data"]["songs"]);
+          try {
+            final result = await InternetAddress.lookup('example.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              // show link-fetching snackBar
+              globalFun.showSnackBars(7, _playlistsPageScaffoldKey, context);
+              // monitoring playback state to close the snackbar when playback starts
+              monitorPlaybackStart();
+              if (AudioService.playbackState != null) {
+                await AudioService.stop();
+                Timer(Duration(milliseconds: 500), () async {
+                  await startAudioService();
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongsToList", dataResponse["data"]["songs"]);
+                });
+              } else {
+                await startAudioService();
+                // calling method to add songs to the background list
+                await AudioService.customAction(
+                    "addSongsToList", dataResponse["data"]["songs"]);
+              }
+            }
+          } on SocketException catch (_) {
+            globalFun.showNoInternetToast();
           }
         },
         padding: EdgeInsets.all(20.0),
@@ -443,10 +452,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
-    if(_queueIndex == (_queue.length-1) && offset == 1){
+    if (_queueIndex == (_queue.length - 1) && offset == 1) {
       _queueIndex = -1;
-    } else if(_queueIndex == 0 && offset == -1){
-      _queueIndex = _queue.length-1;
+    } else if (_queueIndex == 0 && offset == -1) {
+      _queueIndex = _queue.length - 1;
     }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
@@ -532,20 +541,26 @@ class AudioPlayerTask extends BackgroundAudioTask {
       await getMp3URL(
           passedParameters["allSongs"][passedParameters["currIndex"]], true);
       currIndex += 1;
-      for (int i = 0; i < passedParameters["allSongs"].length; i++) {
+      for (int i = 0; i < passedParameters["allSongs"].length - 1; i++) {
         if (currIndex >= passedParameters["allSongs"].length) currIndex = 0;
         await getMp3URL(passedParameters["allSongs"][currIndex], false);
         currIndex += 1;
       }
     } else if (action == "addItemToQueue") {
       getMp3URLToQueue(parameters["song"]);
-    } else if(action == "removeItemFromQueue"){
-        _queue.removeAt(parameters["index"]);
-        AudioServiceBackground.setQueue(_queue);
-    } else if( action == "updateQueueOrder"){
-      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-      _queue.removeAt(parameters["oldIndex"]+1);
+    } else if (action == "removeItemFromQueue") {
+      _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);
+    } else if (action == "updateQueueOrder") {
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"] + 1);
+      // checking if the currently playing item has been modified
+      // if(parameters["nowPIndex"]!=null){
+      //   _queueIndex = parameters["nowPIndex"];
+      // }
+      AudioServiceBackground.setQueue(_queue);
+      // for(int i = 0;i < _queue.length; i++)
+      //   print(_queue[i].title);
     }
   }
 
@@ -568,7 +583,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
       MediaItem mediaItem = MediaItem(
         id: responseJSON.data["link"],
         album: "OpenBeats Music",
@@ -587,7 +603,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-    // gets the mp3URL using videoID and add to the queue
+  // gets the mp3URL using videoID and add to the queue
   void getMp3URLToQueue(parameter) async {
     // holds the responseJSON for checking link validity
     var responseJSON;
@@ -663,15 +679,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
       return [
         skipToPreviousControl,
         pauseControl,
+        skipToNextControl,
         stopControl,
-        skipToNextControl
       ];
     } else {
       return [
         skipToPreviousControl,
         playControl,
-        stopControl,
-        skipToNextControl
+        skipToNextControl,
+        stopControl
       ];
     }
   }

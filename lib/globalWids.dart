@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -120,10 +121,30 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                     BasicPlaybackState.buffering ||
                 AudioService.playbackState.basicState ==
                     BasicPlaybackState.paused) &&
-            AudioService.queue.length == 0) {
+            AudioService.queue.length == 1) {
           settingModalBottomSheet(context);
+        } else if (AudioService.playbackState != null &&
+                AudioService.playbackState.basicState != null &&
+                AudioService.playbackState.basicState ==
+                    BasicPlaybackState.buffering ||
+            AudioService.playbackState.basicState ==
+                BasicPlaybackState.connecting ||
+            AudioService.playbackState.basicState ==
+                BasicPlaybackState.playing ||
+            AudioService.playbackState.basicState ==
+                BasicPlaybackState.paused) {
+          // showing the dialog to check if user wants to start playback or add song to queue
+          globalFun.showStopAndPlayChoice(
+              context, getMp3URL, videosResponseItem, index);
         } else {
-          await getMp3URL(videosResponseItem["videoId"], index);
+          try {
+            final result = await InternetAddress.lookup('example.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              await getMp3URL(videosResponseItem["videoId"], index);
+            }
+          } on SocketException catch (_) {
+            globalFun.showNoInternetToast();
+          }
         }
       },
       child: Container(
@@ -238,7 +259,14 @@ Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
     startPlaylistFromMusic, showRemoveSongConfirmationBox) {
   return InkWell(
       onTap: () async {
-        startPlaylistFromMusic(index);
+        try {
+          final result = await InternetAddress.lookup('example.com');
+          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+            startPlaylistFromMusic(index);
+          }
+        } on SocketException catch (_) {
+          globalFun.showNoInternetToast();
+        }
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
@@ -286,13 +314,12 @@ Widget playlistPageVidResultExtraOptions(
           } else if (choice == "favorite") {
             globalFun.showUnderDevToast();
           } else if (choice == "addToQueue") {
-            
             if (AudioService.playbackState != null &&
                 AudioService.playbackState.basicState !=
                     BasicPlaybackState.none &&
                 AudioService.playbackState.basicState !=
                     BasicPlaybackState.stopped) {
-                      globalFun.showQueueBasedToasts(0);
+              globalFun.showQueueBasedToasts(0);
               var parameter = {"song": videosResponseItem};
               AudioService.customAction("addItemToQueue", parameter);
             } else {
@@ -329,7 +356,14 @@ Widget topChartsPlaylistPageVidResultContainerW(
     context, videosResponseItem, index, startPlaylistFromMusic) {
   return InkWell(
       onTap: () async {
-        startPlaylistFromMusic(index);
+        try {
+          final result = await InternetAddress.lookup('example.com');
+          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+            startPlaylistFromMusic(index);
+          }
+        } on SocketException catch (_) {
+          globalFun.showNoInternetToast();
+        }
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
@@ -388,13 +422,12 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
             } else if (choice == "favorite") {
               globalFun.showUnderDevToast();
             } else if (choice == "addToQueue") {
-              
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState !=
                       BasicPlaybackState.none &&
                   AudioService.playbackState.basicState !=
                       BasicPlaybackState.stopped) {
-                        globalFun.showQueueBasedToasts(0);
+                globalFun.showQueueBasedToasts(0);
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
@@ -569,8 +602,8 @@ Widget bNavPlayControlsW(context, state) {
             onSelected: (choice) {
               if (choice == "viewQueue") {
                 Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => QueuePage()));
-              } else if(choice == "stopService"){
+                    MaterialPageRoute(builder: (context) => QueuePage()));
+              } else if (choice == "stopService") {
                 Navigator.pop(context);
                 AudioService.stop();
               }
