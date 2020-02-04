@@ -537,6 +537,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         await getMp3URL(passedParameters["allSongs"][currIndex], false);
         currIndex += 1;
       }
+    } else if (action == "addItemToQueue") {
+      getMp3URLToQueue(parameters["song"]);
     }
   }
 
@@ -564,7 +566,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         id: responseJSON.data["link"],
         album: "OpenBeats Music",
         title: parameter['title'],
-        duration: getDurationMillis(parameter["duration"]),
+        duration: globalFun.getDurationMillis(parameter["duration"]),
         artist: parameter['channelName'],
         artUri: parameter['thumbnail'],
       );
@@ -578,32 +580,46 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-  // returns the max duration of the media in milliseconds
-  int getDurationMillis(String audioDuration) {
-    // variable holding max value
-    double maxVal = 0;
-    // holds the integerDurationList
-    List durationLst = new List();
-    // converting duration value into list
-    List durationStringLst = audioDuration.toString().split(':');
-    // converting list into integer
-    durationStringLst.forEach((f) {
-      durationLst.add(int.parse(f));
-    });
-    // creating seconds value based on the durationLst
-    // looping through each value from last value
-    for (int i = durationLst.length - 1; i > -1; i--) {
-      // add seconds just as they are
-      if (i == durationLst.length - 1)
-        maxVal += durationLst[i] * 1000;
-      // add minutes by multiplying with 60
-      else if (i == durationLst.length - 2)
-        maxVal += (60000 * durationLst[i]);
-      // add hours by multiplying twice with 60
-      else if (i == durationLst.length - 3)
-        maxVal += (3600000 * durationLst[i]);
+    // gets the mp3URL using videoID and add to the queue
+  void getMp3URLToQueue(parameter) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" + parameter["videoId"];
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        globalFun.showToastMessage(
+            "Cannot connect to the server", Colors.red, Colors.white);
+        onStop();
+        return;
+      }
     }
-    return maxVal.toInt();
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
+      // setting the current mediaItem
+      MediaItem temp = MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Music",
+        title: parameter['title'],
+        artist: parameter['channelName'],
+        duration: globalFun.getDurationMillis(parameter['duration']),
+        artUri: parameter['thumbnail'],
+      );
+      _queue.add(temp);
+      AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+      globalFun.showQueueBasedToasts(1);
+    } else {
+      onStop();
+    }
   }
 
   @override
