@@ -41,7 +41,8 @@ MediaControl stopControl = MediaControl(
 
 class TopChartPlaylistPage extends StatefulWidget {
   String playlistName, playlistId, playlistThumbnail;
-  TopChartPlaylistPage(this.playlistName, this.playlistId, this.playlistThumbnail);
+  TopChartPlaylistPage(
+      this.playlistName, this.playlistId, this.playlistThumbnail);
 
   @override
   _TopChartPlaylistPageState createState() => _TopChartPlaylistPageState();
@@ -65,7 +66,8 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(globalVars.borderRadius), topRight: Radius.circular(globalVars.borderRadius),
+            topLeft: Radius.circular(globalVars.borderRadius),
+            topRight: Radius.circular(globalVars.borderRadius),
           )),
           context: context,
           elevation: 10.0,
@@ -82,12 +84,14 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
         (Timer t) => {
               if (AudioService.playbackState != null &&
                   AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing && _topChartPlaylistPageScaffoldKey.currentState != null && 
+                      BasicPlaybackState.playing &&
+                  _topChartPlaylistPageScaffoldKey.currentState != null &&
                   _topChartPlaylistPageScaffoldKey
                       .currentState.hasFloatingActionButton)
                 {
                   t.cancel(),
-                  _topChartPlaylistPageScaffoldKey.currentState.removeCurrentSnackBar()
+                  _topChartPlaylistPageScaffoldKey.currentState
+                      .removeCurrentSnackBar()
                 }
             });
   }
@@ -100,8 +104,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
     });
     try {
       var response = await http.get(
-          "https://api.openbeats.live/playlist/topcharts/" +
-              widget.playlistId);
+          "https://api.openbeats.live/playlist/topcharts/" + widget.playlistId);
       dataResponse = json.decode(response.body);
       if (dataResponse["status"] == true) {
         setState(() {
@@ -131,7 +134,6 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       androidStopForegroundOnPause: true,
       androidNotificationIcon: 'drawable/ic_stat_logoicon2',
     );
-    
   }
 
   // function to start selected music and add the rest to playlist
@@ -380,10 +382,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
-    if(_queueIndex == (_queue.length-1) && offset == 1){
+    if (_queueIndex == (_queue.length - 1) && offset == 1) {
       _queueIndex = -1;
-    } else if(_queueIndex == 0 && offset == -1){
-      _queueIndex = _queue.length-1;
+    } else if (_queueIndex == 0 && offset == -1) {
+      _queueIndex = _queue.length - 1;
     }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
@@ -463,16 +465,28 @@ class AudioPlayerTask extends BackgroundAudioTask {
           getMp3URL(songsList[i], false);
       }
     } else if (action == "startMusicPlaybackAndCreateQueue") {
+      // getting parameters passed
       var passedParameters = parameters;
+      // finding the index of the song that needs to be played first
       int currIndex = passedParameters["currIndex"];
+      // get the URL of the song and start playback and add it to queue
       await getMp3URL(
           passedParameters["allSongs"][passedParameters["currIndex"]], true);
       currIndex += 1;
-      for (int i = 0; i < passedParameters["allSongs"].length; i++) {
+      for (int i = 0; i < passedParameters["allSongs"].length - 1; i++) {
         if (currIndex >= passedParameters["allSongs"].length) currIndex = 0;
         await getMp3URL(passedParameters["allSongs"][currIndex], false);
         currIndex += 1;
       }
+    } else if (action == "addItemToQueue") {
+      getMp3URLToQueue(parameters["song"]);
+    } else if(action == "removeItemFromQueue"){
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+    } else if( action == "updateQueueOrder"){
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"]+1);
+      AudioServiceBackground.setQueue(_queue);
     }
   }
 
@@ -495,16 +509,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
       MediaItem mediaItem = MediaItem(
         id: responseJSON.data["link"],
-        album: "OpenBeats Free Music",
+        album: "OpenBeats Music",
         title: parameter['title'],
-        duration: getDurationMillis(parameter["duration"]),
+        duration: globalFun.getDurationMillis(parameter["duration"]),
         artist: parameter['channelName'],
         artUri: parameter['thumbnail'],
       );
-      
+
       _queue.add(mediaItem);
       AudioServiceBackground.setQueue(_queue);
       if (shouldPlay) {
@@ -515,32 +530,46 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-  // returns the max duration of the media in milliseconds
-  int getDurationMillis(String audioDuration) {
-    // variable holding max value
-    double maxVal = 0;
-    // holds the integerDurationList
-    List durationLst = new List();
-    // converting duration value into list
-    List durationStringLst = audioDuration.toString().split(':');
-    // converting list into integer
-    durationStringLst.forEach((f) {
-      durationLst.add(int.parse(f));
-    });
-    // creating seconds value based on the durationLst
-    // looping through each value from last value
-    for (int i = durationLst.length - 1; i > -1; i--) {
-      // add seconds just as they are
-      if (i == durationLst.length - 1)
-        maxVal += durationLst[i] * 1000;
-      // add minutes by multiplying with 60
-      else if (i == durationLst.length - 2)
-        maxVal += (60000 * durationLst[i]);
-      // add hours by multiplying twice with 60
-      else if (i == durationLst.length - 3)
-        maxVal += (3600000 * durationLst[i]);
+  // gets the mp3URL using videoID and add to the queue
+  void getMp3URLToQueue(parameter) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" + parameter["videoId"];
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        globalFun.showToastMessage(
+            "Cannot connect to the server", Colors.red, Colors.white);
+        onStop();
+        return;
+      }
     }
-    return maxVal.toInt();
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
+      // setting the current mediaItem
+      MediaItem temp = MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Music",
+        title: parameter['title'],
+        artist: parameter['channelName'],
+        duration: globalFun.getDurationMillis(parameter['duration']),
+        artUri: parameter['thumbnail'],
+      );
+      _queue.add(temp);
+      AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+      globalFun.showQueueBasedToasts(1);
+    } else {
+      onStop();
+    }
   }
 
   @override

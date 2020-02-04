@@ -168,7 +168,7 @@ class _HomePageState extends State<HomePage> {
 
     MediaItem currMediaItem = MediaItem(
       id: videoId,
-      album: "OpenBeats Free Music",
+      album: "OpenBeats Music",
       duration: audioDuration,
       title: videosResponseList[index]["title"],
       artist: videosResponseList[index]["channelName"],
@@ -248,8 +248,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   // checks if there is persistent video result values to be inserted and insert if there are
-  void checkForVidResultPersistency(){
-    if(globalVars.videosResponseList.length != 0){
+  void checkForVidResultPersistency() {
+    if (globalVars.videosResponseList.length != 0) {
       setState(() {
         videosResponseList = globalVars.videosResponseList;
       });
@@ -274,7 +274,6 @@ class _HomePageState extends State<HomePage> {
                 ),
                 new FlatButton(
                   onPressed: () {
-                    
                     SystemChannels.platform.invokeMethod('SystemNavigator.pop');
                   },
                   child: new Text(
@@ -302,8 +301,9 @@ class _HomePageState extends State<HomePage> {
     getAuthStatus();
     connect();
     // setting callHandler to show rational dialog to get storage permissions
-    globalVars.platformMethodChannel
-        .setMethodCallHandler((MethodCall methodCall)=>globalFun.nativeMethodCallHandler(methodCall, context));
+    globalVars.platformMethodChannel.setMethodCallHandler(
+        (MethodCall methodCall) =>
+            globalFun.nativeMethodCallHandler(methodCall, context));
     // sets the status and navigation bar themes
     setStatusNaviThemes();
   }
@@ -452,7 +452,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (hasNext) {
       onSkipToNext();
     } else {
-      onStop();
+      _queueIndex = -1;
+      onSkipToNext();
     }
   }
 
@@ -470,6 +471,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
+    if(_queueIndex == (_queue.length-1) && offset == 1){
+      _queueIndex = -1;
+    } else if(_queueIndex == 0 && offset == -1){
+      _queueIndex = _queue.length-1;
+    }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
     if (_playing == null) {
@@ -542,10 +548,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  void onCustomAction(String action, var parameter) async {
+  void onCustomAction(String action, var parameters) async {
     // if condition to play current media
     if (action == "playMedia2") {
-      getMp3URL(parameter['mediaID'], parameter);
+      getMp3URL(parameters['mediaID'], parameters);
+    } else if (action == "addItemToQueue") {
+      getMp3URLToQueue(parameters["song"]);
+    } else if(action == "removeItemFromQueue"){
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+    } else if( action == "updateQueueOrder"){
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"]+1);
+      AudioServiceBackground.setQueue(_queue);
     }
   }
 
@@ -580,16 +595,76 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_playing != null && _playing) {
-      return [
-        pauseControl,
-        stopControl,
-      ];
+    if (_queue.length == 1) {
+      if (_playing != null && _playing) {
+        return [
+          pauseControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          playControl,
+          stopControl,
+        ];
+      }
     } else {
-      return [
-        playControl,
-        stopControl,
-      ];
+      if (_playing != null && _playing) {
+        return [
+          skipToPreviousControl,
+          pauseControl,
+          stopControl,
+          skipToNextControl
+        ];
+      } else {
+        return [
+          skipToPreviousControl,
+          playControl,
+          stopControl,
+          skipToNextControl
+        ];
+      }
+    }
+  }
+
+  // gets the mp3URL using videoID and add to the queue
+  void getMp3URLToQueue(parameter) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" + parameter["videoId"];
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        globalFun.showToastMessage(
+            "Cannot connect to the server", Colors.red, Colors.white);
+        onStop();
+        return;
+      }
+    }
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
+      // setting the current mediaItem
+      MediaItem temp = MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Music",
+        title: parameter['title'],
+        artist: parameter['channelName'],
+        duration: globalFun.getDurationMillis(parameter['duration']),
+        artUri: parameter['thumbnail'],
+      );
+      _queue.add(temp);
+      AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+      globalFun.showQueueBasedToasts(1);
+    } else {
+      onStop();
     }
   }
 
@@ -612,36 +687,31 @@ class AudioPlayerTask extends BackgroundAudioTask {
         return;
       }
     }
-    if (responseJSON.data["status"] == true && responseJSON.data["link"] != null) {
-      // setting the current mediaItem
-      await AudioServiceBackground.setMediaItem(MediaItem(
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
+      MediaItem temp = MediaItem(
         id: responseJSON.data["link"],
-        album: "OpenBeats Free Music",
+        album: "OpenBeats Music",
         title: parameter['mediaTitle'],
         artist: parameter['channelID'],
         duration: parameter['duration'],
         artUri: parameter['thumbnailURI'],
-      ));
+      );
+      // setting the current mediaItem
+      await AudioServiceBackground.setMediaItem(temp);
       // setting URL for audio player
       await _audioPlayer.setUrl(responseJSON.data["link"]);
+      _queue.add(temp);
+      print("Queue Length" + _queue.length.toString());
+      AudioServiceBackground.setQueue(_queue);
       if (_playing == null) {
         // First time, we want to start playing
         _playing = true;
       }
       // playing audio
       onPlay();
-      // setting sharedPreferences values
-      settingSharedPrefs(parameter, responseJSON.data["link"]);
     } else {
       onStop();
     }
-  }
-
-  void settingSharedPrefs(parameter, String link) async {
-    // creating sharedPreferences instance to set media values
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // setting the url in shared preferences
-    prefs.setString("nowPlayingURL", link.toString());
   }
 }

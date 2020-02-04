@@ -522,6 +522,18 @@ void showUnderDevToast() {
       Colors.white);
 }
 
+// shows the toast related to queue management
+void showQueueBasedToasts(int toastId) {
+  switch (toastId) {
+    case 0:
+      showToastMessage("Adding song to queue...", Colors.orange, Colors.white);
+      break;
+    case 1:
+      showToastMessage("Song added to queue", Colors.green, Colors.white);
+      break;
+  }
+}
+
 // gets the search history from sharedPreferences
 void getSearchHistory() async {
   // creating sharedPreferences instance
@@ -536,11 +548,11 @@ void getSearchHistory() async {
 void addToSearchHistory(String query) async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  if((globalVars.searchHistory.length == 0) || (globalVars.searchHistory[0] != query)){
+  if ((globalVars.searchHistory.length == 0) ||
+      (globalVars.searchHistory[0] != query)) {
     globalVars.searchHistory.insert(0, query);
     prefs.setStringList("searchStrings", globalVars.searchHistory);
-  } 
-  
+  }
 }
 
 // updates the search history sharedPrefs value
@@ -597,61 +609,59 @@ String getCurrentTimeStamp(double totalSeconds) {
   // adding the necessary zeros
   if (int.parse(sec) < 10) sec = "0" + sec;
   // if the duration is greater than 1 hour, return with hour
-  if (totalSecondsPlaceHolder > 3600){
-    if(double.parse(min) < 10.0){
+  if (totalSecondsPlaceHolder > 3600) {
+    if (double.parse(min) < 10.0) {
       return (hour.toString() + ":0" + min.toString() + ":" + sec.toString());
     } else {
       return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
     }
-  }
-  else {
-    if(double.parse(min) < 10.0){
-      return ("0"+min.toString() + ":" + sec.toString());
+  } else {
+    if (double.parse(min) < 10.0) {
+      return ("0" + min.toString() + ":" + sec.toString());
     } else {
       return (min.toString() + ":" + sec.toString());
     }
   }
 }
 
-// method to show dialog 
+// method to show dialog
 Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
-    if (methodCall.method == "showRational") {
-      var parameters = methodCall.arguments;
-      await showDialog(
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-                title: Text("Permission Required"),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(globalVars.borderRadius))),
-                backgroundColor: globalVars.primaryDark,
-                content: Text(
-                    "OpenBeats requires storage access permission to download and save the songs you would like to listen offline"),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text("Cancel"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    color: Colors.transparent,
-                    textColor: globalVars.accentRed,
-                  ),
-                  FlatButton(
-                    child: Text("OK"),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      globalVars.platformMethodChannel
-                          .invokeMethod("startDownload", {
-                        "videoId": parameters[0],
-                        "videoTitle": parameters[1],
-                        "showRational": true,
-                      });
-                    },
-                    color: Colors.transparent,
-                    textColor: globalVars.accentGreen,
-                  ),
-                ],
-              ));
-      
-    }
+  if (methodCall.method == "showRational") {
+    var parameters = methodCall.arguments;
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+              title: Text("Permission Required"),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(
+                      Radius.circular(globalVars.borderRadius))),
+              backgroundColor: globalVars.primaryDark,
+              content: Text(
+                  "OpenBeats requires storage access permission to download and save the songs you would like to listen offline"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text("Cancel"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  color: Colors.transparent,
+                  textColor: globalVars.accentRed,
+                ),
+                FlatButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    globalVars.platformMethodChannel
+                        .invokeMethod("startDownload", {
+                      "videoId": parameters[0],
+                      "videoTitle": parameters[1],
+                      "showRational": true,
+                    });
+                  },
+                  color: Colors.transparent,
+                  textColor: globalVars.accentGreen,
+                ),
+              ],
+            ));
   }
+}

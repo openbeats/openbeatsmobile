@@ -36,32 +36,30 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
   String chartLang = dataResponse["allcharts"][index]["language"];
   chartLang = "${chartLang[0].toUpperCase()}${chartLang.substring(1)}";
 
-  return Container(
-    margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-    padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-    decoration: BoxDecoration(
-        borderRadius: new BorderRadius.all(Radius.circular(globalVars.borderRadius)),
-        gradient: LinearGradient(
-            begin: Alignment.bottomRight,
-            end: Alignment.topLeft,
-            colors: [
-              globalVars.gradientListPrimary[index],
-              globalVars.gradientListSec[index]
-            ])
-        
-            ),
-    child: GestureDetector(
-      onTap: () {
-        
-        Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => TopChartPlaylistPage(
-                      chartLang,
-                      dataResponse["allcharts"][index]["_id"],
-                      dataResponse["allcharts"][index]["thumbnail"])),
-            );
-      },
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TopChartPlaylistPage(
+                chartLang,
+                dataResponse["allcharts"][index]["_id"],
+                dataResponse["allcharts"][index]["thumbnail"])),
+      );
+    },
+    child: Container(
+      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+      decoration: BoxDecoration(
+          borderRadius:
+              new BorderRadius.all(Radius.circular(globalVars.borderRadius)),
+          gradient: LinearGradient(
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+              colors: [
+                globalVars.gradientListPrimary[index],
+                globalVars.gradientListSec[index]
+              ])),
       child: Stack(
         children: <Widget>[
           Positioned(
@@ -83,7 +81,6 @@ Widget gridViewTitle(String chartName, int totalSongs, context) {
         style: TextStyle(
           fontFamily: "Comfortaa-Bold",
           fontSize: 16.0,
-  
           fontWeight: FontWeight.bold,
         ),
         children: <TextSpan>[
