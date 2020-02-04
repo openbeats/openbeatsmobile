@@ -535,6 +535,11 @@ void showQueueBasedToasts(int toastId) {
   }
 }
 
+// shows the no internet toasts
+void showNoInternetToast(){
+  showToastMessage("Not able to connect to the internet", Colors.red, Colors.white);
+}
+
 // gets the search history from sharedPreferences
 void getSearchHistory() async {
   // creating sharedPreferences instance

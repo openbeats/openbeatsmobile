@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audio_service/audio_service.dart';
@@ -136,7 +137,14 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
           globalFun.showStopAndPlayChoice(
               context, getMp3URL, videosResponseItem, index);
         } else {
-          await getMp3URL(videosResponseItem["videoId"], index);
+          try {
+            final result = await InternetAddress.lookup('example.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              await getMp3URL(videosResponseItem["videoId"], index);
+            }
+          } on SocketException catch (_) {
+            globalFun.showNoInternetToast();
+          }
         }
       },
       child: Container(
@@ -251,7 +259,14 @@ Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
     startPlaylistFromMusic, showRemoveSongConfirmationBox) {
   return InkWell(
       onTap: () async {
-        startPlaylistFromMusic(index);
+        try {
+          final result = await InternetAddress.lookup('example.com');
+          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+            startPlaylistFromMusic(index);
+          }
+        } on SocketException catch (_) {
+          globalFun.showNoInternetToast();
+        }
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),
@@ -341,7 +356,14 @@ Widget topChartsPlaylistPageVidResultContainerW(
     context, videosResponseItem, index, startPlaylistFromMusic) {
   return InkWell(
       onTap: () async {
-        startPlaylistFromMusic(index);
+        try {
+          final result = await InternetAddress.lookup('example.com');
+          if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+            startPlaylistFromMusic(index);
+          }
+        } on SocketException catch (_) {
+          globalFun.showNoInternetToast();
+        }
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 20.0, left: 10.0, right: 10.0),

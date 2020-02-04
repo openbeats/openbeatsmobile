@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
@@ -315,23 +316,30 @@ class _PlaylistPageState extends State<PlaylistPage> {
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: RaisedButton(
         onPressed: () async {
-          // show link-fetching snackBar
-          globalFun.showSnackBars(7, _playlistsPageScaffoldKey, context);
-          // monitoring playback state to close the snackbar when playback starts
-          monitorPlaybackStart();
-          if (AudioService.playbackState != null) {
-            await AudioService.stop();
-            Timer(Duration(milliseconds: 500), () async {
-              await startAudioService();
-              // calling method to add songs to the background list
-              await AudioService.customAction(
-                  "addSongsToList", dataResponse["data"]["songs"]);
-            });
-          } else {
-            await startAudioService();
-            // calling method to add songs to the background list
-            await AudioService.customAction(
-                "addSongsToList", dataResponse["data"]["songs"]);
+          try {
+            final result = await InternetAddress.lookup('example.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              // show link-fetching snackBar
+              globalFun.showSnackBars(7, _playlistsPageScaffoldKey, context);
+              // monitoring playback state to close the snackbar when playback starts
+              monitorPlaybackStart();
+              if (AudioService.playbackState != null) {
+                await AudioService.stop();
+                Timer(Duration(milliseconds: 500), () async {
+                  await startAudioService();
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongsToList", dataResponse["data"]["songs"]);
+                });
+              } else {
+                await startAudioService();
+                // calling method to add songs to the background list
+                await AudioService.customAction(
+                    "addSongsToList", dataResponse["data"]["songs"]);
+              }
+            }
+          } on SocketException catch (_) {
+            globalFun.showNoInternetToast();
           }
         },
         padding: EdgeInsets.all(20.0),

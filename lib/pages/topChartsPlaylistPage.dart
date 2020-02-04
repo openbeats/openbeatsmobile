@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
@@ -253,23 +254,31 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       margin: EdgeInsets.symmetric(horizontal: 10.0),
       child: RaisedButton(
         onPressed: () async {
-          // show link-fetching snackBar
-          globalFun.showSnackBars(7, _topChartPlaylistPageScaffoldKey, context);
-          // monitoring playback state to close the snackbar when playback starts
-          monitorPlaybackStart();
-          if (AudioService.playbackState != null) {
-            await AudioService.stop();
-            Timer(Duration(milliseconds: 500), () async {
-              await startAudioService();
-              // calling method to add songs to the background list
-              await AudioService.customAction(
-                  "addSongsToList", dataResponse["chart"]["songs"]);
-            });
-          } else {
-            await startAudioService();
-            // calling method to add songs to the background list
-            await AudioService.customAction(
-                "addSongsToList", dataResponse["chart"]["songs"]);
+          try {
+            final result = await InternetAddress.lookup('example.com');
+            if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+              // show link-fetching snackBar
+              globalFun.showSnackBars(
+                  7, _topChartPlaylistPageScaffoldKey, context);
+              // monitoring playback state to close the snackbar when playback starts
+              monitorPlaybackStart();
+              if (AudioService.playbackState != null) {
+                await AudioService.stop();
+                Timer(Duration(milliseconds: 500), () async {
+                  await startAudioService();
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongsToList", dataResponse["chart"]["songs"]);
+                });
+              } else {
+                await startAudioService();
+                // calling method to add songs to the background list
+                await AudioService.customAction(
+                    "addSongsToList", dataResponse["chart"]["songs"]);
+              }
+            }
+          } on SocketException catch (_) {
+            globalFun.showNoInternetToast();
           }
         },
         padding: EdgeInsets.all(20.0),
@@ -480,12 +489,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
       }
     } else if (action == "addItemToQueue") {
       getMp3URLToQueue(parameters["song"]);
-    } else if(action == "removeItemFromQueue"){
-        _queue.removeAt(parameters["index"]);
-        AudioServiceBackground.setQueue(_queue);
-    } else if( action == "updateQueueOrder"){
+    } else if (action == "removeItemFromQueue") {
+      _queue.removeAt(parameters["index"]);
+      AudioServiceBackground.setQueue(_queue);
+    } else if (action == "updateQueueOrder") {
       _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-      _queue.removeAt(parameters["oldIndex"]+1);
+      _queue.removeAt(parameters["oldIndex"] + 1);
       AudioServiceBackground.setQueue(_queue);
     }
   }
