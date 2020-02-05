@@ -167,7 +167,8 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"], true),
-                  homePageVidResultExtraOptions(context, videosResponseItem)
+                  homePageVidResultExtraOptions(
+                      context, videosResponseItem, getMp3URL, index)
                 ],
               ),
             ),
@@ -177,7 +178,8 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
 }
 
 // holds the extra options of video result list
-Widget homePageVidResultExtraOptions(context, videosResponseItem) {
+Widget homePageVidResultExtraOptions(
+    context, videosResponseItem, getMp3URL, index) {
   return Container(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
@@ -188,7 +190,7 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
           Icons.more_vert,
           size: 30.0,
         ),
-        onSelected: (choice) {
+        onSelected: (choice) async {
           if (globalVars.loginInfo["loginStatus"] == true) {
             if (choice == "addToPlayList") {
               Navigator.push(
@@ -215,7 +217,15 @@ Widget homePageVidResultExtraOptions(context, videosResponseItem) {
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
-                globalFun.showAvailQueueToast();
+                // globalFun.showAvailQueueToast();
+                try {
+                  final result = await InternetAddress.lookup('example.com');
+                  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                    await getMp3URL(videosResponseItem["videoId"], index);
+                  }
+                } on SocketException catch (_) {
+                  globalFun.showNoInternetToast();
+                }
               }
             }
           } else {
@@ -283,8 +293,12 @@ Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"], true),
-                  playlistPageVidResultExtraOptions(context, videosResponseItem,
-                      index, showRemoveSongConfirmationBox)
+                  playlistPageVidResultExtraOptions(
+                      context,
+                      videosResponseItem,
+                      index,
+                      showRemoveSongConfirmationBox,
+                      startPlaylistFromMusic)
                 ],
               ),
             ),
@@ -294,8 +308,8 @@ Widget playlistPageVidResultContainerW(context, videosResponseItem, index,
 }
 
 // holds the extra options of video result list
-Widget playlistPageVidResultExtraOptions(
-    context, videosResponseItem, index, showRemoveSongConfirmationBox) {
+Widget playlistPageVidResultExtraOptions(context, videosResponseItem, index,
+    showRemoveSongConfirmationBox, startPlaylistFromMusic) {
   return Container(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
@@ -307,7 +321,7 @@ Widget playlistPageVidResultExtraOptions(
           Icons.more_vert,
           size: 30.0,
         ),
-        onSelected: (choice) {
+        onSelected: (choice) async {
           if (choice == "deleteSong") {
             showRemoveSongConfirmationBox(index);
           } else if (choice == "favorite") {
@@ -322,7 +336,14 @@ Widget playlistPageVidResultExtraOptions(
               var parameter = {"song": videosResponseItem};
               AudioService.customAction("addItemToQueue", parameter);
             } else {
-              globalFun.showAvailQueueToast();
+              try {
+                final result = await InternetAddress.lookup('example.com');
+                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                  startPlaylistFromMusic(index);
+                }
+              } on SocketException catch (_) {
+                globalFun.showNoInternetToast();
+              }
             }
           }
         },
@@ -379,8 +400,8 @@ Widget topChartsPlaylistPageVidResultContainerW(
                 children: <Widget>[
                   vidResultVidDetails(context, videosResponseItem["title"],
                       videosResponseItem["duration"], false),
-                  topChartsPlaylistPageVidResultExtraOptions(
-                      context, videosResponseItem, index)
+                  topChartsPlaylistPageVidResultExtraOptions(context,
+                      videosResponseItem, index, startPlaylistFromMusic)
                 ],
               ),
             ),
@@ -391,7 +412,7 @@ Widget topChartsPlaylistPageVidResultContainerW(
 
 // holds the extra options of video result list
 Widget topChartsPlaylistPageVidResultExtraOptions(
-    context, videosResponseItem, index) {
+    context, videosResponseItem, index, startPlaylistFromMusic) {
   return Container(
     alignment: Alignment.centerRight,
     width: MediaQuery.of(context).size.width * 0.1,
@@ -402,7 +423,7 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
           Icons.more_vert,
           size: 30.0,
         ),
-        onSelected: (choice) {
+        onSelected: (choice) async {
           if (globalVars.loginInfo["loginStatus"] == true) {
             if (choice == "addToPlayList") {
               Navigator.push(
@@ -429,7 +450,14 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
-                globalFun.showAvailQueueToast();
+                try {
+                  final result = await InternetAddress.lookup('example.com');
+                  if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                    startPlaylistFromMusic(index);
+                  }
+                } on SocketException catch (_) {
+                  globalFun.showNoInternetToast();
+                }
               }
             }
           } else {
@@ -949,7 +977,10 @@ Widget bottomSheet(context, _dragPositionSubject) {
                     ],
                   )
                 : Center(
-                    child: Text("No Audio playing",style: TextStyle(color: Colors.grey, fontSize: 25.0),),
+                    child: Text(
+                      "No Audio playing",
+                      style: TextStyle(color: Colors.grey, fontSize: 25.0),
+                    ),
                   );
           }));
 }

@@ -8,10 +8,10 @@ import '../globalFun.dart' as globalFun;
 
 class QueuePage extends StatefulWidget {
   @override
-  _QueuePageState createState() => _QueuePageState();
+  QueueListPageState createState() => QueueListPageState();
 }
 
-class _QueuePageState extends State<QueuePage> {
+class QueueListPageState extends State<QueuePage> {
   bool _isLoading = true;
   List<MediaItem> queueList = [];
 
@@ -26,22 +26,22 @@ class _QueuePageState extends State<QueuePage> {
 
   // updates the queue list according to user arrangement
   void updateQueue(int oldIndex, int newIndex) {
-    if (queueList[oldIndex].artUri != AudioService.currentMediaItem.artUri &&
-        queueList[newIndex].artUri != AudioService.currentMediaItem.artUri) {
-      setState(() {
+    setState(() {
+      // checks if the rearrangement is upqueue or downqueue
+      if (newIndex < oldIndex) {
         queueList.insert(newIndex, queueList[oldIndex]);
         queueList.removeAt(oldIndex + 1);
-      });
-      Map<String, dynamic> parameters = {
-        "oldIndex": oldIndex,
-        "newIndex": newIndex,
-        "currentArtURI": AudioService.currentMediaItem.artUri
-      };
-      AudioService.customAction("updateQueueOrder", parameters);
-    } else {
-      globalFun.showToastMessage("Please do not modify currently playing media",
-          Colors.orange, Colors.white);
-    }
+      } else if (newIndex > oldIndex) {
+        queueList.insert(newIndex, queueList[oldIndex]);
+        queueList.removeAt(oldIndex);
+      }
+    });
+    Map<String, dynamic> parameters = {
+      "oldIndex": oldIndex,
+      "newIndex": newIndex,
+      "currentArtURI": AudioService.currentMediaItem.artUri
+    };
+    AudioService.customAction("updateQueueOrder", parameters);
   }
 
   // deletes the item from queue
@@ -100,21 +100,21 @@ class _QueuePageState extends State<QueuePage> {
             builder: (context, snapshot) {
               queueList = snapshot.data;
               return StreamBuilder(
-                      stream: AudioService.playbackStateStream,
-                      builder: (context, snapshot) {
-                        PlaybackState state = snapshot.data;
-                        return (state!=null && state.basicState != null)
-                            ? ReorderableListView(
-                                header: Text(
-                                  "Press and hold song to change queue order",
-                                  style: TextStyle(
-                                      color: Colors.grey, fontSize: 14.0),
-                                ),
-                                children: List.generate(queueList.length,
-                                    (index) => queueListTile(index, state)),
-                                onReorder: updateQueue)
-                            : queuePageW.noSongsInQueue();
-                      });
+                  stream: AudioService.playbackStateStream,
+                  builder: (context, snapshot) {
+                    PlaybackState state = snapshot.data;
+                    return (queueList != null && state != null && state.basicState != null && state.basicState != BasicPlaybackState.none)
+                        ? ReorderableListView(
+                            header: Text(
+                              "Press and hold song to change queue order",
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 14.0),
+                            ),
+                            children: List.generate(queueList.length,
+                                (index) => queueListTile(index, state)),
+                            onReorder: updateQueue)
+                        : queuePageW.noSongsInQueue();
+                  });
             }));
   }
 

@@ -474,7 +474,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (_queueIndex == (_queue.length - 1) && offset == 1) {
       _queueIndex = -1;
     } else if (_queueIndex == 0 && offset == -1) {
-      _queueIndex = _queue.length - 1;
+      _queueIndex = _queue.length;
     }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
@@ -553,7 +553,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (action == "playMedia2") {
       getMp3URL(parameters['mediaID'], parameters);
     } else if (action == "addItemToQueue") {
-      getMp3URLToQueue(parameters["song"]);
+      bool alreadyExsists = false;
+      // ckecking if song already exsists in queue
+      for (int i = 0; i < _queue.length; i++) {
+        if (_queue[i].artUri == parameters["song"]["thumbnail"])
+          alreadyExsists = true;
+      }
+      // if song does not exsist in queue
+      if (!alreadyExsists)
+        getMp3URLToQueue(parameters["song"]);
+      else
+        globalFun.showToastMessage(
+            "Song already exsists in queue", Colors.red, Colors.white);
     } else if (action == "removeItemFromQueue") {
       _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);
@@ -563,22 +574,34 @@ class AudioPlayerTask extends BackgroundAudioTask {
           controls: getControls(state), basicState: state, position: position);
       // correcting the queue index of the current playing song
       for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currArtURI"] ==
-            _queue[i].artUri) {
+        if (parameters["currentArtURI"] == _queue[i].artUri) {
+          print("New Queue Indexk: " + i.toString());
           _queueIndex = i;
         }
       }
     } else if (action == "updateQueueOrder") {
-      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-      _queue.removeAt(parameters["oldIndex"] + 1);
-      AudioServiceBackground.setQueue(_queue);
+      // checks if the rearrangement is upqueue or downqueue
+      if (parameters["newIndex"] < parameters["oldIndex"]) {
+        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+        _queue.removeAt(parameters["oldIndex"] + 1);
+      } else if(parameters["newIndex"] > parameters["oldIndex"]) {
+        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+        _queue.removeAt(parameters["oldIndex"]);
+      }
+
       // correcting the queue index of the current playing song
       for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currArtURI"] ==
-            _queue[i].artUri) {
+        if (parameters["currentArtURI"] == _queue[i].artUri) {
+          print("New Queue Index: " + i.toString());
           _queueIndex = i;
         }
       }
+      AudioServiceBackground.setQueue(_queue);
+      // refreshing the audioService state
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
     }
   }
 
