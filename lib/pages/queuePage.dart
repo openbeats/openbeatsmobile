@@ -8,10 +8,10 @@ import '../globalFun.dart' as globalFun;
 
 class QueuePage extends StatefulWidget {
   @override
-  queueListPageState createState() => queueListPageState();
+  QueueListPageState createState() => QueueListPageState();
 }
 
-class queueListPageState extends State<QueuePage> {
+class QueueListPageState extends State<QueuePage> {
   bool _isLoading = true;
   List<MediaItem> queueList = [];
 
@@ -103,7 +103,7 @@ class queueListPageState extends State<QueuePage> {
                   stream: AudioService.playbackStateStream,
                   builder: (context, snapshot) {
                     PlaybackState state = snapshot.data;
-                    return (state != null && state.basicState != null)
+                    return (state != null && state.basicState != null && state.basicState != BasicPlaybackState.none)
                         ? ReorderableListView(
                             header: Text(
                               "Press and hold song to change queue order",
