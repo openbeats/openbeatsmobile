@@ -503,16 +503,28 @@ class AudioPlayerTask extends BackgroundAudioTask {
         }
       }
     } else if (action == "updateQueueOrder") {
-      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-      _queue.removeAt(parameters["oldIndex"] + 1);
-      AudioServiceBackground.setQueue(_queue);
+      // checks if the rearrangement is upqueue or downqueue
+      if (parameters["newIndex"] < parameters["oldIndex"]) {
+        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+        _queue.removeAt(parameters["oldIndex"] + 1);
+      } else if (parameters["newIndex"] > parameters["oldIndex"]) {
+        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+        _queue.removeAt(parameters["oldIndex"]);
+      }
+
       // correcting the queue index of the current playing song
       for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currArtURI"] ==
-            _queue[i].artUri) {
+        if (parameters["currentArtURI"] == _queue[i].artUri) {
+          print("New Queue Index: " + i.toString());
           _queueIndex = i;
         }
       }
+      AudioServiceBackground.setQueue(_queue);
+      // refreshing the audioService state
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
     }
   }
 
