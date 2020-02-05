@@ -26,30 +26,41 @@ class _QueuePageState extends State<QueuePage> {
 
   // updates the queue list according to user arrangement
   void updateQueue(int oldIndex, int newIndex) {
-    if(queueList[oldIndex].artUri != AudioService.currentMediaItem.artUri && queueList[newIndex].artUri != AudioService.currentMediaItem.artUri){
+    if (queueList[oldIndex].artUri != AudioService.currentMediaItem.artUri &&
+        queueList[newIndex].artUri != AudioService.currentMediaItem.artUri) {
       setState(() {
-      queueList.insert(newIndex, queueList[oldIndex]);
-      queueList.removeAt(oldIndex + 1);
-    });
-    Map<String, int> parameters = {"oldIndex": oldIndex, "newIndex": newIndex};
-    AudioService.customAction("updateQueueOrder", parameters);
+        queueList.insert(newIndex, queueList[oldIndex]);
+        queueList.removeAt(oldIndex + 1);
+      });
+      Map<String, dynamic> parameters = {
+        "oldIndex": oldIndex,
+        "newIndex": newIndex,
+        "currentArtURI": AudioService.currentMediaItem.artUri
+      };
+      AudioService.customAction("updateQueueOrder", parameters);
     } else {
-      globalFun.showToastMessage("Please do not modify currently playing media", Colors.orange, Colors.white);
+      globalFun.showToastMessage("Please do not modify currently playing media",
+          Colors.orange, Colors.white);
     }
   }
 
   // deletes the item from queue
   void deleteItemFromQueue(int index) {
-    if(queueList[index].artUri != AudioService.currentMediaItem.artUri){
+    if (queueList[index].artUri != AudioService.currentMediaItem.artUri) {
       setState(() {
-      queueList.removeAt(index);
-      Map<String, int> parameters = {"index": index};
-      AudioService.customAction("removeItemFromQueue", parameters);
-    });
+        queueList.removeAt(index);
+        Map<String, dynamic> parameters = {
+          "index": index,
+          "currentArtURI": AudioService.currentMediaItem.artUri
+        };
+        AudioService.customAction("removeItemFromQueue", parameters);
+      });
     } else {
-      globalFun.showToastMessage("Current playing media cannot be deleted from queue", Colors.orange, Colors.white);
+      globalFun.showToastMessage(
+          "Current playing media cannot be deleted from queue",
+          Colors.orange,
+          Colors.white);
     }
-    
   }
 
   // connects to the audio service
@@ -84,25 +95,27 @@ class _QueuePageState extends State<QueuePage> {
 
   Widget queuePageBody() {
     return Container(
-      child: (AudioService.queue != null && AudioService.playbackState != null)
-          ? StreamBuilder(
-              stream: AudioService.queueStream,
-              builder: (context, snapshot) {
-                queueList = snapshot.data;
-                return StreamBuilder(
-                    stream: AudioService.playbackStateStream,
-                    builder: (context, snapshot) {
-                      PlaybackState state = snapshot.data;
-                      return (queueList != null)
-                          ? ReorderableListView(
-                              children: List.generate(queueList.length,
-                                  (index) => queueListTile(index, state)),
-                              onReorder: updateQueue)
-                          : Container(width: 0.0, height: 0.0);
-                    });
-              })
-          : queuePageW.noSongsInQueue(),
-    );
+        child: StreamBuilder(
+            stream: AudioService.queueStream,
+            builder: (context, snapshot) {
+              queueList = snapshot.data;
+              return StreamBuilder(
+                      stream: AudioService.playbackStateStream,
+                      builder: (context, snapshot) {
+                        PlaybackState state = snapshot.data;
+                        return (state!=null && state.basicState != null)
+                            ? ReorderableListView(
+                                header: Text(
+                                  "Press and hold song to change queue order",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 14.0),
+                                ),
+                                children: List.generate(queueList.length,
+                                    (index) => queueListTile(index, state)),
+                                onReorder: updateQueue)
+                            : queuePageW.noSongsInQueue();
+                      });
+            }));
   }
 
   Widget queueListTile(int index, state) {
