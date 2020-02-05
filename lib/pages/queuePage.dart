@@ -103,7 +103,7 @@ class QueueListPageState extends State<QueuePage> {
                   stream: AudioService.playbackStateStream,
                   builder: (context, snapshot) {
                     PlaybackState state = snapshot.data;
-                    return (state != null && state.basicState != null && state.basicState != BasicPlaybackState.none)
+                    return (queueList != null && state != null && state.basicState != null && state.basicState != BasicPlaybackState.none)
                         ? ReorderableListView(
                             header: Text(
                               "Press and hold song to change queue order",

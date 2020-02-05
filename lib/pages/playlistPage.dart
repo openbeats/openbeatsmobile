@@ -455,7 +455,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (_queueIndex == (_queue.length - 1) && offset == 1) {
       _queueIndex = -1;
     } else if (_queueIndex == 0 && offset == -1) {
-      _queueIndex = _queue.length - 1;
+      _queueIndex = _queue.length;
     }
     final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
@@ -547,7 +547,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
         currIndex += 1;
       }
     } else if (action == "addItemToQueue") {
-      getMp3URLToQueue(parameters["song"]);
+      bool alreadyExsists = false;
+      // ckecking if song already exsists in queue
+      for (int i = 0; i < _queue.length; i++) {
+        if (_queue[i].artUri == parameters["song"]["thumbnail"])
+          alreadyExsists = true;
+      }
+      // if song does not exsist in queue
+      if (!alreadyExsists)
+        getMp3URLToQueue(parameters["song"]);
+      else
+        globalFun.showToastMessage(
+            "Song already exsists in queue", Colors.red, Colors.white);
     } else if (action == "removeItemFromQueue") {
       _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);
