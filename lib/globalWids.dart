@@ -949,7 +949,7 @@ Widget bottomSheet(context, _dragPositionSubject) {
                     ],
                   )
                 : Center(
-                    child: Text("No Audio playing"),
+                    child: Text("No Audio playing",style: TextStyle(color: Colors.grey, fontSize: 25.0),),
                   );
           }));
 }
