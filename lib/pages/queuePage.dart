@@ -95,30 +95,27 @@ class _QueuePageState extends State<QueuePage> {
 
   Widget queuePageBody() {
     return Container(
-      child: (AudioService.queue != null && AudioService.playbackState != null)
-          ? StreamBuilder(
-              stream: AudioService.queueStream,
-              builder: (context, snapshot) {
-                queueList = snapshot.data;
-                return StreamBuilder(
-                    stream: AudioService.playbackStateStream,
-                    builder: (context, snapshot) {
-                      PlaybackState state = snapshot.data;
-                      return (queueList != null)
-                          ? ReorderableListView(
-                              header: Text(
-                                "Press and hold song to change queue order",
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 14.0),
-                              ),
-                              children: List.generate(queueList.length,
-                                  (index) => queueListTile(index, state)),
-                              onReorder: updateQueue)
-                          : Container(width: 0.0, height: 0.0);
-                    });
-              })
-          : queuePageW.noSongsInQueue(),
-    );
+        child: StreamBuilder(
+            stream: AudioService.queueStream,
+            builder: (context, snapshot) {
+              queueList = snapshot.data;
+              return StreamBuilder(
+                      stream: AudioService.playbackStateStream,
+                      builder: (context, snapshot) {
+                        PlaybackState state = snapshot.data;
+                        return (state!=null && state.basicState != null)
+                            ? ReorderableListView(
+                                header: Text(
+                                  "Press and hold song to change queue order",
+                                  style: TextStyle(
+                                      color: Colors.grey, fontSize: 14.0),
+                                ),
+                                children: List.generate(queueList.length,
+                                    (index) => queueListTile(index, state)),
+                                onReorder: updateQueue)
+                            : queuePageW.noSongsInQueue();
+                      });
+            }));
   }
 
   Widget queueListTile(int index, state) {

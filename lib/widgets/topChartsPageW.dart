@@ -32,9 +32,17 @@ Widget loadingPageAnimation() {
 }
 
 Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
+  // holds the string to display on the chart container
+  String chartThumbnail = "മ";
   // setting proper names for all charts
   String chartLang = dataResponse["allcharts"][index]["language"];
   chartLang = "${chartLang[0].toUpperCase()}${chartLang.substring(1)}";
+  // setting the appropriate topChart thumbnail
+  // switch (dataResponse["allcharts"][index]["language"]) {
+  //   case "malayalam":
+  //     chartThumbnail = "മ";
+  //     break;
+  // } 
 
   return GestureDetector(
     onTap: () {
