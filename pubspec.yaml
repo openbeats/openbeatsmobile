@@ -29,6 +29,7 @@ dependencies:
   flare_flutter:
   simple_animations:
   http:
+  path_provider:
   fluttertoast:
   cached_network_image: ^2.0.0
 

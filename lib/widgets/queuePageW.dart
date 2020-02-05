@@ -74,6 +74,6 @@ Widget queueListTile(context, queueList, index, deleteItemFromQueue, state) {
         deleteItemFromQueue(index);
       },
     ),
-    title: Text(queueList[index].title),
+    title: Text(queueList[index].title, maxLines: 2, overflow: TextOverflow.ellipsis,),
   );
 }
