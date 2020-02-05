@@ -123,7 +123,7 @@ class QueueListPageState extends State<QueuePage> {
       margin: EdgeInsets.symmetric(vertical: 10.0),
       key: ValueKey("value$index"),
       child: queuePageW.queueListTile(
-          context, queueList, index, deleteItemFromQueue),
+          context, queueList, index, deleteItemFromQueue, state),
     );
   }
 }
