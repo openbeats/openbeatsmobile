@@ -159,7 +159,6 @@ Widget drawerArtistsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 3)
         ? ListTile(
-          
             leading: Icon(FontAwesomeIcons.users,
                 color: globalVars.leadingIconColor),
             title: Text('Artists',
@@ -537,14 +536,15 @@ void showQueueBasedToasts(int toastId) {
 }
 
 // shows the no internet toasts
-void showNoInternetToast(){
-  showToastMessage("Not able to connect to the internet", Colors.red, Colors.white);
+void showNoInternetToast() {
+  showToastMessage(
+      "Not able to connect to the internet", Colors.red, Colors.white);
 }
 
 // show toast to tell users to start playback to avail queue
-void showAvailQueueToast(){
-  showToastMessage("Please start a song to avail queue",
-                  Colors.orange, Colors.white);
+void showAvailQueueToast() {
+  showToastMessage(
+      "Please start a song to avail queue", Colors.orange, Colors.white);
 }
 
 // gets the search history from sharedPreferences
@@ -563,6 +563,8 @@ void addToSearchHistory(String query) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if ((globalVars.searchHistory.length == 0) ||
       (globalVars.searchHistory[0] != query)) {
+    // removing the instance of the same query in the searchHistory list if it is at the top
+    globalVars.searchHistory.remove(query);
     globalVars.searchHistory.insert(0, query);
     prefs.setStringList("searchStrings", globalVars.searchHistory);
   }
@@ -687,7 +689,9 @@ void showStopAndPlayChoice(context, getMp3URL, videosResponseItem, index) {
             backgroundColor: globalVars.primaryDark,
             title: Text("Are you sure?"),
             content: Text("This action will end the current media playback"),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(globalVars.borderRadius))),
+            shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.all(Radius.circular(globalVars.borderRadius))),
             actions: <Widget>[
               FlatButton(
                   onPressed: () {

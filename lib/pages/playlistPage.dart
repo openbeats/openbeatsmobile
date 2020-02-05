@@ -566,8 +566,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
       _queue.removeAt(parameters["oldIndex"] + 1);
      
       AudioServiceBackground.setQueue(_queue);
-      // for(int i = 0;i < _queue.length; i++)
-      //   print(_queue[i].title);
+      // correcting the queue index of the current playing song
+      for (int i = 0; i < _queue.length; i++) {
+        if (parameters["currArtURI"] ==
+            _queue[i].artUri) {
+          _queueIndex = i;
+        }
+      }
     }
   }
 

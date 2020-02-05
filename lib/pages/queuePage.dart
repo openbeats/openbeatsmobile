@@ -32,9 +32,10 @@ class _QueuePageState extends State<QueuePage> {
         queueList.insert(newIndex, queueList[oldIndex]);
         queueList.removeAt(oldIndex + 1);
       });
-      Map<String, int> parameters = {
+      Map<String, dynamic> parameters = {
         "oldIndex": oldIndex,
-        "newIndex": newIndex
+        "newIndex": newIndex,
+        "currentArtURI": AudioService.currentMediaItem.artUri
       };
       AudioService.customAction("updateQueueOrder", parameters);
     } else {
