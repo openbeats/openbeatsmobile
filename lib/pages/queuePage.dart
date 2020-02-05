@@ -106,6 +106,11 @@ class _QueuePageState extends State<QueuePage> {
                       PlaybackState state = snapshot.data;
                       return (queueList != null)
                           ? ReorderableListView(
+                              header: Text(
+                                "Press and hold song to change queue order",
+                                style: TextStyle(
+                                    color: Colors.grey, fontSize: 14.0),
+                              ),
                               children: List.generate(queueList.length,
                                   (index) => queueListTile(index, state)),
                               onReorder: updateQueue)
