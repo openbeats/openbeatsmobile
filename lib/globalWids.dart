@@ -171,7 +171,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              await getMp3URL(videosResponseItem["videoId"], index);
+              await getMp3URL(videosResponseItem["videoId"], index, false);
             }
           } on SocketException catch (_) {
             globalFun.showNoInternetToast();
@@ -251,15 +251,22 @@ Widget homePageVidResultExtraOptions(
                 try {
                   final result = await InternetAddress.lookup('example.com');
                   if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-                    await getMp3URL(videosResponseItem["videoId"], index);
+                    await getMp3URL(
+                        videosResponseItem["videoId"], index, false);
                   }
                 } on SocketException catch (_) {
                   globalFun.showNoInternetToast();
                 }
               }
             } else if (choice == "repeatSong") {
-              var parameter = {"song": videosResponseItem};
-              AudioService.customAction("repeatSong", parameter);
+              try {
+                final result = await InternetAddress.lookup('example.com');
+                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                  await getMp3URL(videosResponseItem["videoId"], index, true);
+                }
+              } on SocketException catch (_) {
+                globalFun.showNoInternetToast();
+              }
             }
           } else {
             globalFun.showToastMessage(

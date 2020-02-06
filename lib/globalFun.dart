@@ -466,6 +466,11 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
       snackBarColor = Colors.orange;
       snackBarDuration = Duration(seconds: 30);
       break;
+    case 8:
+      snackBarMessage = "Initializing repeat song...";
+      snackBarColor = Colors.orange;
+      snackBarDuration = Duration(seconds: 30);
+      break;
   }
   SnackBar statusSnackBar;
   if (mode != 10) {
