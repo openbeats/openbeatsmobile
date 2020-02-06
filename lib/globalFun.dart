@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:openbeatsmobile/pages/downloadsPage.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:openbeatsmobile/pages/settingsPage.dart';
 import 'package:openbeatsmobile/pages/topChartsPage.dart';
@@ -40,7 +41,7 @@ Widget drawerW(int currPage, context) {
           drawerHistoryPageListTile(currPage, context),
           drawerYourPlaylistsPageListTile(currPage, context),
           drawerLikedSongsPageListTile(currPage, context),
-          drawerYourDownloadsPageListTile(currPage, context),
+          drawerDownloadsPageListTile(currPage, context),
           // drawerappsettingsPageListTile(currPage, context),
           drawerLogoutPageListTile(context),
         ],
@@ -288,7 +289,7 @@ Widget drawerLikedSongsPageListTile(int currPage, context) {
 }
 
 // holds the yourDownloadsPage listTile for the drawer
-Widget drawerYourDownloadsPageListTile(int currPage, context) {
+Widget drawerDownloadsPageListTile(int currPage, context) {
   return Container(
     child: (currPage != 8)
         ? ListTile(
@@ -303,7 +304,8 @@ Widget drawerYourDownloadsPageListTile(int currPage, context) {
             onTap: () {
               // if (globalVars.loginInfo["loginStatus"] == true) {
               //   // navigating to homePage
-              //   Navigator.pushReplacementNamed(context, '/yourDownloadsPage');
+              //   Navigator.of(context).pushReplacement(
+              //       globalWids.FadeRouteBuilder(page: DonwloadsPage()));
               // } else {
               //   showToastMessage(
               //       "Please login to use feature", Colors.black, Colors.white);
@@ -652,7 +654,7 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                       Radius.circular(globalVars.borderRadius))),
               backgroundColor: globalVars.primaryDark,
               content: Text(
-                  "OpenBeats requires storage access permission to download and save the songs you would like to listen offline"),
+                  "OpenBeats requires storage access permission to download, save and play the songs you would like to listen offline"),
               actions: <Widget>[
                 FlatButton(
                   child: Text("Cancel"),

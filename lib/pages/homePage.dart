@@ -584,7 +584,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (parameters["newIndex"] < parameters["oldIndex"]) {
         _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
         _queue.removeAt(parameters["oldIndex"] + 1);
-      } else if(parameters["newIndex"] > parameters["oldIndex"]) {
+      } else if (parameters["newIndex"] > parameters["oldIndex"]) {
         _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
         _queue.removeAt(parameters["oldIndex"]);
       }
@@ -754,5 +754,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else {
       onStop();
     }
+    // refreshing the audioService state
+    var state = AudioServiceBackground.state.basicState;
+    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
   }
 }

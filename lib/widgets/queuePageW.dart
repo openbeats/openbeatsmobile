@@ -13,12 +13,13 @@ Widget appBarW() {
   );
 }
 
-Widget nowPlayingAnimation() {
+Widget nowPlayingAnimation(bool isPlaying) {
   return FlareActor(
     'assets/flareAssets/analysis_new.flr',
-    animation: 'ana'
-        'lysis'
-        '',
+    animation: (isPlaying)
+        ? 'ana'
+            'lysis'
+        : null,
     fit: BoxFit.scaleDown,
   );
 }
@@ -49,28 +50,30 @@ Widget noSongsInQueue() {
   );
 }
 
-Widget queueListTile(context, queueList, index, deleteItemFromQueue){
+Widget queueListTile(context, queueList, index, deleteItemFromQueue, state) {
   return ListTile(
-        leading: Container(
-            width: MediaQuery.of(context).size.width * 0.15,
-            height: MediaQuery.of(context).size.width * 0.15,
-            decoration: BoxDecoration(boxShadow: [
-              new BoxShadow(
-                color: Colors.black,
-                blurRadius: 2.0,
-                offset: new Offset(1.0, 1.0),
-              ),
-            ], borderRadius: BorderRadius.circular(globalVars.borderRadius)),
-            child: (AudioService.currentMediaItem!=null && AudioService.currentMediaItem.artUri ==
-                    queueList[index].artUri)
-                ? nowPlayingAnimation()
-                : thumbNailView(queueList[index].artUri)),
-        trailing: IconButton(
-          icon: Icon(Icons.remove_circle),
-          onPressed: (){
-            deleteItemFromQueue(index);
-          },
-        ),
-        title: Text(queueList[index].title),
-      );
+    leading: Container(
+        width: MediaQuery.of(context).size.width * 0.15,
+        height: MediaQuery.of(context).size.width * 0.15,
+        decoration: BoxDecoration(boxShadow: [
+          new BoxShadow(
+            color: Colors.black,
+            blurRadius: 2.0,
+            offset: new Offset(1.0, 1.0),
+          ),
+        ], borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+        child: (AudioService.currentMediaItem != null &&
+                AudioService.currentMediaItem.artUri == queueList[index].artUri)
+            ? (state.basicState == BasicPlaybackState.playing)
+                ? nowPlayingAnimation(true)
+                : nowPlayingAnimation(false)
+            : thumbNailView(queueList[index].artUri)),
+    trailing: IconButton(
+      icon: Icon(Icons.remove_circle),
+      onPressed: () {
+        deleteItemFromQueue(index);
+      },
+    ),
+    title: Text(queueList[index].title, maxLines: 2, overflow: TextOverflow.ellipsis,),
+  );
 }

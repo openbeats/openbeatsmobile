@@ -629,12 +629,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
       );
       _queue.add(mediaItem);
       AudioServiceBackground.setQueue(_queue);
+
       if (shouldPlay) {
         await onSkipToNext();
       }
     } else {
       onStop();
     }
+    // refreshing the audioService state
+    var state = AudioServiceBackground.state.basicState;
+    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
   }
 
   // gets the mp3URL using videoID and add to the queue
