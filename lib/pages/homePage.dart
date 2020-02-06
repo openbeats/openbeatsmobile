@@ -553,57 +553,74 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (action == "playMedia2") {
       getMp3URL(parameters['mediaID'], parameters);
     } else if (action == "addItemToQueue") {
-      bool alreadyExsists = false;
-      // ckecking if song already exsists in queue
-      for (int i = 0; i < _queue.length; i++) {
-        if (_queue[i].artUri == parameters["song"]["thumbnail"])
-          alreadyExsists = true;
-      }
-      // if song does not exsist in queue
-      if (!alreadyExsists)
-        getMp3URLToQueue(parameters["song"]);
-      else
-        globalFun.showToastMessage(
-            "Song already exsists in queue", Colors.red, Colors.white);
+      addItemToQueue(parameters);
     } else if (action == "removeItemFromQueue") {
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          print("New Queue Indexk: " + i.toString());
-          _queueIndex = i;
-        }
-      }
+      removeItemFromQueue(parameters);
     } else if (action == "updateQueueOrder") {
-      // checks if the rearrangement is upqueue or downqueue
-      if (parameters["newIndex"] < parameters["oldIndex"]) {
-        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-        _queue.removeAt(parameters["oldIndex"] + 1);
-      } else if (parameters["newIndex"] > parameters["oldIndex"]) {
-        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-        _queue.removeAt(parameters["oldIndex"]);
-      }
+      updateQueueOrder(parameters);
+    } else if (action == "repeatSong") {
 
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          print("New Queue Index: " + i.toString());
-          _queueIndex = i;
-        }
-      }
-      AudioServiceBackground.setQueue(_queue);
-      // refreshing the audioService state
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
     }
   }
+
+  // customAction functions
+  void addItemToQueue(parameters) {
+    bool alreadyExsists = false;
+    // ckecking if song already exsists in queue
+    for (int i = 0; i < _queue.length; i++) {
+      if (_queue[i].artUri == parameters["song"]["thumbnail"])
+        alreadyExsists = true;
+    }
+    // if song does not exsist in queue
+    if (!alreadyExsists)
+      getMp3URLToQueue(parameters["song"]);
+    else
+      globalFun.showToastMessage(
+          "Song already exsists in queue", Colors.red, Colors.white);
+  }
+
+  void removeItemFromQueue(parameters) {
+    _queue.removeAt(parameters["index"]);
+    AudioServiceBackground.setQueue(_queue);
+    var state = AudioServiceBackground.state.basicState;
+    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
+    // correcting the queue index of the current playing song
+    for (int i = 0; i < _queue.length; i++) {
+      if (parameters["currentArtURI"] == _queue[i].artUri) {
+        print("New Queue Indexk: " + i.toString());
+        _queueIndex = i;
+      }
+    }
+  }
+
+  void updateQueueOrder(parameters) {
+    // checks if the rearrangement is upqueue or downqueue
+    if (parameters["newIndex"] < parameters["oldIndex"]) {
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"] + 1);
+    } else if (parameters["newIndex"] > parameters["oldIndex"]) {
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"]);
+    }
+
+    // correcting the queue index of the current playing song
+    for (int i = 0; i < _queue.length; i++) {
+      if (parameters["currentArtURI"] == _queue[i].artUri) {
+        print("New Queue Index: " + i.toString());
+        _queueIndex = i;
+      }
+    }
+    AudioServiceBackground.setQueue(_queue);
+    // refreshing the audioService state
+    var state = AudioServiceBackground.state.basicState;
+    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
+  }
+
+  void repeatSong(){}
 
   @override
   void onAddQueueItem(MediaItem mediaItem) {

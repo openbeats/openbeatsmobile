@@ -248,7 +248,6 @@ Widget homePageVidResultExtraOptions(
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
-                // globalFun.showAvailQueueToast();
                 try {
                   final result = await InternetAddress.lookup('example.com');
                   if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
@@ -258,6 +257,9 @@ Widget homePageVidResultExtraOptions(
                   globalFun.showNoInternetToast();
                 }
               }
+            } else if (choice == "repeatSong") {
+              var parameter = {"song": videosResponseItem};
+              AudioService.customAction("repeatSong", parameter);
             }
           } else {
             globalFun.showToastMessage(
@@ -289,6 +291,12 @@ Widget homePageVidResultExtraOptions(
                   child: ListTile(
                     title: Text("Add to Queue"),
                     leading: Icon(Icons.queue),
+                  )),
+              PopupMenuItem(
+                  value: "repeatSong",
+                  child: ListTile(
+                    title: Text("Repeat Song"),
+                    leading: Icon(Icons.repeat),
                   )),
             ]),
   );
