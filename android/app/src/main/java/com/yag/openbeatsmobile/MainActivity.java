@@ -1,11 +1,7 @@
 package com.yag.openbeatsmobile;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,7 +9,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -23,7 +18,6 @@ import java.util.ArrayList;
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.plugins.GeneratedPluginRegistrant;
 
 public class MainActivity extends FlutterActivity {
@@ -90,7 +84,7 @@ public class MainActivity extends FlutterActivity {
         // checking if the required permission is granted
         if (requestCode == STORAGE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Download Initiated", Toast.LENGTH_LONG).show();
                 startDownload();
             } else {
                 Toast.makeText(this, "Please grant permission to download file", Toast.LENGTH_SHORT).show();

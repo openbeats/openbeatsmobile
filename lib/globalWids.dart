@@ -54,6 +54,37 @@ Widget noInternetView(refreshFunction) {
       ));
 }
 
+Widget noFileAccessView(refreshFunction) {
+  return Container(
+      margin: EdgeInsets.all(20.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            FlatButton(
+              child: Icon(
+                FontAwesomeIcons.redo,
+                size: 40.0,
+                color: globalVars.accentRed,
+              ),
+              onPressed: () {
+                refreshFunction();
+              },
+              color: Colors.transparent,
+              textColor: globalVars.accentBlue,
+            ),
+            SizedBox(
+              height: 20.0,
+            ),
+            Text("Please grant permission to access your\nfile system",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 22.0)),
+          ],
+        ),
+      ));
+}
+
 // used to fade transition to search page
 class FadeRouteBuilder<T> extends PageRouteBuilder<T> {
   final Widget page;
