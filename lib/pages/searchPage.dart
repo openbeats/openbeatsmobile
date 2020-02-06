@@ -162,6 +162,7 @@ class _SearchPageState extends State<SearchPage> {
           overflow: TextOverflow.ellipsis,
         ),
       ),
+      leading: Icon(Icons.search, color: Colors.grey,),
       trailing: SizedBox(
         width: MediaQuery.of(context).size.width * 0.3,
         child: Row(
@@ -169,7 +170,7 @@ class _SearchPageState extends State<SearchPage> {
           children: <Widget>[
             updateQueryBtn(showHistory, index),
             SizedBox(
-              width: 5.0,
+              width: 2.0,
             ),
             deleteSearchResultBtn(showHistory, index),
           ],
@@ -196,6 +197,7 @@ class _SearchPageState extends State<SearchPage> {
         child: IconButton(
           tooltip: "Update query",
           icon: Icon(Icons.arrow_upward),
+          iconSize: 20.0,
           onPressed: () {
             // setting global variable to persist search
             globalVars.currSearchText = (showHistory)
@@ -216,6 +218,7 @@ class _SearchPageState extends State<SearchPage> {
           ? IconButton(
               tooltip: "Delete Search Result",
               icon: Icon(Icons.clear),
+              iconSize: 20.0,
               onPressed: () {
                 setState(() {
                   // removing search histoy listing
