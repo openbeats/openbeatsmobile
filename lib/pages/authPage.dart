@@ -171,6 +171,7 @@ class _AuthPageState extends State<AuthPage>
         builder: (context, animation) {
           return Container(
               decoration: BoxDecoration(
+                
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -430,11 +431,27 @@ class _AuthPageState extends State<AuthPage>
     return Container(
       child: TextFormField(
         style: TextStyle(fontSize: 18.0),
-        obscureText: true,
+        obscureText: _obscureText,
         textInputAction: TextInputAction.next,
         cursorColor: globalVars.accentRed,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
+            suffixIcon: IconButton(
+                iconSize: 18.0,
+                icon: (_obscureText)
+                    ? Icon(
+                        FontAwesomeIcons.eye,
+                        color: Colors.grey,
+                      )
+                    : Icon(
+                        FontAwesomeIcons.eyeSlash,
+                        color: Colors.grey,
+                      ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                }),
             border: InputBorder.none,
             hintText: "Confirm your password",
             errorStyle: TextStyle(color: Colors.orange)),
