@@ -593,20 +593,20 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // customAction functions
   void addItemToQueue(parameters) {
-    bool alreadyExsists = false;
-    // ckecking if song already exsists in queue
+    bool alreadyExists = false;
+    // ckecking if song already Exists in queue
     for (int i = 0; i < _queue.length; i++) {
       if (_queue[i].artUri == parameters["song"]["thumbnail"])
-        alreadyExsists = true;
+        alreadyExists = true;
     }
     // if song does not exsist in queue
-    if (!alreadyExsists)
+    if (!alreadyExists)
       // false cause this is not repeating single song
       // last parameter is if the song should be make now playing in queue
       getMp3URLToQueue(parameters["song"], false, false);
     else
       globalFun.showToastMessage(
-          "Song already exsists in queue", Colors.red, Colors.white);
+          "Song already Exists in queue", Colors.red, Colors.white);
   }
 
   void removeItemFromQueue(parameters) {
@@ -657,20 +657,20 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void addItemToQueueFront(parameters) {
-    bool alreadyExsists = false;
-    // ckecking if song already exsists in queue
+    bool alreadyExists = false;
+    // ckecking if song already Exists in queue
     for (int i = 0; i < _queue.length; i++) {
       if (_queue[i].artUri == parameters["song"]["thumbnail"])
-        alreadyExsists = true;
+        alreadyExists = true;
     }
     // if song does not exsist in queue
-    if (!alreadyExsists)
+    if (!alreadyExists)
       // false cause this is not repeating single song
       // last parameter is if the song should be make now playing in queue
       getMp3URLToQueue(parameters["song"], false, true);
     else
       globalFun.showToastMessage(
-          "Song already exsists in queue", Colors.red, Colors.white);
+          "Song already Exists in queue", Colors.red, Colors.white);
   }
 
   @override

@@ -558,18 +558,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
         currIndex += 1;
       }
     } else if (action == "addItemToQueue") {
-      bool alreadyExsists = false;
-      // ckecking if song already exsists in queue
+      bool alreadyExists = false;
+      // ckecking if song already Exists in queue
       for (int i = 0; i < _queue.length; i++) {
         if (_queue[i].artUri == parameters["song"]["thumbnail"])
-          alreadyExsists = true;
+          alreadyExists = true;
       }
       // if song does not exsist in queue
-      if (!alreadyExsists)
+      if (!alreadyExists)
         getMp3URLToQueue(parameters["song"]);
       else
         globalFun.showToastMessage(
-            "Song already exsists in queue", Colors.red, Colors.white);
+            "Song already Exists in queue", Colors.red, Colors.white);
     } else if (action == "removeItemFromQueue") {
       _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);

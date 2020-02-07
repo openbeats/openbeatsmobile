@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations/controlled_animation.dart';
@@ -24,7 +25,8 @@ class _AuthPageState extends State<AuthPage>
   bool _autoValidateLogin = false,
       _autoValidateSignUp = false,
       _isAuthenticating = false,
-      _isSigningUp = false;
+      _isSigningUp = false,
+      _obscureText = true;
   String _emailID, _name, _password;
   final TextEditingController _passwordController = TextEditingController();
 
@@ -182,21 +184,25 @@ class _AuthPageState extends State<AuthPage>
                     child: ListView(
                       children: <Widget>[
                         SizedBox(
-                          height: 40.0,
-                        ),
-                        authPageW.loginImageView(context),
-                        SizedBox(
-                          height: 50.0,
+                          height: MediaQuery.of(context).size.height * 0.07,
                         ),
                         emailIdField(),
                         SizedBox(
-                          height: 20.0,
+                          height: MediaQuery.of(context).size.height * 0.02,
                         ),
                         passwordField(false),
                         SizedBox(
-                          height: 30.0,
+                          height: MediaQuery.of(context).size.height * 0.05,
                         ),
-                        loginBtn()
+                        loginBtn(),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.02,
+                        ),
+                        forgotPasswordLink(),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.0001,
+                        ),
+                        authPageW.loginImageView(context),
                       ],
                     ),
                   ),
@@ -206,37 +212,44 @@ class _AuthPageState extends State<AuthPage>
   }
 
   Widget signUpPageBody() {
-    return Center(
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 30.0),
-        child: Form(
-          key: _signUpFormKey,
-          autovalidate: _autoValidateSignUp,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              authPageW.welcomeText(),
-              SizedBox(
-                height: 40.0,
-              ),
-              emailIdField(),
-              SizedBox(
-                height: 10.0,
-              ),
-              nameField(),
-              SizedBox(
-                height: 10.0,
-              ),
-              passwordField(true),
-              SizedBox(
-                height: 10.0,
-              ),
-              passwordConfirmField(),
-              SizedBox(
-                height: 40.0,
-              ),
-              signUpBtn(),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [Color(0xFFc31432), Color(0xFF240b36)])),
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 30.0),
+          child: Form(
+            key: _signUpFormKey,
+            autovalidate: _autoValidateSignUp,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                authPageW.welcomeText(),
+                SizedBox(
+                  height: 40.0,
+                ),
+                emailIdField(),
+                SizedBox(
+                  height: 10.0,
+                ),
+                nameField(),
+                SizedBox(
+                  height: 10.0,
+                ),
+                passwordField(true),
+                SizedBox(
+                  height: 10.0,
+                ),
+                passwordConfirmField(),
+                SizedBox(
+                  height: 40.0,
+                ),
+                signUpBtn(),
+              ],
+            ),
           ),
         ),
       ),
@@ -273,12 +286,28 @@ class _AuthPageState extends State<AuthPage>
     return Container(
       child: TextFormField(
         controller: (haveController) ? _passwordController : null,
-        obscureText: true,
+        obscureText: _obscureText,
         textInputAction: TextInputAction.done,
         style: TextStyle(fontSize: 18.0),
         cursorColor: globalVars.accentRed,
         keyboardType: TextInputType.emailAddress,
         decoration: InputDecoration(
+            suffixIcon: IconButton(
+                iconSize: 18.0,
+                icon: (_obscureText)
+                    ? Icon(
+                        FontAwesomeIcons.eye,
+                        color: Colors.grey,
+                      )
+                    : Icon(
+                        FontAwesomeIcons.eyeSlash,
+                        color: Colors.grey,
+                      ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                }),
             border: InputBorder.none,
             hintText: "Your Password",
             errorStyle: TextStyle(color: Colors.orange)),
@@ -297,7 +326,7 @@ class _AuthPageState extends State<AuthPage>
 
   Widget loginBtn() {
     return Container(
-      margin: EdgeInsets.only(bottom: 10.0),
+      margin: EdgeInsets.symmetric(horizontal: 30.0),
       child: RaisedButton(
         onPressed: (_isAuthenticating)
             ? null
@@ -326,6 +355,19 @@ class _AuthPageState extends State<AuthPage>
               ),
       ),
     );
+  }
+
+  Widget forgotPasswordLink() {
+    return Center(
+        child: GestureDetector(
+            onTap: () {},
+            child: Text(
+              "Forgot Password ?",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.w400),
+            )));
   }
 
   Widget signUpBtn() {
