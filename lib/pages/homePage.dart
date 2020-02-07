@@ -392,7 +392,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   BasicPlaybackState _skipState;
   bool _playing;
   bool _shouldRepeat = true;
+  // used to differentiate normal pause from pause caused by audio focus lost
   bool _isPaused = false;
+  // temporary mediaItem object to overcome parameter restrictons
+  MediaItem temp;
 
   Map<String, dynamic> mediaIdParameters = {
     'mediaID': null,
@@ -468,11 +471,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   void playPause() {
     print("PlayPause clicked");
-    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing){
+    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing) {
       onPause();
-      
-    }
-    else
+    } else
       onPlay();
   }
 
@@ -531,7 +532,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-  void onPauseAudioFocus(){
+  void onPauseAudioFocus() {
     if (_skipState == null) {
       _playing = false;
       _audioPlayer.pause();
@@ -566,7 +567,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   void onAudioFocusGained() async {
     _audioPlayer.setVolume(1.0);
-    if(!_isPaused) onPlay();
+    if (!_isPaused) onPlay();
   }
 
   @override
@@ -585,6 +586,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else if (action == "repeatSong") {
       _shouldRepeat = true;
       repeatSong(parameters);
+    } else if (action == "addItemToQueueFront") {
+      addItemToQueueFront(parameters);
     }
   }
 
@@ -599,7 +602,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // if song does not exsist in queue
     if (!alreadyExsists)
       // false cause this is not repeating single song
-      getMp3URLToQueue(parameters["song"], false);
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], false, false);
     else
       globalFun.showToastMessage(
           "Song already exsists in queue", Colors.red, Colors.white);
@@ -648,7 +652,25 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   void repeatSong(parameters) {
     // true for repeating single song
-    getMp3URLToQueue(parameters, true);
+    // last parameter is if the song should be make now playing in queue
+    getMp3URLToQueue(parameters, true, false);
+  }
+
+  void addItemToQueueFront(parameters) {
+    bool alreadyExsists = false;
+    // ckecking if song already exsists in queue
+    for (int i = 0; i < _queue.length; i++) {
+      if (_queue[i].artUri == parameters["song"]["thumbnail"])
+        alreadyExsists = true;
+    }
+    // if song does not exsist in queue
+    if (!alreadyExsists)
+      // false cause this is not repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], false, true);
+    else
+      globalFun.showToastMessage(
+          "Song already exsists in queue", Colors.red, Colors.white);
   }
 
   @override
@@ -714,7 +736,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // gets the mp3URL using videoID and add to the queue
-  void getMp3URLToQueue(parameter, bool singleSongRepeat) async {
+  void getMp3URLToQueue(
+      parameter, bool singleSongRepeat, bool shouldBeNowPlaying) async {
     // holds the responseJSON for checking link validity
     var responseJSON;
     // getting the mp3URL
@@ -735,7 +758,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (responseJSON.data["status"] == true &&
         responseJSON.data["link"] != null) {
       // setting the current mediaItem
-      MediaItem temp = MediaItem(
+      temp = MediaItem(
         id: responseJSON.data["link"],
         album: "OpenBeats Music",
         title: parameter['title'],
@@ -743,9 +766,22 @@ class AudioPlayerTask extends BackgroundAudioTask {
         duration: globalFun.getDurationMillis(parameter['duration']),
         artUri: parameter['thumbnail'],
       );
-      _queue.add(temp);
+      (shouldBeNowPlaying)
+          ? _queue.insert(_queueIndex, temp)
+          : _queue.add(temp);
+
       AudioServiceBackground.setQueue(_queue);
-      if (singleSongRepeat) onSkipToNext();
+      if (shouldBeNowPlaying) {
+        int indexOfItem;
+        // finding the index of the element to play
+        for (int i = 0; i < _queue.length; i++) {
+          if (_queue[i].id == temp.id) indexOfItem = i;
+        }
+        _queueIndex = indexOfItem + 1;
+        onSkipToPrevious();
+      } else {
+        if (singleSongRepeat) onSkipToNext();
+      }
       var state = AudioServiceBackground.state.basicState;
       var position = (_audioPlayer.playbackEvent != null)
           ? _audioPlayer.playbackEvent.position.inMilliseconds

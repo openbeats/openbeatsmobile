@@ -163,9 +163,8 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                   BasicPlaybackState.playing ||
               AudioService.playbackState.basicState ==
                   BasicPlaybackState.paused) {
-            // showing the dialog to check if user wants to start playback or add song to queue
-            globalFun.showStopAndPlayChoice(
-                context, getMp3URL, videosResponseItem, index);
+            var parameter = {"song": videosResponseItem};
+            AudioService.customAction("addItemToQueueFront", parameter);
           }
         } else {
           try {
