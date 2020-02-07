@@ -392,6 +392,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   BasicPlaybackState _skipState;
   bool _playing;
   bool _shouldRepeat = true;
+  bool _isPaused = false;
 
   Map<String, dynamic> mediaIdParameters = {
     'mediaID': null,
@@ -459,16 +460,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (_shouldRepeat) {
         _queueIndex = -1;
         onSkipToNext();
-      }
-      else{
+      } else {
         onStop();
       }
     }
   }
 
   void playPause() {
-    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing)
+    print("PlayPause clicked");
+    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing){
       onPause();
+      
+    }
     else
       onPlay();
   }
@@ -514,12 +517,21 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onPlay() {
     if (_skipState == null) {
       _playing = true;
+      _isPaused = false;
       _audioPlayer.play();
     }
   }
 
   @override
   void onPause() {
+    if (_skipState == null) {
+      _playing = false;
+      _isPaused = true;
+      _audioPlayer.pause();
+    }
+  }
+
+  void onPauseAudioFocus(){
     if (_skipState == null) {
       _playing = false;
       _audioPlayer.pause();
@@ -533,17 +545,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onAudioFocusLost() async {
-    onPause();
+    onPauseAudioFocus();
   }
 
   @override
   void onAudioBecomingNoisy() {
-    onPause();
+    onPauseAudioFocus();
   }
 
   @override
   void onAudioFocusLostTransient() async {
-    _audioPlayer.setVolume(0);
+    onPauseAudioFocus();
   }
 
   @override
@@ -554,6 +566,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   void onAudioFocusGained() async {
     _audioPlayer.setVolume(1.0);
+    if(!_isPaused) onPlay();
   }
 
   @override
@@ -732,7 +745,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       );
       _queue.add(temp);
       AudioServiceBackground.setQueue(_queue);
-      if(singleSongRepeat) onSkipToNext();
+      if (singleSongRepeat) onSkipToNext();
       var state = AudioServiceBackground.state.basicState;
       var position = (_audioPlayer.playbackEvent != null)
           ? _audioPlayer.playbackEvent.position.inMilliseconds

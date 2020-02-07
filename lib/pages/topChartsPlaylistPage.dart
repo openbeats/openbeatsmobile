@@ -315,6 +315,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Completer _completer = Completer();
   BasicPlaybackState _skipState;
   bool _playing;
+   bool _isPaused = false;
 
   bool get hasNext => _queueIndex + 1 < _queue.length;
 
@@ -421,10 +422,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-  @override
+   @override
   void onPlay() {
     if (_skipState == null) {
       _playing = true;
+      _isPaused = false;
       _audioPlayer.play();
     }
   }
@@ -433,23 +435,31 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onPause() {
     if (_skipState == null) {
       _playing = false;
+      _isPaused = true;
+      _audioPlayer.pause();
+    }
+  }
+
+  void onPauseAudioFocus() {
+    if (_skipState == null) {
+      _playing = false;
       _audioPlayer.pause();
     }
   }
 
   @override
   void onAudioFocusLost() async {
-    onPause();
+    onPauseAudioFocus();
   }
 
   @override
   void onAudioBecomingNoisy() {
-    onPause();
+    onPauseAudioFocus();
   }
 
   @override
   void onAudioFocusLostTransient() async {
-    _audioPlayer.setVolume(0);
+    onPauseAudioFocus();
   }
 
   @override
@@ -460,8 +470,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   void onAudioFocusGained() async {
     _audioPlayer.setVolume(1.0);
+    if(!_isPaused) onPlay();
   }
-
   @override
   void onCustomAction(String action, var parameters) async {
     // if condition to add all songs to the list and start playback
