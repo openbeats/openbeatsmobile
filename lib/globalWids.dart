@@ -165,6 +165,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                   BasicPlaybackState.paused) {
             var parameter = {"song": videosResponseItem};
             AudioService.customAction("addItemToQueueFront", parameter);
+            globalFun.showToastMessage("Adding song to queue...", Colors.orange, Colors.white);
           }
         } else {
           try {

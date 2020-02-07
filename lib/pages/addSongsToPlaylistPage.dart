@@ -153,6 +153,8 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
         Navigator.pop(context);
         globalFun.showToastMessage(
             "Added to " + playListName, Colors.green, Colors.white);
+      } else if(responseJSON["status"] == false && responseJSON["data"] == "Song already added"){
+        globalFun.showToastMessage("Sorry, song already present in playlist", Colors.red, Colors.white);
       }
     } catch (err) {
       setState(() {
