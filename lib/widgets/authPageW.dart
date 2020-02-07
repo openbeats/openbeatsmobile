@@ -20,7 +20,7 @@ Widget appBarW(_tabController,) {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(FontAwesomeIcons.userAstronaut,size: 20.0,),
+              Icon(FontAwesomeIcons.user,size: 20.0,),
               SizedBox(width: 10.0,),
               Text("Login")
             ],
@@ -30,7 +30,7 @@ Widget appBarW(_tabController,) {
          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Icon(FontAwesomeIcons.userNinja,size: 20.0,),
+              Icon(FontAwesomeIcons.userPlus,size: 20.0,),
               SizedBox(width: 10.0,),
               Text("Sign Up")
             ],
@@ -43,7 +43,9 @@ Widget appBarW(_tabController,) {
 
 Widget loginImageView(context) {
   return Container(
-    child: Image.asset("assets/images/supplementary/authpage1.png",height: MediaQuery.of(context).size.height*0.35),
+    height: MediaQuery.of(context).size.height*0.43,
+    alignment: Alignment.center,
+    child: Image.asset("assets/images/supplementary/authpage1.png",height: MediaQuery.of(context).size.height*0.30),
   );
 }
 

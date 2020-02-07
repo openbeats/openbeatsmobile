@@ -471,6 +471,11 @@ void showSnackBars(int mode, GlobalKey<ScaffoldState> scaffoldKey, context) {
       snackBarColor = Colors.orange;
       snackBarDuration = Duration(seconds: 30);
       break;
+    case 9:
+      snackBarMessage = "Apologies, the song already exists in playlist";
+      snackBarColor = Colors.red;
+      showLoadingAnim = false;
+      snackBarDuration = Duration(seconds: 3);
   }
   SnackBar statusSnackBar;
   if (mode != 10) {

@@ -153,8 +153,9 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
         Navigator.pop(context);
         globalFun.showToastMessage(
             "Added to " + playListName, Colors.green, Colors.white);
-      } else if(responseJSON["status"] == false && responseJSON["data"] == "Song already added"){
-        globalFun.showToastMessage("Sorry, song already present in playlist", Colors.red, Colors.white);
+      } else if (responseJSON["status"] == false &&
+          responseJSON["data"] == "Song already added") {
+        globalFun.showSnackBars(9, _addSongsToPlaylistPageScaffoldKey, context);
       }
     } catch (err) {
       setState(() {
@@ -323,9 +324,21 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
           shape: StadiumBorder(),
           textColor: globalVars.accentRed,
           color: globalVars.accentWhite,
-          child: Text(
-            "Create Playlist",
-            style: TextStyle(fontSize: 18.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(
+                FontAwesomeIcons.plus,
+                size: 20.0,
+              ),
+              SizedBox(
+                width: 10.0,
+              ),
+              Text(
+                "Create Playlist",
+                style: TextStyle(fontSize: 20.0),
+              )
+            ],
           ),
           padding: EdgeInsets.all(20.0),
         ));

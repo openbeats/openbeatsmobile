@@ -100,7 +100,7 @@ class _SearchPageState extends State<SearchPage> {
     // calling function to monitor the textField to handle delayed responses
     // and empty textField edge cases
     addListenerToSearchTextField();
-    // to check if the global value exsists to be inserted
+    // to check if the global value Exists to be inserted
     if (globalVars.currSearchText.length > 1) {
       // inserting persistent text into the field
       queryFieldController.text = globalVars.currSearchText;
