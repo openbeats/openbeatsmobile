@@ -212,37 +212,44 @@ class _AuthPageState extends State<AuthPage>
   }
 
   Widget signUpPageBody() {
-    return Center(
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 30.0),
-        child: Form(
-          key: _signUpFormKey,
-          autovalidate: _autoValidateSignUp,
-          child: ListView(
-            shrinkWrap: true,
-            children: <Widget>[
-              authPageW.welcomeText(),
-              SizedBox(
-                height: 40.0,
-              ),
-              emailIdField(),
-              SizedBox(
-                height: 10.0,
-              ),
-              nameField(),
-              SizedBox(
-                height: 10.0,
-              ),
-              passwordField(true),
-              SizedBox(
-                height: 10.0,
-              ),
-              passwordConfirmField(),
-              SizedBox(
-                height: 40.0,
-              ),
-              signUpBtn(),
-            ],
+    return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              colors: [Color(0xFFc31432), Color(0xFF240b36)])),
+      child: Center(
+        child: Container(
+          margin: EdgeInsets.symmetric(horizontal: 30.0),
+          child: Form(
+            key: _signUpFormKey,
+            autovalidate: _autoValidateSignUp,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                authPageW.welcomeText(),
+                SizedBox(
+                  height: 40.0,
+                ),
+                emailIdField(),
+                SizedBox(
+                  height: 10.0,
+                ),
+                nameField(),
+                SizedBox(
+                  height: 10.0,
+                ),
+                passwordField(true),
+                SizedBox(
+                  height: 10.0,
+                ),
+                passwordConfirmField(),
+                SizedBox(
+                  height: 40.0,
+                ),
+                signUpBtn(),
+              ],
+            ),
           ),
         ),
       ),

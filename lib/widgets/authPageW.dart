@@ -51,8 +51,8 @@ Widget loginImageView(context) {
 
 Widget welcomeText(){
   return Container(
-    child: Text("Welcome\nto OpenBeats!",textAlign: TextAlign.center, style: TextStyle(
-      color: Colors.white, fontSize: 30.0, 
+    child: Text("Join The \nRevolution!",textAlign: TextAlign.center, style: TextStyle(
+      color: Colors.white, fontSize: 30.0, fontWeight: FontWeight.bold, fontFamily: "Comfortaa-Bold" 
     ),),
   );
 }
