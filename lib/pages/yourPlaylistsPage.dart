@@ -314,6 +314,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
   Widget playListsListView() {
     return ListView.builder(
       shrinkWrap: true,
+      physics: ScrollPhysics(),
       itemCount: dataResponse["data"].length,
       itemBuilder: playListsListViewBody,
     );

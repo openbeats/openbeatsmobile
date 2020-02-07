@@ -163,15 +163,15 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                   BasicPlaybackState.playing ||
               AudioService.playbackState.basicState ==
                   BasicPlaybackState.paused) {
-            // showing the dialog to check if user wants to start playback or add song to queue
-            globalFun.showStopAndPlayChoice(
-                context, getMp3URL, videosResponseItem, index);
+            var parameter = {"song": videosResponseItem};
+            AudioService.customAction("addItemToQueueFront", parameter);
+            globalFun.showToastMessage("Adding song to queue...", Colors.orange, Colors.white);
           }
         } else {
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              await getMp3URL(videosResponseItem["videoId"], index);
+              await getMp3URL(videosResponseItem["videoId"], index, false);
             }
           } on SocketException catch (_) {
             globalFun.showNoInternetToast();
@@ -248,15 +248,24 @@ Widget homePageVidResultExtraOptions(
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
-                // globalFun.showAvailQueueToast();
                 try {
                   final result = await InternetAddress.lookup('example.com');
                   if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-                    await getMp3URL(videosResponseItem["videoId"], index);
+                    await getMp3URL(
+                        videosResponseItem["videoId"], index, false);
                   }
                 } on SocketException catch (_) {
                   globalFun.showNoInternetToast();
                 }
+              }
+            } else if (choice == "repeatSong") {
+              try {
+                final result = await InternetAddress.lookup('example.com');
+                if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+                  await getMp3URL(videosResponseItem["videoId"], index, true);
+                }
+              } on SocketException catch (_) {
+                globalFun.showNoInternetToast();
               }
             }
           } else {
@@ -289,6 +298,12 @@ Widget homePageVidResultExtraOptions(
                   child: ListTile(
                     title: Text("Add to Queue"),
                     leading: Icon(Icons.queue),
+                  )),
+              PopupMenuItem(
+                  value: "repeatSong",
+                  child: ListTile(
+                    title: Text("Repeat Song"),
+                    leading: Icon(Icons.repeat),
                   )),
             ]),
   );
@@ -522,6 +537,7 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                     title: Text("Add to Queue"),
                     leading: Icon(Icons.queue),
                   )),
+              
             ]),
   );
 }

@@ -152,19 +152,18 @@ class _HomePageState extends State<HomePage> {
             });
   }
 
-  // sets the shared preferences and starts the audio service after stopping previous one
-  void getMp3URL(String videoId, int index) async {
+  // starts the snackbar and also initiates the audio service and calls the customAction
+  void getMp3URL(String videoId, int index, bool repeatSong) async {
     // monitoring playback state to close the snackbar when playback starts
     monitorPlaybackStart();
     // show link-fetching snackBar
-    globalFun.showSnackBars(0, _homePageScaffoldKey, context);
-    // // holds the responseJSON for checking link validity
+    (repeatSong)
+        ? globalFun.showSnackBars(8, _homePageScaffoldKey, context)
+        : globalFun.showSnackBars(0, _homePageScaffoldKey, context);
 
     // getting the current mp3 duration in milliseconds
     int audioDuration =
         globalFun.getDurationMillis(videosResponseList[index]["duration"]);
-    // sets the sharedPreferences values
-    // setSharedPrefs(index, audioDuration);
 
     MediaItem currMediaItem = MediaItem(
       id: videoId,
@@ -178,10 +177,10 @@ class _HomePageState extends State<HomePage> {
     if (AudioService.playbackState != null) {
       await AudioService.stop();
       Timer(Duration(milliseconds: 500), () async {
-        await audioServiceStart(currMediaItem);
+        await audioServiceStart(currMediaItem, repeatSong, index);
       });
     } else {
-      await audioServiceStart(currMediaItem);
+      await audioServiceStart(currMediaItem, repeatSong, index);
     }
 
     // refreshing the UI build to update the thumbnail for now platying music
@@ -208,7 +207,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   // starts the audio service with notification
-  Future audioServiceStart(MediaItem currMediaItem) async {
+  Future audioServiceStart(
+      MediaItem currMediaItem, bool repeatSong, int index) async {
     // start the AudioService
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
@@ -227,7 +227,10 @@ class _HomePageState extends State<HomePage> {
       'duration': currMediaItem.duration,
       'thumbnailURI': currMediaItem.artUri
     };
-    await AudioService.customAction('playMedia2', parameters);
+    (repeatSong)
+        ? await AudioService.customAction(
+            'repeatSong', videosResponseList[index])
+        : await AudioService.customAction('playMedia2', parameters);
   }
 
   // sets the status and navigation bar themes
@@ -388,6 +391,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Completer _completer = Completer();
   BasicPlaybackState _skipState;
   bool _playing;
+  bool _shouldRepeat = true;
+  // used to differentiate normal pause from pause caused by audio focus lost
+  bool _isPaused = false;
+  // temporary mediaItem object to overcome parameter restrictons
+  MediaItem temp;
 
   Map<String, dynamic> mediaIdParameters = {
     'mediaID': null,
@@ -452,15 +460,20 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (hasNext) {
       onSkipToNext();
     } else {
-      _queueIndex = -1;
-      onSkipToNext();
+      if (_shouldRepeat) {
+        _queueIndex = -1;
+        onSkipToNext();
+      } else {
+        onStop();
+      }
     }
   }
 
   void playPause() {
-    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing)
+    print("PlayPause clicked");
+    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing) {
       onPause();
-    else
+    } else
       onPlay();
   }
 
@@ -505,12 +518,21 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onPlay() {
     if (_skipState == null) {
       _playing = true;
+      _isPaused = false;
       _audioPlayer.play();
     }
   }
 
   @override
   void onPause() {
+    if (_skipState == null) {
+      _playing = false;
+      _isPaused = true;
+      _audioPlayer.pause();
+    }
+  }
+
+  void onPauseAudioFocus() {
     if (_skipState == null) {
       _playing = false;
       _audioPlayer.pause();
@@ -524,17 +546,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   void onAudioFocusLost() async {
-    onPause();
+    onPauseAudioFocus();
   }
 
   @override
   void onAudioBecomingNoisy() {
-    onPause();
+    onPauseAudioFocus();
   }
 
   @override
   void onAudioFocusLostTransient() async {
-    _audioPlayer.setVolume(0);
+    onPauseAudioFocus();
   }
 
   @override
@@ -545,64 +567,110 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   void onAudioFocusGained() async {
     _audioPlayer.setVolume(1.0);
+    if (!_isPaused) onPlay();
   }
 
   @override
   void onCustomAction(String action, var parameters) async {
     // if condition to play current media
     if (action == "playMedia2") {
+      _shouldRepeat = false;
       getMp3URL(parameters['mediaID'], parameters);
     } else if (action == "addItemToQueue") {
-      bool alreadyExsists = false;
-      // ckecking if song already exsists in queue
-      for (int i = 0; i < _queue.length; i++) {
-        if (_queue[i].artUri == parameters["song"]["thumbnail"])
-          alreadyExsists = true;
-      }
-      // if song does not exsist in queue
-      if (!alreadyExsists)
-        getMp3URLToQueue(parameters["song"]);
-      else
-        globalFun.showToastMessage(
-            "Song already exsists in queue", Colors.red, Colors.white);
+      _shouldRepeat = true;
+      addItemToQueue(parameters);
     } else if (action == "removeItemFromQueue") {
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          print("New Queue Indexk: " + i.toString());
-          _queueIndex = i;
-        }
-      }
+      removeItemFromQueue(parameters);
     } else if (action == "updateQueueOrder") {
-      // checks if the rearrangement is upqueue or downqueue
-      if (parameters["newIndex"] < parameters["oldIndex"]) {
-        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-        _queue.removeAt(parameters["oldIndex"] + 1);
-      } else if (parameters["newIndex"] > parameters["oldIndex"]) {
-        _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-        _queue.removeAt(parameters["oldIndex"]);
-      }
-
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          print("New Queue Index: " + i.toString());
-          _queueIndex = i;
-        }
-      }
-      AudioServiceBackground.setQueue(_queue);
-      // refreshing the audioService state
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
+      updateQueueOrder(parameters);
+    } else if (action == "repeatSong") {
+      _shouldRepeat = true;
+      repeatSong(parameters);
+    } else if (action == "addItemToQueueFront") {
+      addItemToQueueFront(parameters);
     }
+  }
+
+  // customAction functions
+  void addItemToQueue(parameters) {
+    bool alreadyExsists = false;
+    // ckecking if song already exsists in queue
+    for (int i = 0; i < _queue.length; i++) {
+      if (_queue[i].artUri == parameters["song"]["thumbnail"])
+        alreadyExsists = true;
+    }
+    // if song does not exsist in queue
+    if (!alreadyExsists)
+      // false cause this is not repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], false, false);
+    else
+      globalFun.showToastMessage(
+          "Song already exsists in queue", Colors.red, Colors.white);
+  }
+
+  void removeItemFromQueue(parameters) {
+    _queue.removeAt(parameters["index"]);
+    AudioServiceBackground.setQueue(_queue);
+    var state = AudioServiceBackground.state.basicState;
+    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
+    // correcting the queue index of the current playing song
+    for (int i = 0; i < _queue.length; i++) {
+      if (parameters["currentArtURI"] == _queue[i].artUri) {
+        print("New Queue Indexk: " + i.toString());
+        _queueIndex = i;
+      }
+    }
+  }
+
+  void updateQueueOrder(parameters) {
+    // checks if the rearrangement is upqueue or downqueue
+    if (parameters["newIndex"] < parameters["oldIndex"]) {
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"] + 1);
+    } else if (parameters["newIndex"] > parameters["oldIndex"]) {
+      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
+      _queue.removeAt(parameters["oldIndex"]);
+    }
+
+    // correcting the queue index of the current playing song
+    for (int i = 0; i < _queue.length; i++) {
+      if (parameters["currentArtURI"] == _queue[i].artUri) {
+        print("New Queue Index: " + i.toString());
+        _queueIndex = i;
+      }
+    }
+    AudioServiceBackground.setQueue(_queue);
+    // refreshing the audioService state
+    var state = AudioServiceBackground.state.basicState;
+    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
+  }
+
+  void repeatSong(parameters) {
+    // true for repeating single song
+    // last parameter is if the song should be make now playing in queue
+    getMp3URLToQueue(parameters, true, false);
+  }
+
+  void addItemToQueueFront(parameters) {
+    bool alreadyExsists = false;
+    // ckecking if song already exsists in queue
+    for (int i = 0; i < _queue.length; i++) {
+      if (_queue[i].artUri == parameters["song"]["thumbnail"])
+        alreadyExsists = true;
+    }
+    // if song does not exsist in queue
+    if (!alreadyExsists)
+      // false cause this is not repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], false, true);
+    else
+      globalFun.showToastMessage(
+          "Song already exsists in queue", Colors.red, Colors.white);
   }
 
   @override
@@ -668,7 +736,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // gets the mp3URL using videoID and add to the queue
-  void getMp3URLToQueue(parameter) async {
+  void getMp3URLToQueue(
+      parameter, bool singleSongRepeat, bool shouldBeNowPlaying) async {
     // holds the responseJSON for checking link validity
     var responseJSON;
     // getting the mp3URL
@@ -689,7 +758,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (responseJSON.data["status"] == true &&
         responseJSON.data["link"] != null) {
       // setting the current mediaItem
-      MediaItem temp = MediaItem(
+      temp = MediaItem(
         id: responseJSON.data["link"],
         album: "OpenBeats Music",
         title: parameter['title'],
@@ -697,10 +766,26 @@ class AudioPlayerTask extends BackgroundAudioTask {
         duration: globalFun.getDurationMillis(parameter['duration']),
         artUri: parameter['thumbnail'],
       );
-      _queue.add(temp);
+      (shouldBeNowPlaying)
+          ? _queue.insert(_queueIndex, temp)
+          : _queue.add(temp);
+
       AudioServiceBackground.setQueue(_queue);
+      if (shouldBeNowPlaying) {
+        int indexOfItem;
+        // finding the index of the element to play
+        for (int i = 0; i < _queue.length; i++) {
+          if (_queue[i].id == temp.id) indexOfItem = i;
+        }
+        _queueIndex = indexOfItem + 1;
+        onSkipToPrevious();
+      } else {
+        if (singleSongRepeat) onSkipToNext();
+      }
       var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      var position = (_audioPlayer.playbackEvent != null)
+          ? _audioPlayer.playbackEvent.position.inMilliseconds
+          : 0;
       AudioServiceBackground.setState(
           controls: getControls(state), basicState: state, position: position);
       globalFun.showQueueBasedToasts(1);
