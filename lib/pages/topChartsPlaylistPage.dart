@@ -315,7 +315,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Completer _completer = Completer();
   BasicPlaybackState _skipState;
   bool _playing;
-   bool _isPaused = false;
+  bool _isPaused = true;
 
   bool get hasNext => _queueIndex + 1 < _queue.length;
 

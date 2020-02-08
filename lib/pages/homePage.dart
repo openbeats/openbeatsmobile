@@ -393,7 +393,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   bool _playing;
   bool _shouldRepeat = true;
   // used to differentiate normal pause from pause caused by audio focus lost
-  bool _isPaused = false;
+  bool _isPaused = true;
   // temporary mediaItem object to overcome parameter restrictons
   MediaItem temp;
 
