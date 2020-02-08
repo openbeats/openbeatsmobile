@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +131,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
         await startAudioService();
         var parameters = {
           "currIndex": index,
-          "allSongs": dataResponse["chart"]["songs"]
+          "allSongs": dataResponse["data"]["songs"]
         };
         await AudioService.customAction(
             "startMusicPlaybackAndCreateQueue", parameters);
@@ -141,7 +140,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       await startAudioService();
       var parameters = {
         "currIndex": index,
-        "allSongs": dataResponse["chart"]["songs"]
+        "allSongs": dataResponse["data"]["songs"]
       };
       await AudioService.customAction(
           "startMusicPlaybackAndCreateQueue", parameters);
@@ -190,7 +189,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
                   : (_isLoading)
                       ? playlistPageW.playlistsLoading()
                       : (dataResponse != null &&
-                              dataResponse["chart"]["songs"].length != 0)
+                              dataResponse["data"]["songs"].length != 0)
                           ? playlistPageBody()
                           : playlistPageW.noSongsMessage()),
         ),
@@ -220,11 +219,11 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
     return ListView.builder(
       shrinkWrap: true,
       physics: ScrollPhysics(),
-      itemCount: dataResponse["chart"]["songs"].length,
+      itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
         return globalWids.topChartsPlaylistPageVidResultContainerW(
             context,
-            dataResponse["chart"]["songs"][index],
+            dataResponse["data"]["songs"][index],
             index,
             startPlaylistFromMusic);
       },
@@ -245,13 +244,13 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
                   await startAudioService();
                   // calling method to add songs to the background list
                   await AudioService.customAction(
-                      "addSongsToList", dataResponse["chart"]["songs"]);
+                      "addSongsToList", dataResponse["data"]["songs"]);
                 });
               } else {
                 await startAudioService();
                 // calling method to add songs to the background list
                 await AudioService.customAction(
-                    "addSongsToList", dataResponse["chart"]["songs"]);
+                    "addSongsToList", dataResponse["data"]["songs"]);
               }
             }
           } on SocketException catch (_) {
