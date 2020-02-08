@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
@@ -170,6 +171,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Future startAudioService() async {
+    print("REached");
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       resumeOnClick: true,
@@ -262,13 +264,13 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Widget playlistPageBody() {
-    return ListView( 
+    return ListView(
       physics: BouncingScrollPhysics(),
       children: <Widget>[
         SizedBox(
           height: 20.0,
         ),
-        shuffleAllBtn(),
+        playAllButtons(),
         SizedBox(
           height: 30.0,
         ),
@@ -282,8 +284,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget playlistPageListViewBody() {
     return ListView.builder(
-      shrinkWrap: true,
       physics: BouncingScrollPhysics(),
+      shrinkWrap: true,
       itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
         return globalWids.playlistPageVidResultContainerW(
@@ -296,50 +298,89 @@ class _PlaylistPageState extends State<PlaylistPage> {
     );
   }
 
-  Widget shuffleAllBtn() {
+  Widget playAllButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        playAllBtnsW(1),
+        playAllBtnsW(2),
+      ],
+    );
+  }
+
+  // mode : 1 - shuffleAll , 2 - addToQueue
+  Widget playAllBtnsW(mode) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.0),
-      child: RaisedButton(
+      // margin: EdgeInsets.symmetric(horizontal: 10.0),
+      width: MediaQuery.of(context).size.width * 0.4,
+      child: OutlineButton(
+        borderSide: BorderSide(
+            color: (mode == 1) ? globalVars.accentGreen : globalVars.accentBlue,
+            width: 2.0),
         onPressed: () async {
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              if (AudioService.playbackState != null) {
-                await AudioService.stop();
-                Timer(Duration(milliseconds: 500), () async {
+              if (mode == 1) {
+                if (AudioService.playbackState != null) {
+                  await AudioService.stop();
+                  Timer(Duration(milliseconds: 500), () async {
+                    await startAudioService();
+                    // calling method to add songs to the background list
+                    await AudioService.customAction(
+                        "addSongsToList", dataResponse["data"]["songs"]);
+                  });
+                } else {
+                  
                   await startAudioService();
                   // calling method to add songs to the background list
                   await AudioService.customAction(
                       "addSongsToList", dataResponse["data"]["songs"]);
-                });
+                }
               } else {
-                await startAudioService();
-                // calling method to add songs to the background list
-                await AudioService.customAction(
-                    "addSongsToList", dataResponse["data"]["songs"]);
+                // showing Toast
+                globalFun.showToastMessage("Adding Songs to queue...", Colors.orange, Colors.white);
+                if ((AudioService.playbackState != null) && (AudioService.playbackState.basicState == BasicPlaybackState.stopped || AudioService.playbackState.basicState == BasicPlaybackState.none)) {
+                  await startAudioService();
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongListToQueue", dataResponse["data"]["songs"]);
+                } else {
+                  
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongListToQueue", dataResponse["data"]["songs"]);
+                }
               }
             }
           } on SocketException catch (_) {
             globalFun.showNoInternetToast();
           }
         },
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(10.0),
         shape: StadiumBorder(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.shuffle,
-              size: 25.0,
-            ),
+            (mode == 1)
+                ? Icon(
+                    Icons.shuffle,
+                    size: 25.0,
+                  )
+                : Icon(
+                    Icons.queue,
+                    size: 25.0,
+                  ),
             SizedBox(width: 10.0),
-            Text(
-              "SHUFFLE ALL",
-              style: TextStyle(fontSize: 20.0),
-            )
+            (mode == 1)
+                ? Text(
+                    "SHUFFLE ALL",
+                  )
+                : Text(
+                    "ADD TO QUEUE",
+                  )
           ],
         ),
-        color: globalVars.accentGreen,
         textColor: globalVars.accentWhite,
       ),
     );
@@ -591,6 +632,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // false cause this is not repeating single song
       // last parameter is if the song should be make now playing in queue
       getMp3URLToQueue(parameters["song"], true);
+    } else if (action == "addSongListToQueue") {
+      addSongListToQueue(parameters);
     }
   }
 
@@ -662,6 +705,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
     var position = _audioPlayer.playbackEvent.position.inMilliseconds;
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
+  }
+
+  void addSongListToQueue(parameters) {
+    // checking if queue is empty
+    if (_queue.length == 0) {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+    }
+    audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URL, _queue);
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {

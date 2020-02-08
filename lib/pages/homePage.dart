@@ -15,6 +15,7 @@ import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
 import '../globalWids.dart' as globalWids;
 import '../actions/globalVarsA.dart' as globalVarsA;
+import '../audioServiceGlobalFun.dart' as audioServiceGlobalFun;
 
 // media item to indicate the current playing audio
 MediaItem currMediaItem;
@@ -624,6 +625,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // false cause this is not repeating single song
       // last parameter is if the song should be make now playing in queue
       getMp3URLToQueue(parameters["song"], false, true);
+    } else if (action == "addSongListToQueue") {
+      addSongListToQueue(parameters);
     }
   }
 
@@ -673,6 +676,17 @@ class AudioPlayerTask extends BackgroundAudioTask {
     var position = _audioPlayer.playbackEvent.position.inMilliseconds;
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
+  }
+
+  void addSongListToQueue(parameters) {
+    // checking if queue is empty
+    if (_queue.length == 0) {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+    }
+    audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URLSpecial, _queue);
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {
@@ -824,5 +838,54 @@ class AudioPlayerTask extends BackgroundAudioTask {
     var position = _audioPlayer.playbackEvent.position.inMilliseconds;
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
+  }
+
+  // gets the mp3URL using videoID and i parameter to start playback on true
+  Future getMp3URLSpecial(parameter, bool shouldPlay) async {
+    // holds the responseJSON for checking link validity
+    var responseJSON;
+    // getting the mp3URL
+    try {
+      // checking for link validity
+      String url = "https://api.openbeats.live/opencc/" +
+          parameter["videoId"].toString();
+      // sending GET request
+      responseJSON = await Dio().get(url);
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        globalFun.showToastMessage(
+            "Cannot connect to the server", Colors.red, Colors.white);
+        return;
+      }
+    }
+    if (responseJSON.data["status"] == true &&
+        responseJSON.data["link"] != null) {
+      MediaItem mediaItem = MediaItem(
+        id: responseJSON.data["link"],
+        album: "OpenBeats Music",
+        title: parameter['title'],
+        duration: globalFun.getDurationMillis(parameter["duration"]),
+        artist: parameter['channelName'],
+        artUri: parameter['thumbnail'],
+      );
+      // adding song thumbnail to the queueMeta list
+      _queueMeta.add(parameter['thumbnail']);
+      _queue.add(mediaItem);
+      AudioServiceBackground.setQueue(_queue);
+
+      if (shouldPlay) {
+        await onSkipToNext();
+      }
+    } else {
+      onStop();
+    }
+    if (AudioService.playbackState != null) {
+      // refreshing the audioService state
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+    }
   }
 }
