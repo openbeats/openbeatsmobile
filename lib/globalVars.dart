@@ -61,3 +61,6 @@ double borderRadius = 10.0;
 
 // holds the videoList obtained after searching for persistent data 
 var videosResponseList = new List();
+
+// holds data on which page is controlling the audio service
+String audioServicePage = "";

@@ -135,32 +135,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // function to monitor the playback start point to remove snackbar
-  void monitorPlaybackStart() async {
-    Timer.periodic(
-        Duration(milliseconds: 500),
-        (Timer t) => {
-              if (AudioService.playbackState != null &&
-                  AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing &&
-                  _homePageScaffoldKey.currentState != null &&
-                  _homePageScaffoldKey.currentState.hasFloatingActionButton)
-                {
-                  t.cancel(),
-                  _homePageScaffoldKey.currentState.removeCurrentSnackBar()
-                }
-            });
-  }
-
   // starts the snackbar and also initiates the audio service and calls the customAction
   void getMp3URL(String videoId, int index, bool repeatSong) async {
-    // monitoring playback state to close the snackbar when playback starts
-    monitorPlaybackStart();
-    // show link-fetching snackBar
-    (repeatSong)
-        ? globalFun.showSnackBars(8, _homePageScaffoldKey, context)
-        : globalFun.showSnackBars(0, _homePageScaffoldKey, context);
-
     // getting the current mp3 duration in milliseconds
     int audioDuration =
         globalFun.getDurationMillis(videosResponseList[index]["duration"]);
@@ -209,6 +185,10 @@ class _HomePageState extends State<HomePage> {
   // starts the audio service with notification
   Future audioServiceStart(
       MediaItem currMediaItem, bool repeatSong, int index) async {
+    setState(() {
+      // setting the page that is handling the audio service
+      globalVars.audioServicePage = "home";
+    });
     // start the AudioService
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
@@ -577,6 +557,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onCustomAction(String action, var parameters) async {
     // if condition to play current media
     if (action == "playMedia2") {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
       _shouldRepeat = false;
       getMp3URL(parameters['mediaID'], parameters);
     } else if (action == "addItemToQueue") {
@@ -602,6 +586,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void removeItemFromQueue(parameters) {
+    _queueMeta.remove(_queue[parameters["index"]].artUri);
     _queue.removeAt(parameters["index"]);
     AudioServiceBackground.setQueue(_queue);
     var state = AudioServiceBackground.state.basicState;

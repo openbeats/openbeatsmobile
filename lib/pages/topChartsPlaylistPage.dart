@@ -78,25 +78,6 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
     }
   }
 
-  // function to monitor the playback start point to remove snackbar
-  void monitorPlaybackStart() async {
-    Timer.periodic(
-        Duration(milliseconds: 500),
-        (Timer t) => {
-              if (AudioService.playbackState != null &&
-                  AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing &&
-                  _topChartPlaylistPageScaffoldKey.currentState != null &&
-                  _topChartPlaylistPageScaffoldKey
-                      .currentState.hasFloatingActionButton)
-                {
-                  t.cancel(),
-                  _topChartPlaylistPageScaffoldKey.currentState
-                      .removeCurrentSnackBar()
-                }
-            });
-  }
-
   // gets all the music in the playlist
   void getPlaylistContents() async {
     setState(() {
@@ -126,6 +107,10 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
   }
 
   Future startAudioService() async {
+    setState(() {
+      // setting the page that is handling the audio service
+      globalVars.audioServicePage = "topCharts";
+    });
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       resumeOnClick: true,
@@ -141,10 +126,6 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
   // function to start selected music and add the rest to playlist
   // index is the index of the clicked item
   Future startPlaylistFromMusic(index) async {
-    // show link-fetching snackBar
-    globalFun.showSnackBars(7, _topChartPlaylistPageScaffoldKey, context);
-    // monitoring playback state to close the snackbar when playback starts
-    monitorPlaybackStart();
     if (AudioService.playbackState != null) {
       await AudioService.stop();
       Timer(Duration(milliseconds: 500), () async {
@@ -258,11 +239,6 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              // show link-fetching snackBar
-              globalFun.showSnackBars(
-                  7, _topChartPlaylistPageScaffoldKey, context);
-              // monitoring playback state to close the snackbar when playback starts
-              monitorPlaybackStart();
               if (AudioService.playbackState != null) {
                 await AudioService.stop();
                 Timer(Duration(milliseconds: 500), () async {
@@ -480,8 +456,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onCustomAction(String action, var parameters) async {
     // if condition to add all songs to the list and start playback
     if (action == "addSongsToList") {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
       addSongsToList(parameters);
     } else if (action == "startMusicPlaybackAndCreateQueue") {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
       startMusicPlaybackAndCreateQueue(parameters);
     } else if (action == "addItemToQueue") {
       addItemToQueue(parameters);
@@ -542,6 +526,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void removeItemFromQueue(parameters) {
+    _queueMeta.remove(_queue[parameters["index"]].artUri);
     _queue.removeAt(parameters["index"]);
     AudioServiceBackground.setQueue(_queue);
     var state = AudioServiceBackground.state.basicState;
