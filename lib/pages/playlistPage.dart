@@ -262,7 +262,8 @@ class _PlaylistPageState extends State<PlaylistPage> {
   }
 
   Widget playlistPageBody() {
-    return ListView(
+    return ListView( 
+      physics: BouncingScrollPhysics(),
       children: <Widget>[
         SizedBox(
           height: 20.0,
@@ -282,7 +283,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
   Widget playlistPageListViewBody() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: ScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
         return globalWids.playlistPageVidResultContainerW(

@@ -344,6 +344,7 @@ class _HomePageState extends State<HomePage> {
   Widget videoListView() {
     return ListView.builder(
       shrinkWrap: true,
+      physics: BouncingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         return globalWids.homePageVidResultContainerW(
             context,

@@ -182,7 +182,8 @@ class _AuthPageState extends State<AuthPage>
                   key: _loginFormKey,
                   autovalidate: _autoValidateLogin,
                   child: Center(
-                    child: ListView(
+                    child: ListView( 
+                      physics: BouncingScrollPhysics(),
                       children: <Widget>[
                         SizedBox(
                           height: MediaQuery.of(context).size.height * 0.07,
@@ -225,7 +226,8 @@ class _AuthPageState extends State<AuthPage>
           child: Form(
             key: _signUpFormKey,
             autovalidate: _autoValidateSignUp,
-            child: ListView(
+            child: ListView( 
+              physics: BouncingScrollPhysics(),
               shrinkWrap: true,
               children: <Widget>[
                 authPageW.welcomeText(),

@@ -108,7 +108,8 @@ class QueueListPageState extends State<QueuePage> {
                             state.basicState != null &&
                             state.basicState != BasicPlaybackState.none &&
                             state.basicState != BasicPlaybackState.stopped)
-                        ? ReorderableListView(
+                        ? ReorderableListView( 
+                    
                             header: Text(
                               "Press and hold song to change queue order",
                               style:

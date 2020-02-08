@@ -221,6 +221,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
         : Container(
             color: globalVars.primaryDark,
             child: ListView(
+              physics: BouncingScrollPhysics(),
               children: <Widget>[
                 SizedBox(
                   height: 20.0,
@@ -277,7 +278,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
   Widget playListsListView() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: ScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       itemCount: dataResponse["data"].length,
       itemBuilder: playListsListViewBody,
     );

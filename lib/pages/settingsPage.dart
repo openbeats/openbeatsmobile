@@ -49,7 +49,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget settingsPageBody() {
     return Container(
-      child: ListView(
+      child: ListView( 
         children: <Widget>[settingsPageW.closeAudioService()],
       ),
     );
