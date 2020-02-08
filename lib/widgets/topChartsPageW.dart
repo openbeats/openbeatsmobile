@@ -35,13 +35,7 @@ Widget gridViewBuilder(BuildContext context, int index, var dataResponse) {
   
   // setting proper names for all charts
   String chartLang = dataResponse["allcharts"][index]["language"];
-  chartLang = "${chartLang[0]}${chartLang.substring(1).toLowerCase()}";
-  // setting the appropriate topChart thumbnail
-  // switch (dataResponse["allcharts"][index]["language"]) {
-  //   case "malayalam":
-  //     chartThumbnail = "മ";
-  //     break;
-  // } 
+  chartLang = "${chartLang[0].toUpperCase()}${chartLang.substring(1).toLowerCase()}";
 
   return GestureDetector(
     onTap: () {

@@ -439,6 +439,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
     eventSubscription.cancel();
   }
 
+  @override
+  void onClick(MediaButton button) {
+    playPause();
+  }
+
+  @override
+  void onStop() {
+    _audioPlayer.stop();
+    _setState(state: BasicPlaybackState.stopped);
+    _completer.complete();
+  }
+
   void _handlePlaybackCompleted() {
     if (hasNext) {
       onSkipToNext();
@@ -553,6 +565,38 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (!_isPaused) onPlay();
   }
 
+  List<MediaControl> getControls(BasicPlaybackState state) {
+    if (_queue.length == 1) {
+      if (_playing != null && _playing) {
+        return [
+          pauseControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          playControl,
+          stopControl,
+        ];
+      }
+    } else {
+      if (_playing != null && _playing) {
+        return [
+          skipToPreviousControl,
+          pauseControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          skipToPreviousControl,
+          playControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      }
+    }
+  }
+
   @override
   void onCustomAction(String action, var parameters) async {
     // if condition to play current media
@@ -572,9 +616,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
       updateQueueOrder(parameters);
     } else if (action == "repeatSong") {
       _shouldRepeat = true;
-      repeatSong(parameters);
+      // true for repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters, true, false);
     } else if (action == "addItemToQueueFront") {
-      addItemToQueueFront(parameters);
+      // false cause this is not repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], false, true);
     }
   }
 
@@ -626,36 +674,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
         controls: getControls(state), basicState: state, position: position);
   }
 
-  void repeatSong(parameters) {
-    // true for repeating single song
-    // last parameter is if the song should be make now playing in queue
-    getMp3URLToQueue(parameters, true, false);
-  }
-
-  void addItemToQueueFront(parameters) {
-    // false cause this is not repeating single song
-    // last parameter is if the song should be make now playing in queue
-    getMp3URLToQueue(parameters["song"], false, true);
-  }
-
-  @override
-  void onAddQueueItem(MediaItem mediaItem) {
-    _queue.add(mediaItem);
-    AudioServiceBackground.setQueue(_queue);
-  }
-
-  @override
-  void onClick(MediaButton button) {
-    playPause();
-  }
-
-  @override
-  void onStop() {
-    _audioPlayer.stop();
-    _setState(state: BasicPlaybackState.stopped);
-    _completer.complete();
-  }
-
   void _setState({@required BasicPlaybackState state, int position}) {
     if (position == null) {
       position = _audioPlayer.playbackEvent.position.inMilliseconds;
@@ -666,38 +684,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       basicState: state,
       position: position,
     );
-  }
-
-  List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_queue.length == 1) {
-      if (_playing != null && _playing) {
-        return [
-          pauseControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          playControl,
-          stopControl,
-        ];
-      }
-    } else {
-      if (_playing != null && _playing) {
-        return [
-          skipToPreviousControl,
-          pauseControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          skipToPreviousControl,
-          playControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      }
-    }
   }
 
   // gets the mp3URL using videoID and add to the queue

@@ -13,6 +13,7 @@ import '../widgets/playlistPageW.dart' as playlistPageW;
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
 import '../globalWids.dart' as globalWids;
+import '../audioServiceGlobalFun.dart' as audioServiceGlobalFun;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -302,7 +303,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              
               if (AudioService.playbackState != null) {
                 await AudioService.stop();
                 Timer(Duration(milliseconds: 500), () async {
@@ -411,6 +411,23 @@ class AudioPlayerTask extends BackgroundAudioTask {
     eventSubscription.cancel();
   }
 
+  @override
+  void onSeekTo(int position) {
+    _audioPlayer.seek(Duration(milliseconds: position));
+  }
+
+  @override
+  void onClick(MediaButton button) {
+    playPause();
+  }
+
+  @override
+  void onStop() {
+    _audioPlayer.stop();
+    _setState(state: BasicPlaybackState.stopped);
+    _completer.complete();
+  }
+
   void _handlePlaybackCompleted() {
     if (hasNext) {
       onSkipToNext();
@@ -516,17 +533,49 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (!_isPaused) onPlay();
   }
 
+  List<MediaControl> getControls(BasicPlaybackState state) {
+    if (_queue.length == 1) {
+      if (_playing != null && _playing) {
+        return [
+          pauseControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          playControl,
+          stopControl,
+        ];
+      }
+    } else {
+      if (_playing != null && _playing) {
+        return [
+          skipToPreviousControl,
+          pauseControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          skipToPreviousControl,
+          playControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      }
+    }
+  }
+
   @override
   void onCustomAction(String action, var parameters) async {
     // if condition to add all songs to the list and start playback
     if (action == "addSongsToList") {
-       var state = BasicPlaybackState.connecting;
+      var state = BasicPlaybackState.connecting;
       var position = 0;
       AudioServiceBackground.setState(
           controls: getControls(state), basicState: state, position: position);
-      addSongsToList(parameters);
+      audioServiceGlobalFun.addSongsToList(parameters, getMp3URL);
     } else if (action == "startMusicPlaybackAndCreateQueue") {
-       var state = BasicPlaybackState.connecting;
+      var state = BasicPlaybackState.connecting;
       var position = 0;
       AudioServiceBackground.setState(
           controls: getControls(state), basicState: state, position: position);
@@ -538,17 +587,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else if (action == "updateQueueOrder") {
       updateQueryOrder(parameters);
     } else if (action == "addItemToQueueFront") {
-      addItemToQueueFront(parameters);
-    }
-  }
-
-  void addSongsToList(parameters) {
-    List<dynamic> songsList = parameters;
-    for (int i = 0; i < songsList.length; i++) {
-      if (i == 0)
-        getMp3URL(songsList[i], true);
-      else
-        getMp3URL(songsList[i], false);
+      // false cause this is not repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], true);
     }
   }
 
@@ -579,12 +620,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
     else
       globalFun.showToastMessage(
           "Song already Exists in queue", Colors.red, Colors.white);
-  }
-
-  void addItemToQueueFront(parameters) {
-    // false cause this is not repeating single song
-    // last parameter is if the song should be make now playing in queue
-    getMp3URLToQueue(parameters["song"], true);
   }
 
   void removeItemFromQueue(parameters) {
@@ -626,6 +661,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
     var position = _audioPlayer.playbackEvent.position.inMilliseconds;
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
+  }
+
+  void _setState({@required BasicPlaybackState state, int position}) {
+    if (position == null) {
+      position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    }
+    AudioServiceBackground.setState(
+      controls: getControls(state),
+      systemActions: [MediaAction.seekTo],
+      basicState: state,
+      position: position,
+    );
   }
 
   // gets the mp3URL using videoID and i parameter to start playback on true
@@ -748,67 +795,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (tempIndex != -1) {
         _queueIndex = tempIndex + 1;
         onSkipToPrevious();
-      }
-    }
-  }
-
-  @override
-  void onSeekTo(int position) {
-    _audioPlayer.seek(Duration(milliseconds: position));
-  }
-
-  @override
-  void onClick(MediaButton button) {
-    playPause();
-  }
-
-  @override
-  void onStop() {
-    _audioPlayer.stop();
-    _setState(state: BasicPlaybackState.stopped);
-    _completer.complete();
-  }
-
-  void _setState({@required BasicPlaybackState state, int position}) {
-    if (position == null) {
-      position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    }
-    AudioServiceBackground.setState(
-      controls: getControls(state),
-      systemActions: [MediaAction.seekTo],
-      basicState: state,
-      position: position,
-    );
-  }
-
-  List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_queue.length == 1) {
-      if (_playing != null && _playing) {
-        return [
-          pauseControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          playControl,
-          stopControl,
-        ];
-      }
-    } else {
-      if (_playing != null && _playing) {
-        return [
-          skipToPreviousControl,
-          pauseControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          skipToPreviousControl,
-          playControl,
-          skipToNextControl,
-          stopControl,
-        ];
       }
     }
   }
