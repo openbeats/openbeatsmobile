@@ -153,7 +153,7 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                       BasicPlaybackState.buffering ||
                   AudioService.playbackState.basicState ==
                       BasicPlaybackState.paused) &&
-              AudioService.queue.length == 1) {
+              globalVars.audioServicePage == "home") {
             settingModalBottomSheet(context);
           } else if (AudioService.playbackState.basicState ==
                   BasicPlaybackState.buffering ||
@@ -165,7 +165,6 @@ Widget homePageVidResultContainerW(context, videosResponseItem, index,
                   BasicPlaybackState.paused) {
             var parameter = {"song": videosResponseItem};
             AudioService.customAction("addItemToQueueFront", parameter);
-            globalFun.showToastMessage("Adding song to queue...", Colors.orange, Colors.white);
           }
         } else {
           try {
@@ -244,7 +243,6 @@ Widget homePageVidResultExtraOptions(
                       BasicPlaybackState.none &&
                   AudioService.playbackState.basicState !=
                       BasicPlaybackState.stopped) {
-                globalFun.showQueueBasedToasts(0);
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
@@ -378,7 +376,6 @@ Widget playlistPageVidResultExtraOptions(context, videosResponseItem, index,
                     BasicPlaybackState.none &&
                 AudioService.playbackState.basicState !=
                     BasicPlaybackState.stopped) {
-              globalFun.showQueueBasedToasts(0);
               var parameter = {"song": videosResponseItem};
               AudioService.customAction("addItemToQueue", parameter);
             } else {
@@ -492,7 +489,6 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                       BasicPlaybackState.none &&
                   AudioService.playbackState.basicState !=
                       BasicPlaybackState.stopped) {
-                globalFun.showQueueBasedToasts(0);
                 var parameter = {"song": videosResponseItem};
                 AudioService.customAction("addItemToQueue", parameter);
               } else {
@@ -537,7 +533,6 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                     title: Text("Add to Queue"),
                     leading: Icon(Icons.queue),
                   )),
-              
             ]),
   );
 }
@@ -561,7 +556,12 @@ Widget vidResultThumbnail(context, String thumbnail, int pageMode) {
             PlaybackState state = snapshot.data;
             if (state != null) {
               if (AudioService.currentMediaItem != null &&
-                  AudioService.currentMediaItem.artUri == thumbnail) {
+                  AudioService.currentMediaItem.artUri == thumbnail &&
+                  ((pageMode == 1 && globalVars.audioServicePage == "home") ||
+                      (pageMode == 2 &&
+                          globalVars.audioServicePage == "playlist") ||
+                      (pageMode == 3 &&
+                          globalVars.audioServicePage == "topCharts"))) {
                 if (state.basicState == BasicPlaybackState.connecting ||
                     state.basicState == BasicPlaybackState.buffering) {
                   return nowPlayingLoadingAnimation();
@@ -923,8 +923,7 @@ Widget fabView(settingModalBottomSheet, scaffoldKey) {
           // stopping audio playback if an error has been detected
           AudioService.stop();
         }
-
-        return (state != null &&
+        return ((state != null) &&
                 (state.basicState == BasicPlaybackState.connecting ||
                     state.basicState == BasicPlaybackState.playing ||
                     state.basicState == BasicPlaybackState.buffering ||
@@ -953,29 +952,19 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
     onPressed: () {
       settingModalBottomSheet(context);
     },
-    label: (isPlaying)
-        ? Text("Playing")
-        : Container(
-            margin: EdgeInsets.only(left: 11.0), child: Text("Loading")),
-    icon: (isPlaying)
-        ? SizedBox(
-            width: 40.0,
-            height: 40.0,
-            child: FlareActor(
-              'assets/flareAssets/analysis_new.flr',
-              animation: (isPaused)
-                  ? null
-                  : 'ana'
-                      'lysis'
-                      '',
-              fit: BoxFit.scaleDown,
-            ))
-        : SizedBox(
-            width: 25.0,
-            height: 25.0,
-            child: CircularProgressIndicator(
-              valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
-            )),
+    label: (isPlaying) ? Text("Playing") : Container(child: Text("Loading")),
+    elevation: 10.0,
+    icon: Container(
+      margin: EdgeInsets.only(right: 7.0, left: 7.0),
+      child: (isPlaying)
+          ? (!isPaused) ? Icon(Icons.pause) : Icon(Icons.play_arrow)
+          : SizedBox(
+              width: 20.0,
+              height: 20.0,
+              child: CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+              )),
+    ),
     backgroundColor: Color(0xFFFF5C5C),
     foregroundColor: Colors.white,
   );

@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audio_service: ^0.5.7
+  audio_service: ^0.6.1
   just_audio:
   rxdart:
   font_awesome_flutter:

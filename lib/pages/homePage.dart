@@ -135,32 +135,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // function to monitor the playback start point to remove snackbar
-  void monitorPlaybackStart() async {
-    Timer.periodic(
-        Duration(milliseconds: 500),
-        (Timer t) => {
-              if (AudioService.playbackState != null &&
-                  AudioService.playbackState.basicState ==
-                      BasicPlaybackState.playing &&
-                  _homePageScaffoldKey.currentState != null &&
-                  _homePageScaffoldKey.currentState.hasFloatingActionButton)
-                {
-                  t.cancel(),
-                  _homePageScaffoldKey.currentState.removeCurrentSnackBar()
-                }
-            });
-  }
-
   // starts the snackbar and also initiates the audio service and calls the customAction
   void getMp3URL(String videoId, int index, bool repeatSong) async {
-    // monitoring playback state to close the snackbar when playback starts
-    monitorPlaybackStart();
-    // show link-fetching snackBar
-    (repeatSong)
-        ? globalFun.showSnackBars(8, _homePageScaffoldKey, context)
-        : globalFun.showSnackBars(0, _homePageScaffoldKey, context);
-
     // getting the current mp3 duration in milliseconds
     int audioDuration =
         globalFun.getDurationMillis(videosResponseList[index]["duration"]);
@@ -209,10 +185,15 @@ class _HomePageState extends State<HomePage> {
   // starts the audio service with notification
   Future audioServiceStart(
       MediaItem currMediaItem, bool repeatSong, int index) async {
+    setState(() {
+      // setting the page that is handling the audio service
+      globalVars.audioServicePage = "home";
+    });
     // start the AudioService
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
       resumeOnClick: true,
+      androidStopOnRemoveTask: true,
       androidNotificationChannelName: 'OpenBeats Notification Channel',
       notificationColor: 0xFF09090E,
       enableQueue: true,
@@ -386,6 +367,8 @@ void _audioPlayerTaskEntrypoint() async {
 
 class AudioPlayerTask extends BackgroundAudioTask {
   var _queue = <MediaItem>[];
+  // holds one attribute of the contents of MediaItems in _queue
+  var _queueMeta = <String>[];
   int _queueIndex = 0;
   AudioPlayer _audioPlayer = new AudioPlayer();
   Completer _completer = Completer();
@@ -393,7 +376,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   bool _playing;
   bool _shouldRepeat = true;
   // used to differentiate normal pause from pause caused by audio focus lost
-  bool _isPaused = false;
+  bool _isPaused = true;
   // temporary mediaItem object to overcome parameter restrictons
   MediaItem temp;
 
@@ -574,6 +557,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onCustomAction(String action, var parameters) async {
     // if condition to play current media
     if (action == "playMedia2") {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
       _shouldRepeat = false;
       getMp3URL(parameters['mediaID'], parameters);
     } else if (action == "addItemToQueue") {
@@ -593,23 +580,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // customAction functions
   void addItemToQueue(parameters) {
-    bool alreadyExists = false;
-    // ckecking if song already Exists in queue
-    for (int i = 0; i < _queue.length; i++) {
-      if (_queue[i].artUri == parameters["song"]["thumbnail"])
-        alreadyExists = true;
-    }
-    // if song does not exsist in queue
-    if (!alreadyExists)
-      // false cause this is not repeating single song
-      // last parameter is if the song should be make now playing in queue
-      getMp3URLToQueue(parameters["song"], false, false);
-    else
-      globalFun.showToastMessage(
-          "Song already Exists in queue", Colors.red, Colors.white);
+    // false cause this is not repeating single song
+    // last parameter is if the song should be make now playing in queue
+    getMp3URLToQueue(parameters["song"], false, false);
   }
 
   void removeItemFromQueue(parameters) {
+    _queueMeta.remove(_queue[parameters["index"]].artUri);
     _queue.removeAt(parameters["index"]);
     AudioServiceBackground.setQueue(_queue);
     var state = AudioServiceBackground.state.basicState;
@@ -619,7 +596,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // correcting the queue index of the current playing song
     for (int i = 0; i < _queue.length; i++) {
       if (parameters["currentArtURI"] == _queue[i].artUri) {
-        print("New Queue Indexk: " + i.toString());
         _queueIndex = i;
       }
     }
@@ -657,20 +633,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void addItemToQueueFront(parameters) {
-    bool alreadyExists = false;
-    // ckecking if song already Exists in queue
-    for (int i = 0; i < _queue.length; i++) {
-      if (_queue[i].artUri == parameters["song"]["thumbnail"])
-        alreadyExists = true;
-    }
-    // if song does not exsist in queue
-    if (!alreadyExists)
-      // false cause this is not repeating single song
-      // last parameter is if the song should be make now playing in queue
-      getMp3URLToQueue(parameters["song"], false, true);
-    else
-      globalFun.showToastMessage(
-          "Song already Exists in queue", Colors.red, Colors.white);
+    // false cause this is not repeating single song
+    // last parameter is if the song should be make now playing in queue
+    getMp3URLToQueue(parameters["song"], false, true);
   }
 
   @override
@@ -738,59 +703,85 @@ class AudioPlayerTask extends BackgroundAudioTask {
   // gets the mp3URL using videoID and add to the queue
   void getMp3URLToQueue(
       parameter, bool singleSongRepeat, bool shouldBeNowPlaying) async {
-    // holds the responseJSON for checking link validity
-    var responseJSON;
-    // getting the mp3URL
-    try {
-      // checking for link validity
-      String url = "https://api.openbeats.live/opencc/" + parameter["videoId"];
-      // sending GET request
-      responseJSON = await Dio().get(url);
-    } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
-        onStop();
-        return;
-      }
-    }
-    if (responseJSON.data["status"] == true &&
-        responseJSON.data["link"] != null) {
-      // setting the current mediaItem
-      temp = MediaItem(
-        id: responseJSON.data["link"],
-        album: "OpenBeats Music",
-        title: parameter['title'],
-        artist: parameter['channelName'],
-        duration: globalFun.getDurationMillis(parameter['duration']),
-        artUri: parameter['thumbnail'],
-      );
-      (shouldBeNowPlaying)
-          ? _queue.insert(_queueIndex, temp)
-          : _queue.add(temp);
-
-      AudioServiceBackground.setQueue(_queue);
-      if (shouldBeNowPlaying) {
-        int indexOfItem;
-        // finding the index of the element to play
-        for (int i = 0; i < _queue.length; i++) {
-          if (_queue[i].id == temp.id) indexOfItem = i;
+    // checking if media is present in the queueMeta list
+    if (!_queueMeta.contains(parameter["thumbnail"])) {
+      globalFun.showToastMessage(
+          "Adding song to queue...", Colors.orange, Colors.white);
+      // adding song thumbnail to the queueMeta list
+      _queueMeta.add(parameter['thumbnail']);
+      print("Added " + parameter['thumbnail']);
+      // holds the responseJSON for checking link validity
+      var responseJSON;
+      // getting the mp3URL
+      try {
+        // checking for link validity
+        String url =
+            "https://api.openbeats.live/opencc/" + parameter["videoId"];
+        // sending GET request
+        responseJSON = await Dio().get(url);
+      } catch (e) {
+        // catching dio error
+        if (e is DioError) {
+          globalFun.showToastMessage(
+              "Cannot connect to the server", Colors.red, Colors.white);
+          onStop();
+          return;
         }
-        _queueIndex = indexOfItem + 1;
-        onSkipToPrevious();
-      } else {
-        if (singleSongRepeat) onSkipToNext();
       }
-      var state = AudioServiceBackground.state.basicState;
-      var position = (_audioPlayer.playbackEvent != null)
-          ? _audioPlayer.playbackEvent.position.inMilliseconds
-          : 0;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      globalFun.showQueueBasedToasts(1);
+      if (responseJSON.data["status"] == true &&
+          responseJSON.data["link"] != null) {
+        // setting the current mediaItem
+        temp = MediaItem(
+          id: responseJSON.data["link"],
+          album: "OpenBeats Music",
+          title: parameter['title'],
+          artist: parameter['channelName'],
+          duration: globalFun.getDurationMillis(parameter['duration']),
+          artUri: parameter['thumbnail'],
+        );
+
+        (shouldBeNowPlaying)
+            ? _queue.insert(_queueIndex, temp)
+            : _queue.add(temp);
+
+        AudioServiceBackground.setQueue(_queue);
+        if (shouldBeNowPlaying) {
+          int indexOfItem;
+          // finding the index of the element to play
+          for (int i = 0; i < _queue.length; i++) {
+            if (_queue[i].id == temp.id) indexOfItem = i;
+          }
+          _queueIndex = indexOfItem + 1;
+          onSkipToPrevious();
+        } else {
+          if (singleSongRepeat) onSkipToNext();
+        }
+        var state = AudioServiceBackground.state.basicState;
+        var position = (_audioPlayer.playbackEvent != null)
+            ? _audioPlayer.playbackEvent.position.inMilliseconds
+            : 0;
+        AudioServiceBackground.setState(
+            controls: getControls(state),
+            basicState: state,
+            position: position);
+        globalFun.showQueueBasedToasts(1);
+      } else {
+        onStop();
+      }
     } else {
-      onStop();
+      // index buffer to prevent modifying the _queueIndex value
+      int tempIndex = -1;
+      // finding index of the song clicked
+      for (int i = 0; i < _queue.length; i++) {
+        if (parameter["thumbnail"] == _queue[i].artUri) {
+          tempIndex = i;
+        }
+      }
+      // checking if song exists in queue
+      if (tempIndex != -1) {
+        _queueIndex = tempIndex + 1;
+        onSkipToPrevious();
+      }
     }
   }
 
@@ -823,12 +814,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
         duration: parameter['duration'],
         artUri: parameter['thumbnailURI'],
       );
+      // adding song thumbnail to the queueMeta list
+      _queueMeta.add(parameter['thumbnailURI']);
       // setting the current mediaItem
       await AudioServiceBackground.setMediaItem(temp);
       // setting URL for audio player
       await _audioPlayer.setUrl(responseJSON.data["link"]);
       _queue.add(temp);
-      print("Queue Length" + _queue.length.toString());
+
       AudioServiceBackground.setQueue(_queue);
       if (_playing == null) {
         // First time, we want to start playing
