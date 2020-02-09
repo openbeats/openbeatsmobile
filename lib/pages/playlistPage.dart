@@ -242,22 +242,28 @@ class _PlaylistPageState extends State<PlaylistPage> {
         floatingActionButton: globalWids.fabView(
             settingModalBottomSheet, _playlistsPageScaffoldKey),
         backgroundColor: globalVars.primaryDark,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              playlistPageW.appBarW(context, _playlistsPageScaffoldKey,
-                  widget.playlistName, widget.playlistThumbnail),
-            ];
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowGlow();
           },
-          body: Container(
-              child: (_noInternet)
-                  ? globalWids.noInternetView(getPlaylistContents)
-                  : (_isLoading)
-                      ? playlistPageW.playlistsLoading()
-                      : (dataResponse != null &&
-                              dataResponse["data"]["songs"].length != 0)
-                          ? playlistPageBody()
-                          : playlistPageW.noSongsMessage()),
+          child: NestedScrollView(
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                playlistPageW.appBarW(context, _playlistsPageScaffoldKey,
+                    widget.playlistName, widget.playlistThumbnail),
+              ];
+            },
+            body: Container(
+                child: (_noInternet)
+                    ? globalWids.noInternetView(getPlaylistContents)
+                    : (_isLoading)
+                        ? playlistPageW.playlistsLoading()
+                        : (dataResponse != null &&
+                                dataResponse["data"]["songs"].length != 0)
+                            ? playlistPageBody()
+                            : playlistPageW.noSongsMessage()),
+          ),
         ),
       ),
     );
@@ -265,7 +271,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget playlistPageBody() {
     return ListView(
-      physics: BouncingScrollPhysics(),
+      physics: ClampingScrollPhysics(),
       children: <Widget>[
         SizedBox(
           height: 20.0,
@@ -284,7 +290,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
 
   Widget playlistPageListViewBody() {
     return ListView.builder(
-      physics: BouncingScrollPhysics(),
+      physics: ClampingScrollPhysics(),
       shrinkWrap: true,
       itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
@@ -331,7 +337,6 @@ class _PlaylistPageState extends State<PlaylistPage> {
                         "addSongsToList", dataResponse["data"]["songs"]);
                   });
                 } else {
-                  
                   await startAudioService();
                   // calling method to add songs to the background list
                   await AudioService.customAction(
@@ -339,14 +344,18 @@ class _PlaylistPageState extends State<PlaylistPage> {
                 }
               } else {
                 // showing Toast
-                globalFun.showToastMessage("Adding Songs to queue...", Colors.orange, Colors.white);
-                if ((AudioService.playbackState != null) && (AudioService.playbackState.basicState == BasicPlaybackState.stopped || AudioService.playbackState.basicState == BasicPlaybackState.none)) {
+                globalFun.showToastMessage(
+                    "Adding Songs to queue...", Colors.orange, Colors.white);
+                if ((AudioService.playbackState != null) &&
+                    (AudioService.playbackState.basicState ==
+                            BasicPlaybackState.stopped ||
+                        AudioService.playbackState.basicState ==
+                            BasicPlaybackState.none)) {
                   await startAudioService();
                   // calling method to add songs to the background list
                   await AudioService.customAction(
                       "addSongListToQueue", dataResponse["data"]["songs"]);
                 } else {
-                  
                   // calling method to add songs to the background list
                   await AudioService.customAction(
                       "addSongListToQueue", dataResponse["data"]["songs"]);

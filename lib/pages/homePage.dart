@@ -330,21 +330,21 @@ class _HomePageState extends State<HomePage> {
 
   Widget homePageBody() {
     return Container(
-      child: Center(
-          child: (searchResultLoading)
+      alignment: Alignment.center,
+      child: (searchResultLoading)
               ? CircularProgressIndicator(
                   valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
                 )
               : (videosResponseList.length == 0)
                   ? homePageW.homePageView()
-                  : videoListView()),
+                  : videoListView()
     );
   }
 
   // listView builder to construct list of videos
   Widget videoListView() {
     return ListView.builder(
-      shrinkWrap: true,
+      
       physics: BouncingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         return globalWids.homePageVidResultContainerW(
@@ -678,7 +678,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         controls: getControls(state), basicState: state, position: position);
   }
 
-  void addSongListToQueue(parameters) {
+  void addSongListToQueue(parameters) async{
     // checking if queue is empty
     if (_queue.length == 0) {
       var state = BasicPlaybackState.connecting;
@@ -686,7 +686,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       AudioServiceBackground.setState(
           controls: getControls(state), basicState: state, position: position);
     }
-    audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URLSpecial, _queue);
+    await audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URLSpecial, _queue);
+    
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {

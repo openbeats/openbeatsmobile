@@ -8,7 +8,7 @@ void addSongsToList(parameters, getMp3URL) {
   }
 }
 
-void addSongListToQueue(parameters, getMp3URL, List _queue) {
+Future<void> addSongListToQueue(parameters, getMp3URL, List _queue) async{
   List<dynamic> songsList = parameters;
   bool addSong;
   for (int i = 0; i < songsList.length; i++) {

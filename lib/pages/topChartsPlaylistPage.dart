@@ -166,6 +166,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
   @override
   void dispose() {
     disconnect();
+
     super.dispose();
   }
 
@@ -177,22 +178,29 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
         floatingActionButton: globalWids.fabView(
             settingModalBottomSheet, _topChartPlaylistPageScaffoldKey),
         backgroundColor: globalVars.primaryDark,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              playlistPageW.appBarW(context, _topChartPlaylistPageScaffoldKey,
-                  widget.playlistName, widget.playlistThumbnail),
-            ];
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowGlow();
           },
-          body: Container(
-              child: (_noInternet)
-                  ? globalWids.noInternetView(getPlaylistContents)
-                  : (_isLoading)
-                      ? playlistPageW.playlistsLoading()
-                      : (dataResponse != null &&
-                              dataResponse["data"]["songs"].length != 0)
-                          ? playlistPageBody()
-                          : playlistPageW.noSongsMessage()),
+          child: NestedScrollView(
+            physics: ClampingScrollPhysics(),
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                playlistPageW.appBarW(context, _topChartPlaylistPageScaffoldKey,
+                    widget.playlistName, widget.playlistThumbnail),
+              ];
+            },
+            body: Container(
+                child: (_noInternet)
+                    ? globalWids.noInternetView(getPlaylistContents)
+                    : (_isLoading)
+                        ? playlistPageW.playlistsLoading()
+                        : (dataResponse != null &&
+                                dataResponse["data"]["songs"].length != 0)
+                            ? playlistPageBody()
+                            : playlistPageW.noSongsMessage()),
+          ),
         ),
       ),
     );
@@ -200,7 +208,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
 
   Widget playlistPageBody() {
     return ListView(
-      physics: BouncingScrollPhysics(),
+      physics: ClampingScrollPhysics(),
       children: <Widget>[
         SizedBox(
           height: 20.0,
@@ -220,7 +228,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
   Widget playlistPageListViewBody() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: BouncingScrollPhysics(),
+      physics: ClampingScrollPhysics(),
       itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
         return globalWids.topChartsPlaylistPageVidResultContainerW(
@@ -650,7 +658,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   void addSongListToQueue(parameters) {
     // checking if queue is empty
-    
+
     if (_queue.length == 0) {
       var state = BasicPlaybackState.connecting;
       var position = 0;
