@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,7 @@ import '../widgets/playlistPageW.dart' as playlistPageW;
 import '../globalVars.dart' as globalVars;
 import '../globalFun.dart' as globalFun;
 import '../globalWids.dart' as globalWids;
+import '../audioServiceGlobalFun.dart' as audioServiceGlobalFun;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -132,7 +132,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
         await startAudioService();
         var parameters = {
           "currIndex": index,
-          "allSongs": dataResponse["chart"]["songs"]
+          "allSongs": dataResponse["data"]["songs"]
         };
         await AudioService.customAction(
             "startMusicPlaybackAndCreateQueue", parameters);
@@ -141,7 +141,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       await startAudioService();
       var parameters = {
         "currIndex": index,
-        "allSongs": dataResponse["chart"]["songs"]
+        "allSongs": dataResponse["data"]["songs"]
       };
       await AudioService.customAction(
           "startMusicPlaybackAndCreateQueue", parameters);
@@ -166,6 +166,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
   @override
   void dispose() {
     disconnect();
+
     super.dispose();
   }
 
@@ -177,22 +178,29 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
         floatingActionButton: globalWids.fabView(
             settingModalBottomSheet, _topChartPlaylistPageScaffoldKey),
         backgroundColor: globalVars.primaryDark,
-        body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              playlistPageW.appBarW(context, _topChartPlaylistPageScaffoldKey,
-                  widget.playlistName, widget.playlistThumbnail),
-            ];
+        body: NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll) {
+            overscroll.disallowGlow();
           },
-          body: Container(
-              child: (_noInternet)
-                  ? globalWids.noInternetView(getPlaylistContents)
-                  : (_isLoading)
-                      ? playlistPageW.playlistsLoading()
-                      : (dataResponse != null &&
-                              dataResponse["chart"]["songs"].length != 0)
-                          ? playlistPageBody()
-                          : playlistPageW.noSongsMessage()),
+          child: NestedScrollView(
+            physics: ClampingScrollPhysics(),
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return <Widget>[
+                playlistPageW.appBarW(context, _topChartPlaylistPageScaffoldKey,
+                    widget.playlistName, widget.playlistThumbnail),
+              ];
+            },
+            body: Container(
+                child: (_noInternet)
+                    ? globalWids.noInternetView(getPlaylistContents)
+                    : (_isLoading)
+                        ? playlistPageW.playlistsLoading()
+                        : (dataResponse != null &&
+                                dataResponse["data"]["songs"].length != 0)
+                            ? playlistPageBody()
+                            : playlistPageW.noSongsMessage()),
+          ),
         ),
       ),
     );
@@ -200,11 +208,12 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
 
   Widget playlistPageBody() {
     return ListView(
+      physics: ClampingScrollPhysics(),
       children: <Widget>[
         SizedBox(
           height: 20.0,
         ),
-        shuffleAllBtn(),
+        playAllButtons(),
         SizedBox(
           height: 30.0,
         ),
@@ -219,62 +228,106 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
   Widget playlistPageListViewBody() {
     return ListView.builder(
       shrinkWrap: true,
-      physics: ScrollPhysics(),
-      itemCount: dataResponse["chart"]["songs"].length,
+      physics: ClampingScrollPhysics(),
+      itemCount: dataResponse["data"]["songs"].length,
       itemBuilder: (context, index) {
         return globalWids.topChartsPlaylistPageVidResultContainerW(
             context,
-            dataResponse["chart"]["songs"][index],
+            dataResponse["data"]["songs"][index],
             index,
             startPlaylistFromMusic);
       },
     );
   }
 
-  Widget shuffleAllBtn() {
+  Widget playAllButtons() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        playAllBtnsW(1),
+        playAllBtnsW(2),
+      ],
+    );
+  }
+
+  // mode : 1 - shuffleAll , 2 - addToQueue
+  Widget playAllBtnsW(mode) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 10.0),
-      child: RaisedButton(
+      // margin: EdgeInsets.symmetric(horizontal: 10.0),
+      width: MediaQuery.of(context).size.width * 0.4,
+      child: OutlineButton(
+        borderSide: BorderSide(
+            color: (mode == 1) ? globalVars.accentGreen : globalVars.accentBlue,
+            width: 2.0),
         onPressed: () async {
           try {
             final result = await InternetAddress.lookup('example.com');
             if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-              if (AudioService.playbackState != null) {
-                await AudioService.stop();
-                Timer(Duration(milliseconds: 500), () async {
+              if (mode == 1) {
+                if (AudioService.playbackState != null) {
+                  await AudioService.stop();
+                  Timer(Duration(milliseconds: 500), () async {
+                    await startAudioService();
+                    // calling method to add songs to the background list
+                    await AudioService.customAction(
+                        "addSongsToList", dataResponse["data"]["songs"]);
+                  });
+                } else {
                   await startAudioService();
                   // calling method to add songs to the background list
                   await AudioService.customAction(
-                      "addSongsToList", dataResponse["chart"]["songs"]);
-                });
+                      "addSongsToList", dataResponse["data"]["songs"]);
+                }
               } else {
-                await startAudioService();
-                // calling method to add songs to the background list
-                await AudioService.customAction(
-                    "addSongsToList", dataResponse["chart"]["songs"]);
+                // showing Toast
+                globalFun.showToastMessage(
+                    "Adding Songs to queue...", Colors.orange, Colors.white);
+                print("Reached");
+                if ((AudioService.playbackState != null) &&
+                    (AudioService.playbackState.basicState ==
+                            BasicPlaybackState.stopped ||
+                        AudioService.playbackState.basicState ==
+                            BasicPlaybackState.none)) {
+                  await startAudioService();
+
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongListToQueue", dataResponse["data"]["songs"]);
+                } else {
+                  // calling method to add songs to the background list
+                  await AudioService.customAction(
+                      "addSongListToQueue", dataResponse["data"]["songs"]);
+                }
               }
             }
           } on SocketException catch (_) {
             globalFun.showNoInternetToast();
           }
         },
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(10.0),
         shape: StadiumBorder(),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              Icons.shuffle,
-              size: 20.0,
-            ),
+            (mode == 1)
+                ? Icon(
+                    Icons.shuffle,
+                    size: 25.0,
+                  )
+                : Icon(
+                    Icons.queue,
+                    size: 25.0,
+                  ),
             SizedBox(width: 10.0),
-            Text(
-              "Shuffle All",
-              style: TextStyle(fontSize: 20.0),
-            )
+            (mode == 1)
+                ? Text(
+                    "SHUFFLE ALL",
+                  )
+                : Text(
+                    "ADD TO QUEUE",
+                  )
           ],
         ),
-        color: globalVars.accentGreen,
         textColor: globalVars.accentWhite,
       ),
     );
@@ -345,6 +398,23 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await _completer.future;
     playerStateSubscription.cancel();
     eventSubscription.cancel();
+  }
+
+  @override
+  void onSeekTo(int position) {
+    _audioPlayer.seek(Duration(milliseconds: position));
+  }
+
+  @override
+  void onClick(MediaButton button) {
+    playPause();
+  }
+
+  @override
+  void onStop() {
+    _audioPlayer.stop();
+    _setState(state: BasicPlaybackState.stopped);
+    _completer.complete();
   }
 
   void _handlePlaybackCompleted() {
@@ -452,6 +522,38 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (!_isPaused) onPlay();
   }
 
+  List<MediaControl> getControls(BasicPlaybackState state) {
+    if (_queue.length == 1) {
+      if (_playing != null && _playing) {
+        return [
+          pauseControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          playControl,
+          stopControl,
+        ];
+      }
+    } else {
+      if (_playing != null && _playing) {
+        return [
+          skipToPreviousControl,
+          pauseControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          skipToPreviousControl,
+          playControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      }
+    }
+  }
+
   @override
   void onCustomAction(String action, var parameters) async {
     // if condition to add all songs to the list and start playback
@@ -460,7 +562,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       var position = 0;
       AudioServiceBackground.setState(
           controls: getControls(state), basicState: state, position: position);
-      addSongsToList(parameters);
+      audioServiceGlobalFun.addSongsToList(parameters, getMp3URL);
     } else if (action == "startMusicPlaybackAndCreateQueue") {
       var state = BasicPlaybackState.connecting;
       var position = 0;
@@ -474,18 +576,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else if (action == "updateQueueOrder") {
       updateQueueOrder(parameters);
     } else if (action == "addItemToQueueFront") {
-      addItemToQueueFront(parameters);
-    }
-  }
-
-  void addSongsToList(parameters) {
-    List<dynamic> songsList = parameters;
-    for (int i = 0; i < songsList.length; i++) {
-      if (i == 0)
-        getMp3URL(songsList[i], true);
-      else
-        getMp3URL(songsList[i], false);
-    }
+      // false cause this is not repeating single song
+      // last parameter is if the song should be make now playing in queue
+      getMp3URLToQueue(parameters["song"], true);
+    } else if (action == "addSongListToQueue") {
+      addSongListToQueue(parameters);
+    } else if (action == "jumpToQueueItem") {
+      jumpToQueueItem(parameters);
+    } 
   }
 
   void startMusicPlaybackAndCreateQueue(parameters) async {
@@ -519,24 +617,26 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "Song already Exists in queue", Colors.red, Colors.white);
   }
 
-  void addItemToQueueFront(parameters) {
-    // false cause this is not repeating single song
-    // last parameter is if the song should be make now playing in queue
-    getMp3URLToQueue(parameters["song"], true);
-  }
-
-  void removeItemFromQueue(parameters) {
-    _queueMeta.remove(_queue[parameters["index"]].artUri);
-    _queue.removeAt(parameters["index"]);
-    AudioServiceBackground.setQueue(_queue);
-    var state = AudioServiceBackground.state.basicState;
-    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
-    // correcting the queue index of the current playing song
-    for (int i = 0; i < _queue.length; i++) {
-      if (parameters["currentArtURI"] == _queue[i].artUri) {
-        _queueIndex = i;
+  void removeItemFromQueue(parameters) async{
+    // checking if the item to be removed is the current playing item
+    if (parameters["currentArtURI"] == _queue[_queueIndex].artUri) {
+      _queueMeta.remove(_queue[parameters["index"]].artUri);
+      _queue.removeAt(parameters["index"]);
+      AudioServiceBackground.setQueue(_queue);
+      await onSkipToNext();
+    } else {
+      _queueMeta.remove(_queue[parameters["index"]].artUri);
+      _queue.removeAt(parameters["index"]);
+      AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+      // correcting the queue index of the current playing song
+      for (int i = 0; i < _queue.length; i++) {
+        if (parameters["currentArtURI"] == _queue[i].artUri) {
+          _queueIndex = i;
+        }
       }
     }
   }
@@ -564,6 +664,42 @@ class AudioPlayerTask extends BackgroundAudioTask {
     var position = _audioPlayer.playbackEvent.position.inMilliseconds;
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
+  }
+
+  void addSongListToQueue(parameters) {
+    // checking if queue is empty
+
+    if (_queue.length == 0) {
+      var state = BasicPlaybackState.connecting;
+      var position = 0;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+    }
+    audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URL, _queue);
+  }
+
+  void jumpToQueueItem(parameters) async {
+    int index = parameters["index"];
+    if (index == _queue.length)
+      _queueIndex = index - 1;
+    else if (index == 0)
+      _queueIndex = _queue.length - 1;
+    else
+      _queueIndex = index - 1;
+
+    await onSkipToNext();
+  }
+
+  void _setState({@required BasicPlaybackState state, int position}) {
+    if (position == null) {
+      position = _audioPlayer.playbackEvent.position.inMilliseconds;
+    }
+    AudioServiceBackground.setState(
+      controls: getControls(state),
+      systemActions: [MediaAction.seekTo],
+      basicState: state,
+      position: position,
+    );
   }
 
   // gets the mp3URL using videoID and i parameter to start playback on true
@@ -606,11 +742,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else {
       onStop();
     }
-    // refreshing the audioService state
-    var state = AudioServiceBackground.state.basicState;
-    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
+    if (AudioService.playbackState != null) {
+      // refreshing the audioService state
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+    }
   }
 
   // gets the mp3URL using videoID and add to the queue
@@ -676,67 +814,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
       if (tempIndex != -1) {
         _queueIndex = tempIndex + 1;
         onSkipToPrevious();
-      }
-    }
-  }
-
-  @override
-  void onSeekTo(int position) {
-    _audioPlayer.seek(Duration(milliseconds: position));
-  }
-
-  @override
-  void onClick(MediaButton button) {
-    playPause();
-  }
-
-  @override
-  void onStop() {
-    _audioPlayer.stop();
-    _setState(state: BasicPlaybackState.stopped);
-    _completer.complete();
-  }
-
-  void _setState({@required BasicPlaybackState state, int position}) {
-    if (position == null) {
-      position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    }
-    AudioServiceBackground.setState(
-      controls: getControls(state),
-      systemActions: [MediaAction.seekTo],
-      basicState: state,
-      position: position,
-    );
-  }
-
-  List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_queue.length == 1) {
-      if (_playing != null && _playing) {
-        return [
-          pauseControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          playControl,
-          stopControl,
-        ];
-      }
-    } else {
-      if (_playing != null && _playing) {
-        return [
-          skipToPreviousControl,
-          pauseControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          skipToPreviousControl,
-          playControl,
-          skipToNextControl,
-          stopControl,
-        ];
       }
     }
   }

@@ -91,6 +91,7 @@ class _TopChartsPageState extends State<TopChartsPage> {
   Widget topChartsGrid() {
     return Container(
       child: GridView.builder(
+        physics: BouncingScrollPhysics(),
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
         scrollDirection: Axis.vertical,

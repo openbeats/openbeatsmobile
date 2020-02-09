@@ -26,6 +26,10 @@ List<Color> gradientListPrimary = [
   Color(0xFF50cc7f),
   Color(0xFF1e3c72),
   Color(0xFF243949),
+  Color(0xFF243949),
+  Color(0xFF1e3c72),
+  Color(0xFF243949),
+  Color(0xFF243949),
 ];
 List<Color> gradientListSec = [
   Color(0xFFff7eb3),
@@ -35,6 +39,10 @@ List<Color> gradientListSec = [
   Color(0xFF68e0cf),
   Color(0xFFf5d100),
   Color(0xFF2a5298),
+  Color(0xFF517fa4),
+  Color(0xFF517fa4),
+  Color(0xFF2a5298),
+  Color(0xFF517fa4),
   Color(0xFF517fa4),
 ];
 

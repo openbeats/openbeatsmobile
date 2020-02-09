@@ -293,7 +293,8 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
           ? globalWids.noInternetView(getListofPlayLists)
           : (_isLoading)
               ? yourPlaylistsPageW.playlistsLoading()
-              : ListView(
+              : ListView( 
+                physics: BouncingScrollPhysics(),
                   children: <Widget>[
                     SizedBox(
                       height: 20.0,
@@ -304,17 +305,17 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
                       height: 40.0,
                     ),
                     (dataResponse != null && dataResponse["data"].length != 0)
-                        ? playListsListView()
+                        ? playListsListView( )
                         : yourPlaylistsPageW.noPlaylistsMessage()
                   ],
                 ),
     );
   }
 
-  Widget playListsListView() {
+  Widget playListsListView( ) {
     return ListView.builder(
       shrinkWrap: true,
-      physics: ScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       itemCount: dataResponse["data"].length,
       itemBuilder: playListsListViewBody,
     );
@@ -357,6 +358,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
             alignment: Alignment.centerRight,
             width: MediaQuery.of(context).size.width * 0.1,
             child: PopupMenuButton<String>(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(globalVars.borderRadius)),
                 elevation: 30.0,
                 icon: Icon(
                   Icons.more_vert,

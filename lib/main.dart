@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:openbeatsmobile/pages/AddSongsToPlaylistPage.dart';
-import 'package:openbeatsmobile/pages/authPage.dart';
-import 'package:openbeatsmobile/pages/homePage.dart';
-import 'package:openbeatsmobile/pages/settingsPage.dart';
-import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
+import './pages/authPage.dart';
+import './pages/homePage.dart';
+import './pages/settingsPage.dart';
+import './pages/yourPlaylistsPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import './pages/aboutPage.dart';
 import './actions/globalVarsA.dart' as globalVarsA;
 import './globalFun.dart' as globalFun;
 
@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
       home: HomePage(),
       theme: ThemeData(
         fontFamily: "lineto-circular-pro-medium",
-        brightness: Brightness.dark, 
+        brightness: Brightness.dark,
         primarySwatch: Colors.red,
       ),
       routes: {
@@ -64,6 +64,7 @@ class _MyAppState extends State<MyApp> {
         '/authPage': (context) => AuthPage(),
         '/yourPlaylistsPage': (context) => YourPlaylistsPage(),
         '/settingsPage': (context) => SettingsPage(),
+        '/authPage': (context) => AboutPage()
       },
     );
   }

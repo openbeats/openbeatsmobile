@@ -68,12 +68,20 @@ Widget queueListTile(context, queueList, index, deleteItemFromQueue, state) {
                 ? nowPlayingAnimation(true)
                 : nowPlayingAnimation(false)
             : thumbNailView(queueList[index].artUri)),
+    onTap: () {
+      var parameter = {"index": index};
+      AudioService.customAction("jumpToQueueItem", parameter);
+    },
     trailing: IconButton(
       icon: Icon(Icons.remove_circle),
       onPressed: () {
         deleteItemFromQueue(index);
       },
     ),
-    title: Text(queueList[index].title, maxLines: 2, overflow: TextOverflow.ellipsis,),
+    title: Text(
+      queueList[index].title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    ),
   );
 }

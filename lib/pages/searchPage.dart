@@ -127,16 +127,16 @@ class _SearchPageState extends State<SearchPage> {
         appBar: searchPageW.appBarSearchPageW(
             queryFieldController, getImmediateSuggestions, context),
         body: (suggestionResponseList.length != 0)
-            ? searchResultListView(false)
+            ? searchResultListView( false)
             : (globalVars.searchHistory.length != 0)
-                ? searchResultListView(true)
+                ? searchResultListView( true)
                 : Container(),
       ),
     );
   }
 
   // holds the list view builder responsible for showing the suggestions
-  Widget searchResultListView(bool showHistory) {
+  Widget searchResultListView( bool showHistory) {
     return ListView.builder(
       itemBuilder: (context, index) =>
           suggestionsListBuilder(context, index, showHistory),

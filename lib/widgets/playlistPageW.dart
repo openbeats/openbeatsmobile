@@ -13,7 +13,7 @@ Widget appBarW(context, GlobalKey<ScaffoldState> _playlistsPageScaffoldKey,
     String playlistName, String playlistThumbnail) {
   return SliverAppBar(
     expandedHeight: 200.0,
-    floating: true,
+    floating: true, 
     backgroundColor: globalVars.primaryDark,
     pinned: true,
     elevation: 0,
