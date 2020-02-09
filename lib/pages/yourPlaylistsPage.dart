@@ -358,6 +358,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
             alignment: Alignment.centerRight,
             width: MediaQuery.of(context).size.width * 0.1,
             child: PopupMenuButton<String>(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(globalVars.borderRadius)),
                 elevation: 30.0,
                 icon: Icon(
                   Icons.more_vert,

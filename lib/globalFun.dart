@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:openbeatsmobile/pages/aboutPage.dart';
 import 'package:openbeatsmobile/pages/downloadsPage.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:openbeatsmobile/pages/settingsPage.dart';
@@ -30,7 +31,7 @@ Widget drawerW(int currPage, context) {
   return Drawer(
     child: Container(
       color: globalVars.primaryDark,
-      child: ListView( 
+      child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
           drawerHeader(context),
@@ -42,6 +43,7 @@ Widget drawerW(int currPage, context) {
           drawerYourPlaylistsPageListTile(currPage, context),
           drawerLikedSongsPageListTile(currPage, context),
           drawerDownloadsPageListTile(currPage, context),
+          drawerAboutPageListTile(currPage, context),
           // drawerappsettingsPageListTile(currPage, context),
           drawerLogoutPageListTile(context),
         ],
@@ -334,6 +336,29 @@ Widget drawerappsettingsPageListTile(int currPage, context) {
             onTap: () {
               // navigating to settings Page
               Navigator.of(context).pushNamed('/settingsPage');
+            },
+          )
+        : null,
+  );
+}
+
+// holds the appsettings listTile for the drawer
+Widget drawerAboutPageListTile(int currPage, context) {
+  return Container(
+    child: (currPage != 10)
+        ? ListTile(
+            leading: Icon(FontAwesomeIcons.infoCircle,
+                color: globalVars.leadingIconColor),
+            title: Text('About',
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
+            // subtitle: Text("Application related settings",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
+            onTap: () {
+              // navigating to homePage
+              Navigator.of(context).pushReplacement(
+                  globalWids.FadeRouteBuilder(page: AboutPage()));
             },
           )
         : null,
@@ -692,4 +717,3 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
             ));
   }
 }
-
