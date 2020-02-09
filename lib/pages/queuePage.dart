@@ -46,7 +46,7 @@ class QueueListPageState extends State<QueuePage> {
 
   // deletes the item from queue
   void deleteItemFromQueue(int index) {
-    if (queueList[index].artUri != AudioService.currentMediaItem.artUri) {
+    
       setState(() {
         queueList.removeAt(index);
         Map<String, dynamic> parameters = {
@@ -55,12 +55,7 @@ class QueueListPageState extends State<QueuePage> {
         };
         AudioService.customAction("removeItemFromQueue", parameters);
       });
-    } else {
-      globalFun.showToastMessage(
-          "Current playing media cannot be deleted from queue",
-          Colors.orange,
-          Colors.white);
-    }
+    
   }
 
   // connects to the audio service
@@ -109,7 +104,6 @@ class QueueListPageState extends State<QueuePage> {
                             state.basicState != BasicPlaybackState.none &&
                             state.basicState != BasicPlaybackState.stopped)
                         ? ReorderableListView( 
-                    
                             header: Text(
                               "Press and hold song to change queue order",
                               style:

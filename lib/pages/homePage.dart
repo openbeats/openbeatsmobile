@@ -108,6 +108,8 @@ class _HomePageState extends State<HomePage> {
           globalVarsA.setPersistentVideoList(videosResponseList);
           // removing loading animation from screen
           searchResultLoading = false;
+          // removing any snackbar
+          _homePageScaffoldKey.currentState.hideCurrentSnackBar();
         });
       } else {
         setState(() {
@@ -627,6 +629,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], false, true);
     } else if (action == "addSongListToQueue") {
       addSongListToQueue(parameters);
+    } else if (action == "jumpToQueueItem"){
+      jumpToQueueItem(parameters);
     }
   }
 
@@ -688,6 +692,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
     await audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URLSpecial, _queue);
     
+  }
+
+  void jumpToQueueItem(parameters) async{
+    int index = parameters["index"];
+    if(index == _queue.length)
+      _queueIndex = index-1;
+    else if(index == 0)
+      _queueIndex = _queue.length-1;
+    else
+      _queueIndex = index -1;
+    
+    await onSkipToNext();
+
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {

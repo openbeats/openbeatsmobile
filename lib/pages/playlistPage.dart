@@ -643,6 +643,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], true);
     } else if (action == "addSongListToQueue") {
       addSongListToQueue(parameters);
+    } else if (action == "jumpToQueueItem"){
+      jumpToQueueItem(parameters);
     }
   }
 
@@ -676,6 +678,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void removeItemFromQueue(parameters) {
+    // checking if the item to be removed is the current playing item
+    // if(_queue[parameters["index"]].artUri)
     _queueMeta.remove(_queue[parameters["index"]].artUri);
     _queue.removeAt(parameters["index"]);
     AudioServiceBackground.setQueue(_queue);
@@ -725,6 +729,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
           controls: getControls(state), basicState: state, position: position);
     }
     audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URL, _queue);
+  }
+
+  void jumpToQueueItem(parameters) async{
+    int index = parameters["index"];
+    if(index == _queue.length)
+      _queueIndex = index-1;
+    else if(index == 0)
+      _queueIndex = _queue.length-1;
+    else
+      _queueIndex = index -1;
+    
+    await onSkipToNext();
+
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {

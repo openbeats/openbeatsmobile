@@ -581,7 +581,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], true);
     } else if (action == "addSongListToQueue") {
       addSongListToQueue(parameters);
-    }
+    } else if (action == "jumpToQueueItem") {
+      jumpToQueueItem(parameters);
+    } 
   }
 
   void startMusicPlaybackAndCreateQueue(parameters) async {
@@ -666,6 +668,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
           controls: getControls(state), basicState: state, position: position);
     }
     audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URL, _queue);
+  }
+
+  void jumpToQueueItem(parameters) async {
+    int index = parameters["index"];
+    if (index == _queue.length)
+      _queueIndex = index - 1;
+    else if (index == 0)
+      _queueIndex = _queue.length - 1;
+    else
+      _queueIndex = index - 1;
+
+    await onSkipToNext();
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {
