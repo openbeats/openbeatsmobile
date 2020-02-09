@@ -643,7 +643,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], true);
     } else if (action == "addSongListToQueue") {
       addSongListToQueue(parameters);
-    } else if (action == "jumpToQueueItem"){
+    } else if (action == "jumpToQueueItem") {
       jumpToQueueItem(parameters);
     }
   }
@@ -677,20 +677,26 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "Song already Exists in queue", Colors.red, Colors.white);
   }
 
-  void removeItemFromQueue(parameters) {
+  void removeItemFromQueue(parameters) async {
     // checking if the item to be removed is the current playing item
-    // if(_queue[parameters["index"]].artUri)
-    _queueMeta.remove(_queue[parameters["index"]].artUri);
-    _queue.removeAt(parameters["index"]);
-    AudioServiceBackground.setQueue(_queue);
-    var state = AudioServiceBackground.state.basicState;
-    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
-    // correcting the queue index of the current playing song
-    for (int i = 0; i < _queue.length; i++) {
-      if (parameters["currentArtURI"] == _queue[i].artUri) {
-        _queueIndex = i;
+    if (parameters["currentArtURI"] == _queue[_queueIndex].artUri) {
+      _queueMeta.remove(_queue[parameters["index"]].artUri);
+      _queue.removeAt(parameters["index"]);
+      AudioServiceBackground.setQueue(_queue);
+      await onSkipToNext();
+    } else {
+      _queueMeta.remove(_queue[parameters["index"]].artUri);
+      _queue.removeAt(parameters["index"]);
+      AudioServiceBackground.setQueue(_queue);
+      var state = AudioServiceBackground.state.basicState;
+      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+      AudioServiceBackground.setState(
+          controls: getControls(state), basicState: state, position: position);
+      // correcting the queue index of the current playing song
+      for (int i = 0; i < _queue.length; i++) {
+        if (parameters["currentArtURI"] == _queue[i].artUri) {
+          _queueIndex = i;
+        }
       }
     }
   }
@@ -731,17 +737,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
     audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URL, _queue);
   }
 
-  void jumpToQueueItem(parameters) async{
+  void jumpToQueueItem(parameters) async {
     int index = parameters["index"];
-    if(index == _queue.length)
-      _queueIndex = index-1;
-    else if(index == 0)
-      _queueIndex = _queue.length-1;
+    if (index == _queue.length)
+      _queueIndex = index - 1;
+    else if (index == 0)
+      _queueIndex = _queue.length - 1;
     else
-      _queueIndex = index -1;
-    
-    await onSkipToNext();
+      _queueIndex = index - 1;
 
+    await onSkipToNext();
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {
