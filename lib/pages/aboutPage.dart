@@ -15,46 +15,6 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   final GlobalKey<ScaffoldState> _aboutPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
-  final BehaviorSubject<double> _dragPositionSubject =
-      BehaviorSubject.seeded(null);
-
-  // function that calls the bottomSheet
-  void settingModalBottomSheet(context) async {
-    if (AudioService.currentMediaItem != null) {
-      // bottomSheet definition
-      showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(globalVars.borderRadius),
-            topRight: Radius.circular(globalVars.borderRadius),
-          )),
-          context: context,
-          elevation: 10.0,
-          builder: (BuildContext bc) {
-            return globalWids.bottomSheet(context, _dragPositionSubject);
-          });
-    }
-  }
-
-  void connect() async {
-    await AudioService.connect();
-  }
-
-  void disconnect() {
-    AudioService.disconnect();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    connect();
-  }
-
-  @override
-  void dispose() {
-    disconnect();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +30,26 @@ class _AboutPageState extends State<AboutPage> {
             backgroundColor: globalVars.primaryDark,
             appBar: aboutPageW.appBarW(context, _aboutPageScaffoldKey),
             drawer: globalFun.drawerW(10, context),
-            floatingActionButton: globalWids.fabView(
-                settingModalBottomSheet, _aboutPageScaffoldKey),
+            body: aboutPageBody(),
           ),
         ));
+  }
+
+  Widget aboutPageBody() {
+    return Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.symmetric(horizontal: 5.0),
+      child: ListView(
+        physics: BouncingScrollPhysics(),
+        children: <Widget>[
+          SizedBox(
+            height: 20.0,
+          ),
+          aboutPageW.aboutAppCard(context),
+          
+          aboutPageW.helpCard(context)
+        ],
+      ),
+    );
   }
 }
