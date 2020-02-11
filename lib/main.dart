@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:openbeatsmobile/pages/bugReportPage.dart';
 import './pages/authPage.dart';
 import './pages/homePage.dart';
 import './pages/settingsPage.dart';
@@ -64,7 +65,8 @@ class _MyAppState extends State<MyApp> {
         '/authPage': (context) => AuthPage(),
         '/yourPlaylistsPage': (context) => YourPlaylistsPage(),
         '/settingsPage': (context) => SettingsPage(),
-        '/aboutPage': (context) => AboutPage()
+        '/aboutPage': (context) => AboutPage(),
+        '/bugReportingPage': (context) => BugReportPage()
       },
     );
   }

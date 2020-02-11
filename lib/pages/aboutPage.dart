@@ -46,7 +46,6 @@ class _AboutPageState extends State<AboutPage> {
             height: 20.0,
           ),
           aboutPageW.aboutAppCard(context),
-          
           aboutPageW.helpCard(context)
         ],
       ),
