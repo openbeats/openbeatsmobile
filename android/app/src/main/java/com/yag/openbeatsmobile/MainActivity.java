@@ -52,6 +52,8 @@ public class MainActivity extends FlutterActivity {
                         } else if (call.method.equals("getDeviceInfo")){
                             getDeviceInfo();
                             result.success(deviceInfo);
+                        } else if (call.method.equals("startDownloadAndInstall")){
+                            
                         }
                     }
                 }
