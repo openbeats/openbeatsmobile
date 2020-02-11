@@ -1,9 +1,11 @@
 package com.yag.openbeatsmobile;
 
+import android.app.ActivityManager;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -13,7 +15,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
@@ -26,6 +30,7 @@ public class MainActivity extends FlutterActivity {
     String videoId, videoTitle;
     private static MethodChannel backwardMChannel = null;
     String downloadPath = Environment.getExternalStorageDirectory() + "/OpenBeatsDownloads/";
+    HashMap<String, String> deviceInfo = new HashMap<String, String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +49,54 @@ public class MainActivity extends FlutterActivity {
                             videoTitle = call.argument("videoTitle");
                             boolean showRational = call.argument("showRational");
                             checkPermAccessAndStartDownload(showRational);
+                        } else if (call.method.equals("getDeviceInfo")){
+                            getDeviceInfo();
+                            result.success(deviceInfo);
                         }
                     }
                 }
         );
+    }
+
+    // gets the device information and feeds it into the hashMap variable
+    void getDeviceInfo(){
+        // getting system details
+        String OSVersion = System.getProperty("os.version");
+        String apiLevel = Build.VERSION.SDK_INT+"";
+        String brand = Build.BRAND;
+        String deviceModel = Build.MODEL;
+        // getting system memory information
+        ActivityManager actManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
+        actManager.getMemoryInfo(memInfo);
+        long totalMemory = memInfo.totalMem;
+
+        DecimalFormat twoDecimalForm = new DecimalFormat("#.##");
+
+        String finalValue = "";
+
+        double kb = totalMemory / 1024.0;
+        double mb = totalMemory / 1048576.0;
+        double gb = totalMemory / 1073741824.0;
+        double tb = totalMemory / 1099511627776.0;
+
+        if (tb > 1) {
+            finalValue = twoDecimalForm.format(tb).concat(" TB");
+        } else if (gb > 1) {
+            finalValue = twoDecimalForm.format(gb).concat(" GB");
+        } else if (mb > 1) {
+            finalValue = twoDecimalForm.format(mb).concat(" MB");
+        }else if(kb > 1){
+            finalValue = twoDecimalForm.format(mb).concat(" KB");
+        } else {
+            finalValue = twoDecimalForm.format(totalMemory).concat(" Bytes");
+        }
+
+        // putting values into map variable
+        deviceInfo.put("systemApi",apiLevel);
+        deviceInfo.put("deviceBrand", brand);
+        deviceInfo.put("systemRam", finalValue);
+        deviceInfo.put("deviceModel", deviceModel);
     }
 
     // showRational variable to check if the rational message should be shown after the user clicks OK

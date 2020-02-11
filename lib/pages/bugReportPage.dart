@@ -1,4 +1,3 @@
-import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import '../widgets/helpUsPageW.dart' as helpUsPageW;
 import '../globalVars.dart' as globalVars;
@@ -9,16 +8,16 @@ class BugReportPage extends StatefulWidget {
 }
 
 class _BugReportPageState extends State<BugReportPage> {
-  // holds the android device information instance
-  AndroidDeviceInfo androidInfo;
+  var deviceInfo;
   bool _isLoading = true;
 
   void getDeviceInfo() async {
     setState(() {
       _isLoading = true;
     });
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    androidInfo = await deviceInfo.androidInfo;
+    deviceInfo =
+        await globalVars.platformMethodChannel.invokeMethod("getDeviceInfo");
+    print(deviceInfo);
     setState(() {
       _isLoading = false;
     });
@@ -43,6 +42,7 @@ class _BugReportPageState extends State<BugReportPage> {
 
   Widget bugReportingBody() {
     return Container(
+      alignment: Alignment.center,
       padding: EdgeInsets.all(20.0),
       child: (_isLoading)
           ? CircularProgressIndicator(
@@ -61,19 +61,21 @@ class _BugReportPageState extends State<BugReportPage> {
     return Container(
       child: TextFormField(
         enabled: false,
-        maxLines: 2,
+        maxLines: 3,
         decoration: InputDecoration(
             labelText: "Device Information",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(globalVars.borderRadius),
             ),
             prefixIcon: Icon(Icons.perm_device_information)),
-        initialValue: androidInfo.manufacturer +
+        initialValue: deviceInfo["deviceBrand"].toString()[0].toUpperCase() +
+            deviceInfo["deviceBrand"].toString().substring(1) +
             " " +
-            androidInfo.model +
-            "\nSDK: " +
-            androidInfo.version.sdkInt.toString() +
-            "\n",
+            deviceInfo["deviceModel"] +
+            "\nApi Level: " +
+            deviceInfo["systemApi"] +
+            "\nRAM: " +
+            deviceInfo["systemRam"],
       ),
     );
   }
