@@ -246,7 +246,7 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
             // subtitle: Text("Tune to your own collections",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              if (globalVars.loginInfo["loginStatus"] == true) {
+              if (globalVars.loginInfo["loginStatus"]) {
                 // navigating to homePage
                 Navigator.of(context).pushReplacement(
                     globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
