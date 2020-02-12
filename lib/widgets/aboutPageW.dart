@@ -109,7 +109,7 @@ Widget helpCard(context) {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             bugReportBtn(context),
-            suggestFeaturesBtn(),
+            suggestFeaturesBtn(context),
             msgDevsBtn()
           ],
         ),
@@ -164,13 +164,21 @@ Widget bugReportBtn(context) {
   );
 }
 
-Widget suggestFeaturesBtn() {
+Widget suggestFeaturesBtn(context) {
   return OutlineButton(
     padding: EdgeInsets.all(15.0),
     borderSide: BorderSide(color: globalVars.accentWhite, width: 2.0),
     shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(globalVars.borderRadius)),
-    onPressed: () {},
+    onPressed: () {
+      if (globalVars.loginInfo["loginStatus"]) {
+        Navigator.pushNamed(context, '/suggestionsPage');
+      } else {
+        globalFun.showToastMessage(
+            "Please login to use feature", Colors.black, Colors.white);
+        Navigator.pushNamed(context, '/authPage');
+      }
+    },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -194,7 +202,9 @@ Widget msgDevsBtn() {
     borderSide: BorderSide(color: globalVars.accentWhite, width: 2.0),
     shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(globalVars.borderRadius)),
-    onPressed: () {},
+    onPressed: () {
+
+    },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,

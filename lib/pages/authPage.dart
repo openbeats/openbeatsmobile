@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations/controlled_animation.dart';
 import 'package:simple_animations/simple_animations/multi_track_tween.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../widgets/authPageW.dart' as authPageW;
 import '../globalVars.dart' as globalVars;
 import '../actions/globalVarsA.dart' as globalVarsA;
@@ -51,9 +52,9 @@ class _AuthPageState extends State<AuthPage>
       var response = await http.post("https://api.openbeats.live/auth/login",
           body: {"email": "$_emailID", "password": "$_password"});
       final body = json.decode(response.body);
-      if (body["error"] == null) {
+      if (body["status"] == true) {
         _authPageScaffoldKey.currentState.removeCurrentSnackBar();
-        setLoginParmeters(body);
+        setLoginParmeters(body["data"]);
         Navigator.pop(context);
         globalFun.showToastMessage(
             "Welcome to OpenBeats", Colors.green, Colors.white);
@@ -171,7 +172,6 @@ class _AuthPageState extends State<AuthPage>
         builder: (context, animation) {
           return Container(
               decoration: BoxDecoration(
-                
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -182,7 +182,7 @@ class _AuthPageState extends State<AuthPage>
                   key: _loginFormKey,
                   autovalidate: _autoValidateLogin,
                   child: Center(
-                    child: ListView( 
+                    child: ListView(
                       physics: BouncingScrollPhysics(),
                       children: <Widget>[
                         SizedBox(
@@ -226,7 +226,7 @@ class _AuthPageState extends State<AuthPage>
           child: Form(
             key: _signUpFormKey,
             autovalidate: _autoValidateSignUp,
-            child: ListView( 
+            child: ListView(
               physics: BouncingScrollPhysics(),
               shrinkWrap: true,
               children: <Widget>[
@@ -363,7 +363,14 @@ class _AuthPageState extends State<AuthPage>
   Widget forgotPasswordLink() {
     return Center(
         child: GestureDetector(
-            onTap: () {},
+            onTap: () async {
+              const url = 'https://openbeats.live/auth/forgot';
+              if (await canLaunch(url)) {
+                await launch(url);
+              } else {
+                throw 'Could not launch $url';
+              }
+            },
             child: Text(
               "Forgot Password ?",
               style: TextStyle(

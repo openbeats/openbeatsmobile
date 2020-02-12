@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+
 import 'package:openbeatsmobile/pages/bugReportPage.dart';
+import 'package:openbeatsmobile/pages/suggestionsPage.dart';
 import './pages/authPage.dart';
 import './pages/homePage.dart';
 import './pages/settingsPage.dart';
@@ -10,6 +12,7 @@ import './pages/aboutPage.dart';
 import 'package:package_info/package_info.dart';
 import './actions/globalVarsA.dart' as globalVarsA;
 import './globalFun.dart' as globalFun;
+import './globalVars.dart' as globalVars;
 
 void main() => runApp(MyApp());
 
@@ -52,9 +55,8 @@ class _MyAppState extends State<MyApp> {
       Response response =
           await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
       print(response.data["versionName"]);
-      if(response.data["versionName"] != versionName || response.data["versionCode"] != versionCode){
-        
-      }
+      if (response.data["versionName"] != versionName ||
+          response.data["versionCode"] != versionCode) {}
     } catch (e) {
       print(e);
     }
@@ -65,7 +67,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     getLoginInfo();
     globalFun.getSearchHistory();
-    verifyAppVersion();
+    //verifyAppVersion();
   }
 
   @override
@@ -85,7 +87,9 @@ class _MyAppState extends State<MyApp> {
         '/yourPlaylistsPage': (context) => YourPlaylistsPage(),
         '/settingsPage': (context) => SettingsPage(),
         '/aboutPage': (context) => AboutPage(),
-        '/bugReportingPage': (context) => BugReportPage()
+        '/bugReportingPage': (context) => BugReportPage(),
+        '/suggestionsPage': (context) => SuggestionsPage(),
+        
       },
     );
   }

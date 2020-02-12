@@ -10,3 +10,11 @@ Widget bugReportAppBarW(){
   );
 }
 
+Widget sugAppBarW(){
+  return AppBar(
+    title: Text("Suggestions"),
+    elevation: 0,
+    centerTitle: true,
+    backgroundColor: globalVars.primaryDark,
+  );
+}

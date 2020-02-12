@@ -53,11 +53,29 @@ public class MainActivity extends FlutterActivity {
                             getDeviceInfo();
                             result.success(deviceInfo);
                         } else if (call.method.equals("startDownloadAndInstall")){
-                            
+
                         }
                     }
                 }
         );
+    }
+
+    // downloads the latest version of the apk
+    void downloadApk(){
+        //get destination to update file and set Uri
+        String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
+        String fileName = "apkrelease.apk";
+        destination += fileName;
+        final Uri uri = Uri.parse("file://" + destination);
+
+        //Delete update file if exists
+        File file = new File(destination);
+        if (file.exists())
+            //file.delete() - test this, I think sometimes it doesnt work
+            file.delete();
+
+        //get url of app on server
+        String url = "";
     }
 
     // gets the device information and feeds it into the hashMap variable
