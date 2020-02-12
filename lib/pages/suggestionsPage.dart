@@ -58,15 +58,30 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
         key: _formKey,
         child: ListView(
           children: <Widget>[
-            SizedBox(height: 20.0),
+            SizedBox(height: 10.0),
+            sugQuote(),
+            SizedBox(height: 40.0),
             sugTitleTextBox(),
-            SizedBox(height: 20.0),
+            SizedBox(height: 30.0),
             sugDescTextBox(),
-            SizedBox(height: 20.0),
+            SizedBox(height: 40.0),
             submitsug()
           ],
         ),
       ),
+    );
+  }
+
+  Widget sugQuote() {
+    return Container(
+      child: Text(
+          "\"Suggestions maketh the app better\"\n\n- Someone, probably",
+          style: TextStyle(
+              fontFamily: "Comfortaa-Medium",
+              fontSize: 16.0,
+              color: Colors.grey,
+              fontStyle: FontStyle.italic),
+          textAlign: TextAlign.center),
     );
   }
 
@@ -79,7 +94,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
           textInputAction: TextInputAction.done,
           validator: (args) {
             if (args.length == 0)
-              return "Please enter a title for your suggestion";
+              return "Please enter your suggestion title";
             else
               return null;
           },
@@ -90,6 +105,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
           maxLines: null,
           decoration: InputDecoration(
             labelText: "Suggestion Title",
+            helperText: "This will help us identify your suggestion better",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(globalVars.borderRadius),
             ),
@@ -105,7 +121,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
           textInputAction: TextInputAction.newline,
           validator: (args) {
             if (args.length == 0)
-              return "Please enter description of the suggestion";
+              return "Please describe your suggestion";
             else
               return null;
           },
@@ -116,6 +132,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
           maxLines: 6,
           decoration: InputDecoration(
             labelText: "Suggestion Description",
+            helperText: "Feel free to be as descriptive as you like",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(globalVars.borderRadius),
             ),
