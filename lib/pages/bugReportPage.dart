@@ -98,7 +98,7 @@ class _BugReportPageState extends State<BugReportPage> {
   Widget bugQuote() {
     return Container(
       child: Text(
-          "\"There are two ways to write error-free programs; only the third one works\n\n- Alan J. Perlis\"",
+          "\"There are two ways to write error-free programs; only the third one works\"\n\n- Alan J. Perlis",
           style: TextStyle(
               fontFamily: "Comfortaa-Medium",
               fontSize: 16.0,

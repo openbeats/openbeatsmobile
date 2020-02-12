@@ -18,3 +18,13 @@ Widget sugAppBarW(){
     backgroundColor: globalVars.primaryDark,
   );
 }
+
+
+Widget msgDevAppBarW(){
+  return AppBar(
+    title: Text("Message Developers"),
+    elevation: 0,
+    centerTitle: true,
+    backgroundColor: globalVars.primaryDark,
+  );
+}

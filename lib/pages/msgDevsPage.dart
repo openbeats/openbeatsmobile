@@ -3,25 +3,25 @@ import 'package:url_launcher/url_launcher.dart';
 import '../widgets/helpUsPageW.dart' as helpUsPageW;
 import '../globalVars.dart' as globalVars;
 
-class SuggestionsPage extends StatefulWidget {
+class MsgDevsPage extends StatefulWidget {
   @override
-  _SuggestionsPageState createState() => _SuggestionsPageState();
+  _MsgDevsPageState createState() => _MsgDevsPageState();
 }
 
-class _SuggestionsPageState extends State<SuggestionsPage> {
+class _MsgDevsPageState extends State<MsgDevsPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   var deviceInfo;
   bool _autoValidate = false;
-  String sugTitle, sugDesc;
+  String msgDevMessage;
 
-  // verifies the sug report fields
+  // verifies the msgDev report fields
   void validateFields() async {
     // validate all fields
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // creating URL to send mail
       String url =
-          "mailto:openbeatsyag@gmail.com?subject=Suggestion: $sugTitle&body=$sugDesc";
+          "mailto:openbeatsyag@gmail.com?subject=Message from ${globalVars.loginInfo["userEmail"]}&body=$msgDevMessage";
       if (await canLaunch(url)) {
         await launch(url);
       } else {
@@ -43,14 +43,14 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: helpUsPageW.sugAppBarW(),
+        appBar: helpUsPageW.msgDevAppBarW(),
         backgroundColor: globalVars.primaryDark,
-        body: sugBody(),
+        body: msgDevBody(),
       ),
     );
   }
 
-  Widget sugBody() {
+  Widget msgDevBody() {
     return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.all(20.0),
@@ -59,23 +59,21 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
         child: ListView(
           children: <Widget>[
             SizedBox(height: 10.0),
-            sugQuote(),
-            SizedBox(height: 40.0),
-            sugTitleTextBox(),
+            msgDevQuote(),
             SizedBox(height: 30.0),
-            sugDescTextBox(),
+            msgDevDescTextBox(),
             SizedBox(height: 40.0),
-            submitsug()
+            submitmsgDev()
           ],
         ),
       ),
     );
   }
 
-  Widget sugQuote() {
+  Widget msgDevQuote() {
     return Container(
       child: Text(
-          "\"There is always space for improvement, no matter how long you’ve been in the business\"\n\n- Oscar De La Hoya",
+          "\"We all need people who will give us feedback. That’s how we improve\"\n\n- Bill Gates",
           style: TextStyle(
               fontFamily: "Comfortaa-Medium",
               fontSize: 16.0,
@@ -85,35 +83,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     );
   }
 
-  Widget sugTitleTextBox() {
-    return Container(
-      child: TextFormField(
-          autovalidate: _autoValidate,
-          autofocus: true,
-          autocorrect: true,
-          textInputAction: TextInputAction.done,
-          validator: (args) {
-            if (args.length == 0)
-              return "Please enter your suggestion title";
-            else
-              return null;
-          },
-          onSaved: (val) {
-            sugTitle = val;
-          },
-          maxLength: 50,
-          maxLines: null,
-          decoration: InputDecoration(
-            labelText: "Suggestion Title",
-            helperText: "Helps us identify your suggestion better",
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(globalVars.borderRadius),
-            ),
-          )),
-    );
-  }
-
-  Widget sugDescTextBox() {
+  Widget msgDevDescTextBox() {
     return Container(
       child: TextFormField(
           autovalidate: _autoValidate,
@@ -121,18 +91,18 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
           textInputAction: TextInputAction.newline,
           validator: (args) {
             if (args.length == 0)
-              return "Please describe your suggestion";
+              return "Please type the message you want to send to us";
             else
               return null;
           },
           onSaved: (val) {
-            sugDesc = val;
+            msgDevMessage = val;
           },
           maxLength: 2000,
-          maxLines: 6,
+          maxLines: 10,
           decoration: InputDecoration(
-            labelText: "Suggestion Description",
-            helperText: "Feel free to be as descriptive as you like",
+            labelText: "Message Description",
+            helperText: "Please avoid sending us nagativity or profanity",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(globalVars.borderRadius),
             ),
@@ -140,12 +110,12 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     );
   }
 
-  Widget submitsug() {
+  Widget submitmsgDev() {
     return Container(
       child: RaisedButton(
         onPressed: validateFields,
         padding: EdgeInsets.all(20.0),
-        child: Text("Send Suggestion"),
+        child: Text("Send Message"),
         color: globalVars.primaryLight,
         textColor: globalVars.primaryDark,
         shape: StadiumBorder(),

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import 'package:openbeatsmobile/pages/bugReportPage.dart';
+import 'package:openbeatsmobile/pages/msgDevsPage.dart';
 import 'package:openbeatsmobile/pages/suggestionsPage.dart';
 import './pages/authPage.dart';
 import './pages/homePage.dart';
@@ -89,7 +90,7 @@ class _MyAppState extends State<MyApp> {
         '/aboutPage': (context) => AboutPage(),
         '/bugReportingPage': (context) => BugReportPage(),
         '/suggestionsPage': (context) => SuggestionsPage(),
-        
+        '/msgDevsPage' : (context) => MsgDevsPage(),
       },
     );
   }

@@ -51,7 +51,7 @@ Widget appNameListTile() {
       "OpenBeats",
       style: TextStyle(fontFamily: "Helvetica-Normal", fontSize: 30.0),
     ),
-    subtitle: Text("Free music, forever"),
+    subtitle: Text("Free music, Forever"),
     dense: true,
   );
 }
@@ -65,7 +65,7 @@ Widget versionListTile() {
         "Version",
         style: TextStyle(fontFamily: "Helvetica-Normal", fontSize: 20.0),
       ),
-      subtitle: Text("1.19"),
+      subtitle: Text("2.0.0+1"),
     ),
   );
 }
@@ -110,7 +110,7 @@ Widget helpCard(context) {
           children: <Widget>[
             bugReportBtn(context),
             suggestFeaturesBtn(context),
-            msgDevsBtn()
+            msgDevsBtn(context)
           ],
         ),
         SizedBox(
@@ -196,14 +196,20 @@ Widget suggestFeaturesBtn(context) {
   );
 }
 
-Widget msgDevsBtn() {
+Widget msgDevsBtn(context) {
   return OutlineButton(
     padding: EdgeInsets.all(15.0),
     borderSide: BorderSide(color: globalVars.accentWhite, width: 2.0),
     shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(globalVars.borderRadius)),
     onPressed: () {
-
+      if (globalVars.loginInfo["loginStatus"]) {
+        Navigator.pushNamed(context, '/msgDevsPage');
+      } else {
+        globalFun.showToastMessage(
+            "Please login to use feature", Colors.black, Colors.white);
+        Navigator.pushNamed(context, '/authPage');
+      }
     },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.center,
