@@ -731,6 +731,7 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
 }
 
 void showUpdateAvailableDialog(response, context) {
+  List<String> changeLogList = response.data["changeLog"].toString().split("|");
   showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
@@ -746,11 +747,11 @@ void showUpdateAvailableDialog(response, context) {
                 itemBuilder: (context, index) {
                   return Container(
                     child: ListTile(
-                      title: Text(response.data["changeLog"][index]),
+                      title: Text(changeLogList[index]),
                     ),
                   );
                 },
-                itemCount: response.data["changeLog"].length,
+                itemCount: changeLogList.length,
               ),
             ),
             actions: <Widget>[
