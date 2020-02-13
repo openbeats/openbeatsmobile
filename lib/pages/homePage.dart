@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     String versionName = packageInfo.version;
     String versionCode = packageInfo.buildNumber;
     try {
-      Response response = await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
+      Response response = await Dio().get(" http://yagupdtserver.000webhostapp.com/api/");
       if (response.data["versionName"] != versionName ||
           response.data["versionCode"] != versionCode) {
         globalVars.updateResponse = response;
