@@ -2,7 +2,10 @@ package com.yag.openbeatsmobile;
 
 import android.app.ActivityManager;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -31,6 +35,13 @@ public class MainActivity extends FlutterActivity {
     private static MethodChannel backwardMChannel = null;
     String downloadPath = Environment.getExternalStorageDirectory() + "/OpenBeatsDownloads/";
     HashMap<String, String> deviceInfo = new HashMap<String, String>();
+    String TAG = "com.yag.openbeatsmobile";
+    boolean downCompleteTriggered = false;
+    static final int INSTALL_UNKNOWNAPP_PERMISSION_CODE = 1;
+    String apkURL, updateName;
+    // variable to store which storage requiring activity is invoking the storage permission request
+    String storageReqAct = "";
+    boolean showRational;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,37 +56,115 @@ public class MainActivity extends FlutterActivity {
                             String message = call.argument("message");
                             Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                         } else if (call.method.equals("startDownload")) {
+                            storageReqAct = "startDownload";
                             videoId = call.argument("videoId");
                             videoTitle = call.argument("videoTitle");
-                            boolean showRational = call.argument("showRational");
+                            showRational = call.argument("showRational");
                             checkPermAccessAndStartDownload(showRational);
                         } else if (call.method.equals("getDeviceInfo")){
                             getDeviceInfo();
                             result.success(deviceInfo);
-                        } else if (call.method.equals("startDownloadAndInstall")){
+                        } else if (call.method.equals("downloadUpdate")){
 
+                            apkURL = call.argument("apkURL");
+                            updateName = call.argument("updateName");
+                            storageReqAct = "downloadUpdate";
+                            showRational = call.argument("showRational");
+                            // checking if install app from unknown sources is allowed
+                            // returns false for everything below Oreo
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                                if (!getPackageManager().canRequestPackageInstalls()) {
+
+                                    Toast.makeText(MainActivity.this, "Please grant permission to install app", Toast.LENGTH_LONG).show();
+
+                                    // creating intent to send user to get permission to install unknown apps
+                                    Intent installUnknownApps = new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:com.yag.openbeatsmobile"));
+
+                                    // sending user to get permission
+                                    startActivityForResult(installUnknownApps,INSTALL_UNKNOWNAPP_PERMISSION_CODE);
+
+                                } else {
+                                    getStoragePermissionApkUpdate();
+                                }
+                            } else {
+                                getStoragePermissionApkUpdate();
+                            }
                         }
                     }
                 }
         );
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == INSTALL_UNKNOWNAPP_PERMISSION_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                getStoragePermissionApkUpdate();
+            }
+        }
+    }
+
+    void getStoragePermissionApkUpdate(){
+        Log.d(TAG, "getStoragePermissionApkUpdate: Reached");
+        // declaring the permission we need to request
+        String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        // checking if the permission was already granted
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_GRANTED) {
+            downloadApk();
+        } else {
+            requestStoragePermission(permission, showRational);
+        }
+    }
+
     // downloads the latest version of the apk
     void downloadApk(){
+        Log.d(TAG, "downloadApk: GOt here");
         //get destination to update file and set Uri
         String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
-        String fileName = "apkrelease.apk";
+        String fileName = "app-release.apk";
         destination += fileName;
         final Uri uri = Uri.parse("file://" + destination);
 
         //Delete update file if exists
         File file = new File(destination);
-        if (file.exists())
-            //file.delete() - test this, I think sometimes it doesnt work
+        if (file.exists()){
+            Log.d(TAG, "downloadApk: File Exists, deleting");
             file.delete();
+        }
 
-        //get url of app on server
-        String url = "";
+        DownloadManager.Request request=new DownloadManager.Request(Uri.parse(apkURL))
+                .setTitle("OpenBeats v"+updateName)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+                .setDestinationUri(Uri.fromFile(file));
+        DownloadManager downloadManager= (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        downloadManager.enqueue(request);
+
+        BroadcastReceiver onComplete=new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                if(file.exists() && downCompleteTriggered == false) {
+                    Toast.makeText(context, "Initializing update install", Toast.LENGTH_SHORT).show();
+                    Intent intent2;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        Log.d(TAG, "downloadApk: "+file.getAbsolutePath());
+                        Uri apkUri = FileProvider.getUriForFile(MainActivity.this, "openbeats.fileProvider", file);
+                        intent2 = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                        intent2.setData(apkUri);
+                        intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    } else {
+                        Uri apkUri = Uri.fromFile(file);
+                        intent2 = new Intent(Intent.ACTION_VIEW);
+                        intent2.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                        intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    }
+                    MainActivity.this.startActivity(intent2);
+                    downCompleteTriggered = true;
+                }
+            }
+        };
+        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     // gets the device information and feeds it into the hashMap variable
@@ -141,6 +230,7 @@ public class MainActivity extends FlutterActivity {
             ArrayList<String> parameters = new ArrayList<String>();
             parameters.add(videoId);
             parameters.add(videoTitle);
+            parameters.add(storageReqAct);
             backwardMChannel.invokeMethod("showRational", parameters);
 
         } else {
@@ -151,12 +241,19 @@ public class MainActivity extends FlutterActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // checking if the required permission is granted
-        if (requestCode == STORAGE_PERMISSION_CODE) {
+        if (requestCode == STORAGE_PERMISSION_CODE && storageReqAct == "startDownload") {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(MainActivity.this, "Download Initiated", Toast.LENGTH_LONG).show();
                 startDownload();
             } else {
                 Toast.makeText(this, "Please grant permission to download file", Toast.LENGTH_SHORT).show();
+            }
+        } else if(requestCode == STORAGE_PERMISSION_CODE && storageReqAct == "downloadUpdate"){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this, "Update downloading...", Toast.LENGTH_LONG).show();
+                downloadApk();
+            } else {
+                Toast.makeText(this, "Please grant permission to download update", Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -72,3 +73,10 @@ var videosResponseList = new List();
 
 // holds data on which page is controlling the audio service
 String audioServicePage = "";
+
+// flag variable to notify if the update check has to be done
+// used to prevent rechecking everytime the app is launched
+bool chechForUpdate = true;
+
+// holds a copy of the update parameters
+Response updateResponse;

@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:openbeatsmobile/pages/aboutPage.dart';
 import 'package:openbeatsmobile/pages/downloadsPage.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+
 import 'package:openbeatsmobile/pages/settingsPage.dart';
 import 'package:openbeatsmobile/pages/topChartsPage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './globalVars.dart' as globalVars;
@@ -689,7 +694,7 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                       Radius.circular(globalVars.borderRadius))),
               backgroundColor: globalVars.primaryDark,
               content: Text(
-                  "OpenBeats requires storage access permission to download, save and play the songs you would like to listen offline"),
+                  "OpenBeats requires storage access permission to download, save and play the songs you would like to listen offline and to download app updates"),
               actions: <Widget>[
                 FlatButton(
                   child: Text("Cancel"),
@@ -703,17 +708,76 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                   child: Text("OK"),
                   onPressed: () {
                     Navigator.pop(context);
+                    (parameters[2] == "startDownload")?
                     globalVars.platformMethodChannel
                         .invokeMethod("startDownload", {
                       "videoId": parameters[0],
                       "videoTitle": parameters[1],
                       "showRational": true,
-                    });
+                    }):globalVars.platformMethodChannel
+                      .invokeMethod("downloadUpdate", {
+                    "apkURL": globalVars.updateResponse.data["apkURL"],
+                    "updateName": globalVars.updateResponse.data["versionName"] +
+                        "+" +
+                        globalVars.updateResponse.data["versionCode"], "showRational": true
+                  });;
                   },
                   color: Colors.transparent,
                   textColor: globalVars.accentGreen,
                 ),
               ],
             ));
-  }
+  } 
+}
+
+void showUpdateAvailableDialog(response, context) {
+  List<String> changeLogList = response.data["changeLog"].toString().split("|");
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+            backgroundColor: globalVars.primaryDark,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+            title: Text("Update Available"),
+            content: Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: ListTile(
+                      title: Text(changeLogList[index]),
+                    ),
+                  );
+                },
+                itemCount: changeLogList.length,
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                color: globalVars.primaryDark,
+                textColor: globalVars.accentRed,
+                child: Text("Cancel"),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  globalVars.platformMethodChannel
+                      .invokeMethod("downloadUpdate", {
+                    "apkURL": response.data["apkURL"],
+                    "updateName": response.data["versionName"] +
+                        "+" +
+                        response.data["versionCode"], "showRational": false
+                  });
+                },
+                color: globalVars.primaryDark,
+                textColor: globalVars.accentGreen,
+                child: Text("Update App"),
+              ),
+            ],
+          ));
 }
