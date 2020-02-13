@@ -22,7 +22,7 @@ Widget appBarW(context, GlobalKey<ScaffoldState> _aboutPageScaffoldKey) {
   );
 }
 
-Widget aboutAppCard(context) {
+Widget aboutAppCard(context, versionString) {
   return Container(
     height: MediaQuery.of(context).size.height * 0.45,
     child: Container(
@@ -34,7 +34,7 @@ Widget aboutAppCard(context) {
           SizedBox(
             height: 10.0,
           ),
-          versionListTile(),
+          versionListTile(versionString),
           appDescListTile()
         ],
       ),
@@ -56,7 +56,7 @@ Widget appNameListTile() {
   );
 }
 
-Widget versionListTile() {
+Widget versionListTile(versionString) {
   return Container(
     margin: EdgeInsets.only(left: 12.0),
     child: ListTile(
@@ -65,7 +65,7 @@ Widget versionListTile() {
         "Version",
         style: TextStyle(fontFamily: "Helvetica-Normal", fontSize: 20.0),
       ),
-      subtitle: Text("2.0.0+1"),
+      subtitle: Text(versionString),
     ),
   );
 }
