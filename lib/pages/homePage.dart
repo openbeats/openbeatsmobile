@@ -80,6 +80,7 @@ class _HomePageState extends State<HomePage> {
       Response response = await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
       if (response.data["versionName"] != versionName ||
           response.data["versionCode"] != versionCode) {
+        globalVars.updateResponse = response;
         globalFun.showUpdateAvailableDialog(response, context);
       }
     } catch (e) {

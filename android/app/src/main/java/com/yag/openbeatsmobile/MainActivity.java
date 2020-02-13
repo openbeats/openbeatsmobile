@@ -37,6 +37,11 @@ public class MainActivity extends FlutterActivity {
     HashMap<String, String> deviceInfo = new HashMap<String, String>();
     String TAG = "com.yag.openbeatsmobile";
     boolean downCompleteTriggered = false;
+    static final int INSTALL_UNKNOWNAPP_PERMISSION_CODE = 1;
+    String apkURL, updateName;
+    // variable to store which storage requiring activity is invoking the storage permission request
+    String storageReqAct = "";
+    boolean showRational;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,26 +56,74 @@ public class MainActivity extends FlutterActivity {
                             String message = call.argument("message");
                             Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
                         } else if (call.method.equals("startDownload")) {
+                            storageReqAct = "startDownload";
                             videoId = call.argument("videoId");
                             videoTitle = call.argument("videoTitle");
-                            boolean showRational = call.argument("showRational");
+                            showRational = call.argument("showRational");
                             checkPermAccessAndStartDownload(showRational);
                         } else if (call.method.equals("getDeviceInfo")){
                             getDeviceInfo();
                             result.success(deviceInfo);
                         } else if (call.method.equals("downloadUpdate")){
-                            downloadApk(call.argument("apkURL"), call.argument("updateName"));
+
+                            apkURL = call.argument("apkURL");
+                            updateName = call.argument("updateName");
+                            storageReqAct = "downloadUpdate";
+                            showRational = call.argument("showRational");
+                            // checking if install app from unknown sources is allowed
+                            // returns false for everything below Oreo
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                                if (!getPackageManager().canRequestPackageInstalls()) {
+
+                                    Toast.makeText(MainActivity.this, "Please grant permission to install app", Toast.LENGTH_LONG).show();
+
+                                    // creating intent to send user to get permission to install unknown apps
+                                    Intent installUnknownApps = new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:com.yag.openbeatsmobile"));
+
+                                    // sending user to get permission
+                                    startActivityForResult(installUnknownApps,INSTALL_UNKNOWNAPP_PERMISSION_CODE);
+
+                                } else {
+                                    getStoragePermissionApkUpdate();
+                                }
+                            } else {
+                                getStoragePermissionApkUpdate();
+                            }
                         }
                     }
                 }
         );
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == INSTALL_UNKNOWNAPP_PERMISSION_CODE) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                getStoragePermissionApkUpdate();
+            }
+        }
+    }
+
+    void getStoragePermissionApkUpdate(){
+        Log.d(TAG, "getStoragePermissionApkUpdate: Reached");
+        // declaring the permission we need to request
+        String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        // checking if the permission was already granted
+        if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_GRANTED) {
+            downloadApk();
+        } else {
+            requestStoragePermission(permission, showRational);
+        }
+    }
+
     // downloads the latest version of the apk
-    void downloadApk(String apkURL, String updateName){
+    void downloadApk(){
+        Log.d(TAG, "downloadApk: GOt here");
         //get destination to update file and set Uri
         String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
-//        String destination = getFilesDir().getAbsolutePath();
         String fileName = "app-release.apk";
         destination += fileName;
         final Uri uri = Uri.parse("file://" + destination);
@@ -177,6 +230,7 @@ public class MainActivity extends FlutterActivity {
             ArrayList<String> parameters = new ArrayList<String>();
             parameters.add(videoId);
             parameters.add(videoTitle);
+            parameters.add(storageReqAct);
             backwardMChannel.invokeMethod("showRational", parameters);
 
         } else {
@@ -187,12 +241,19 @@ public class MainActivity extends FlutterActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         // checking if the required permission is granted
-        if (requestCode == STORAGE_PERMISSION_CODE) {
+        if (requestCode == STORAGE_PERMISSION_CODE && storageReqAct == "startDownload") {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(MainActivity.this, "Download Initiated", Toast.LENGTH_LONG).show();
                 startDownload();
             } else {
                 Toast.makeText(this, "Please grant permission to download file", Toast.LENGTH_SHORT).show();
+            }
+        } else if(requestCode == STORAGE_PERMISSION_CODE && storageReqAct == "downloadUpdate"){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(MainActivity.this, "Update downloading...", Toast.LENGTH_LONG).show();
+                downloadApk();
+            } else {
+                Toast.makeText(this, "Please grant permission to download update", Toast.LENGTH_SHORT).show();
             }
         }
     }

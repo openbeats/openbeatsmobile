@@ -694,7 +694,7 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                       Radius.circular(globalVars.borderRadius))),
               backgroundColor: globalVars.primaryDark,
               content: Text(
-                  "OpenBeats requires storage access permission to download, save and play the songs you would like to listen offline"),
+                  "OpenBeats requires storage access permission to download, save and play the songs you would like to listen offline and to download app updates"),
               actions: <Widget>[
                 FlatButton(
                   child: Text("Cancel"),
@@ -708,19 +708,26 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                   child: Text("OK"),
                   onPressed: () {
                     Navigator.pop(context);
+                    (parameters[2] == "startDownload")?
                     globalVars.platformMethodChannel
                         .invokeMethod("startDownload", {
                       "videoId": parameters[0],
                       "videoTitle": parameters[1],
                       "showRational": true,
-                    });
+                    }):globalVars.platformMethodChannel
+                      .invokeMethod("downloadUpdate", {
+                    "apkURL": globalVars.updateResponse.data["apkURL"],
+                    "updateName": globalVars.updateResponse.data["versionName"] +
+                        "+" +
+                        globalVars.updateResponse.data["versionCode"], "showRational": true
+                  });;
                   },
                   color: Colors.transparent,
                   textColor: globalVars.accentGreen,
                 ),
               ],
             ));
-  } else if (methodCall.method == "updateDownloaded") {}
+  } 
 }
 
 void showUpdateAvailableDialog(response, context) {
@@ -758,9 +765,13 @@ void showUpdateAvailableDialog(response, context) {
               FlatButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  globalVars.platformMethodChannel.invokeMethod(
-                      "downloadUpdate", {"apkURL": response.data["apkURL"], "updateName": response.data["versionName"]+"+"+response.data["versionCode"]});
-                  showToastMessage("Downloading update...", globalVars.accentGreen, globalVars.accentWhite);
+                  globalVars.platformMethodChannel
+                      .invokeMethod("downloadUpdate", {
+                    "apkURL": response.data["apkURL"],
+                    "updateName": response.data["versionName"] +
+                        "+" +
+                        response.data["versionCode"], "showRational": false
+                  });
                 },
                 color: globalVars.primaryDark,
                 textColor: globalVars.accentGreen,
