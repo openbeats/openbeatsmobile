@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:package_info/package_info.dart';
 import 'package:rxdart/subjects.dart';
 import '../widgets/aboutPageW.dart' as aboutPageW;
 import '../globalVars.dart' as globalVars;
@@ -15,6 +16,20 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   final GlobalKey<ScaffoldState> _aboutPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
+  String versionString = "0.0.0+0";
+
+  void getVersionInfo()  async{
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      versionString = packageInfo.version+"+"+packageInfo.buildNumber;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getVersionInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +60,7 @@ class _AboutPageState extends State<AboutPage> {
           SizedBox(
             height: 20.0,
           ),
-          aboutPageW.aboutAppCard(context),
+          aboutPageW.aboutAppCard(context, versionString),
           aboutPageW.helpCard(context)
         ],
       ),
