@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:openbeatsmobile/pages/aboutPage.dart';
 import 'package:openbeatsmobile/pages/downloadsPage.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+
 import 'package:openbeatsmobile/pages/settingsPage.dart';
 import 'package:openbeatsmobile/pages/topChartsPage.dart';
 import 'package:openbeatsmobile/pages/yourPlaylistsPage.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import './globalVars.dart' as globalVars;
@@ -715,5 +720,7 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                 ),
               ],
             ));
+  } else if (methodCall.method == "installApp") {
+    
   }
 }

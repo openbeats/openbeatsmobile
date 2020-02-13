@@ -2,7 +2,10 @@ package com.yag.openbeatsmobile;
 
 import android.app.ActivityManager;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -13,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -31,6 +35,7 @@ public class MainActivity extends FlutterActivity {
     private static MethodChannel backwardMChannel = null;
     String downloadPath = Environment.getExternalStorageDirectory() + "/OpenBeatsDownloads/";
     HashMap<String, String> deviceInfo = new HashMap<String, String>();
+    String TAG = "com.yag.openbeatsmobile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +57,8 @@ public class MainActivity extends FlutterActivity {
                         } else if (call.method.equals("getDeviceInfo")){
                             getDeviceInfo();
                             result.success(deviceInfo);
-                        } else if (call.method.equals("startDownloadAndInstall")){
-
+                        } else if (call.method.equals("downloadApp")){
+                            downloadApk(call.argument("apkURL"));
                         }
                     }
                 }
@@ -61,21 +66,50 @@ public class MainActivity extends FlutterActivity {
     }
 
     // downloads the latest version of the apk
-    void downloadApk(){
+    void downloadApk(String apkURL){
         //get destination to update file and set Uri
         String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
-        String fileName = "apkrelease.apk";
+//        String destination = getFilesDir().getAbsolutePath();
+        String fileName = "app-release.apk";
         destination += fileName;
         final Uri uri = Uri.parse("file://" + destination);
 
         //Delete update file if exists
         File file = new File(destination);
-        if (file.exists())
-            //file.delete() - test this, I think sometimes it doesnt work
-            file.delete();
+//        if (file.exists()){
+//            Log.d(TAG, "downloadApk: File Exists, deleting");
+//            file.delete();
+//        }
 
-        //get url of app on server
-        String url = "";
+//        DownloadManager.Request request=new DownloadManager.Request(Uri.parse(apkURL))
+//                .setTitle("OpenBeats Update")
+//                .setDescription("Downloading update")
+//                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+//                .setDestinationUri(Uri.fromFile(file));
+//        DownloadManager downloadManager= (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+//        downloadManager.enqueue(request);
+
+        Intent intent2;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Log.d(TAG, "downloadApk: "+file.getAbsolutePath());
+            Uri apkUri = FileProvider.getUriForFile(MainActivity.this, "openbeats.fileProvider", file);
+            intent2 = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+            intent2.setData(apkUri);
+            intent2.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            Uri apkUri = Uri.fromFile(file);
+            intent2 = new Intent(Intent.ACTION_VIEW);
+            intent2.setDataAndType(apkUri, "application/vnd.android.package-archive");
+            intent2.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        MainActivity.this.startActivity(intent2);
+
+        BroadcastReceiver onComplete=new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                backwardMChannel.invokeMethod("updateDownloaded","");
+            }
+        };
+        registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     // gets the device information and feeds it into the hashMap variable

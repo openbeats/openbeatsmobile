@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:openbeatsmobile/pages/bugReportPage.dart';
 import 'package:openbeatsmobile/pages/msgDevsPage.dart';
 import 'package:openbeatsmobile/pages/suggestionsPage.dart';
+import 'package:path_provider/path_provider.dart';
 import './pages/authPage.dart';
 import './pages/homePage.dart';
 import './pages/settingsPage.dart';
@@ -49,15 +53,22 @@ class _MyAppState extends State<MyApp> {
   }
 
   void verifyAppVersion() async {
+    // setting callHandler to show rational dialog to get storage permissions
+    globalVars.platformMethodChannel.setMethodCallHandler(
+        (MethodCall methodCall) =>
+            globalFun.nativeMethodCallHandler(methodCall, context));
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     String versionName = packageInfo.version;
     String versionCode = packageInfo.buildNumber;
     try {
       Response response =
           await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
-      print(response.data["versionName"]);
       if (response.data["versionName"] != versionName ||
-          response.data["versionCode"] != versionCode) {}
+          response.data["versionCode"] != versionCode) {
+        print("Downloading Update");
+        globalVars.platformMethodChannel
+            .invokeMethod("downloadApp", {"apkURL": response.data["apkURL"]});
+      }
     } catch (e) {
       print(e);
     }
@@ -68,7 +79,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     getLoginInfo();
     globalFun.getSearchHistory();
-    //verifyAppVersion();
+    verifyAppVersion();
   }
 
   @override
@@ -90,7 +101,7 @@ class _MyAppState extends State<MyApp> {
         '/aboutPage': (context) => AboutPage(),
         '/bugReportingPage': (context) => BugReportPage(),
         '/suggestionsPage': (context) => SuggestionsPage(),
-        '/msgDevsPage' : (context) => MsgDevsPage(),
+        '/msgDevsPage': (context) => MsgDevsPage(),
       },
     );
   }
