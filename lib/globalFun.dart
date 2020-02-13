@@ -720,7 +720,52 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                 ),
               ],
             ));
-  } else if (methodCall.method == "installApp") {
-    
-  }
+  } else if (methodCall.method == "updateDownloaded") {}
+}
+
+void showUpdateAvailableDialog(response, context) {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+            backgroundColor: globalVars.primaryDark,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+            title: Text("Update Available"),
+            content: Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ListView.builder(
+                physics: BouncingScrollPhysics(),
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: ListTile(
+                      title: Text(response.data["changeLog"][index]),
+                    ),
+                  );
+                },
+                itemCount: response.data["changeLog"].length,
+              ),
+            ),
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                color: globalVars.primaryDark,
+                textColor: globalVars.accentRed,
+                child: Text("Cancel"),
+              ),
+              FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  globalVars.platformMethodChannel.invokeMethod(
+                      "downloadUpdate", {"apkURL": response.data["apkURL"], "updateName": response.data["versionName"]+"+"+response.data["versionCode"]});
+                  showToastMessage("Downloading update...", globalVars.accentGreen, globalVars.accentWhite);
+                },
+                color: globalVars.primaryDark,
+                textColor: globalVars.accentGreen,
+                child: Text("Update App"),
+              ),
+            ],
+          ));
 }

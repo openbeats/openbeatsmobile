@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
+import 'package:package_info/package_info.dart';
 import 'package:rxdart/subjects.dart';
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
@@ -65,6 +66,26 @@ class _HomePageState extends State<HomePage> {
   var videosResponseList = new List();
   // holds the flag indicating that the media streaming is loading
   bool streamLoading = false;
+
+  // initiates the app update verification process
+  void verifyAppVersion() async {
+    // setting callHandler to show rational dialog to get storage permissions
+    globalVars.platformMethodChannel.setMethodCallHandler(
+        (MethodCall methodCall) =>
+            globalFun.nativeMethodCallHandler(methodCall, context));
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String versionName = packageInfo.version;
+    String versionCode = packageInfo.buildNumber;
+    try {
+      Response response = await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
+      if (response.data["versionName"] != versionName ||
+          response.data["versionCode"] != versionCode) {
+        globalFun.showUpdateAvailableDialog(response, context);
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 
   // navigates to the search page
   void navigateToSearchPage() async {
@@ -282,6 +303,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    if(globalVars.chechForUpdate){
+      // starts app version checking functionality
+      verifyAppVersion();
+      // setting to false to prevent retriggering until the app is restarted
+      globalVars.chechForUpdate = false;
+    }
     // checks if there is persistent video result values to be inserted and insert if there are
     checkForVidResultPersistency();
     // getting authStatus to refresh app after restart
@@ -311,8 +338,6 @@ class _HomePageState extends State<HomePage> {
     AudioService.disconnect();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -334,21 +359,19 @@ class _HomePageState extends State<HomePage> {
 
   Widget homePageBody() {
     return Container(
-      alignment: Alignment.center,
-      child: (searchResultLoading)
-              ? CircularProgressIndicator(
-                  valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
-                )
-              : (videosResponseList.length == 0)
-                  ? homePageW.homePageView()
-                  : videoListView()
-    );
+        alignment: Alignment.center,
+        child: (searchResultLoading)
+            ? CircularProgressIndicator(
+                valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+              )
+            : (videosResponseList.length == 0)
+                ? homePageW.homePageView()
+                : videoListView());
   }
 
   // listView builder to construct list of videos
   Widget videoListView() {
     return ListView.builder(
-      
       physics: BouncingScrollPhysics(),
       itemBuilder: (BuildContext context, int index) {
         return globalWids.homePageVidResultContainerW(
@@ -631,7 +654,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], false, true);
     } else if (action == "addSongListToQueue") {
       addSongListToQueue(parameters);
-    } else if (action == "jumpToQueueItem"){
+    } else if (action == "jumpToQueueItem") {
       jumpToQueueItem(parameters);
     }
   }
@@ -643,7 +666,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     getMp3URLToQueue(parameters["song"], false, false);
   }
 
-  void removeItemFromQueue(parameters) async{
+  void removeItemFromQueue(parameters) async {
     // checking if the item to be removed is the current playing item
     if (parameters["currentArtURI"] == _queue[_queueIndex].artUri) {
       _queueMeta.remove(_queue[parameters["index"]].artUri);
@@ -692,7 +715,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         controls: getControls(state), basicState: state, position: position);
   }
 
-  void addSongListToQueue(parameters) async{
+  void addSongListToQueue(parameters) async {
     // checking if queue is empty
     if (_queue.length == 0) {
       var state = BasicPlaybackState.connecting;
@@ -700,21 +723,20 @@ class AudioPlayerTask extends BackgroundAudioTask {
       AudioServiceBackground.setState(
           controls: getControls(state), basicState: state, position: position);
     }
-    await audioServiceGlobalFun.addSongListToQueue(parameters, getMp3URLSpecial, _queue);
-    
+    await audioServiceGlobalFun.addSongListToQueue(
+        parameters, getMp3URLSpecial, _queue);
   }
 
-  void jumpToQueueItem(parameters) async{
+  void jumpToQueueItem(parameters) async {
     int index = parameters["index"];
-    if(index == _queue.length)
-      _queueIndex = index-1;
-    else if(index == 0)
-      _queueIndex = _queue.length-1;
+    if (index == _queue.length)
+      _queueIndex = index - 1;
+    else if (index == 0)
+      _queueIndex = _queue.length - 1;
     else
-      _queueIndex = index -1;
-    
-    await onSkipToNext();
+      _queueIndex = index - 1;
 
+    await onSkipToNext();
   }
 
   void _setState({@required BasicPlaybackState state, int position}) {

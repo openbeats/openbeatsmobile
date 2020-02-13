@@ -27,6 +27,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  
   // recovers login information from sharedPreferences
   void getLoginInfo() async {
     // creating sharedPreferences instance
@@ -52,34 +53,12 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void verifyAppVersion() async {
-    // setting callHandler to show rational dialog to get storage permissions
-    globalVars.platformMethodChannel.setMethodCallHandler(
-        (MethodCall methodCall) =>
-            globalFun.nativeMethodCallHandler(methodCall, context));
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String versionName = packageInfo.version;
-    String versionCode = packageInfo.buildNumber;
-    try {
-      Response response =
-          await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
-      if (response.data["versionName"] != versionName ||
-          response.data["versionCode"] != versionCode) {
-        print("Downloading Update");
-        globalVars.platformMethodChannel
-            .invokeMethod("downloadApp", {"apkURL": response.data["apkURL"]});
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     getLoginInfo();
     globalFun.getSearchHistory();
-    verifyAppVersion();
+    
   }
 
   @override
