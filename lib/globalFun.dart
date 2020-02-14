@@ -708,37 +708,56 @@ Future<dynamic> nativeMethodCallHandler(MethodCall methodCall, context) async {
                   child: Text("OK"),
                   onPressed: () {
                     Navigator.pop(context);
-                    (parameters[2] == "startDownload")?
-                    globalVars.platformMethodChannel
-                        .invokeMethod("startDownload", {
-                      "videoId": parameters[0],
-                      "videoTitle": parameters[1],
-                      "showRational": true,
-                    }):globalVars.platformMethodChannel
-                      .invokeMethod("downloadUpdate", {
-                    "apkURL": globalVars.updateResponse.data["apkURL"],
-                    "updateName": globalVars.updateResponse.data["versionName"] +
-                        "+" +
-                        globalVars.updateResponse.data["versionCode"], "showRational": true
-                  });;
+                    (parameters[2] == "startDownload")
+                        ? globalVars.platformMethodChannel
+                            .invokeMethod("startDownload", {
+                            "videoId": parameters[0],
+                            "videoTitle": parameters[1],
+                            "showRational": true,
+                          })
+                        : globalVars.platformMethodChannel
+                            .invokeMethod("downloadUpdate", {
+                            "apkURL": globalVars.updateResponse.data["apkURL"],
+                            "updateName": globalVars
+                                    .updateResponse.data["versionName"] +
+                                "+" +
+                                globalVars.updateResponse.data["versionCode"],
+                            "showRational": true
+                          });
+                    ;
                   },
                   color: Colors.transparent,
                   textColor: globalVars.accentGreen,
                 ),
               ],
             ));
-  } 
+  }
 }
 
 void showUpdateAvailableDialog(response, context) {
   List<String> changeLogList = response.data["changeLog"].toString().split("|");
   showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) => AlertDialog(
             backgroundColor: globalVars.primaryDark,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(globalVars.borderRadius)),
-            title: Text("Update Available"),
+            title: ListTile(
+              title: RichText(
+                text: TextSpan(
+                    text: "Update Available ",
+                    style: TextStyle(fontSize: 20.0),
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: "v" +
+                              response.data["versionName"] +
+                              "+" +
+                              response.data["versionCode"],
+                          style: TextStyle(fontSize: 14.0, color: Colors.grey))
+                    ]),
+              ),
+            ),
             content: Container(
               height: MediaQuery.of(context).size.height * 0.3,
               width: MediaQuery.of(context).size.width * 0.8,
@@ -771,7 +790,8 @@ void showUpdateAvailableDialog(response, context) {
                     "apkURL": response.data["apkURL"],
                     "updateName": response.data["versionName"] +
                         "+" +
-                        response.data["versionCode"], "showRational": false
+                        response.data["versionCode"],
+                    "showRational": false
                   });
                 },
                 color: globalVars.primaryDark,

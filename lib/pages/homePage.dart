@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
     String versionName = packageInfo.version;
     String versionCode = packageInfo.buildNumber;
     try {
-      Response response = await Dio().get(" http://yagupdtserver.000webhostapp.com/api/");
+      Response response = await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
       if (response.data["versionName"] != versionName ||
           response.data["versionCode"] != versionCode) {
         globalVars.updateResponse = response;
@@ -669,7 +669,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   void removeItemFromQueue(parameters) async {
     // checking if the item to be removed is the current playing item
-    if (parameters["currentArtURI"] == _queue[_queueIndex].artUri) {
+    if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
       _queueMeta.remove(_queue[parameters["index"]].artUri);
       _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);

@@ -127,16 +127,16 @@ class _SearchPageState extends State<SearchPage> {
         appBar: searchPageW.appBarSearchPageW(
             queryFieldController, getImmediateSuggestions, context),
         body: (suggestionResponseList.length != 0)
-            ? searchResultListView( false)
+            ? searchResultListView(false)
             : (globalVars.searchHistory.length != 0)
-                ? searchResultListView( true)
+                ? searchResultListView(true)
                 : Container(),
       ),
     );
   }
 
   // holds the list view builder responsible for showing the suggestions
-  Widget searchResultListView( bool showHistory) {
+  Widget searchResultListView(bool showHistory) {
     return ListView.builder(
       itemBuilder: (context, index) =>
           suggestionsListBuilder(context, index, showHistory),
@@ -152,17 +152,21 @@ class _SearchPageState extends State<SearchPage> {
   Widget suggestionsListBuilder(
       BuildContext context, int index, bool showHistory) {
     return ListTile(
-      title: SizedBox(
+      title: Container(
         width: MediaQuery.of(context).size.width * 0.7,
         child: Text(
           (showHistory)
               ? globalVars.searchHistory[index]
               : suggestionResponseList[index][0],
           style: TextStyle(color: Colors.grey),
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
       ),
-      leading: Icon(Icons.search, color: Colors.grey,),
+      leading: Icon(
+        Icons.search,
+        color: Colors.grey,
+      ),
       trailing: SizedBox(
         width: MediaQuery.of(context).size.width * 0.3,
         child: Row(
