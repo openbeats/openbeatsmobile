@@ -19,29 +19,29 @@ Color subtitleTextColor = Colors.white;
 
 // holds the gradient information for the TopCharts page
 List<Color> gradientListPrimary = [
-  Color(0xFFff758c),
-  Color(0xFF00cdac),
-  Color(0xFFc79081),
-  Color(0xFFfa709a),
-  Color(0xFF209cff),
-  Color(0xFF50cc7f),
-  Color(0xFF1e3c72),
-  Color(0xFF243949),
-  Color(0xFF243949),
+  Color(0xFF434343), // English
+  Color(0xFF00cdac), // Bangla
+  Color(0xFF667eea), // Kannada
+  Color(0xFFfa709a), // Punjabi
+  Color(0xFF209cff), // Tamil
+  Color(0xFF50cc7f), // Telugu
+  Color(0xFF1e3c72), // Malayalam
+  Color(0xFF243949), // Marathi
+  Color(0xFF13547a), // Hindi
   Color(0xFF1e3c72),
   Color(0xFF243949),
   Color(0xFF243949),
 ];
 List<Color> gradientListSec = [
-  Color(0xFFff7eb3),
-  Color(0xFF8ddad5),
-  Color(0xFFdfa579),
-  Color(0xFFfee140),
-  Color(0xFF68e0cf),
-  Color(0xFFf5d100),
-  Color(0xFF2a5298),
-  Color(0xFF517fa4),
-  Color(0xFF517fa4),
+  Color(0xFF000000), // English
+  Color(0xFF8ddad5), // Bangla
+  Color(0xFF764ba2), // Kannada
+  Color(0xFFfee140), // Punjabi
+  Color(0xFF68e0cf), // Tamil
+  Color(0xFFf5d100), // Telugu
+  Color(0xFF2a5298), // Malayalam
+  Color(0xFF517fa4), // Marathi
+  Color(0xFF80d0c7), // Hindi
   Color(0xFF2a5298),
   Color(0xFF517fa4),
   Color(0xFF517fa4),
