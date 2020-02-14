@@ -619,7 +619,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   void removeItemFromQueue(parameters) async{
     // checking if the item to be removed is the current playing item
-    if (parameters["currentArtURI"] == _queue[_queueIndex].artUri) {
+    if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
       _queueMeta.remove(_queue[parameters["index"]].artUri);
       _queue.removeAt(parameters["index"]);
       AudioServiceBackground.setQueue(_queue);

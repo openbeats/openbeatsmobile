@@ -102,7 +102,7 @@ class _MsgDevsPageState extends State<MsgDevsPage> {
           maxLines: 10,
           decoration: InputDecoration(
             labelText: "Message Description",
-            helperText: "Please avoid sending us nagativity or profanity",
+            helperText: "Please avoid sending us negativity or profanity",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(globalVars.borderRadius),
             ),
