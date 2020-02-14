@@ -138,7 +138,6 @@ class _BugReportPageState extends State<BugReportPage> {
     return Container(
       child: TextFormField(
           autovalidate: _autoValidate,
-          autofocus: true,
           autocorrect: true,
           textInputAction: TextInputAction.done,
           validator: (args) {

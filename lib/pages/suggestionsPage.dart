@@ -89,7 +89,6 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
     return Container(
       child: TextFormField(
           autovalidate: _autoValidate,
-          autofocus: true,
           autocorrect: true,
           textInputAction: TextInputAction.done,
           validator: (args) {
