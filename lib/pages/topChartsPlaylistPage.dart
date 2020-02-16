@@ -583,7 +583,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       addSongListToQueue(parameters);
     } else if (action == "jumpToQueueItem") {
       jumpToQueueItem(parameters);
-    } 
+    }
   }
 
   void startMusicPlaybackAndCreateQueue(parameters) async {
@@ -617,25 +617,38 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "Song already Exists in queue", Colors.red, Colors.white);
   }
 
-  void removeItemFromQueue(parameters) async{
-    // checking if the item to be removed is the current playing item
-    if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
-      _queueMeta.remove(_queue[parameters["index"]].artUri);
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      await onSkipToNext();
+  void removeItemFromQueue(parameters) async {
+    // checking if queue length is just one
+    if (_queue.length == 1) {
+      onStop();
     } else {
-      _queueMeta.remove(_queue[parameters["index"]].artUri);
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          _queueIndex = i;
+      // checking if the item to be removed is the current playing item
+      if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
+        // correcting the queue index of the current playing song
+        for (int i = 0; i < _queue.length; i++) {
+          if (parameters["currentArtURI"] == _queue[i].artUri) {
+            _queueIndex = i;
+          }
+        }
+        await onSkipToNext();
+        _queueMeta.remove(_queue[parameters["index"]].artUri);
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+      } else {
+        _queueMeta.remove(_queue[parameters["index"]].artUri);
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+        var state = AudioServiceBackground.state.basicState;
+        var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+        AudioServiceBackground.setState(
+            controls: getControls(state),
+            basicState: state,
+            position: position);
+        // correcting the queue index of the current playing song
+        for (int i = 0; i < _queue.length; i++) {
+          if (parameters["currentArtURI"] == _queue[i].artUri) {
+            _queueIndex = i;
+          }
         }
       }
     }
