@@ -99,7 +99,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       });
       print(err);
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
     setState(() {
       _isLoading = false;
@@ -281,7 +281,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
               } else {
                 // showing Toast
                 globalFun.showToastMessage(
-                    "Adding Songs to queue...", Colors.orange, Colors.white);
+                    "Adding Songs to queue...", Colors.orange, Colors.white, false);
                 print("Reached");
                 if ((AudioService.playbackState != null) &&
                     (AudioService.playbackState.basicState ==
@@ -614,7 +614,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], false);
     else
       globalFun.showToastMessage(
-          "Song already Exists in queue", Colors.red, Colors.white);
+          "Song already Exists in queue", Colors.red, Colors.white, false);
   }
 
   void removeItemFromQueue(parameters) async {
@@ -730,7 +730,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white, false);
         return;
       }
     }
@@ -784,7 +784,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // catching dio error
         if (e is DioError) {
           globalFun.showToastMessage(
-              "Cannot connect to the server", Colors.red, Colors.white);
+              "Cannot connect to the server", Colors.red, Colors.white, false);
           onStop();
           return;
         }

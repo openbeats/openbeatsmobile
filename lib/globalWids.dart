@@ -268,7 +268,7 @@ Widget homePageVidResultExtraOptions(
             }
           } else {
             globalFun.showToastMessage(
-                "Please login to use feature", Colors.black, Colors.white);
+                "Please login to use feature", Colors.black, Colors.white, false);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -504,7 +504,7 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
             }
           } else {
             globalFun.showToastMessage(
-                "Please login to use feature", Colors.black, Colors.white);
+                "Please login to use feature", Colors.black, Colors.white, false);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -952,7 +952,9 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
     onPressed: () {
       settingModalBottomSheet(context);
     },
-    label: (isPlaying) ? Text("Playing") : Container(child: Text("Loading")),
+    label: (isPlaying)
+        ? (!isPaused) ? Text("Playing") : Text("Paused")
+        : Container(child: Text("Loading")),
     elevation: 10.0,
     icon: Container(
       margin: EdgeInsets.only(right: 7.0, left: 7.0),

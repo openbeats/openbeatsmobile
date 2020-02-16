@@ -44,7 +44,7 @@ class _TopChartsPageState extends State<TopChartsPage> {
       });
       print(err);
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
     setState(() {
       _isLoading = false;

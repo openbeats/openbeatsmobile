@@ -142,7 +142,7 @@ class _HomePageState extends State<HomePage> {
         globalFun.showToastMessage(
             "Could not get proper response from server. Please try another query",
             Colors.orange,
-            Colors.white);
+            Colors.white, false);
       }
     } catch (e) {
       // catching dio error
@@ -772,12 +772,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // checking if media is present in the queueMeta list
     if (!_queueMeta.contains(parameter["thumbnail"])) {
       globalFun.showToastMessage(
-          "Adding song to queue...", Colors.orange, Colors.white);
+          "Adding song to queue...", Colors.orange, Colors.white, false);
       // adding song thumbnail to the queueMeta list
       _queueMeta.add(parameter['thumbnail']);
       print("Added " + parameter['thumbnail']);
       // holds the responseJSON for checking link validity
       var responseJSON;
+      // pausing current playing media to provide instant feedback
+      if(shouldBeNowPlaying) onPause();
       // getting the mp3URL
       try {
         // checking for link validity
@@ -789,7 +791,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // catching dio error
         if (e is DioError) {
           globalFun.showToastMessage(
-              "Cannot connect to the server", Colors.red, Colors.white);
+              "Cannot connect to the server", Colors.red, Colors.white, false);
           onStop();
           return;
         }
@@ -812,6 +814,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
         AudioServiceBackground.setQueue(_queue);
         if (shouldBeNowPlaying) {
+          // starting playback again 
+          onPlay();
           int indexOfItem;
           // finding the index of the element to play
           for (int i = 0; i < _queue.length; i++) {
@@ -865,7 +869,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white, false);
         onStop();
         return;
       }
@@ -920,7 +924,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white, false);
         return;
       }
     }

@@ -143,7 +143,7 @@ Widget bugReportBtn(context) {
         Navigator.pushNamed(context, '/bugReportingPage');
       } else {
         globalFun.showToastMessage(
-            "Please login to use feature", Colors.black, Colors.white);
+            "Please login to use feature", Colors.black, Colors.white, false);
         Navigator.pushNamed(context, '/authPage');
       }
     },
@@ -175,7 +175,7 @@ Widget suggestFeaturesBtn(context) {
         Navigator.pushNamed(context, '/suggestionsPage');
       } else {
         globalFun.showToastMessage(
-            "Please login to use feature", Colors.black, Colors.white);
+            "Please login to use feature", Colors.black, Colors.white, false);
         Navigator.pushNamed(context, '/authPage');
       }
     },
@@ -207,7 +207,7 @@ Widget msgDevsBtn(context) {
         Navigator.pushNamed(context, '/msgDevsPage');
       } else {
         globalFun.showToastMessage(
-            "Please login to use feature", Colors.black, Colors.white);
+            "Please login to use feature", Colors.black, Colors.white, false);
         Navigator.pushNamed(context, '/authPage');
       }
     },

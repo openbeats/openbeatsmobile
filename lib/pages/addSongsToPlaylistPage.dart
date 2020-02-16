@@ -110,10 +110,10 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
         getListofPlayLists();
 
         globalFun.showToastMessage(
-            "Created playlist " + newPlaylistName, Colors.green, Colors.white);
+            "Created playlist " + newPlaylistName, Colors.green, Colors.white, false);
       } else {
         globalFun.showToastMessage(
-            "Apologies, response error", Colors.red, Colors.white);
+            "Apologies, response error", Colors.red, Colors.white, false);
       }
     } catch (err) {
       print(err);
@@ -121,7 +121,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
         _noInternet = true;
       });
       globalFun.showToastMessage(
-          "No able to connect to server", Colors.red, Colors.white);
+          "No able to connect to server", Colors.red, Colors.white, false);
     }
   }
 
@@ -152,7 +152,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
       if (responseJSON["status"] == true) {
         Navigator.pop(context);
         globalFun.showToastMessage(
-            "Added to " + playListName, Colors.green, Colors.white);
+            "Added to " + playListName, Colors.green, Colors.white, false);
       } else if (responseJSON["status"] == false &&
           responseJSON["data"] == "Song already added") {
         globalFun.showSnackBars(9, _addSongsToPlaylistPageScaffoldKey, context);
@@ -163,7 +163,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
       });
       print(err);
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
   }
 
@@ -189,7 +189,7 @@ class _AddSongsToPlaylistPageState extends State<AddSongsToPlaylistPage> {
       });
       print(err);
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
     setState(() {
       _isLoading = false;

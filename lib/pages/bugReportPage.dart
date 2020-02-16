@@ -25,7 +25,7 @@ class _BugReportPageState extends State<BugReportPage> {
           "mailto:openbeatsyag@gmail.com?subject=Bug Report: $bugTitle&body=<b>Device information:</b><br>${deviceInfo["deviceBrand"]} ${deviceInfo["deviceModel"]}<br>Api Level: ${deviceInfo["systemApi"]}<br>RAM: ${deviceInfo["systemRam"]}<br><br><b>Bug Description:</b><br>$bugDesc";
       if (await canLaunch(url)) {
         globalFun.showToastMessage("Please press Send", globalVars.accentGreen,
-            globalVars.accentWhite);
+            globalVars.accentWhite, false);
         await launch(url);
       } else {
         throw 'Could not launch $url';
