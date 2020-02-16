@@ -57,7 +57,7 @@ class _AuthPageState extends State<AuthPage>
         setLoginParmeters(body["data"]);
         Navigator.pop(context);
         globalFun.showToastMessage(
-            "Welcome to OpenBeats", Colors.green, Colors.white);
+            "Welcome to OpenBeats", Colors.green, Colors.white, false);
       } else {
         globalFun.showSnackBars(3, _authPageScaffoldKey, context);
         setState(() {

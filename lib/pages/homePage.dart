@@ -77,7 +77,8 @@ class _HomePageState extends State<HomePage> {
     String versionName = packageInfo.version;
     String versionCode = packageInfo.buildNumber;
     try {
-      Response response = await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
+      Response response =
+          await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
       if (response.data["versionName"] != versionName ||
           response.data["versionCode"] != versionCode) {
         globalVars.updateResponse = response;
@@ -141,7 +142,7 @@ class _HomePageState extends State<HomePage> {
         globalFun.showToastMessage(
             "Could not get proper response from server. Please try another query",
             Colors.orange,
-            Colors.white);
+            Colors.white, false);
       }
     } catch (e) {
       // catching dio error
@@ -304,7 +305,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    if(globalVars.chechForUpdate){
+    if (globalVars.chechForUpdate) {
       // starts app version checking functionality
       verifyAppVersion();
       // setting to false to prevent retriggering until the app is restarted
@@ -668,24 +669,37 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void removeItemFromQueue(parameters) async {
-    // checking if the item to be removed is the current playing item
-    if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
-      _queueMeta.remove(_queue[parameters["index"]].artUri);
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      await onSkipToNext();
+    // checking if queue length is just one
+    if (_queue.length == 1) {
+      onStop();
     } else {
-      _queueMeta.remove(_queue[parameters["index"]].artUri);
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          _queueIndex = i;
+      // checking if the item to be removed is the current playing item
+      if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
+        // correcting the queue index of the current playing song
+        for (int i = 0; i < _queue.length; i++) {
+          if (parameters["currentArtURI"] == _queue[i].artUri) {
+            _queueIndex = i;
+          }
+        }
+        await onSkipToNext();
+        _queueMeta.remove(_queue[parameters["index"]].artUri);
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+      } else {
+        _queueMeta.remove(_queue[parameters["index"]].artUri);
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+        var state = AudioServiceBackground.state.basicState;
+        var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+        AudioServiceBackground.setState(
+            controls: getControls(state),
+            basicState: state,
+            position: position);
+        // correcting the queue index of the current playing song
+        for (int i = 0; i < _queue.length; i++) {
+          if (parameters["currentArtURI"] == _queue[i].artUri) {
+            _queueIndex = i;
+          }
         }
       }
     }
@@ -758,12 +772,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // checking if media is present in the queueMeta list
     if (!_queueMeta.contains(parameter["thumbnail"])) {
       globalFun.showToastMessage(
-          "Adding song to queue...", Colors.orange, Colors.white);
+          "Adding song to queue...", Colors.orange, Colors.white, false);
       // adding song thumbnail to the queueMeta list
       _queueMeta.add(parameter['thumbnail']);
       print("Added " + parameter['thumbnail']);
       // holds the responseJSON for checking link validity
       var responseJSON;
+      // pausing current playing media to provide instant feedback
+      if(shouldBeNowPlaying) onPause();
       // getting the mp3URL
       try {
         // checking for link validity
@@ -775,7 +791,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // catching dio error
         if (e is DioError) {
           globalFun.showToastMessage(
-              "Cannot connect to the server", Colors.red, Colors.white);
+              "Cannot connect to the server", Colors.red, Colors.white, false);
           onStop();
           return;
         }
@@ -798,6 +814,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
         AudioServiceBackground.setQueue(_queue);
         if (shouldBeNowPlaying) {
+          // starting playback again 
+          onPlay();
           int indexOfItem;
           // finding the index of the element to play
           for (int i = 0; i < _queue.length; i++) {
@@ -851,7 +869,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white, false);
         onStop();
         return;
       }
@@ -906,7 +924,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white, false);
         return;
       }
     }

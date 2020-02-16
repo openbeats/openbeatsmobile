@@ -256,8 +256,8 @@ Widget drawerYourPlaylistsPageListTile(int currPage, context) {
                 Navigator.of(context).pushReplacement(
                     globalWids.FadeRouteBuilder(page: YourPlaylistsPage()));
               } else {
-                showToastMessage(
-                    "Please login to use feature", Colors.black, Colors.white);
+                showToastMessage("Please login to use feature", Colors.black,
+                    Colors.white, false);
                 Navigator.pushNamed(context, '/authPage');
               }
             },
@@ -413,7 +413,7 @@ Widget drawerLogoutPageListTile(context) {
                             Navigator.of(context).pushReplacement(
                                 globalWids.FadeRouteBuilder(page: HomePage()));
                             showToastMessage("Logged out Successfully",
-                                Colors.black, Colors.white);
+                                Colors.black, Colors.white, false);
                           },
                           color: Colors.transparent,
                           textColor: globalVars.accentRed,
@@ -428,10 +428,11 @@ Widget drawerLogoutPageListTile(context) {
 }
 
 // function to show ToastMessage
-void showToastMessage(String message, Color bgColor, Color txtColor) {
+void showToastMessage(
+    String message, Color bgColor, Color txtColor, bool toastLengthLong) {
   Fluttertoast.showToast(
       msg: message,
-      toastLength: Toast.LENGTH_SHORT,
+      toastLength: (toastLengthLong) ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       backgroundColor: bgColor,
       textColor: txtColor,
@@ -562,31 +563,37 @@ void showUnderDevToast() {
   showToastMessage(
       "Feature under development\nBut hey, we appreciate your interest! 😃",
       Colors.blue,
-      Colors.white);
+      Colors.white,
+      false);
 }
 
 // shows the toast related to queue management
 void showQueueBasedToasts(int toastId) {
   switch (toastId) {
     case 0:
-      showToastMessage("Adding song to queue...", Colors.orange, Colors.white);
+      showToastMessage(
+          "Adding song to queue...", Colors.orange, Colors.white, true);
       break;
     case 1:
-      showToastMessage("Song added to queue", Colors.green, Colors.white);
+      showToastMessage(
+          "Song added to queue", Colors.green, Colors.white, false);
       break;
+    case 2:
+      showToastMessage(
+          "Sorry, please select another song", Colors.red, Colors.white, false);
   }
 }
 
 // shows the no internet toasts
 void showNoInternetToast() {
   showToastMessage(
-      "Not able to connect to the internet", Colors.red, Colors.white);
+      "Not able to connect to the internet", Colors.red, Colors.white, false);
 }
 
 // show toast to tell users to start playback to avail queue
 void showAvailQueueToast() {
   showToastMessage(
-      "Please start a song to avail queue", Colors.orange, Colors.white);
+      "Please start a song to avail queue", Colors.orange, Colors.white, false);
 }
 
 // gets the search history from sharedPreferences

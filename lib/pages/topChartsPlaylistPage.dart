@@ -99,7 +99,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
       });
       print(err);
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
     setState(() {
       _isLoading = false;
@@ -281,7 +281,7 @@ class _TopChartPlaylistPageState extends State<TopChartPlaylistPage> {
               } else {
                 // showing Toast
                 globalFun.showToastMessage(
-                    "Adding Songs to queue...", Colors.orange, Colors.white);
+                    "Adding Songs to queue...", Colors.orange, Colors.white, false);
                 print("Reached");
                 if ((AudioService.playbackState != null) &&
                     (AudioService.playbackState.basicState ==
@@ -583,7 +583,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       addSongListToQueue(parameters);
     } else if (action == "jumpToQueueItem") {
       jumpToQueueItem(parameters);
-    } 
+    }
   }
 
   void startMusicPlaybackAndCreateQueue(parameters) async {
@@ -614,28 +614,41 @@ class AudioPlayerTask extends BackgroundAudioTask {
       getMp3URLToQueue(parameters["song"], false);
     else
       globalFun.showToastMessage(
-          "Song already Exists in queue", Colors.red, Colors.white);
+          "Song already Exists in queue", Colors.red, Colors.white, false);
   }
 
-  void removeItemFromQueue(parameters) async{
-    // checking if the item to be removed is the current playing item
-    if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
-      _queueMeta.remove(_queue[parameters["index"]].artUri);
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      await onSkipToNext();
+  void removeItemFromQueue(parameters) async {
+    // checking if queue length is just one
+    if (_queue.length == 1) {
+      onStop();
     } else {
-      _queueMeta.remove(_queue[parameters["index"]].artUri);
-      _queue.removeAt(parameters["index"]);
-      AudioServiceBackground.setQueue(_queue);
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      // correcting the queue index of the current playing song
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameters["currentArtURI"] == _queue[i].artUri) {
-          _queueIndex = i;
+      // checking if the item to be removed is the current playing item
+      if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
+        // correcting the queue index of the current playing song
+        for (int i = 0; i < _queue.length; i++) {
+          if (parameters["currentArtURI"] == _queue[i].artUri) {
+            _queueIndex = i;
+          }
+        }
+        await onSkipToNext();
+        _queueMeta.remove(_queue[parameters["index"]].artUri);
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+      } else {
+        _queueMeta.remove(_queue[parameters["index"]].artUri);
+        _queue.removeAt(parameters["index"]);
+        AudioServiceBackground.setQueue(_queue);
+        var state = AudioServiceBackground.state.basicState;
+        var position = _audioPlayer.playbackEvent.position.inMilliseconds;
+        AudioServiceBackground.setState(
+            controls: getControls(state),
+            basicState: state,
+            position: position);
+        // correcting the queue index of the current playing song
+        for (int i = 0; i < _queue.length; i++) {
+          if (parameters["currentArtURI"] == _queue[i].artUri) {
+            _queueIndex = i;
+          }
         }
       }
     }
@@ -717,7 +730,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // catching dio error
       if (e is DioError) {
         globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white);
+            "Cannot connect to the server", Colors.red, Colors.white, false);
         return;
       }
     }
@@ -771,7 +784,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // catching dio error
         if (e is DioError) {
           globalFun.showToastMessage(
-              "Cannot connect to the server", Colors.red, Colors.white);
+              "Cannot connect to the server", Colors.red, Colors.white, false);
           onStop();
           return;
         }

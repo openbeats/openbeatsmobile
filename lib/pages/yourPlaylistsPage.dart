@@ -133,17 +133,17 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
       if (responseJSON["status"] == true) {
         getListofPlayLists();
         globalFun.showToastMessage(
-            "Successfully deleted playlist", Colors.green, Colors.white);
+            "Successfully deleted playlist", Colors.green, Colors.white, false);
       } else {
         globalFun.showToastMessage(
-            "Apologies, response error", Colors.red, Colors.white);
+            "Apologies, response error", Colors.red, Colors.white, false);
       }
     } catch (err) {
       print(err);
       globalFun.showToastMessage(
           "Apologies, some error occurred\nPlease make sure internet connectivity is available",
           Colors.red,
-          Colors.white);
+          Colors.white, false);
     }
     setState(() {
       _isLoading = false;
@@ -181,10 +181,10 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
       if (responseJSON["status"] == true) {
         getListofPlayLists();
         globalFun.showToastMessage(
-            "Playlist Renamed", Colors.green, Colors.white);
+            "Playlist Renamed", Colors.green, Colors.white, false);
       } else {
         globalFun.showToastMessage(
-            "Apologies, response error", Colors.red, Colors.white);
+            "Apologies, response error", Colors.red, Colors.white, false);
       }
     } catch (err) {
       print(err);
@@ -192,7 +192,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
         _noInternet = true;
       });
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
   }
 
@@ -213,10 +213,10 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
       if (responseJSON["status"] == true) {
         getListofPlayLists();
         globalFun.showToastMessage(
-            "Created playlist " + newPlaylistName, Colors.green, Colors.white);
+            "Created playlist " + newPlaylistName, Colors.green, Colors.white, false);
       } else {
         globalFun.showToastMessage(
-            "Apologies, response error", Colors.red, Colors.white);
+            "Apologies, response error", Colors.red, Colors.white, false);
       }
     } catch (err) {
       print(err);
@@ -224,7 +224,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
         _noInternet = true;
       });
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
   }
 
@@ -250,7 +250,7 @@ class _YourPlaylistsPageState extends State<YourPlaylistsPage> {
       });
       print(err);
       globalFun.showToastMessage(
-          "Not able to connect to server", Colors.red, Colors.white);
+          "Not able to connect to server", Colors.red, Colors.white, false);
     }
     setState(() {
       _isLoading = false;
