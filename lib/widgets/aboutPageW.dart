@@ -133,7 +133,9 @@ Widget youCanHelpUsText() {
 }
 
 Widget bugReportBtn(context) {
-  return OutlineButton(
+  return SizedBox(
+    width: MediaQuery.of(context).size.width*0.24,
+    child: OutlineButton(
     padding: EdgeInsets.all(15.0),
     borderSide: BorderSide(color: globalVars.accentWhite, width: 2.0),
     shape: RoundedRectangleBorder(
@@ -161,11 +163,14 @@ Widget bugReportBtn(context) {
         )
       ],
     ),
+  ),
   );
 }
 
 Widget suggestFeaturesBtn(context) {
-  return OutlineButton(
+  return SizedBox(
+    width: MediaQuery.of(context).size.width*0.24,
+    child:  OutlineButton(
     padding: EdgeInsets.all(15.0),
     borderSide: BorderSide(color: globalVars.accentWhite, width: 2.0),
     shape: RoundedRectangleBorder(
@@ -193,11 +198,14 @@ Widget suggestFeaturesBtn(context) {
         )
       ],
     ),
+  ),
   );
 }
 
 Widget msgDevsBtn(context) {
-  return OutlineButton(
+  return SizedBox(
+    width: MediaQuery.of(context).size.width*0.24,
+    child: OutlineButton(
     padding: EdgeInsets.all(15.0),
     borderSide: BorderSide(color: globalVars.accentWhite, width: 2.0),
     shape: RoundedRectangleBorder(
@@ -225,5 +233,6 @@ Widget msgDevsBtn(context) {
         )
       ],
     ),
+  ),
   );
 }
