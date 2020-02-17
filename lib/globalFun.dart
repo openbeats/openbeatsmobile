@@ -32,11 +32,14 @@ import './globalWids.dart' as globalWids;
 // 7 - likedSongsPage
 // 8 - yourDownloadsPage
 // 9 - settingsPage
+// 10 - aboutPage
+// 11 - appReleasePage
 Widget drawerW(int currPage, context) {
   return Drawer(
     child: Container(
       color: globalVars.primaryDark,
       child: ListView(
+        physics: BouncingScrollPhysics(),
         padding: EdgeInsets.zero,
         children: <Widget>[
           drawerHeader(context),
@@ -49,6 +52,7 @@ Widget drawerW(int currPage, context) {
           drawerLikedSongsPageListTile(currPage, context),
           drawerDownloadsPageListTile(currPage, context),
           drawerAboutPageListTile(currPage, context),
+          // drawerAppReleaseListTile(currPage, context),
           // drawerappsettingsPageListTile(currPage, context),
           drawerLogoutPageListTile(context),
         ],
@@ -355,6 +359,29 @@ Widget drawerAboutPageListTile(int currPage, context) {
             leading: Icon(FontAwesomeIcons.infoCircle,
                 color: globalVars.leadingIconColor),
             title: Text('About',
+                style: TextStyle(
+                    color: globalVars.titleTextColor,
+                    fontWeight: FontWeight.bold)),
+            // subtitle: Text("Application related settings",
+            //     style: TextStyle(color: globalVars.subtitleTextColor)),
+            onTap: () {
+              // navigating to homePage
+              Navigator.of(context).pushReplacement(
+                  globalWids.FadeRouteBuilder(page: AboutPage()));
+            },
+          )
+        : null,
+  );
+}
+
+// holds the apprelease listTile for the drawer
+Widget drawerAppReleaseListTile(int currPage, context) {
+  return Container(
+    child: (currPage != 10 && globalVars.loginInfo["userEmail"] == "rij7u7d@gmail.com")
+        ? ListTile(
+            leading: Icon(FontAwesomeIcons.fire,
+                color: globalVars.leadingIconColor),
+            title: Text('App Release',
                 style: TextStyle(
                     color: globalVars.titleTextColor,
                     fontWeight: FontWeight.bold)),

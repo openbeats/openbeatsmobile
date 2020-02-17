@@ -957,7 +957,7 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
         : Container(child: Text("Loading")),
     elevation: 10.0,
     icon: Container(
-      margin: EdgeInsets.only(right: 7.0, left: 7.0),
+      margin: EdgeInsets.only(right: 7.0, left: 7.0), 
       child: (isPlaying)
           ? (!isPaused) ? Icon(Icons.pause) : Icon(Icons.play_arrow)
           : SizedBox(
@@ -1042,7 +1042,9 @@ Widget positionIndicator(int audioDuration, PlaybackState state,
                 children: [
                   if (duration != null)
                     Slider(
-                      min: 0.0,
+                      label: globalFun.getCurrentTimeStamp(position/1000),
+                      divisions: 100,
+                      min: 0.0, 
                       max: duration,
                       value: seekPos ?? max(0.0, min(position, duration)),
                       onChanged: (value) {
