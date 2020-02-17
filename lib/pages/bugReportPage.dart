@@ -21,8 +21,8 @@ class _BugReportPageState extends State<BugReportPage> {
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       // creating URL to send mail
-      String url =
-          "mailto:openbeatsyag@gmail.com?subject=Bug Report: $bugTitle&body=<b>Device information:</b><br>${deviceInfo["deviceBrand"]} ${deviceInfo["deviceModel"]}<br>Api Level: ${deviceInfo["systemApi"]}<br>RAM: ${deviceInfo["systemRam"]}<br><br><b>Bug Description:</b><br>$bugDesc";
+       String url =
+          "mailto:openbeatsyag@gmail.com?subject=Bug Report: $bugTitle&body=<b>Device Information:</b><br>${deviceInfo["deviceBrand"]} ${deviceInfo["deviceModel"]}<br>Api Level: ${deviceInfo["systemApi"]}<br>RAM: ${deviceInfo["systemRam"]}<br><br><b>App Information:</b><br>App version: ${globalVars.appVersion}<br><br><b>Bug Description:</b><br>$bugDesc";
       if (await canLaunch(url)) {
         globalFun.showToastMessage("Please press Send", globalVars.accentGreen,
             globalVars.accentWhite, false);
