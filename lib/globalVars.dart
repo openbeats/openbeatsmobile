@@ -61,6 +61,8 @@ Map<String, dynamic> loginInfo = {
 // holds the current searched text
 String currSearchText = "";
 List<String> searchHistory = new List();
+// holds the app version as string
+String appVersion = "0.0.0+0";
 
 // holds the method channel variable
 const platformMethodChannel = const MethodChannel('com.yag.openbeatsmobile');
@@ -80,3 +82,4 @@ bool chechForUpdate = true;
 
 // holds a copy of the update parameters
 Response updateResponse;
+

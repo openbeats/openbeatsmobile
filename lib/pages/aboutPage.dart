@@ -16,12 +16,11 @@ class AboutPage extends StatefulWidget {
 class _AboutPageState extends State<AboutPage> {
   final GlobalKey<ScaffoldState> _aboutPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
-  String versionString = "0.0.0+0";
 
   void getVersionInfo()  async{
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
-      versionString = packageInfo.version+"+"+packageInfo.buildNumber;
+      globalVars.appVersion = packageInfo.version+"+"+packageInfo.buildNumber;
     });
   }
 
@@ -60,7 +59,7 @@ class _AboutPageState extends State<AboutPage> {
           SizedBox(
             height: 20.0,
           ),
-          aboutPageW.aboutAppCard(context, versionString),
+          aboutPageW.aboutAppCard(context),
           aboutPageW.helpCard(context)
         ],
       ),

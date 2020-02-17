@@ -21,7 +21,7 @@ class _SuggestionsPageState extends State<SuggestionsPage> {
       _formKey.currentState.save();
       // creating URL to send mail
       String url =
-          "mailto:openbeatsyag@gmail.com?subject=Suggestion: $sugTitle&body=$sugDesc";
+          "mailto:openbeatsyag@gmail.com?subject=Suggestion: $sugTitle&body=<b>App Information:</b><br>App version: ${globalVars.appVersion}<br><br><b>Your Suggestion:</b><br>$sugDesc";
       if (await canLaunch(url)) {
         await launch(url);
       } else {

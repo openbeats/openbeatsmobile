@@ -21,7 +21,7 @@ class _MsgDevsPageState extends State<MsgDevsPage> {
       _formKey.currentState.save();
       // creating URL to send mail
       String url =
-          "mailto:openbeatsyag@gmail.com?subject=Message from ${globalVars.loginInfo["userEmail"]}&body=$msgDevMessage";
+          "mailto:openbeatsyag@gmail.com?subject=Message from ${globalVars.loginInfo["userEmail"]}&body=<b>App Information:</b><br>App version: ${globalVars.appVersion}<br><br><b>Your Message:</b><br>$msgDevMessage";
       if (await canLaunch(url)) {
         await launch(url);
       } else {
