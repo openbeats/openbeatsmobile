@@ -831,6 +831,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // adding song thumbnail to the queueMeta list
       _queueMeta.add(parameter['thumbnail']);
       var responseJSON;
+      // pausing current playing media to provide instant feedback
+      if(shouldBeNowPlaying) onPause();
       // getting the mp3URL
       try {
         // checking for link validity
@@ -861,8 +863,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
         (shouldBeNowPlaying)
             ? _queue.insert(_queueIndex, temp)
             : _queue.add(temp);
+        
         AudioServiceBackground.setQueue(_queue);
         if (shouldBeNowPlaying) {
+          // starting playback again 
+          onPlay();
           int indexOfItem;
           // finding the index of the element to play
           for (int i = 0; i < _queue.length; i++) {
