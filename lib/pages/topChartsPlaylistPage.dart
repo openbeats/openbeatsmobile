@@ -764,70 +764,84 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
   }
 
-  // gets the mp3URL using videoID and add to the queue
-  void getMp3URLToQueue(parameter, bool shouldBeNowPlaying) async {
-    // checking if media is present in the queueMeta list
-    if (!_queueMeta.contains(parameter["thumbnail"])) {
-      // holds the responseJSON for checking link validity
-      // adding song thumbnail to the queueMeta list
-      _queueMeta.add(parameter['thumbnail']);
-      // holds the responseJSON for checking link validity
-      var responseJSON;
-      // getting the mp3URL
-      try {
-        // checking for link validity
-        String url =
-            "https://api.openbeats.live/opencc/" + parameter["videoId"];
-        // sending GET request
-        responseJSON = await Dio().get(url);
-      } catch (e) {
-        // catching dio error
-        if (e is DioError) {
-          globalFun.showToastMessage(
-              "Cannot connect to the server", Colors.red, Colors.white, false);
-          onStop();
-          return;
-        }
-      }
-      if (responseJSON.data["status"] == true &&
-          responseJSON.data["link"] != null) {
-        // setting the current mediaItem
-        MediaItem temp = MediaItem(
-          id: responseJSON.data["link"],
-          album: "OpenBeats Music",
-          title: parameter['title'],
-          artist: parameter['channelName'],
-          duration: globalFun.getDurationMillis(parameter['duration']),
-          artUri: parameter['thumbnail'],
-        );
-        // adding song thumbnail to the queueMeta list
-        _queueMeta.add(parameter['thumbnail']);
-        _queue.add(temp);
-        AudioServiceBackground.setQueue(_queue);
-        var state = AudioServiceBackground.state.basicState;
-        var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-        AudioServiceBackground.setState(
-            controls: getControls(state),
-            basicState: state,
-            position: position);
-        globalFun.showQueueBasedToasts(1);
-      } else {
-        onStop();
-      }
-    } else {
-// index buffer to prevent modifying the _queueIndex value
-      int tempIndex = -1;
-      // finding index of the song clicked
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameter["thumbnail"] == _queue[i].artUri) {
-          tempIndex = i;
-        }
-      }
-      // checking if song exists in queue
-      if (tempIndex != -1) {
-        _queueIndex = tempIndex + 1;
-        onSkipToPrevious();
-      }
-    }
-  }
+  // gets the mp3URL using videoID and add to the queue	
+	  void getMp3URLToQueue(parameter, bool shouldBeNowPlaying) async {	
+	    // checking if media is present in the queueMeta list	
+	    if (!_queueMeta.contains(parameter["thumbnail"])) {	
+	      // holds the responseJSON for checking link validity	
+	      // adding song thumbnail to the queueMeta list	
+	      _queueMeta.add(parameter['thumbnail']);	
+		
+	      var responseJSON;	
+	      // pausing current playing media to provide instant feedback	
+	      if(shouldBeNowPlaying) onPause();	
+	      // getting the mp3URL	
+	      try {	
+	        // checking for link validity	
+	        String url =	
+	            "https://api.openbeats.live/opencc/" + parameter["videoId"];	
+	        // sending GET request	
+	        responseJSON = await Dio().get(url);	
+	      } catch (e) {	
+	        // catching dio error	
+	        if (e is DioError) {	
+	          globalFun.showToastMessage(	
+	              "Cannot connect to the server", Colors.red, Colors.white, false);	
+	          onStop();	
+	          return;	
+	        }	
+	      }	
+	      if (responseJSON.data["status"] == true &&	
+	          responseJSON.data["link"] != null) {	
+	        // setting the current mediaItem	
+	        MediaItem temp = MediaItem(	
+	          id: responseJSON.data["link"],	
+	          album: "OpenBeats Music",	
+	          title: parameter['title'],	
+	          artist: parameter['channelName'],	
+	          duration: globalFun.getDurationMillis(parameter['duration']),	
+	          artUri: parameter['thumbnail'],	
+	        );	
+	        (shouldBeNowPlaying)	
+	            ? _queue.insert(_queueIndex, temp)	
+	            : _queue.add(temp);	
+	        	
+	        AudioServiceBackground.setQueue(_queue);	
+	        if (shouldBeNowPlaying) {	
+	          // starting playback again 	
+	          onPlay();	
+	          int indexOfItem;	
+	          // finding the index of the element to play	
+	          for (int i = 0; i < _queue.length; i++) {	
+	            if (_queue[i].id == temp.id) indexOfItem = i;	
+	          }	
+	          _queueIndex = indexOfItem + 1;	
+	          onSkipToPrevious();	
+	        }	
+	        var state = AudioServiceBackground.state.basicState;	
+	        var position = _audioPlayer.playbackEvent.position.inMilliseconds;	
+	        AudioServiceBackground.setState(	
+	            controls: getControls(state),	
+	            basicState: state,	
+	            position: position);	
+	        globalFun.showQueueBasedToasts(1);	
+	      } else {	
+	        onStop();	
+	      }	
+	    } else {	
+	// index buffer to prevent modifying the _queueIndex value	
+	      int tempIndex = -1;	
+	      // finding index of the song clicked	
+	      for (int i = 0; i < _queue.length; i++) {	
+	        if (parameter["thumbnail"] == _queue[i].artUri) {	
+	          tempIndex = i;	
+	        }	
+	      }	
+	      // checking if song exists in queue	
+	      if (tempIndex != -1) {	
+	        _queueIndex = tempIndex + 1;	
+	        onSkipToPrevious();	
+	      }	
+	    }	
+	  }
 }

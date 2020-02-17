@@ -1043,7 +1043,7 @@ Widget positionIndicator(int audioDuration, PlaybackState state,
                   if (duration != null)
                     Slider(
                       label: globalFun.getCurrentTimeStamp(position/1000),
-                      divisions: 100,
+                      divisions: 1000,
                       min: 0.0, 
                       max: duration,
                       value: seekPos ?? max(0.0, min(position, duration)),
