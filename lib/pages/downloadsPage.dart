@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
 import '../widgets/downloadsPageW.dart' as downloadsPageW;
@@ -10,22 +12,25 @@ class DonwloadsPage extends StatefulWidget {
   _DonwloadsPageState createState() => _DonwloadsPageState();
 }
 
-class _DonwloadsPageState extends State<DonwloadsPage> with WidgetsBindingObserver{
+class _DonwloadsPageState extends State<DonwloadsPage>
+    with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _downloadsPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
 
   // holds the loading flag
   bool _isLoading = true, _hasPermission = false, _noDownloadedFiles = true;
+  // holds the list of songs in downloads
+  List listOfSongs = new List();
 
   // gets the list of file in local storage
-  void getListofFiles() async{
+  void getListofFiles() async {
     setState(() {
       _isLoading = true;
     });
     // getting list of downloaded media
-    String result = await globalVars.platformMethodChannel
+    listOfSongs = await globalVars.platformMethodChannel
         .invokeMethod("getListOfDownloadedAudio");
-    if(result == "No Downloaded Files"){
+    if (listOfSongs[0] == "No Downloaded Files") {
       setState(() {
         _isLoading = false;
         _hasPermission = true;
@@ -41,7 +46,7 @@ class _DonwloadsPageState extends State<DonwloadsPage> with WidgetsBindingObserv
   }
 
   // gets local storage permission
-  void getPermission() async{
+  void getPermission() async {
     // getting permission status result
     String result = await globalVars.platformMethodChannel
         .invokeMethod("getStoragePermission");
@@ -55,7 +60,6 @@ class _DonwloadsPageState extends State<DonwloadsPage> with WidgetsBindingObserv
     // getting permission status result
     String result = await globalVars.platformMethodChannel
         .invokeMethod("checkStoragePermission");
-    print(result);
     if (result == "Access Granted") {
       getListofFiles();
       setState(() {
@@ -115,9 +119,30 @@ class _DonwloadsPageState extends State<DonwloadsPage> with WidgetsBindingObserv
                 ? downloadsPageW.loadingAnimation()
                 : (!_hasPermission)
                     ? globalWids.noFileAccessView(getPermission)
-                    : (_noDownloadedFiles)?downloadsPageW.noDownloadedFiles(checksPermissionStatus):null,
+                    : (_noDownloadedFiles)
+                        ? downloadsPageW
+                            .noDownloadedFiles(checksPermissionStatus)
+                        : listOfMedia(),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget listOfMedia() {
+    return ListView.builder(
+      itemBuilder: listOfMediaBuilder,
+      itemCount: listOfSongs.length,
+      physics: BouncingScrollPhysics(),
+    );
+  }
+
+  Widget listOfMediaBuilder(BuildContext context, int index) {
+    return Container(
+      margin: EdgeInsets.all(5.0),
+      child: ListTile(
+        title: Text(listOfSongs[index].toString().replaceAll("@OpenBeats.mp3", "")),
+        leading: Icon(Icons.music_note),
       ),
     );
   }

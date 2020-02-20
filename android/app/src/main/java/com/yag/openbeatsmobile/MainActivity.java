@@ -111,6 +111,8 @@ public class MainActivity extends FlutterActivity {
                                 }
                             }
                         } else if (call.method.equals("getListOfDownloadedAudio")){
+                            // holds the list of files in local storage
+                            List<String> audioList = new ArrayList<String>();
                             // setting path to the download variable
                             String path = Environment.getExternalStorageDirectory().toString()+"/OpenBeatsDownloads/";
                             // creating a directory with the path
@@ -121,14 +123,14 @@ public class MainActivity extends FlutterActivity {
                                 File[] files = directory.listFiles();
                                 if(files.length > 0){
                                     // storing file list in array
-                                    List<String> audioList = Arrays.asList(directory.list());
-                                    result.success(audioList.toString());
+                                    audioList = Arrays.asList(directory.list());
                                 } else {
-                                    result.success("No Downloaded Files");
+                                    audioList.add("No Downloaded Files");
                                 }
                             } else {
-                                result.success("No Downloaded Files");
+                                audioList.add("No Downloaded Files");
                             }
+                            result.success(audioList);
                         }
                     }
                 }
