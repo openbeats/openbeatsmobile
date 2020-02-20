@@ -306,23 +306,22 @@ Widget drawerDownloadsPageListTile(int currPage, context) {
         ? ListTile(
             leading: Icon(FontAwesomeIcons.download,
                 color: globalVars.leadingIconColor),
-            title: Text('Your Downloads',
+            title: Text('Offline Songs',
                 style: TextStyle(
                     color: globalVars.titleTextColor,
                     fontWeight: FontWeight.bold)),
             // subtitle: Text("All songs on local device",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              // if (globalVars.loginInfo["loginStatus"] == true) {
-              //   // navigating to homePage
-              //   Navigator.of(context).pushReplacement(
-              //       globalWids.FadeRouteBuilder(page: DonwloadsPage()));
-              // } else {
-              //   showToastMessage(
-              //       "Please login to use feature", Colors.black, Colors.white);
-              //   Navigator.pushNamed(context, '/authPage');
-              // }
-              showUnderDevToast();
+              if (globalVars.loginInfo["loginStatus"] == true) {
+                // navigating to homePage
+                Navigator.of(context).pushReplacement(
+                    globalWids.FadeRouteBuilder(page: DonwloadsPage()));
+              } else {
+                showToastMessage(
+                    "Please login to use feature", Colors.black, Colors.white, false);
+                Navigator.pushNamed(context, '/authPage');
+              }
             },
           )
         : null,

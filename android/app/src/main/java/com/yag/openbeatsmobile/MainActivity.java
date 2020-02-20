@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,7 +22,9 @@ import androidx.core.content.FileProvider;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import io.flutter.app.FlutterActivity;
 import io.flutter.plugin.common.MethodCall;
@@ -61,11 +64,18 @@ public class MainActivity extends FlutterActivity {
                             videoTitle = call.argument("videoTitle");
                             showRational = call.argument("showRational");
                             checkPermAccessAndStartDownload(showRational);
-                        } else if (call.method.equals("getDeviceInfo")){
+                        } else if (call.method.equals("getDeviceInfo")) {
                             getDeviceInfo();
                             result.success(deviceInfo);
-                        } else if (call.method.equals("downloadUpdate")){
-
+                        } else if (call.method.equals("checkStoragePermission")) {
+                            String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                            // checking if the permission was already granted
+                            if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_GRANTED) {
+                                result.success("Access Granted");
+                            } else {
+                                result.success("Access Denied");
+                            }
+                        } else if (call.method.equals("downloadUpdate")) {
                             apkURL = call.argument("apkURL");
                             updateName = call.argument("updateName");
                             storageReqAct = "downloadUpdate";
@@ -73,27 +83,69 @@ public class MainActivity extends FlutterActivity {
                             // checking if install app from unknown sources is allowed
                             // returns false for everything below Oreo
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
                                 if (!getPackageManager().canRequestPackageInstalls()) {
-
                                     Toast.makeText(MainActivity.this, "Please grant permission to install app", Toast.LENGTH_LONG).show();
-
                                     // creating intent to send user to get permission to install unknown apps
                                     Intent installUnknownApps = new Intent(android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:com.yag.openbeatsmobile"));
-
                                     // sending user to get permission
-                                    startActivityForResult(installUnknownApps,INSTALL_UNKNOWNAPP_PERMISSION_CODE);
-
+                                    startActivityForResult(installUnknownApps, INSTALL_UNKNOWNAPP_PERMISSION_CODE);
                                 } else {
                                     getStoragePermissionApkUpdate();
                                 }
                             } else {
                                 getStoragePermissionApkUpdate();
                             }
+                        } else if (call.method.equals("getStoragePermission")){
+                            // declaring the permission we need to request
+                            String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+                            // checking if the permission was already granted
+                            if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_GRANTED) {
+                                result.success("Permission Granted");
+                            } else {
+                                // checks if we should show the dialog to the user
+                                if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, permission)) {
+                                    Toast.makeText(MainActivity.this, "Please enable storage permission from settings", Toast.LENGTH_LONG).show();
+                                    openStorageSettingsPage();
+                                } else {
+                                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, STORAGE_PERMISSION_CODE);
+                                }
+                            }
+                        } else if (call.method.equals("getListOfDownloadedAudio")){
+                            // setting path to the download variable
+                            String path = Environment.getExternalStorageDirectory().toString()+"/OpenBeatsDownloads/";
+                            // creating a directory with the path
+                            File directory = new File(path);
+                            // checking if directory exists
+                            if(directory.exists()){
+                                // getting list of files in directory to FILE array instance
+                                File[] files = directory.listFiles();
+                                if(files.length > 0){
+                                    // storing file list in array
+                                    List<String> audioList = Arrays.asList(directory.list());
+                                    result.success(audioList.toString());
+                                } else {
+                                    result.success("No Downloaded Files");
+                                }
+                            } else {
+                                result.success("No Downloaded Files");
+                            }
                         }
                     }
                 }
         );
+    }
+
+    // returns the list of files stored in the downloads folder
+    private List<String> getListOfFiles(){
+        return null;
+    }
+
+    void openStorageSettingsPage(){
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Uri uri = Uri.fromParts("package", getPackageName(), null);
+        intent.setData(uri);
+        startActivity(intent);
     }
 
     @Override
@@ -107,7 +159,7 @@ public class MainActivity extends FlutterActivity {
         }
     }
 
-    void getStoragePermissionApkUpdate(){
+    void getStoragePermissionApkUpdate() {
         Log.d(TAG, "getStoragePermissionApkUpdate: Reached");
         // declaring the permission we need to request
         String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -120,7 +172,7 @@ public class MainActivity extends FlutterActivity {
     }
 
     // downloads the latest version of the apk
-    void downloadApk(){
+    void downloadApk() {
         Log.d(TAG, "downloadApk: GOt here");
         //get destination to update file and set Uri
         String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/";
@@ -130,25 +182,25 @@ public class MainActivity extends FlutterActivity {
 
         //Delete update file if exists
         File file = new File(destination);
-        if (file.exists()){
+        if (file.exists()) {
             Log.d(TAG, "downloadApk: File Exists, deleting");
             file.delete();
         }
 
-        DownloadManager.Request request=new DownloadManager.Request(Uri.parse(apkURL))
-                .setTitle("OpenBeats v"+updateName)
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(apkURL))
+                .setTitle("OpenBeats v" + updateName)
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
                 .setDestinationUri(Uri.fromFile(file));
-        DownloadManager downloadManager= (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
         downloadManager.enqueue(request);
 
-        BroadcastReceiver onComplete=new BroadcastReceiver() {
+        BroadcastReceiver onComplete = new BroadcastReceiver() {
             public void onReceive(Context context, Intent intent) {
-                if(file.exists() && downCompleteTriggered == false) {
+                if (file.exists() && downCompleteTriggered == false) {
                     Toast.makeText(context, "Initializing update install", Toast.LENGTH_SHORT).show();
                     Intent intent2;
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        Log.d(TAG, "downloadApk: "+file.getAbsolutePath());
+                        Log.d(TAG, "downloadApk: " + file.getAbsolutePath());
                         Uri apkUri = FileProvider.getUriForFile(MainActivity.this, "openbeats.fileProvider", file);
                         intent2 = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                         intent2.setData(apkUri);
@@ -168,10 +220,10 @@ public class MainActivity extends FlutterActivity {
     }
 
     // gets the device information and feeds it into the hashMap variable
-    void getDeviceInfo(){
+    void getDeviceInfo() {
         // getting system details
         String OSVersion = System.getProperty("os.version");
-        String apiLevel = Build.VERSION.SDK_INT+"";
+        String apiLevel = Build.VERSION.SDK_INT + "";
         String brand = Build.BRAND;
         String deviceModel = Build.MODEL;
         // getting system memory information
@@ -195,14 +247,14 @@ public class MainActivity extends FlutterActivity {
             finalValue = twoDecimalForm.format(gb).concat(" GB");
         } else if (mb > 1) {
             finalValue = twoDecimalForm.format(mb).concat(" MB");
-        }else if(kb > 1){
+        } else if (kb > 1) {
             finalValue = twoDecimalForm.format(mb).concat(" KB");
         } else {
             finalValue = twoDecimalForm.format(totalMemory).concat(" Bytes");
         }
 
         // putting values into map variable
-        deviceInfo.put("systemApi",apiLevel);
+        deviceInfo.put("systemApi", apiLevel);
         deviceInfo.put("deviceBrand", brand);
         deviceInfo.put("systemRam", finalValue);
         deviceInfo.put("deviceModel", deviceModel);
@@ -248,7 +300,7 @@ public class MainActivity extends FlutterActivity {
             } else {
                 Toast.makeText(this, "Please grant permission to download file", Toast.LENGTH_SHORT).show();
             }
-        } else if(requestCode == STORAGE_PERMISSION_CODE && storageReqAct == "downloadUpdate"){
+        } else if (requestCode == STORAGE_PERMISSION_CODE && storageReqAct == "downloadUpdate") {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(MainActivity.this, "Update downloading...", Toast.LENGTH_LONG).show();
                 downloadApk();

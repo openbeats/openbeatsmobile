@@ -54,7 +54,7 @@ Widget noInternetView(refreshFunction) {
       ));
 }
 
-Widget noFileAccessView(refreshFunction) {
+Widget noFileAccessView(getPermission) {
   return Container(
       margin: EdgeInsets.all(20.0),
       child: Center(
@@ -62,24 +62,30 @@ Widget noFileAccessView(refreshFunction) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            FlatButton(
-              child: Icon(
-                FontAwesomeIcons.redo,
-                size: 40.0,
-                color: globalVars.accentRed,
+            SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              "Offline media playback requires storage permission",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 22.0,
               ),
-              onPressed: () {
-                refreshFunction();
-              },
-              color: Colors.transparent,
-              textColor: globalVars.accentBlue,
             ),
             SizedBox(
               height: 20.0,
             ),
-            Text("Please grant permission to access your\nfile system",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 22.0)),
+            FlatButton(
+              child: Text("Grant Permission"),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              onPressed: () {
+                getPermission();
+              },
+              color: globalVars.accentRed,
+              textColor: globalVars.accentWhite,
+            ),
           ],
         ),
       ));
@@ -267,8 +273,8 @@ Widget homePageVidResultExtraOptions(
               }
             }
           } else {
-            globalFun.showToastMessage(
-                "Please login to use feature", Colors.black, Colors.white, false);
+            globalFun.showToastMessage("Please login to use feature",
+                Colors.black, Colors.white, false);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -503,8 +509,8 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
               }
             }
           } else {
-            globalFun.showToastMessage(
-                "Please login to use feature", Colors.black, Colors.white, false);
+            globalFun.showToastMessage("Please login to use feature",
+                Colors.black, Colors.white, false);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -957,7 +963,7 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
         : Container(child: Text("Loading")),
     elevation: 10.0,
     icon: Container(
-      margin: EdgeInsets.only(right: 7.0, left: 7.0), 
+      margin: EdgeInsets.only(right: 7.0, left: 7.0),
       child: (isPlaying)
           ? (!isPaused) ? Icon(Icons.pause) : Icon(Icons.play_arrow)
           : SizedBox(
@@ -1042,9 +1048,9 @@ Widget positionIndicator(int audioDuration, PlaybackState state,
                 children: [
                   if (duration != null)
                     Slider(
-                      label: globalFun.getCurrentTimeStamp(position/1000),
+                      label: globalFun.getCurrentTimeStamp(position / 1000),
                       divisions: 1000,
-                      min: 0.0, 
+                      min: 0.0,
                       max: duration,
                       value: seekPos ?? max(0.0, min(position, duration)),
                       onChanged: (value) {
