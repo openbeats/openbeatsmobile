@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/addSongsToPlaylistPage.dart';
 import 'package:openbeatsmobile/pages/queuePage.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter_share/flutter_share.dart';
 
 import './globalVars.dart' as globalVars;
 import './globalFun.dart' as globalFun;
@@ -271,6 +272,21 @@ Widget homePageVidResultExtraOptions(
               } on SocketException catch (_) {
                 globalFun.showNoInternetToast();
               }
+            } else if (choice == "share") {
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you...',
+                  linkUrl: 'https://openbeats.live/media/~~~~' +
+                      videosResponseItem["videoId"] +
+                      "~~~" +
+                      videosResponseItem["title"]
+                          .toString()
+                          .replaceAll(" ", "") +
+                      "~~~" +
+                      videosResponseItem["duration"] +
+                      "~~~" +
+                      videosResponseItem["thumbnail"]+"~~~"+videosResponseItem["channelName"].toString().replaceAll(" ", ""),
+                  chooserTitle: 'Share the experience');
             }
           } else {
             globalFun.showToastMessage("Please login to use feature",
@@ -296,6 +312,12 @@ Widget homePageVidResultExtraOptions(
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+              PopupMenuItem(
+                  value: "share",
+                  child: ListTile(
+                    title: Text("Share"),
+                    leading: Icon(Icons.share),
                   )),
               PopupMenuItem(
                   value: "addToQueue",

@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -45,12 +46,29 @@ public class MainActivity extends FlutterActivity {
     // variable to store which storage requiring activity is invoking the storage permission request
     String storageReqAct = "";
     boolean showRational;
+    // holds the shared video parameters
+    String sharedParameters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         GeneratedPluginRegistrant.registerWith(this);
         backwardMChannel = new MethodChannel(MainActivity.this.getFlutterView(), CHANNEL);
+        // intent instance to handle shared media instances
+        Intent intent = getIntent();
+        // getting data from intent
+        Uri data = intent.getData();
+        // if there is shared data
+        if (data != null) {
+            // extracting data from the url
+            // splitting string based on / separators
+            String[] mainArr = data.toString().split("~~~~");
+            // splitting the array parameters based on |
+            sharedParameters = mainArr[1];
+
+        } else {
+            Log.d(TAG, "onCreate: Null Intent");
+        }
         new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
                 new MethodChannel.MethodCallHandler() {
                     @Override
@@ -95,7 +113,7 @@ public class MainActivity extends FlutterActivity {
                             } else {
                                 getStoragePermissionApkUpdate();
                             }
-                        } else if (call.method.equals("getStoragePermission")){
+                        } else if (call.method.equals("getStoragePermission")) {
                             // declaring the permission we need to request
                             String permission = android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
                             // checking if the permission was already granted
@@ -110,39 +128,52 @@ public class MainActivity extends FlutterActivity {
                                     ActivityCompat.requestPermissions(MainActivity.this, new String[]{permission}, STORAGE_PERMISSION_CODE);
                                 }
                             }
-                        } else if (call.method.equals("getListOfDownloadedAudio")){
-                            // holds the list of files in local storage
-                            List<String> audioList = new ArrayList<String>();
-                            // setting path to the download variable
-                            String path = Environment.getExternalStorageDirectory().toString()+"/OpenBeatsDownloads/";
-                            // creating a directory with the path
-                            File directory = new File(path);
-                            // checking if directory exists
-                            if(directory.exists()){
-                                // getting list of files in directory to FILE array instance
-                                File[] files = directory.listFiles();
-                                if(files.length > 0){
-                                    // storing file list in array
-                                    audioList = Arrays.asList(directory.list());
-                                } else {
-                                    audioList.add("No Downloaded Files");
-                                }
-                            } else {
-                                audioList.add("No Downloaded Files");
-                            }
-                            result.success(audioList);
+                        } else if (call.method.equals("getListOfDownloadedAudio")) {
+                            result.success(getListOfDownloadedAudio());
+                        } else if (call.method.equals("getSharedMediaParameters")) {
+                            result.success(sharedParameters);
                         }
                     }
                 }
         );
     }
 
-    // returns the list of files stored in the downloads folder
-    private List<String> getListOfFiles(){
-        return null;
+    // returns the list of downloaded audio
+    List<String> getListOfDownloadedAudio(){
+        // shared preferences instance to check validity of the downloaded audio if there are any
+        SharedPreferences pref = getApplicationContext().getSharedPreferences(getPackageName(), 0); // 0 - for private mode
+        // holds the list of files in local storage
+        List<String> audioList = new ArrayList<String>(),tempList = new ArrayList<String>();
+        // setting path to the download variable
+        String path = Environment.getExternalStorageDirectory().toString() + "/OpenBeatsDownloads/";
+        // creating a directory with the path
+        File directory = new File(path);
+        // checking if directory exists
+        if (directory.exists()) {
+            // getting list of files in directory to FILE array instance
+            File[] files = directory.listFiles();
+            if (files.length > 0) {
+                // storing file list in array
+                tempList = Arrays.asList(directory.list());
+                // removing items that are not in shared preferences
+                for(int i=0;i<tempList.size();i++){
+                    String audioTitle = tempList.get(i).replace("@OpenBeats.mp3","");
+                    Log.d(TAG, "downloadedMedia"+audioTitle);
+                    Log.d(TAG, pref.getString("downloadedMedia"+audioTitle,null));
+                    if(pref.getString("downloadedMedia"+audioTitle,null) != null)
+                        audioList.add(tempList.get(i));
+                }
+                // checking if the list is empty and appending template
+                if(audioList.size() == 0)
+                    audioList.add("No Downloaded Files");
+            } else
+                audioList.add("No Downloaded Files");
+        } else
+            audioList.add("No Downloaded Files");
+        return audioList;
     }
 
-    void openStorageSettingsPage(){
+    void openStorageSettingsPage() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -332,9 +363,22 @@ public class MainActivity extends FlutterActivity {
             // get download service and enqueue file
             DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
             manager.enqueue(request);
+
+            // download complete listener to add file information to shared preferences
+            BroadcastReceiver onCompleteMediaDownload = new BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences(getPackageName(), 0); // 0 - for private mode
+                    SharedPreferences.Editor editor = pref.edit();
+                    Log.d("Testing","downloadedMedia"+videoTitle);
+                    editor.putString("downloadedMedia"+videoTitle, videoId);
+                }
+            };
+            registerReceiver(onCompleteMediaDownload, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         } else {
             Toast.makeText(this, "External Storage not accessible", Toast.LENGTH_SHORT).show();
         }
+
+
     }
 
     void makeSureFileExists() {

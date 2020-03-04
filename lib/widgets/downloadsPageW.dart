@@ -28,6 +28,7 @@ Widget loadingAnimation() {
   ));
 }
 
+// getting checkPermission status to ensure permissions have not been tampered with
 Widget noDownloadedFiles(checkPermissionStatus) {
   return Container(
       margin: EdgeInsets.all(20.0),
@@ -51,14 +52,16 @@ Widget noDownloadedFiles(checkPermissionStatus) {
               height: 20.0,
             ),
             FlatButton(
-              child: Text("Check Again"),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5)),
+              child: Icon(
+                FontAwesomeIcons.redo,
+                size: 40.0,
+                color: globalVars.accentRed,
+              ),
               onPressed: () {
                 checkPermissionStatus();
               },
-              color: globalVars.accentRed,
-              textColor: globalVars.accentWhite,
+              color: Colors.transparent,
+              textColor: globalVars.accentBlue,
             ),
           ],
         ),

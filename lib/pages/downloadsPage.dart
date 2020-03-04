@@ -1,7 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/homePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../widgets/downloadsPageW.dart' as downloadsPageW;
 import '../globalWids.dart' as globalWids;
 import '../globalVars.dart' as globalVars;
@@ -43,6 +42,7 @@ class _DonwloadsPageState extends State<DonwloadsPage>
         _noDownloadedFiles = false;
       });
     }
+
   }
 
   // gets local storage permission
@@ -130,6 +130,7 @@ class _DonwloadsPageState extends State<DonwloadsPage>
   }
 
   Widget listOfMedia() {
+    print(listOfSongs.length);
     return ListView.builder(
       itemBuilder: listOfMediaBuilder,
       itemCount: listOfSongs.length,
@@ -141,7 +142,8 @@ class _DonwloadsPageState extends State<DonwloadsPage>
     return Container(
       margin: EdgeInsets.all(5.0),
       child: ListTile(
-        title: Text(listOfSongs[index].toString().replaceAll("@OpenBeats.mp3", "")),
+        title: Text(
+            listOfSongs[index].toString().replaceAll("@OpenBeats.mp3", "")),
         leading: Icon(Icons.music_note),
       ),
     );
