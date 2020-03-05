@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.1+6
+version: 2.0.1+7
 
 environment:
   sdk: ">=2.2.2 <3.0.0"
@@ -33,6 +33,7 @@ dependencies:
   fluttertoast:
   url_launcher:
   package_info:
+  flutter_share: ^1.0.2
   cached_network_image: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.

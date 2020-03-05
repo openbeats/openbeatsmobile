@@ -67,6 +67,27 @@ class _HomePageState extends State<HomePage> {
   // holds the flag indicating that the media streaming is loading
   bool streamLoading = false;
 
+  // starts media playback of shared media
+  void startSharedMediaPlayback(List<String> parameters) {
+    print(parameters);
+    getMp3URLShare(parameters[0],parameters[2],parameters[1],parameters[3],parameters[4]);
+  }
+
+  // checks for shared intent audio
+  void checkForShareIntent() async {
+    // querying native side to check for shared audio
+    String sharedParameters = await globalVars.platformMethodChannel
+        .invokeMethod("getSharedMediaParameters");
+    if (sharedParameters != null) {
+      // splitting the required parameters
+      List<String> parameters = sharedParameters.split("~~~");
+      // start media playback
+      startSharedMediaPlayback(parameters);
+    } else {
+      print("No share intent");
+    }
+  }
+
   // initiates the app update verification process
   void verifyAppVersion() async {
     // setting callHandler to show rational dialog to get storage permissions
@@ -142,7 +163,8 @@ class _HomePageState extends State<HomePage> {
         globalFun.showToastMessage(
             "Could not get proper response from server. Please try another query",
             Colors.orange,
-            Colors.white, false);
+            Colors.white,
+            false);
       }
     } catch (e) {
       // catching dio error
@@ -159,6 +181,34 @@ class _HomePageState extends State<HomePage> {
         });
       }
     }
+  }
+
+  // starts the share snackbar and also initiates the audio service and calls the customAction
+  void getMp3URLShare(String shareVideoId, String shareDuration,
+      String shareTitle, String shareThumbnail, String shareChannel) async {
+    // getting the current mp3 duration in milliseconds
+    int audioDuration = globalFun.getDurationMillis(shareDuration);
+
+    MediaItem currMediaItem = MediaItem(
+      id: shareVideoId,
+      album: "OpenBeats Music",
+      duration: audioDuration,
+      title: shareTitle,
+      artist: shareChannel,
+      artUri: shareThumbnail,
+    );
+
+    if (AudioService.playbackState != null) {
+      await AudioService.stop();
+      Timer(Duration(milliseconds: 500), () async {
+        await audioServiceStart(currMediaItem, false, 0);
+      });
+    } else {
+      await audioServiceStart(currMediaItem, false, 0);
+    }
+
+    // refreshing the UI build to update the thumbnail for now platying music
+    setState(() {});
   }
 
   // starts the snackbar and also initiates the audio service and calls the customAction
@@ -305,6 +355,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    connect();
+    checkForShareIntent();
     if (globalVars.chechForUpdate) {
       // starts app version checking functionality
       verifyAppVersion();
@@ -315,7 +367,7 @@ class _HomePageState extends State<HomePage> {
     checkForVidResultPersistency();
     // getting authStatus to refresh app after restart
     getAuthStatus();
-    connect();
+
     // setting callHandler to show rational dialog to get storage permissions
     globalVars.platformMethodChannel.setMethodCallHandler(
         (MethodCall methodCall) =>
@@ -779,7 +831,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // holds the responseJSON for checking link validity
       var responseJSON;
       // pausing current playing media to provide instant feedback
-      if(shouldBeNowPlaying) onPause();
+      if (shouldBeNowPlaying) onPause();
       // getting the mp3URL
       try {
         // checking for link validity
@@ -814,7 +866,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
         AudioServiceBackground.setQueue(_queue);
         if (shouldBeNowPlaying) {
-          // starting playback again 
+          // starting playback again
           onPlay();
           int indexOfItem;
           // finding the index of the element to play

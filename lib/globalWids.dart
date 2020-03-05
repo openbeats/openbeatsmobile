@@ -9,6 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:openbeatsmobile/pages/addSongsToPlaylistPage.dart';
 import 'package:openbeatsmobile/pages/queuePage.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter_share/flutter_share.dart';
 
 import './globalVars.dart' as globalVars;
 import './globalFun.dart' as globalFun;
@@ -54,7 +55,7 @@ Widget noInternetView(refreshFunction) {
       ));
 }
 
-Widget noFileAccessView(refreshFunction) {
+Widget noFileAccessView(getPermission) {
   return Container(
       margin: EdgeInsets.all(20.0),
       child: Center(
@@ -62,24 +63,30 @@ Widget noFileAccessView(refreshFunction) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            FlatButton(
-              child: Icon(
-                FontAwesomeIcons.redo,
-                size: 40.0,
-                color: globalVars.accentRed,
+            SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              "Offline media playback requires storage permission",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 22.0,
               ),
-              onPressed: () {
-                refreshFunction();
-              },
-              color: Colors.transparent,
-              textColor: globalVars.accentBlue,
             ),
             SizedBox(
               height: 20.0,
             ),
-            Text("Please grant permission to access your\nfile system",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 22.0)),
+            FlatButton(
+              child: Text("Grant Permission"),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5)),
+              onPressed: () {
+                getPermission();
+              },
+              color: globalVars.accentRed,
+              textColor: globalVars.accentWhite,
+            ),
           ],
         ),
       ));
@@ -265,10 +272,33 @@ Widget homePageVidResultExtraOptions(
               } on SocketException catch (_) {
                 globalFun.showNoInternetToast();
               }
+            } else if (choice == "share") {
+              // url to encode
+              String url = videosResponseItem["videoId"] +
+                      "~~~" +
+                      videosResponseItem["title"]
+                          .toString()
+                          .replaceAll(" ", "") +
+                      "~~~" +
+                      videosResponseItem["duration"] +
+                      "~~~" +
+                      videosResponseItem["thumbnail"] +
+                      "~~~" +
+                      videosResponseItem["channelName"]
+                          .toString()
+                          .replaceAll(" ", "");
+              // getting encoded string from the native side
+              String encodedURL = await globalVars.platformMethodChannel.invokeMethod("encryptURLForShare",{"url":url});
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you...'+videosResponseItem["title"]
+                          .toString(),
+                  linkUrl: 'https://openbeats.live/share/~~~~'+encodedURL,
+                  chooserTitle: 'Share the experience');
             }
           } else {
-            globalFun.showToastMessage(
-                "Please login to use feature", Colors.black, Colors.white, false);
+            globalFun.showToastMessage("Please login to use feature",
+                Colors.black, Colors.white, false);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -290,6 +320,12 @@ Widget homePageVidResultExtraOptions(
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+              PopupMenuItem(
+                  value: "share",
+                  child: ListTile(
+                    title: Text("Share"),
+                    leading: Icon(Icons.share),
                   )),
               PopupMenuItem(
                   value: "addToQueue",
@@ -388,7 +424,30 @@ Widget playlistPageVidResultExtraOptions(context, videosResponseItem, index,
                 globalFun.showNoInternetToast();
               }
             }
-          }
+          } else if (choice == "share") {
+            // url to encode
+              String url = videosResponseItem["videoId"] +
+                      "~~~" +
+                      videosResponseItem["title"]
+                          .toString()
+                          .replaceAll(" ", "") +
+                      "~~~" +
+                      videosResponseItem["duration"] +
+                      "~~~" +
+                      videosResponseItem["thumbnail"] +
+                      "~~~" +
+                      videosResponseItem["channelName"]
+                          .toString()
+                          .replaceAll(" ", "");
+              // getting encoded string from the native side
+              String encodedURL = await globalVars.platformMethodChannel.invokeMethod("encryptURLForShare",{"url":url});
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you...'+videosResponseItem["title"]
+                          .toString(),
+                  linkUrl: 'https://openbeats.live/share/~~~~'+encodedURL,
+                  chooserTitle: 'Share the experience');
+            }
         },
         itemBuilder: (context) => [
               PopupMenuItem(
@@ -402,6 +461,12 @@ Widget playlistPageVidResultExtraOptions(context, videosResponseItem, index,
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+              PopupMenuItem(
+                  value: "share",
+                  child: ListTile(
+                    title: Text("Share"),
+                    leading: Icon(Icons.share),
                   )),
               PopupMenuItem(
                   value: "addToQueue",
@@ -501,10 +566,33 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                   globalFun.showNoInternetToast();
                 }
               }
+            } else if (choice == "share") {
+            // url to encode
+              String url = videosResponseItem["videoId"] +
+                      "~~~" +
+                      videosResponseItem["title"]
+                          .toString()
+                          .replaceAll(" ", "") +
+                      "~~~" +
+                      videosResponseItem["duration"] +
+                      "~~~" +
+                      videosResponseItem["thumbnail"] +
+                      "~~~" +
+                      videosResponseItem["channelName"]
+                          .toString()
+                          .replaceAll(" ", "");
+              // getting encoded string from the native side
+              String encodedURL = await globalVars.platformMethodChannel.invokeMethod("encryptURLForShare",{"url":url});
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you... '+videosResponseItem["title"]
+                          .toString(),
+                  linkUrl: 'https://openbeats.live/share/~~~~'+encodedURL,
+                  chooserTitle: 'Share the experience');
             }
           } else {
-            globalFun.showToastMessage(
-                "Please login to use feature", Colors.black, Colors.white, false);
+            globalFun.showToastMessage("Please login to use feature",
+                Colors.black, Colors.white, false);
             Navigator.pushNamed(context, '/authPage');
           }
         },
@@ -526,6 +614,12 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+                  PopupMenuItem(
+                  value: "share",
+                  child: ListTile(
+                    title: Text("Share"),
+                    leading: Icon(Icons.share),
                   )),
               PopupMenuItem(
                   value: "addToQueue",
@@ -957,7 +1051,7 @@ Widget fabBtnW(settingModalBottomSheet, context, bool isPlaying, bool isPaused,
         : Container(child: Text("Loading")),
     elevation: 10.0,
     icon: Container(
-      margin: EdgeInsets.only(right: 7.0, left: 7.0), 
+      margin: EdgeInsets.only(right: 7.0, left: 7.0),
       child: (isPlaying)
           ? (!isPaused) ? Icon(Icons.pause) : Icon(Icons.play_arrow)
           : SizedBox(
@@ -1042,9 +1136,9 @@ Widget positionIndicator(int audioDuration, PlaybackState state,
                 children: [
                   if (duration != null)
                     Slider(
-                      label: globalFun.getCurrentTimeStamp(position/1000),
+                      label: globalFun.getCurrentTimeStamp(position / 1000),
                       divisions: 1000,
-                      min: 0.0, 
+                      min: 0.0,
                       max: duration,
                       value: seekPos ?? max(0.0, min(position, duration)),
                       onChanged: (value) {

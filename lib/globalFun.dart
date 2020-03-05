@@ -306,7 +306,7 @@ Widget drawerDownloadsPageListTile(int currPage, context) {
         ? ListTile(
             leading: Icon(FontAwesomeIcons.download,
                 color: globalVars.leadingIconColor),
-            title: Text('Your Downloads',
+            title: Text('Offline Songs',
                 style: TextStyle(
                     color: globalVars.titleTextColor,
                     fontWeight: FontWeight.bold)),
@@ -319,7 +319,7 @@ Widget drawerDownloadsPageListTile(int currPage, context) {
               //       globalWids.FadeRouteBuilder(page: DonwloadsPage()));
               // } else {
               //   showToastMessage(
-              //       "Please login to use feature", Colors.black, Colors.white);
+              //       "Please login to use feature", Colors.black, Colors.white, false);
               //   Navigator.pushNamed(context, '/authPage');
               // }
               showUnderDevToast();
