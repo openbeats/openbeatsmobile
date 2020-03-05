@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,8 +65,13 @@ public class MainActivity extends FlutterActivity {
             // extracting data from the url
             // splitting string based on / separators
             String[] mainArr = data.toString().split("~~~~");
-            // splitting the array parameters based on |
-            sharedParameters = mainArr[1];
+            byte[] decodeBytes = Base64.decode(mainArr[1], Base64.NO_WRAP);
+            try {
+                sharedParameters = new String(decodeBytes, "UTF-8");
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
 
         } else {
             Log.d(TAG, "onCreate: Null Intent");
@@ -131,7 +138,18 @@ public class MainActivity extends FlutterActivity {
                         } else if (call.method.equals("getListOfDownloadedAudio")) {
                             result.success(getListOfDownloadedAudio());
                         } else if (call.method.equals("getSharedMediaParameters")) {
-                            result.success(sharedParameters);
+                            // creating a temp copy of shared parameters
+                            String temp = sharedParameters;
+                            // clearing the shared parameters to prevent starting same audio on restart
+                            sharedParameters = null;
+                            result.success(temp);
+                        } else if (call.method.equals("encryptURLForShare")){
+                            try {
+                                byte[] data = call.argument("url").toString().getBytes("UTF-8");
+                                result.success(android.util.Base64.encodeToString(data, Base64.NO_WRAP));
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }

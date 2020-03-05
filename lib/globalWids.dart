@@ -273,11 +273,8 @@ Widget homePageVidResultExtraOptions(
                 globalFun.showNoInternetToast();
               }
             } else if (choice == "share") {
-              await FlutterShare.share(
-                  title: 'OpenBeats Share',
-                  text: 'Here is a song for you...',
-                  linkUrl: 'https://openbeats.live/media/~~~~' +
-                      videosResponseItem["videoId"] +
+              // url to encode
+              String url = videosResponseItem["videoId"] +
                       "~~~" +
                       videosResponseItem["title"]
                           .toString()
@@ -285,7 +282,18 @@ Widget homePageVidResultExtraOptions(
                       "~~~" +
                       videosResponseItem["duration"] +
                       "~~~" +
-                      videosResponseItem["thumbnail"]+"~~~"+videosResponseItem["channelName"].toString().replaceAll(" ", ""),
+                      videosResponseItem["thumbnail"] +
+                      "~~~" +
+                      videosResponseItem["channelName"]
+                          .toString()
+                          .replaceAll(" ", "");
+              // getting encoded string from the native side
+              String encodedURL = await globalVars.platformMethodChannel.invokeMethod("encryptURLForShare",{"url":url});
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you...'+videosResponseItem["title"]
+                          .toString(),
+                  linkUrl: 'https://openbeats.live/share/~~~~'+encodedURL,
                   chooserTitle: 'Share the experience');
             }
           } else {
@@ -416,7 +424,30 @@ Widget playlistPageVidResultExtraOptions(context, videosResponseItem, index,
                 globalFun.showNoInternetToast();
               }
             }
-          }
+          } else if (choice == "share") {
+            // url to encode
+              String url = videosResponseItem["videoId"] +
+                      "~~~" +
+                      videosResponseItem["title"]
+                          .toString()
+                          .replaceAll(" ", "") +
+                      "~~~" +
+                      videosResponseItem["duration"] +
+                      "~~~" +
+                      videosResponseItem["thumbnail"] +
+                      "~~~" +
+                      videosResponseItem["channelName"]
+                          .toString()
+                          .replaceAll(" ", "");
+              // getting encoded string from the native side
+              String encodedURL = await globalVars.platformMethodChannel.invokeMethod("encryptURLForShare",{"url":url});
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you...'+videosResponseItem["title"]
+                          .toString(),
+                  linkUrl: 'https://openbeats.live/share/~~~~'+encodedURL,
+                  chooserTitle: 'Share the experience');
+            }
         },
         itemBuilder: (context) => [
               PopupMenuItem(
@@ -430,6 +461,12 @@ Widget playlistPageVidResultExtraOptions(context, videosResponseItem, index,
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+              PopupMenuItem(
+                  value: "share",
+                  child: ListTile(
+                    title: Text("Share"),
+                    leading: Icon(Icons.share),
                   )),
               PopupMenuItem(
                   value: "addToQueue",
@@ -529,6 +566,29 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                   globalFun.showNoInternetToast();
                 }
               }
+            } else if (choice == "share") {
+            // url to encode
+              String url = videosResponseItem["videoId"] +
+                      "~~~" +
+                      videosResponseItem["title"]
+                          .toString()
+                          .replaceAll(" ", "") +
+                      "~~~" +
+                      videosResponseItem["duration"] +
+                      "~~~" +
+                      videosResponseItem["thumbnail"] +
+                      "~~~" +
+                      videosResponseItem["channelName"]
+                          .toString()
+                          .replaceAll(" ", "");
+              // getting encoded string from the native side
+              String encodedURL = await globalVars.platformMethodChannel.invokeMethod("encryptURLForShare",{"url":url});
+              await FlutterShare.share(
+                  title: 'OpenBeats Share',
+                  text: 'Here is a song for you... '+videosResponseItem["title"]
+                          .toString(),
+                  linkUrl: 'https://openbeats.live/share/~~~~'+encodedURL,
+                  chooserTitle: 'Share the experience');
             }
           } else {
             globalFun.showToastMessage("Please login to use feature",
@@ -554,6 +614,12 @@ Widget topChartsPlaylistPageVidResultExtraOptions(
                   child: ListTile(
                     title: Text("Favorite"),
                     leading: Icon(Icons.favorite_border),
+                  )),
+                  PopupMenuItem(
+                  value: "share",
+                  child: ListTile(
+                    title: Text("Share"),
+                    leading: Icon(Icons.share),
                   )),
               PopupMenuItem(
                   value: "addToQueue",

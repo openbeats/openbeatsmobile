@@ -53,7 +53,7 @@
 
                 <data
                     android:host="openbeats.live"
-                    android:pathPattern="/media/.*"
+                    android:pathPattern="/share/.*"
                     android:scheme="https" />
             </intent-filter>
             <intent-filter>

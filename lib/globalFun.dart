@@ -313,15 +313,16 @@ Widget drawerDownloadsPageListTile(int currPage, context) {
             // subtitle: Text("All songs on local device",
             //     style: TextStyle(color: globalVars.subtitleTextColor)),
             onTap: () {
-              if (globalVars.loginInfo["loginStatus"] == true) {
-                // navigating to homePage
-                Navigator.of(context).pushReplacement(
-                    globalWids.FadeRouteBuilder(page: DonwloadsPage()));
-              } else {
-                showToastMessage(
-                    "Please login to use feature", Colors.black, Colors.white, false);
-                Navigator.pushNamed(context, '/authPage');
-              }
+              // if (globalVars.loginInfo["loginStatus"] == true) {
+              //   // navigating to homePage
+              //   Navigator.of(context).pushReplacement(
+              //       globalWids.FadeRouteBuilder(page: DonwloadsPage()));
+              // } else {
+              //   showToastMessage(
+              //       "Please login to use feature", Colors.black, Colors.white, false);
+              //   Navigator.pushNamed(context, '/authPage');
+              // }
+              showUnderDevToast();
             },
           )
         : null,

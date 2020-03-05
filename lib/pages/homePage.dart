@@ -69,6 +69,7 @@ class _HomePageState extends State<HomePage> {
 
   // starts media playback of shared media
   void startSharedMediaPlayback(List<String> parameters) {
+    print(parameters);
     getMp3URLShare(parameters[0],parameters[2],parameters[1],parameters[3],parameters[4]);
   }
 
