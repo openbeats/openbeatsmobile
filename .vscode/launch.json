@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter Debug",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "emulator-5554",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Flutter Profiler",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "2228cdd13d027ece",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Flutter Release",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "2228cdd13d027ece",
+      "program": "lib/main.dart",
+      "flutterMode": "release"
+    }
+  ]
+}
