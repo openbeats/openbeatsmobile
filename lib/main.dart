@@ -10,10 +10,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
+  // routeObserver instance to control connection to audio service
+  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +23,7 @@ class _MyAppState extends State<MyApp> {
         brightness: Brightness.light,
         primarySwatch: Colors.red,
       ),
-      home: HomePage(),
+      home: HomePage(routeObserver),
     );
   }
 }
