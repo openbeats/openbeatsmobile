@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import '../globals/globalVars.dart' as globalVars;
+import '../globals/globalColors.dart' as globalColors;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -50,7 +51,7 @@ List<Widget> homePageTabs = [
 // holds the app bar for the homePage Appbar
 Widget homePageAppBar() {
   return AppBar(
-    backgroundColor: globalVars.primaryLight,
+    backgroundColor: globalColors.primaryLight,
     elevation: 0,
     title: Image.asset(
       "assets/images/logo/logotextblack.png",
@@ -82,7 +83,7 @@ Widget homePageAppBar() {
 
 Widget searchActBtn() {
   return IconButton(
-    color: globalVars.primaryDark,
+    color: globalColors.primaryDark,
     onPressed: () {},
     icon: Icon(Icons.search),
   );
@@ -90,7 +91,7 @@ Widget searchActBtn() {
 
 Widget moreOptionsBtn() {
   return IconButton(
-    color: globalVars.primaryDark,
+    color: globalColors.primaryDark,
     onPressed: () {},
     icon: Icon(Icons.more_vert),
   );

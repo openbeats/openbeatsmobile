@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import './pages/homePage.dart';
+import './globals/globalColors.dart' as globalColors;
+import './globals/globalStrings.dart' as globalStrings;
 
 void main() => runApp(MyApp());
 
@@ -16,12 +17,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "OpenBeats Music",
-      color: Colors.black,
+      title: globalStrings.appTitleString,
+      color: globalColors.appTitleColor,
       theme: ThemeData(
         fontFamily: "Helvetica-Normal",
-        brightness: Brightness.light,
-        primarySwatch: Colors.red,
+        brightness: globalColors.appBrightness,
+        primarySwatch: globalColors.appSwatchColor,
       ),
       home: HomePage(routeObserver),
     );

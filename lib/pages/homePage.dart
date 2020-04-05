@@ -2,11 +2,13 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:openbeatsmobile/pages/explorePage.dart';
+import '../tabs/exploreTab.dart';
+import '../tabs/searchTab.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalVars.dart' as globalVars;
+import '../globals/globalColors.dart' as globalColors;
 
 class HomePage extends StatefulWidget {
   // inheriting routeObserver instance
@@ -16,17 +18,14 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin, RouteAware {
+class _HomePageState extends State<HomePage> {
   // holds the list of tab pages for homePage body
   List<Widget> homePageTabBody = [
-    ExplorePage(),
+    ExploreTab(startAudioService),
     Center(
       child: Text("Page 2"),
     ),
-    Center(
-      child: Text("Page 3"),
-    ),
+    SearchTab(),
     Center(
       child: Text("Page 4"),
     ),
@@ -35,21 +34,28 @@ class _HomePageState extends State<HomePage>
     ),
   ];
 
+  ///////////////////////// AudioService Methods - Start
+
+  static void startAudioService() {
+    AudioService.start(
+      backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
+      androidNotificationChannelName: 'Audio Service Demo',
+      notificationColor: 0xFF2196f3,
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      enableQueue: true,
+    );
+  }
+
+  //////////////////////// AudioService Methods - End
+
   // connects to the audioService
   void audioServiceConnect() async {
     await AudioService.connect();
   }
 
   // disconnects from the audioService
-  void disconnect() {
+  void audioServiceDisconnect() {
     AudioService.disconnect();
-  }
-
-  // subscribing to routeObserver
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    widget.routeObserver.subscribe(this, ModalRoute.of(context));
   }
 
   @override
@@ -60,9 +66,16 @@ class _HomePageState extends State<HomePage>
   }
 
   @override
+  void dispose() {
+    // disconnecting from audioService
+    audioServiceDisconnect();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: globalVars.primaryLight,
+      backgroundColor: globalColors.primaryLight,
       body: SafeArea(
         child: homePageWidgets(),
       ),
@@ -72,7 +85,7 @@ class _HomePageState extends State<HomePage>
   Widget homePageWidgets() {
     return SlidingUpPanel(
       maxHeight: MediaQuery.of(context).size.height,
-      minHeight: MediaQuery.of(context).size.height * 0.1,
+      minHeight: MediaQuery.of(context).size.height * 0.09,
       collapsed: slideUpCollapsedW(),
       panel: slideUpPanelW(),
       body: homePageScaffold(),
@@ -82,8 +95,7 @@ class _HomePageState extends State<HomePage>
   Widget slideUpCollapsedW() {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5.0),
-        color: globalVars.primaryLight,
+        color: globalColors.primaryLight,
       ),
       child: null,
     );
@@ -101,7 +113,7 @@ class _HomePageState extends State<HomePage>
     return DefaultTabController(
       length: 5,
       child: Scaffold(
-        backgroundColor: globalVars.primaryLight,
+        backgroundColor: globalColors.primaryLight,
         appBar: homePageW.homePageAppBar(),
         body: TabBarView(
           children: homePageTabBody,
