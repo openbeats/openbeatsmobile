@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+import '../globals/globalColors.dart' as globalColors;
+import '../globals/actions/globalStringsA.dart' as globalStringsA;
+
+// holds the appBar for the SearchPage
+Widget appBar(
+    queryFieldController, getImmediateSuggestions, BuildContext context) {
+  return AppBar(
+    elevation: 0,
+    backgroundColor: globalColors.searchPageScaffoldBG,
+    iconTheme: IconThemeData(
+      color: globalColors.searchPageAppBarIconColor,
+    ),
+    title: TextField(
+      controller: queryFieldController,
+      textInputAction: TextInputAction.search,
+      autofocus: true,
+      autocorrect: true,
+      enableSuggestions: true,
+      cursorColor: globalColors.searchPageCursorColor,
+      style: TextStyle(
+        color: globalColors.searchPageAppBarTextColor,
+        fontSize: 18.0,
+      ),
+      onChanged: (String value) {
+        // updating the global variable for search text persistance
+        globalStringsA.updateSearchPageCurrSearchQuery(value);
+        // getting length of input
+        int valueLen = value.length;
+        // checking if the input is not empty and if it is
+        // meeting parameters to help reduce network calls
+        if (valueLen > 0)
+          // calling function to immediately get suggestions
+          getImmediateSuggestions(value);
+      },
+      onSubmitted: (String value) {
+        // going back to previous screen with the suggestion data
+        Navigator.pop(context, value);
+      },
+      decoration: InputDecoration(
+        suffixIcon: (queryFieldController.text.length == 0)
+            ? null
+            : IconButton(
+                onPressed: () {
+                  globalStringsA.updateSearchPageCurrSearchQuery("");
+                  WidgetsBinding.instance.addPostFrameCallback(
+                      (_) => queryFieldController.clear());
+                },
+                icon: Icon(Icons.clear),
+                color: globalColors.searchPageAppBarIconColor,
+              ),
+        border: InputBorder.none,
+        hintText: "Search for songs, artists, audio books...",
+        hintStyle: TextStyle(
+          color: globalColors.searchPageAppBarHintColor,
+          fontSize: 16.0,
+        ),
+      ),
+    ),
+  );
+}

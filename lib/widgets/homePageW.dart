@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import '../pages/searchPage.dart';
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalStrings.dart' as globalStrings;
@@ -43,11 +45,13 @@ Widget searchActBtn(context) {
   return IconButton(
     icon: Icon(Icons.search),
     onPressed: () {
-      // Navigator.push(
-      //     context,
-      //     MaterialPageRoute(
-      //       builder: (BuildContext context) => SearchPage(),
-      //     ));
+      Navigator.push(
+        context,
+        PageTransition(
+          child: SearchPage(),
+          type: PageTransitionType.fade,
+        ),
+      );
     },
   );
 }

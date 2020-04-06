@@ -17,7 +17,6 @@ class _MyAppState extends State<MyApp> {
       title: globalStrings.mainAppTitleString,
       color: globalColors.mainAppTitleColor,
       theme: ThemeData(
-        fontFamily: "Helvetica-Normal",
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.mainPrimarySwatch,
       ),

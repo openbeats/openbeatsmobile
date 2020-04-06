@@ -15,3 +15,5 @@ List<String> homePageTabTitles = [
   "Library",
   "User"
 ];
+// searchPage.dart
+String searchPageCurrSearchQuery = "";
