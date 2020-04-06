@@ -11,20 +11,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // routeObserver instance to control connection to audio service
-  final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: globalStrings.appTitleString,
-      color: globalColors.appTitleColor,
+      title: globalStrings.mainAppTitleString,
+      color: globalColors.mainAppTitleColor,
       theme: ThemeData(
         fontFamily: "Helvetica-Normal",
         brightness: globalColors.appBrightness,
-        primarySwatch: globalColors.appSwatchColor,
+        primarySwatch: globalColors.mainPrimarySwatch,
       ),
-      home: HomePage(routeObserver),
+      home: HomePage(),
     );
   }
 }

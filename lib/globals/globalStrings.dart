@@ -1,4 +1,17 @@
 import 'package:flutter/material.dart';
 
-// holds the appNameString
-String appTitleString = "OpenBeats Music";
+// static strings
+String _homePageLogoURIDarkText = "assets/images/logo/logotextblack.png";
+String _homePageLogoURILightText = "assets/images/logo/logotextblack.png";
+
+// main.dart
+String mainAppTitleString = "OpenBeats Music";
+// homePage.dart
+String homePageLogoURI = _homePageLogoURIDarkText;
+List<String> homePageTabTitles = [
+  "Explore",
+  "Trending",
+  "Search",
+  "Library",
+  "User"
+];
