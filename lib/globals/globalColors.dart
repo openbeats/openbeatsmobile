@@ -8,6 +8,7 @@ Color _staticPrimaryLight = Color(0xFFFFFFFF);
 Brightness appBrightness = Brightness.light;
 Color appBackgroundColor = _staticPrimaryLight;
 Color appIconColor = _staticPrimaryDark;
+Color snackBarErrorMsgColor = Colors.red;
 
 // main.dart
 Color mainAppTitleColor = Colors.red;
@@ -26,3 +27,5 @@ Color searchPageAppBarIconColor = appIconColor;
 Color searchPageAppBarTextColor = Colors.black;
 Color searchPageAppBarHintColor = Colors.grey;
 Color searchPageCursorColor = Colors.red;
+Color searchPageSuggestionsColor = Colors.grey;
+Color searchPageSuggestionsIconColor = Colors.grey;

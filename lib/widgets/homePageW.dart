@@ -6,7 +6,8 @@ import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalStrings.dart' as globalStrings;
 
 // holds the homePage appBar
-Widget homePageAppBar(context) {
+Widget homePageAppBar(
+    context, Function navigateToSearchPage, TabController tabController) {
   return AppBar(
     elevation: 0,
     backgroundColor: globalColors.homePageAppBarBG,
@@ -14,20 +15,21 @@ Widget homePageAppBar(context) {
         IconThemeData(color: globalColors.homePageAppBarIconColor),
     title: globalWids.homePageLogo,
     actions: <Widget>[
-      searchActBtn(context),
+      searchActBtn(context, navigateToSearchPage),
       moreOptionsBtn(),
     ],
     bottom: TabBar(
+      controller: tabController,
       isScrollable: true,
       indicatorColor: globalColors.homePageAppBarIndicatorColor,
       unselectedLabelColor: globalColors.homePageAppBarUnselectedLabelColor,
       labelColor: globalColors.homePageAppBarLabelColor,
       unselectedLabelStyle: TextStyle(
-        fontSize: 26.0,
+        fontSize: 28.0,
         fontWeight: FontWeight.bold,
       ),
       labelStyle: TextStyle(
-        fontSize: 26.0,
+        fontSize: 28.0,
         fontWeight: FontWeight.bold,
       ),
       tabs: globalStrings.homePageTabTitles
@@ -41,17 +43,11 @@ Widget homePageAppBar(context) {
   );
 }
 
-Widget searchActBtn(context) {
+Widget searchActBtn(context, Function navigateToSearchPage) {
   return IconButton(
     icon: Icon(Icons.search),
     onPressed: () {
-      Navigator.push(
-        context,
-        PageTransition(
-          child: SearchPage(),
-          type: PageTransitionType.fade,
-        ),
-      );
+      navigateToSearchPage();
     },
   );
 }

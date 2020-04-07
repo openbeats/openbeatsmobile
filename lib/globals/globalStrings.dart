@@ -17,3 +17,4 @@ List<String> homePageTabTitles = [
 ];
 // searchPage.dart
 String searchPageCurrSearchQuery = "";
+List<String> searchHistory = new List();

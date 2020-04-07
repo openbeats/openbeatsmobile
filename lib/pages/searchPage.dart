@@ -4,6 +4,8 @@ import '../widgets/searchPageW.dart' as searchPageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalFun.dart' as globalFun;
 import '../globals/globalStrings.dart' as globalStrings;
+import '../globals/actions/globalStringsA.dart' as globalStringsA;
+import 'dart:math' as math;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -28,8 +30,6 @@ class _SearchPageState extends State<SearchPage> {
 
   // gets suggestions as the user is typing
   void getImmediateSuggestions(String query) async {
-    // simply updating state
-    setState(() {});
     // construct dynamic url based on current query
     String url = "https://api.openbeats.live/suggester?k=" + query;
     // setting up exception handlers to alert for network issues
@@ -54,7 +54,7 @@ class _SearchPageState extends State<SearchPage> {
             searcPageScaffoldKey,
             context,
             "Internet Connection unavailable",
-            Colors.red,
+            globalColors.snackBarErrorMsgColor,
             Duration(minutes: 30),
           );
           setState(() {
@@ -86,6 +86,17 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
+  // sends suggestions to the textField
+  void sendSuggestionToField(String suggestion) {
+    // modifying query field value
+    queryFieldController.text = suggestion;
+    // sending cursor to end of queryField
+    queryFieldController.selection =
+        TextSelection.collapsed(offset: queryFieldController.text.length);
+    // calling function to update suggestions
+    getImmediateSuggestions(suggestion);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -103,6 +114,14 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the
+    // widget tree.
+    queryFieldController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: searcPageScaffoldKey,
@@ -116,7 +135,117 @@ class _SearchPageState extends State<SearchPage> {
   // holds the body implementation of searchPage
   Widget searchPageBody() {
     return Container(
-      child: null,
+      child: (suggestionResponseList.length != 0)
+          ? searchResultListView(false)
+          : (globalStrings.searchHistory.length != 0)
+              ? searchResultListView(true)
+              : Container(),
+    );
+  }
+
+  // holds the list view builder responsible for showing the suggestions
+  Widget searchResultListView(bool showHistory) {
+    print(globalStrings.searchHistory);
+    return ListView.builder(
+      physics: BouncingScrollPhysics(),
+      itemBuilder: (context, index) =>
+          suggestionsListBuilder(context, index, showHistory),
+      itemCount: (showHistory)
+          ? (globalStrings.searchHistory.length < 10)
+              ? globalStrings.searchHistory.length
+              : 10
+          : suggestionResponseList.length,
+    );
+  }
+
+  // builds the suggestions listView
+  Widget suggestionsListBuilder(
+      BuildContext context, int index, bool showHistory) {
+    return ListTile(
+      title: Container(
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: Text(
+          (showHistory)
+              ? globalStrings.searchHistory[index]
+              : suggestionResponseList[index][0],
+          style: TextStyle(
+            color: globalColors.searchPageSuggestionsColor,
+          ),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      leading: Icon(
+        Icons.search,
+        color: globalColors.searchPageSuggestionsIconColor,
+      ),
+      trailing: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.3,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            updateQueryBtn(showHistory, index),
+            SizedBox(
+              width: 2.0,
+            ),
+            deleteSearchResultBtn(showHistory, index),
+          ],
+        ),
+      ),
+      onTap: () {
+        // setting global variable to persist search
+        globalStringsA.updateSearchPageCurrSearchQuery((showHistory)
+            ? globalStrings.searchHistory[index]
+            : suggestionResponseList[index][0]);
+        // going back to previous screen with the suggestion data
+        Navigator.pop(
+            context,
+            (showHistory)
+                ? globalStrings.searchHistory[index]
+                : suggestionResponseList[index][0]);
+      },
+    );
+  }
+
+  Widget updateQueryBtn(bool showHistory, int index) {
+    return Transform.rotate(
+        angle: -50 * math.pi / 180,
+        child: IconButton(
+          tooltip: "Update query",
+          icon: Icon(Icons.arrow_upward),
+          iconSize: 20.0,
+          onPressed: () {
+            // setting global variable to persist search
+            globalStringsA.updateSearchPageCurrSearchQuery((showHistory)
+                ? globalStrings.searchHistory[index]
+                : suggestionResponseList[index][0]);
+
+            // sending the current text to the search field
+            sendSuggestionToField((showHistory)
+                ? globalStrings.searchHistory[index]
+                : suggestionResponseList[index][0]);
+          },
+          color: globalColors.searchPageSuggestionsIconColor,
+        ));
+  }
+
+  Widget deleteSearchResultBtn(bool showHistory, int index) {
+    return Container(
+      child: (showHistory)
+          ? IconButton(
+              tooltip: "Delete Search Result",
+              icon: Icon(Icons.clear),
+              iconSize: 20.0,
+              onPressed: () {
+                setState(() {
+                  // removing search histoy listing
+                  globalStrings.searchHistory.removeAt(index);
+                });
+                globalFun.updateSearchHistorySharedPrefs();
+              },
+              color: globalColors.searchPageSuggestionsIconColor,
+            )
+          : null,
     );
   }
 }
