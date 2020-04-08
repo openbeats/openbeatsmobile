@@ -1,11 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
+import 'package:openbeatsmobile/pages/tabs/searchTab.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalStrings.dart' as globalStrings;
 import '../globals/globalFun.dart' as globalFun;
+import '../globals/actions/globalVarsA.dart' as globalVarsA;
+import '../widgets/tabsw/searchTabW.dart' as searchTabW;
 
 class HomePage extends StatefulWidget {
   @override
@@ -14,31 +18,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // homePageScaffold key for the Scaffold containing the tabs
-  final GlobalKey<ScaffoldState> tabScaffoldkey =
+  final GlobalKey<ScaffoldState> tabScaffoldKey =
       new GlobalKey<ScaffoldState>();
 
-  // holds the list of tab pages
-  List<Widget> homePageTabBody = [
-    Center(
-      child: Text("Page 1"),
-    ),
-    Center(
-      child: Text("Page 2"),
-    ),
-    Center(
-      child: Text("Page 3"),
-    ),
-    Center(
-      child: Text("Page 4"),
-    ),
-    Center(
-      child: Text("Page 5"),
-    ),
-  ];
   // flag to mark that the search results are loading
   bool searchResultLoading = false;
   // tab controller to help control the tabs in code
   TabController tabController;
+  // holds the videos received for query
+  List videosResponseList = new List();
 
   // navigating to the searchPage
   void navigateToSearchPage() async {
@@ -65,7 +53,62 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       // adding the query to the search results history
       globalFun.addToSearchHistory(selectedSearchResult);
       // calling function to get videos for query
-      // getVideosForQuery(selectedSearchResult);
+      getVideosForQuery(selectedSearchResult);
+    }
+  }
+
+  // gets list of videos for query
+  void getVideosForQuery(String query) async {
+    // sanitizing query to prevent rogue characters
+    query = query.replaceAll(new RegExp(r'[^\w\s]+'), '');
+    // constructing url to send request to to get list of videos
+    String url = "https://api.openbeats.live/ytcat?q=" + query + " audio";
+    try {
+      // sending http get request
+      var response = await Dio().get(url);
+      // decoding to json
+      var responseJSON = response.data;
+      // checking if proper response is received
+      if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
+        setState(() {
+          // response as list to iterate over
+          videosResponseList = responseJSON["data"] as List;
+          // calling function to set the videoResponseList globally for persistency
+          globalVarsA.setPersistentVideoList(videosResponseList);
+          // removing loading animation from screen
+          searchResultLoading = false;
+          // removing any snackbar
+          tabScaffoldKey.currentState.hideCurrentSnackBar();
+        });
+      } else {
+        setState(() {
+          // removing loading animation from screen
+          searchResultLoading = false;
+        });
+        globalFun.showSnackBars(
+            tabScaffoldKey,
+            context,
+            "Could not get proper response from server. Please try another query",
+            globalColors.snackBarWarningMsgColor,
+            Duration(seconds: 3));
+      }
+    } catch (e) {
+      // catching dio error
+      if (e is DioError) {
+        // removing previous snackBar
+        tabScaffoldKey.currentState.removeCurrentSnackBar();
+        globalFun.showSnackBars(
+            tabScaffoldKey,
+            context,
+            "Not able to connect to internet",
+            globalColors.snackBarErrorMsgColor,
+            Duration(seconds: 5));
+        // removing the loading animation
+        setState(() {
+          // removing loading animation from screen
+          searchResultLoading = false;
+        });
+      }
     }
   }
 
@@ -126,13 +169,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return DefaultTabController(
       length: globalStrings.homePageTabTitles.length,
       child: Scaffold(
-        key: tabScaffoldkey,
+        key: tabScaffoldKey,
         backgroundColor: globalColors.appBackgroundColor,
         appBar: homePageW.homePageAppBar(
             context, navigateToSearchPage, tabController),
         body: TabBarView(
           controller: tabController,
-          children: homePageTabBody,
+          children: <Widget>[
+            Center(
+              child: Text("Page 1"),
+            ),
+            Center(
+              child: Text("Page 2"),
+            ),
+            SearchTab(searchResultLoading),
+            Center(
+              child: Text("Page 4"),
+            ),
+            Center(
+              child: Text("Page 5"),
+            )
+          ],
         ),
       ),
     );

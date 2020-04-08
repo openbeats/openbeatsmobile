@@ -6,3 +6,4 @@ Widget homePageLogo = Image.asset(
   globalStrings.homePageLogoURI,
   height: 36.0,
 );
+

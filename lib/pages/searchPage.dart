@@ -53,7 +53,7 @@ class _SearchPageState extends State<SearchPage> {
           globalFun.showSnackBars(
             searcPageScaffoldKey,
             context,
-            "Internet Connection unavailable",
+            "Not able to connect to internet",
             globalColors.snackBarErrorMsgColor,
             Duration(minutes: 30),
           );
@@ -136,30 +136,50 @@ class _SearchPageState extends State<SearchPage> {
   Widget searchPageBody() {
     return Container(
       child: (suggestionResponseList.length != 0)
-          ? searchResultListView(false)
+          ? suggestionsListBuilder(false)
           : (globalStrings.searchHistory.length != 0)
-              ? searchResultListView(true)
+              ? suggestionsListBuilder(true)
               : Container(),
     );
   }
 
   // holds the list view builder responsible for showing the suggestions
-  Widget searchResultListView(bool showHistory) {
-    print(globalStrings.searchHistory);
-    return ListView.builder(
+  Widget suggestionsListBuilder(showHistory) {
+    return ListView(
       physics: BouncingScrollPhysics(),
-      itemBuilder: (context, index) =>
-          suggestionsListBuilder(context, index, showHistory),
-      itemCount: (showHistory)
-          ? (globalStrings.searchHistory.length < 10)
-              ? globalStrings.searchHistory.length
-              : 10
-          : suggestionResponseList.length,
+      children: <Widget>[
+        suggestionsTitleW(showHistory),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (context, index) =>
+              suggestionsListTile(context, index, showHistory),
+          itemCount: (showHistory)
+              ? (globalStrings.searchHistory.length < 10)
+                  ? globalStrings.searchHistory.length
+                  : 10
+              : suggestionResponseList.length,
+        )
+      ],
     );
   }
 
-  // builds the suggestions listView
-  Widget suggestionsListBuilder(
+  // holds the title for the suggestions and searchHistory list
+  Widget suggestionsTitleW(bool showHistory) {
+    return Container(
+      margin: EdgeInsets.only(left: 20.0, top: 10.0, bottom: 5.0),
+      child: Text(
+        (showHistory) ? "Search History" : "Suggestions",
+        style: TextStyle(
+          fontSize: 26.0,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  // holds the listTiles containing the suggestions and searchHistory
+  Widget suggestionsListTile(
       BuildContext context, int index, bool showHistory) {
     return ListTile(
       title: Container(
