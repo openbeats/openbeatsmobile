@@ -3,8 +3,8 @@ import '../globals/globalColors.dart' as globalColors;
 import '../globals/actions/globalStringsA.dart' as globalStringsA;
 
 // holds the appBar for the SearchPage
-Widget appBar(
-    queryFieldController, getImmediateSuggestions, BuildContext context) {
+Widget appBar(TextEditingController queryFieldController,
+    getImmediateSuggestions, BuildContext context) {
   return AppBar(
     elevation: 0,
     backgroundColor: globalColors.searchPageScaffoldBG,
@@ -65,16 +65,23 @@ Widget appBar(
         ),
       ),
     ),
-    actions: <Widget>[searchButton()],
+    actions: <Widget>[searchButton(queryFieldController, context)],
   );
 }
 
 // holds the search button
-Widget searchButton() {
+Widget searchButton(
+    TextEditingController queryFieldController, BuildContext context) {
   return Container(
     child: IconButton(
       icon: Icon(Icons.search),
-      onPressed: () {},
+      onPressed: () {
+        // setting global variable to persist search
+        globalStringsA
+            .updateSearchPageCurrSearchQuery(queryFieldController.text);
+        // going back to previous screen with the suggestion data
+        Navigator.pop(context, queryFieldController.text);
+      },
     ),
   );
 }
