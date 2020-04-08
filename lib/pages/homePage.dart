@@ -9,7 +9,6 @@ import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalStrings.dart' as globalStrings;
 import '../globals/globalFun.dart' as globalFun;
 import '../globals/actions/globalVarsA.dart' as globalVarsA;
-import '../widgets/tabsw/searchTabW.dart' as searchTabW;
 
 class HomePage extends StatefulWidget {
   @override
@@ -182,7 +181,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             Center(
               child: Text("Page 2"),
             ),
-            SearchTab(searchResultLoading),
+            SearchTab(searchResultLoading, videosResponseList),
             Center(
               child: Text("Page 4"),
             ),

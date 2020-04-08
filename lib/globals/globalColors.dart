@@ -31,4 +31,4 @@ Color searchPageCursorColor = Colors.red;
 Color searchPageSuggestionsColor = Colors.grey;
 Color searchPageSuggestionsIconColor = Colors.grey;
 // searchTab.dart
-Color searchTabLoadingIndicatorColor = Colors.red;
+Color searchTabDefaultTextColor = Colors.grey;

@@ -13,6 +13,7 @@ Widget homePageAppBar(
     backgroundColor: globalColors.homePageAppBarBG,
     actionsIconTheme:
         IconThemeData(color: globalColors.homePageAppBarIconColor),
+    titleSpacing: 0.0,
     title: globalWids.homePageLogo,
     actions: <Widget>[
       searchActBtn(context, navigateToSearchPage),
