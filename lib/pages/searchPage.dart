@@ -16,7 +16,7 @@ class _SearchPageState extends State<SearchPage> {
   // holds the list of suggestions
   List suggestionResponseList = new List();
   // scaffold key for snackBar
-  final GlobalKey<ScaffoldState> searcPageScaffoldKey =
+  final GlobalKey<ScaffoldState> searchPageScaffoldKey =
       new GlobalKey<ScaffoldState>();
   // controller to monitor if the textField becomes empty
   final TextEditingController queryFieldController =
@@ -45,22 +45,20 @@ class _SearchPageState extends State<SearchPage> {
         });
       }
       // removing the noInternet snackbar when internet connection is returned
-      searcPageScaffoldKey.currentState.removeCurrentSnackBar();
-    } catch (e) {
+      searchPageScaffoldKey.currentState.removeCurrentSnackBar();
+    } on DioError {
       // catching dio error
-      if (e is DioError) {
-        if (!noInternetSnackbarShown) {
-          globalFun.showSnackBars(
-            searcPageScaffoldKey,
-            context,
-            "Not able to connect to internet",
-            globalColors.snackBarErrorMsgColor,
-            Duration(minutes: 30),
-          );
-          setState(() {
-            noInternetSnackbarShown = true;
-          });
-        }
+      if (!noInternetSnackbarShown) {
+        globalFun.showSnackBars(
+          searchPageScaffoldKey,
+          context,
+          "Not able to connect to internet",
+          globalColors.snackBarErrorMsgColor,
+          Duration(minutes: 30),
+        );
+        setState(() {
+          noInternetSnackbarShown = true;
+        });
       }
     }
   }
@@ -124,7 +122,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: searcPageScaffoldKey,
+      key: searchPageScaffoldKey,
       backgroundColor: globalColors.appBackgroundColor,
       appBar: searchPageW.appBar(
           queryFieldController, getImmediateSuggestions, context),

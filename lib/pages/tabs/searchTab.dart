@@ -58,10 +58,20 @@ class _SearchTabState extends State<SearchTab> {
 
   // holds the listview builder to build the search results
   Widget searchResultListBuilder() {
-    return ListView.builder(
+    return ListView(
       physics: BouncingScrollPhysics(),
-      itemBuilder: searchResultListTile,
-      itemCount: widget.videosResponseList.length,
+      children: <Widget>[
+        ListView.builder(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          itemBuilder: searchResultListTile,
+          itemCount: widget.videosResponseList.length,
+        ),
+        // space to compensate for the slideUpPanel
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.2,
+        )
+      ],
     );
   }
 

@@ -8,7 +8,7 @@ void showSnackBars(GlobalKey<ScaffoldState> scaffoldKey, context,
     snackBarContent, snackBarBGColors, snackBarDuration) {
   // forming required snackbar
   SnackBar statusSnackBar = SnackBar(
-    content: snackBarContent,
+    content: Text(snackBarContent),
     backgroundColor: snackBarBGColors,
     duration: snackBarDuration,
   );

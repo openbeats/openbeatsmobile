@@ -97,7 +97,7 @@ Widget searchResultSubtitles(
     Function reformatViews, String views, String duration) {
   return Container(
     margin: EdgeInsets.only(top: 5.0),
-    child: Text(duration + "  |  " + reformatViews(views)),
+    child: Text(duration + " | " + reformatViews(views)),
   );
 }
 
