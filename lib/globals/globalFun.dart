@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './globalStrings.dart' as globalStrings;
 import './actions/globalStringsA.dart' as globalStringsA;
@@ -46,4 +47,17 @@ void updateSearchHistorySharedPrefs() async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList("searchStrings", globalStrings.searchHistory);
+}
+
+// function to show ToastMessage
+void showToastMessage(
+    String message, Color bgColor, Color txtColor, bool toastLengthLong) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: (toastLengthLong) ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: bgColor,
+    textColor: txtColor,
+    fontSize: 16.0,
+  );
 }

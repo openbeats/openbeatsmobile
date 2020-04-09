@@ -11,6 +11,8 @@ import '../globals/globalFun.dart' as globalFun;
 import '../globals/actions/globalVarsA.dart' as globalVarsA;
 
 class HomePage extends StatefulWidget {
+  Function startAudioService, startSinglePlayback;
+  HomePage(this.startAudioService, this.startSinglePlayback);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -176,12 +178,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           controller: tabController,
           children: <Widget>[
             Center(
-              child: Text("Page 1"),
+              child: FlatButton(
+                onPressed: () => widget.startAudioService(),
+                child: Text("Start"),
+              ),
             ),
             Center(
               child: Text("Page 2"),
             ),
-            SearchTab(searchResultLoading, videosResponseList),
+            SearchTab(searchResultLoading, videosResponseList,
+                widget.startSinglePlayback),
             Center(
               child: Text("Page 4"),
             ),
