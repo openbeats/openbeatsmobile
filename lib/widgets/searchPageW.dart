@@ -45,6 +45,8 @@ Widget appBar(TextEditingController queryFieldController,
           Navigator.pop(context, value);
         },
         decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: "Search for songs, artists, audio books...",
           suffixIcon: (queryFieldController.text.length == 0)
               ? null
               : IconButton(
@@ -56,8 +58,6 @@ Widget appBar(TextEditingController queryFieldController,
                   icon: Icon(Icons.clear),
                   color: globalColors.searchPageAppBarIconColor,
                 ),
-          border: InputBorder.none,
-          hintText: "Search for songs, artists, audio books...",
           hintStyle: TextStyle(
             color: globalColors.searchPageAppBarHintColor,
             fontSize: 16.0,

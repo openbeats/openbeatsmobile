@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:rxdart/rxdart.dart';
 import './pages/homePage.dart';
 import './globals/globalColors.dart' as globalColors;
 import './globals/globalStrings.dart' as globalStrings;
@@ -43,7 +44,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  //
+  final BehaviorSubject<double> dragPositionSubject =
+      BehaviorSubject.seeded(null);
+
   // starts single playback of audio
   void startSinglePlayback(Map<String, dynamic> mediaParameters) async {
     // check if the audioService is already running
@@ -104,7 +107,8 @@ class _MyAppState extends State<MyApp> {
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.mainPrimarySwatch,
       ),
-      home: HomePage(startAudioService, startSinglePlayback),
+      home:
+          HomePage(startAudioService, startSinglePlayback, dragPositionSubject),
     );
   }
 }
@@ -359,20 +363,25 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onCustomAction(String action, arguments) async {
     super.onCustomAction(action, arguments);
     if (action == "startSinglePlayback") {
-      var state = BasicPlaybackState.connecting;
-      var position = 0;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      _shouldRepeat = false;
-      // gets the mediaItem for the song to play with the valid streamingURL
-      MediaItem currMediaItem = await getStreamingURL(arguments);
-      // setting the current mediaItem
-      await AudioServiceBackground.setMediaItem(currMediaItem);
-      // setting URL for audio player
-      await _audioPlayer.setUrl(currMediaItem.id);
-      // playing audio
-      onPlay();
+      startSinglePlayback(arguments);
     }
+  }
+
+  // starts playback of single song
+  void startSinglePlayback(arguments) async {
+    var state = BasicPlaybackState.connecting;
+    var position = 0;
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
+    _shouldRepeat = false;
+    // gets the mediaItem for the song to play with the valid streamingURL
+    MediaItem currMediaItem = await getStreamingURL(arguments);
+    // setting the current mediaItem
+    await AudioServiceBackground.setMediaItem(currMediaItem);
+    // setting URL for audio player
+    await _audioPlayer.setUrl(currMediaItem.id);
+    // playing audio
+    onPlay();
   }
 
   // function to get the streaming URL for the audio

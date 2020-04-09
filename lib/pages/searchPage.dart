@@ -133,11 +133,17 @@ class _SearchPageState extends State<SearchPage> {
   // holds the body implementation of searchPage
   Widget searchPageBody() {
     return Container(
-      child: (suggestionResponseList.length != 0)
-          ? suggestionsListBuilder(false)
-          : (globalStrings.searchHistory.length != 0)
-              ? suggestionsListBuilder(true)
-              : Container(),
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        child: (suggestionResponseList.length != 0)
+            ? suggestionsListBuilder(false)
+            : AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: (globalStrings.searchHistory.length != 0)
+                    ? suggestionsListBuilder(true)
+                    : Container(),
+              ),
+      ),
     );
   }
 
@@ -157,7 +163,7 @@ class _SearchPageState extends State<SearchPage> {
                   ? globalStrings.searchHistory.length
                   : 10
               : suggestionResponseList.length,
-        )
+        ),
       ],
     );
   }
@@ -203,10 +209,10 @@ class _SearchPageState extends State<SearchPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             updateQueryBtn(showHistory, index),
-            SizedBox(
-              width: 2.0,
-            ),
-            deleteSearchResultBtn(showHistory, index),
+            // SizedBox(
+            //   width: 2.0,
+            // ),
+            // deleteSearchResultBtn(showHistory, index),
           ],
         ),
       ),

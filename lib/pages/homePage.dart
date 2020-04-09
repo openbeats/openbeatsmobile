@@ -1,18 +1,23 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalStrings.dart' as globalStrings;
 import '../globals/globalFun.dart' as globalFun;
 import '../globals/actions/globalVarsA.dart' as globalVarsA;
+import '../globals/globalWids.dart' as globalWids;
 
 class HomePage extends StatefulWidget {
   Function startAudioService, startSinglePlayback;
-  HomePage(this.startAudioService, this.startSinglePlayback);
+  BehaviorSubject<double> dragPositionSubject;
+  HomePage(this.startAudioService, this.startSinglePlayback,
+      this.dragPositionSubject);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -113,15 +118,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     }
   }
 
+  // connects to the audio_service
+  void connect() async {
+    await AudioService.connect();
+  }
+
+  // disconnects from the audio_service
+  void disconnect() {
+    AudioService.disconnect();
+  }
+
   @override
   void initState() {
     super.initState();
     tabController = new TabController(
         vsync: this, length: globalStrings.homePageTabTitles.length);
+    connect();
   }
 
   @override
   void dispose() {
+    disconnect();
     tabController.dispose();
     super.dispose();
   }
@@ -149,12 +166,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the widget to display when slideUp is collapsed
   Widget slideUpCollapsedW() {
-    return Container(
-      decoration: BoxDecoration(
-        color: globalColors.homePageSlideUpCollapsedBG,
-      ),
-      child: null,
-    );
+    String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
+        audioTitle = "No audio playing",
+        audioTimeStamp = "00:00";
+    int audioPosition = 0;
+    return (AudioService.playbackState != null)
+        ? StreamBuilder(
+            stream: AudioService.playbackStateStream,
+            builder: (context, snapshot) {
+              PlaybackState state = snapshot.data;
+              if (AudioService.currentMediaItem != null) {
+                // getting thumbNail image
+                audioThumbnail = AudioService.currentMediaItem.artUri;
+                // getting audioTitle
+                audioTitle = AudioService.currentMediaItem.title;
+              }
+              return Container(
+                  decoration: BoxDecoration(
+                    color: globalColors.homePageSlideUpCollapsedBG,
+                  ),
+                  child: homePageW.nowPlayingCollapsed(audioThumbnail,
+                      audioTitle, context, widget.dragPositionSubject));
+            })
+        : homePageW.nowPlayingCollapsed(
+            audioThumbnail, audioTitle, context, widget.dragPositionSubject);
   }
 
   // holds the widget in the slide up panel

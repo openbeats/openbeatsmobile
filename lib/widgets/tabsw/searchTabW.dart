@@ -22,12 +22,25 @@ Widget searchTabDefault(BuildContext context) {
             animation: "Searching",
           ),
         ),
-        Text(
-          "Try searching for any song\nof your liking",
+        RichText(
           textAlign: TextAlign.center,
-          style: TextStyle(
-              color: globalColors.searchTabDefaultTextColor, fontSize: 25.0),
-        )
+          text: TextSpan(
+            style: TextStyle(
+                color: globalColors.searchTabDefaultTextColor, fontSize: 25.0),
+            children: [
+              TextSpan(
+                text: "Click on ",
+              ),
+              WidgetSpan(
+                child: Icon(
+                  Icons.search,
+                  size: 30.0,
+                ),
+              ),
+              TextSpan(text: " to search\nfor your favorite songs")
+            ],
+          ),
+        ),
       ],
     ),
   );
@@ -48,36 +61,6 @@ Widget searchResultLoadingW() {
   );
 }
 
-// holds the thumbnail to show in searchResults
-Widget searchResultThumbnail(String thumbnailURL, BuildContext context) {
-  return Container(
-    width: MediaQuery.of(context).size.width * 0.15,
-    height: MediaQuery.of(context).size.width * 0.15,
-    decoration: BoxDecoration(boxShadow: [
-      new BoxShadow(
-        color: Colors.black,
-        blurRadius: 2.0,
-        offset: new Offset(1.0, 1.0),
-      ),
-    ], borderRadius: BorderRadius.circular(globalVars.borderRadius)),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(globalVars.borderRadius),
-      child: CachedNetworkImage(
-        fit: BoxFit.cover,
-        imageUrl: thumbnailURL,
-        placeholder: (context, url) => Center(
-          child: Container(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
-    ),
-  );
-}
-
 // holds the audio title to show in searchResults
 Widget searchResultTitle(String title, BuildContext context) {
   return Container(
@@ -89,15 +72,6 @@ Widget searchResultTitle(String title, BuildContext context) {
         fontWeight: FontWeight.bold,
       ),
     ),
-  );
-}
-
-// holds the subtitles for searchResults
-Widget searchResultSubtitles(
-    Function reformatViews, String views, String duration) {
-  return Container(
-    margin: EdgeInsets.only(top: 5.0),
-    child: Text(duration + " | " + reformatViews(views)),
   );
 }
 
