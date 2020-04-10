@@ -38,7 +38,7 @@ class _SearchTabState extends State<SearchTab> {
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 500),
       child: (widget.searchResultLoading)
-          ? searchTabW.searchResultLoadingW()
+          ? searchTabW.searchResultLoadingW(context)
           : searchTabBody(),
     );
   }

@@ -47,15 +47,20 @@ Widget searchTabDefault(BuildContext context) {
 }
 
 // holds the widget to show when the search results are loading
-Widget searchResultLoadingW() {
+Widget searchResultLoadingW(BuildContext context) {
   return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.start,
     crossAxisAlignment: CrossAxisAlignment.center,
     children: <Widget>[
       SizedBox(
-        height: 50.0,
-        width: 50.0,
-        child: CircularProgressIndicator(),
+        height: MediaQuery.of(context).size.height * 0.3,
+      ),
+      SizedBox(
+        height: 100.0,
+        child: FlareActor(
+          "assets/flareAssets/loadinganim.flr",
+          animation: "loadnew",
+        ),
       )
     ],
   );
