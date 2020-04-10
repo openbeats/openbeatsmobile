@@ -23,7 +23,7 @@ dependencies:
   dio: ^3.0.9
   sliding_up_panel: ^1.0.1
   just_audio: ^0.1.4
-  audio_service: ^0.7.0
+  audio_service: ^0.7.1
   rxdart: ^0.23.1
   page_transition: ^1.1.5
   shared_preferences: ^0.5.6+3
@@ -63,19 +63,19 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  fonts:
-    - family: Helvetica-Normal
-      fonts:
-        - asset: assets/fonts/Helvetica-Normal.ttf
-          style: normal
-    # - family: Poppins-Medium
-    #   fonts:
-    #     - asset: assets/fonts/Poppins-SemiBold.ttf
-    #       style: normal
-    # - family: Poppins-Bold
-    #   fonts:
-    #     - asset: assets/fonts/Poppins-Bold.ttf
-    #       style: normal
+  # fonts:
+  #   - family: Helvetica-Normal
+  #     fonts:
+  #       - asset: assets/fonts/Helvetica-Normal.ttf
+  #         style: normal
+  # - family: Poppins-Medium
+  #   fonts:
+  #     - asset: assets/fonts/Poppins-SemiBold.ttf
+  #       style: normal
+  # - family: Poppins-Bold
+  #   fonts:
+  #     - asset: assets/fonts/Poppins-Bold.ttf
+  #       style: normal
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

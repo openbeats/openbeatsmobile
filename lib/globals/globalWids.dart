@@ -24,7 +24,7 @@ Widget audioThumbnailW(String thumbnailURL, BuildContext context) {
     decoration: BoxDecoration(boxShadow: [
       new BoxShadow(
         color: Colors.black,
-        blurRadius: 2.0,
+        blurRadius: 3.0,
         offset: new Offset(1.0, 1.0),
       ),
     ], borderRadius: BorderRadius.circular(globalVars.borderRadius)),
@@ -70,12 +70,12 @@ Widget audioDetailsW(String views, String duration) {
 }
 
 // holds the timing details to show under the title in collapsed slideUpPanel
-Widget audioDetailsTimingW(int seconds, String duration) {
-  return Text(
-    globalFun.getCurrentTimeStamp(seconds / 1000) + " / " + duration,
-    style: TextStyle(
-      fontSize: 12.0,
-      color: Colors.grey,
-    ),
-  );
-}
+// Widget audioDetailsTimingW(int seconds, String duration) {
+//   return Text(
+//     globalFun.getCurrentTimeStamp(seconds / 1000) + " / " + duration,
+//     style: TextStyle(
+//       fontSize: 12.0,
+//       color: Colors.grey,
+//     ),
+//   );
+// }

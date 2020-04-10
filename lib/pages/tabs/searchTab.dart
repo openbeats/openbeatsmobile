@@ -58,9 +58,12 @@ class _SearchTabState extends State<SearchTab> {
     return ListView(
       physics: BouncingScrollPhysics(),
       children: <Widget>[
-        ListView.builder(
+        ListView.separated(
           shrinkWrap: true,
           physics: BouncingScrollPhysics(),
+          separatorBuilder: (context, index) {
+            return Divider();
+          },
           itemBuilder: searchResultListTile,
           itemCount: widget.videosResponseList.length,
         ),
@@ -77,7 +80,6 @@ class _SearchTabState extends State<SearchTab> {
   // holds the listtile for the searchResults
   Widget searchResultListTile(BuildContext context, int index) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5.0),
       decoration: BoxDecoration(),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
