@@ -318,7 +318,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_queue.length == 1) {
+    if (_queue.length <= 1) {
       if (_playing != null && _playing) {
         return [
           pauseControl,
@@ -375,19 +375,29 @@ class AudioPlayerTask extends BackgroundAudioTask {
     var position = 0;
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
-    _shouldRepeat = false;
-    // gets the mediaItem for the song to play with the valid streamingURL
-    MediaItem currMediaItem = await getStreamingURL(arguments);
+    // creating mediaItem instance to immidiately show response to user
+    MediaItem currMediaItem = MediaItem(
+      id: arguments["videoId"],
+      album: "OpenBeats Music",
+      title: arguments['title'],
+      duration: arguments['durationInMilliSeconds'],
+      artUri: arguments['thumbnail'],
+    );
     // setting the current mediaItem
     await AudioServiceBackground.setMediaItem(currMediaItem);
+    // refreshing state to update mediaItem details
+    AudioServiceBackground.setState(
+        controls: getControls(state), basicState: state, position: position);
+    // gets the mediaItem for the song to play with the valid streamingURL
+    String streamingURL = await getStreamingURL(arguments);
     // setting URL for audio player
-    await _audioPlayer.setUrl(currMediaItem.id);
+    await _audioPlayer.setUrl(streamingURL);
     // playing audio
     onPlay();
   }
 
   // function to get the streaming URL for the audio
-  Future<MediaItem> getStreamingURL(mediaParamters) async {
+  Future<String> getStreamingURL(mediaParamters) async {
     // holds the responseJSON containing the streaming URL
     var responseJSON;
     try {
@@ -399,15 +409,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
       // checking conditions to make sure the streamingURL has been recieved
       if (responseJSON.data["status"] == true &&
           responseJSON.data["link"] != null) {
-        // creating mediaItem instance
-        MediaItem currMediaItem = MediaItem(
-          id: responseJSON.data["link"],
-          album: "OpenBeats Music",
-          title: mediaParamters['title'],
-          duration: mediaParamters['durationInMilliSeconds'],
-          artUri: mediaParamters['thumbnail'],
-        );
-        return currMediaItem;
+        return responseJSON.data["link"];
       }
     } on DioError {
       globalFun.showToastMessage(

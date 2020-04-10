@@ -174,13 +174,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         stream: AudioService.playbackStateStream,
         builder: (context, snapshot) {
           PlaybackState state = snapshot.data;
-          if (state != null && state.basicState != BasicPlaybackState.none) {
+
+          if (state != null &&
+              state.basicState != BasicPlaybackState.none &&
+              state.basicState != BasicPlaybackState.stopped) {
             if (AudioService.currentMediaItem != null) {
               // getting thumbNail image
               audioThumbnail = AudioService.currentMediaItem.artUri;
               // getting audioTitle
               audioTitle = AudioService.currentMediaItem.title;
             }
+          } else {
+            // resetting values
+            audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF";
+            audioTitle = "No audio playing";
           }
           return Container(
               decoration: BoxDecoration(
