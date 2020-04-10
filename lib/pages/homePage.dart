@@ -27,6 +27,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> tabScaffoldKey =
       new GlobalKey<ScaffoldState>();
 
+  // controls the animation of the play_pause button in collapsed slideUpPanel
+  AnimationController playPauseAnimationController;
   // flag to mark that the search results are loading
   bool searchResultLoading = false;
   // tab controller to help control the tabs in code
@@ -131,15 +133,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    connect();
     tabController = new TabController(
         vsync: this, length: globalStrings.homePageTabTitles.length);
-    connect();
+    // initiating animation controller for play_pause button in the collapsed slideUpPanel
+    playPauseAnimationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
   }
 
   @override
   void dispose() {
     disconnect();
     tabController.dispose();
+    // disposing play_pause animation controller
+    playPauseAnimationController.dispose();
     super.dispose();
   }
 
@@ -170,7 +177,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget slideUpCollapsedW() {
     String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
         audioTitle = "No audio playing";
-    
+
     return StreamBuilder(
         stream: AudioService.playbackStateStream,
         builder: (context, snapshot) {
@@ -179,7 +186,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           if (state != null &&
               state.basicState != BasicPlaybackState.none &&
               state.basicState != BasicPlaybackState.stopped) {
-            print(state.basicState);
             if (AudioService.currentMediaItem != null &&
                 state.basicState != BasicPlaybackState.connecting) {
               // getting thumbNail image
@@ -204,8 +210,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 color: globalColors.homePageSlideUpCollapsedBG,
               ),
-              child: homePageW.nowPlayingCollapsed(state, audioThumbnail,
-                  audioTitle, context, widget.audioServicePlayPause));
+              child: homePageW.nowPlayingCollapsed(
+                  state,
+                  audioThumbnail,
+                  audioTitle,
+                  context,
+                  widget.audioServicePlayPause,
+                  playPauseAnimationController));
         });
   }
 
