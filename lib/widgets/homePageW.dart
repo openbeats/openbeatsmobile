@@ -83,7 +83,9 @@ Widget collapsedSlideUpControls(
 // holds th play&pause btn for collapsed slideUpPanel
 Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause) {
   return IconButton(
-    icon: Icon((state != null)
+    icon: Icon((state != null &&
+            (state.basicState == BasicPlaybackState.paused ||
+                state.basicState == BasicPlaybackState.playing))
         ? (state.basicState == BasicPlaybackState.paused)
             ? Icons.play_arrow
             : Icons.pause
