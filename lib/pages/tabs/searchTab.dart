@@ -17,6 +17,22 @@ class SearchTab extends StatefulWidget {
 }
 
 class _SearchTabState extends State<SearchTab> {
+  void startSinglePlaybackOnTap(int index) {
+    // constructing the mediaParameters object
+    Map<String, dynamic> mediaParameters = {
+      "title": widget.videosResponseList[index]["title"],
+      "thumbnail": widget.videosResponseList[index]["thumbnail"],
+      "duration": widget.videosResponseList[index]["duration"],
+      "durationInMilliSeconds": globalFun.reformatTimeStampToMilliSeconds(
+          widget.videosResponseList[index]["duration"]),
+      "videoId": widget.videosResponseList[index]["videoId"],
+      "channelName": widget.videosResponseList[index]["channelName"],
+      "views": widget.videosResponseList[index]["views"],
+    };
+    // calling method to start media playback
+    widget.startSinglePlayback(mediaParameters);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
@@ -58,28 +74,31 @@ class _SearchTabState extends State<SearchTab> {
 
   // holds the listtile for the searchResults
   Widget searchResultListTile(BuildContext context, int index) {
-    return GestureDetector(
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 5.0),
-        decoration: BoxDecoration(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.03,
-            ),
-            Flexible(
-              flex: 1,
-              fit: FlexFit.tight,
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 5.0),
+      decoration: BoxDecoration(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.03,
+          ),
+          Flexible(
+            flex: 2,
+            fit: FlexFit.tight,
+            child: GestureDetector(
               child: globalWids.audioThumbnailW(
                   widget.videosResponseList[index]["thumbnail"], context),
+              onTap: () => startSinglePlaybackOnTap(index),
             ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.03,
-            ),
-            Flexible(
-              flex: 4,
-              fit: FlexFit.tight,
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.03,
+          ),
+          Flexible(
+            flex: 8,
+            fit: FlexFit.tight,
+            child: GestureDetector(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -91,33 +110,19 @@ class _SearchTabState extends State<SearchTab> {
                       widget.videosResponseList[index]["duration"])
                 ],
               ),
+              onTap: () => startSinglePlaybackOnTap(index),
             ),
-            Flexible(
-              flex: 1,
-              fit: FlexFit.tight,
-              child: searchTabW.searchResultExtraOptions(),
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width * 0.03,
-            ),
-          ],
-        ),
+          ),
+          Flexible(
+            flex: 1,
+            fit: FlexFit.tight,
+            child: searchTabW.searchResultExtraOptions(),
+          ),
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.03,
+          ),
+        ],
       ),
-      onTap: () {
-        // constructing the mediaParameters object
-        Map<String, dynamic> mediaParameters = {
-          "title": widget.videosResponseList[index]["title"],
-          "thumbnail": widget.videosResponseList[index]["thumbnail"],
-          "duration": widget.videosResponseList[index]["duration"],
-          "durationInMilliSeconds": globalFun.reformatTimeStampToMilliSeconds(
-              widget.videosResponseList[index]["duration"]),
-          "videoId": widget.videosResponseList[index]["videoId"],
-          "channelName": widget.videosResponseList[index]["channelName"],
-          "views": widget.videosResponseList[index]["views"],
-        };
-        // calling method to start media playback
-        widget.startSinglePlayback(mediaParameters);
-      },
     );
   }
 }
