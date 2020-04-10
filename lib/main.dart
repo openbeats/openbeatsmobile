@@ -49,19 +49,21 @@ class _MyAppState extends State<MyApp> {
 
   // starts single playback of audio
   void startSinglePlayback(Map<String, dynamic> mediaParameters) async {
+    // getting instance of audioService playbackState
+    PlaybackState playbackState = AudioService.playbackState;
     // check if the audioService is already running
-    if (AudioService.playbackState != null) {
-      await AudioService.stop();
-      Timer(Duration(milliseconds: 500), () async {
-        startAudioService(false);
-      });
-    } else {
-      await startAudioService(false);
-    }
-    Timer(Duration(milliseconds: 500), () async {
-      // calling custom action to start single audio playback
+    if (playbackState != null &&
+        playbackState.basicState != BasicPlaybackState.none) {
       await AudioService.customAction("startSinglePlayback", mediaParameters);
-    });
+    } else {
+      // if audioService isn't running, start it
+      await startAudioService(false);
+      // giving time for audioService to startup
+      Timer(Duration(seconds: 1), () async {
+        // calling custom action to start single audio playback
+        await AudioService.customAction("startSinglePlayback", mediaParameters);
+      });
+    }
   }
 
   // sample function to start audioService

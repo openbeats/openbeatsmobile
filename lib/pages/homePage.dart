@@ -167,29 +167,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the widget to display when slideUp is collapsed
   Widget slideUpCollapsedW() {
     String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
-        audioTitle = "No audio playing",
-        audioTimeStamp = "00:00";
-    int audioPosition = 0;
-    return (AudioService.playbackState != null)
-        ? StreamBuilder(
-            stream: AudioService.playbackStateStream,
-            builder: (context, snapshot) {
-              PlaybackState state = snapshot.data;
-              if (AudioService.currentMediaItem != null) {
-                // getting thumbNail image
-                audioThumbnail = AudioService.currentMediaItem.artUri;
-                // getting audioTitle
-                audioTitle = AudioService.currentMediaItem.title;
-              }
-              return Container(
-                  decoration: BoxDecoration(
-                    color: globalColors.homePageSlideUpCollapsedBG,
-                  ),
-                  child: homePageW.nowPlayingCollapsed(audioThumbnail,
-                      audioTitle, context, widget.dragPositionSubject));
-            })
-        : homePageW.nowPlayingCollapsed(
-            audioThumbnail, audioTitle, context, widget.dragPositionSubject);
+        audioTitle = "No audio playing";
+    // getting instance of audioService playbackState
+    PlaybackState playbackState = AudioService.playbackState;
+    return StreamBuilder(
+        stream: AudioService.playbackStateStream,
+        builder: (context, snapshot) {
+          PlaybackState state = snapshot.data;
+          if (state != null && state.basicState != BasicPlaybackState.none) {
+            if (AudioService.currentMediaItem != null) {
+              // getting thumbNail image
+              audioThumbnail = AudioService.currentMediaItem.artUri;
+              // getting audioTitle
+              audioTitle = AudioService.currentMediaItem.title;
+            }
+          }
+          return Container(
+              decoration: BoxDecoration(
+                color: globalColors.homePageSlideUpCollapsedBG,
+              ),
+              child: homePageW.nowPlayingCollapsed(audioThumbnail, audioTitle,
+                  context, widget.dragPositionSubject));
+        });
   }
 
   // holds the widget in the slide up panel

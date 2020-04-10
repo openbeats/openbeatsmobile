@@ -115,33 +115,7 @@ Widget nowPlayingCollapsed(String audioThumbnail, String audioTitle,
       Flexible(
         flex: 3,
         fit: FlexFit.tight,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            globalWids.audioTitleW(audioTitle, context),
-            Container(
-              child: (AudioService.playbackState != null &&
-                      AudioService.currentMediaItem != null)
-                  ? StreamBuilder(
-                      stream: Rx.combineLatest2<double, double, double>(
-                          dragPositionSubject.stream,
-                          Stream.periodic(Duration(milliseconds: 200)),
-                          (dragPosition, _) => dragPosition),
-                      builder: (context, snapshot) {
-                        // getting audioDuration in Min
-                        String audioTimeStamp = globalFun.getCurrentTimeStamp(
-                            AudioService.currentMediaItem.duration / 1000);
-                        // getting the current audio position
-                        int audioPosition = AudioService.playbackState.position;
-                        return globalWids.audioDetailsTimingW(
-                            audioPosition, audioTimeStamp);
-                      },
-                    )
-                  : null,
-            ),
-          ],
-        ),
+        child: globalWids.audioTitleW(audioTitle, context),
       ),
       Flexible(
         flex: 2,
