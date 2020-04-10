@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import '../../widgets/tabsw/searchTabW.dart' as searchTabW;
 import '../../globals/globalWids.dart' as globalWids;
@@ -54,31 +55,49 @@ class _SearchTabState extends State<SearchTab> {
   }
 
   // holds the listview builder to build the search results
+  // using stream to notify search result of currently playing media item
   Widget searchResultListBuilder() {
-    return ListView(
-      physics: BouncingScrollPhysics(),
-      children: <Widget>[
-        ListView.separated(
-          shrinkWrap: true,
-          physics: BouncingScrollPhysics(),
-          separatorBuilder: (context, index) {
-            return Divider();
-          },
-          itemBuilder: searchResultListTile,
-          itemCount: widget.videosResponseList.length,
-        ),
-        // space to compensate for the slideUpPanel
-        SizedBox(
-          height: (MediaQuery.of(context).orientation == Orientation.portrait)
-              ? MediaQuery.of(context).size.height * 0.2
-              : MediaQuery.of(context).size.height * 0.3,
-        )
-      ],
-    );
+    // holds the thumbnailURL of the current playing media (empty if no media is playing)
+    String currentPlayingMediaThumbnail;
+    return StreamBuilder(
+        stream: AudioService.playbackStateStream,
+        builder: (context, snapshot) {
+          // setting default value for the thumbnail
+          currentPlayingMediaThumbnail = "";
+          PlaybackState state = snapshot.data;
+          // getting the title of the current playing media
+          if (state != null && AudioService.currentMediaItem != null) {
+            currentPlayingMediaThumbnail = AudioService.currentMediaItem.artUri;
+          }
+          return ListView(
+            physics: BouncingScrollPhysics(),
+            children: <Widget>[
+              ListView.separated(
+                shrinkWrap: true,
+                physics: BouncingScrollPhysics(),
+                separatorBuilder: (context, index) {
+                  return Divider();
+                },
+                itemBuilder: (BuildContext context, int index) =>
+                    searchResultListTile(
+                        context, index, currentPlayingMediaThumbnail),
+                itemCount: widget.videosResponseList.length,
+              ),
+              // space to compensate for the slideUpPanel
+              SizedBox(
+                height:
+                    (MediaQuery.of(context).orientation == Orientation.portrait)
+                        ? MediaQuery.of(context).size.height * 0.2
+                        : MediaQuery.of(context).size.height * 0.3,
+              )
+            ],
+          );
+        });
   }
 
   // holds the listtile for the searchResults
-  Widget searchResultListTile(BuildContext context, int index) {
+  Widget searchResultListTile(
+      BuildContext context, int index, String currentPlayingMediaThumbnail) {
     return Container(
       decoration: BoxDecoration(),
       child: Row(
@@ -108,7 +127,12 @@ class _SearchTabState extends State<SearchTab> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   globalWids.audioTitleW(
-                      widget.videosResponseList[index]["title"], context),
+                      widget.videosResponseList[index]["title"],
+                      context,
+                      (currentPlayingMediaThumbnail ==
+                              widget.videosResponseList[index]["thumbnail"])
+                          ? true
+                          : false),
                   globalWids.audioDetailsW(
                       widget.videosResponseList[index]["views"],
                       widget.videosResponseList[index]["duration"])

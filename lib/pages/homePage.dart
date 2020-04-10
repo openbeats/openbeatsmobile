@@ -170,8 +170,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget slideUpCollapsedW() {
     String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
         audioTitle = "No audio playing";
-    // getting instance of audioService playbackState
-    PlaybackState playbackState = AudioService.playbackState;
+    
     return StreamBuilder(
         stream: AudioService.playbackStateStream,
         builder: (context, snapshot) {

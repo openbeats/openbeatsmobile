@@ -124,7 +124,7 @@ Widget nowPlayingCollapsed(PlaybackState state, String audioThumbnail,
       Flexible(
         flex: 3,
         fit: FlexFit.tight,
-        child: globalWids.audioTitleW(audioTitle, context),
+        child: globalWids.audioTitleW(audioTitle, context, false),
       ),
       Flexible(
         flex: 2,

@@ -10,6 +10,8 @@ Color appBackgroundColor = _staticPrimaryLight;
 Color appIconColor = _staticPrimaryDark;
 Color snackBarErrorMsgColor = Colors.red;
 Color snackBarWarningMsgColor = Colors.orange;
+Color resultDefaultTextColor = Colors.black;
+Color resultNowPlayingTextColor = Colors.red;
 
 // main.dart
 Color mainAppTitleColor = Colors.red;
@@ -32,3 +34,4 @@ Color searchPageSuggestionsColor = Colors.grey;
 Color searchPageSuggestionsIconColor = Colors.grey;
 // searchTab.dart
 Color searchTabDefaultTextColor = Colors.grey;
+

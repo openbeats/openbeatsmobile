@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import './globalStrings.dart' as globalStrings;
 import './globalVars.dart' as globalVars;
 import './globalFun.dart' as globalFun;
+import './globalColors.dart' as globalColors;
 
 // homePage.dart
 Widget homePageLogo = Container(
@@ -47,7 +48,7 @@ Widget audioThumbnailW(String thumbnailURL, BuildContext context) {
 }
 
 // holds the audio title in audioTile listing view
-Widget audioTitleW(String title, BuildContext context) {
+Widget audioTitleW(String title, BuildContext context, bool currentlyPlaying) {
   return Container(
     child: Text(
       title,
@@ -56,6 +57,9 @@ Widget audioTitleW(String title, BuildContext context) {
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 16.0,
+        color: (currentlyPlaying)
+            ? globalColors.resultNowPlayingTextColor
+            : globalColors.resultDefaultTextColor,
       ),
     ),
   );
