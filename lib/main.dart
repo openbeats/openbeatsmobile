@@ -401,12 +401,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
         controls: getControls(state), basicState: state, position: position);
     // creating mediaItem instance to immidiately show response to user
     MediaItem tempMediaItem = MediaItem(
-      id: arguments["videoId"],
-      album: "OpenBeats Music",
-      title: arguments['title'],
-      duration: arguments['durationInMilliSeconds'],
-      artUri: arguments['thumbnail'],
-    );
+        id: arguments["videoId"],
+        album: "OpenBeats Music",
+        title: arguments['title'],
+        duration: arguments['durationInMilliSeconds'],
+        artUri: arguments['thumbnail'],
+        extras: {
+          "views": arguments["views"],
+        });
     // setting the current mediaItem
     await AudioServiceBackground.setMediaItem(tempMediaItem);
     // refreshing state to update mediaItem details
@@ -416,12 +418,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
     String streamingURL = await getStreamingURL(arguments);
     // creating updatedMediaItemInstance
     MediaItem updatedMediaItem = MediaItem(
-      id: streamingURL,
-      album: "OpenBeats Music",
-      title: arguments['title'],
-      duration: arguments['durationInMilliSeconds'],
-      artUri: arguments['thumbnail'],
-    );
+        id: streamingURL,
+        album: "OpenBeats Music",
+        title: arguments['title'],
+        duration: arguments['durationInMilliSeconds'],
+        artUri: arguments['thumbnail'],
+        extras: {
+          "views": arguments["views"],
+        });
+    // setting the current mediaItem
+    await AudioServiceBackground.setMediaItem(updatedMediaItem);
     // adding mediaITem to queue
     _queue.add(updatedMediaItem);
     // setting URL for audio player

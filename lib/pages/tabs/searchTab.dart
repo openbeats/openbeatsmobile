@@ -28,7 +28,8 @@ class _SearchTabState extends State<SearchTab> {
           widget.videosResponseList[index]["duration"]),
       "videoId": widget.videosResponseList[index]["videoId"],
       "channelName": widget.videosResponseList[index]["channelName"],
-      "views": widget.videosResponseList[index]["views"],
+      "views":
+          globalFun.reformatViews(widget.videosResponseList[index]["views"]),
     };
     // calling method to start media playback
     widget.startSinglePlayback(mediaParameters);

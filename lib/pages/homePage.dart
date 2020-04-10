@@ -175,6 +175,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the widget to display when slideUp is collapsed
   Widget slideUpCollapsedW() {
+// setting default values
     String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
         audioTitle = "No audio playing";
 
@@ -222,10 +223,65 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the widget in the slide up panel
   Widget slideUpPanelW() {
-    return Container(
-      child: Center(
-        child: Text("This is the sliding Widget"),
-      ),
+    // setting default values
+    String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
+        audioTitle = "No audio playing",
+        audioPlays = "0";
+    return StreamBuilder(
+      stream: AudioService.playbackStateStream,
+      builder: (context, snapshot) {
+        PlaybackState state = snapshot.data;
+        if (state != null &&
+            state.basicState != BasicPlaybackState.none &&
+            state.basicState != BasicPlaybackState.stopped) {
+          if (AudioService.currentMediaItem != null &&
+              state.basicState != BasicPlaybackState.connecting) {
+            // getting thumbNail image
+            audioThumbnail = AudioService.currentMediaItem.artUri;
+            // getting audioTitle
+            audioTitle = AudioService.currentMediaItem.title;
+            // getting audioViews
+            audioPlays = AudioService.currentMediaItem.extras["views"];
+          }
+          // if the audio is connecting
+          else if (AudioService.currentMediaItem != null &&
+              state.basicState == BasicPlaybackState.connecting) {
+            // getting thumbNail image
+            audioThumbnail = AudioService.currentMediaItem.artUri;
+            audioTitle = "Please wait\nConnecting...";
+            audioPlays = "0";
+          }
+        } else {
+          // resetting values
+          audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF";
+          audioTitle = "No audio playing";
+          audioPlays = "0";
+        }
+        return Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
+              homePageW.slideUpPanelExpandedPanelTitle(),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
+              ),
+              homePageW.slideUpPanelExpandedThumbnail(audioThumbnail, context),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.045,
+              ),
+              homePageW.slideUpPanelExpandedMediaTitle(audioTitle, context),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.01,
+              ),
+              homePageW.slideUpPanelExpandedMediaViews(audioPlays, context),
+            ],
+          ),
+        );
+      },
     );
   }
 

@@ -6,3 +6,4 @@ List videosResponseList = new List();
 
 // holds the borderRadius for all components of the app
 double borderRadius = 5.0;
+double borderRadiusNowPlayingPanel = 20.0;

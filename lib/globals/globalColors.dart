@@ -18,6 +18,8 @@ Color mainAppTitleColor = Colors.red;
 Color mainPrimarySwatch = Colors.red;
 // homePage.dart
 Color homePageSlideUpCollapsedBG = appBackgroundColor;
+Color homePageSlideUpExpandedViewsTextColor = Colors.grey;
+Color homePageSlideUpExpandedViewsIconColor = Colors.grey;
 Color homePageAppBarBG = appBackgroundColor;
 Color homePageAppBarIconColor = appIconColor;
 Color homePageAppBarIndicatorColor = Colors.transparent;
@@ -34,4 +36,3 @@ Color searchPageSuggestionsColor = Colors.grey;
 Color searchPageSuggestionsIconColor = Colors.grey;
 // searchTab.dart
 Color searchTabDefaultTextColor = Colors.grey;
-
