@@ -14,10 +14,10 @@ import '../globals/actions/globalVarsA.dart' as globalVarsA;
 import '../globals/globalWids.dart' as globalWids;
 
 class HomePage extends StatefulWidget {
-  Function startAudioService, startSinglePlayback;
+  Function startAudioService, startSinglePlayback, audioServicePlayPause;
   BehaviorSubject<double> dragPositionSubject;
   HomePage(this.startAudioService, this.startSinglePlayback,
-      this.dragPositionSubject);
+      this.dragPositionSubject, this.audioServicePlayPause);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -195,8 +195,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               decoration: BoxDecoration(
                 color: globalColors.homePageSlideUpCollapsedBG,
               ),
-              child: homePageW.nowPlayingCollapsed(audioThumbnail, audioTitle,
-                  context, widget.dragPositionSubject));
+              child: homePageW.nowPlayingCollapsed(state, audioThumbnail, audioTitle,
+                  context, widget.audioServicePlayPause));
         });
   }
 

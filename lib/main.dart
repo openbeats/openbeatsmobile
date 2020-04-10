@@ -66,7 +66,23 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  // sample function to start audioService
+  // audioService playAndPause control callback
+  void audioServicePlayPause() {
+    // getting instance of audioService playbackState
+    PlaybackState playbackState = AudioService.playbackState;
+    // checking state of audioService
+    if (playbackState != null) {
+      // checking playbackState
+      if (playbackState.basicState == BasicPlaybackState.playing)
+        // pausing playback
+        AudioService.pause();
+      else if (playbackState.basicState == BasicPlaybackState.paused)
+        // resuming playback
+        AudioService.play();
+    }
+  }
+
+  // initiates the audioService
   Future<void> startAudioService(bool enableQueue) async {
     await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
@@ -109,8 +125,8 @@ class _MyAppState extends State<MyApp> {
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.mainPrimarySwatch,
       ),
-      home:
-          HomePage(startAudioService, startSinglePlayback, dragPositionSubject),
+      home: HomePage(startAudioService, startSinglePlayback,
+          dragPositionSubject, audioServicePlayPause),
     );
   }
 }
@@ -365,18 +381,23 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void onCustomAction(String action, arguments) async {
     super.onCustomAction(action, arguments);
     if (action == "startSinglePlayback") {
-      startSinglePlayback(arguments);
+      // calling method to start playback with no repeat
+      startSinglePlayback(arguments, false);
     }
   }
 
   // starts playback of single song
-  void startSinglePlayback(arguments) async {
+  void startSinglePlayback(arguments, bool shouldRepeat) async {
     var state = BasicPlaybackState.connecting;
     var position = 0;
+    // setting repeat status
+    _shouldRepeat = shouldRepeat;
+    // clearing current queue
+    _queue.clear();
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
     // creating mediaItem instance to immidiately show response to user
-    MediaItem currMediaItem = MediaItem(
+    MediaItem tempMediaItem = MediaItem(
       id: arguments["videoId"],
       album: "OpenBeats Music",
       title: arguments['title'],
@@ -384,12 +405,22 @@ class AudioPlayerTask extends BackgroundAudioTask {
       artUri: arguments['thumbnail'],
     );
     // setting the current mediaItem
-    await AudioServiceBackground.setMediaItem(currMediaItem);
+    await AudioServiceBackground.setMediaItem(tempMediaItem);
     // refreshing state to update mediaItem details
     AudioServiceBackground.setState(
         controls: getControls(state), basicState: state, position: position);
     // gets the mediaItem for the song to play with the valid streamingURL
     String streamingURL = await getStreamingURL(arguments);
+    // creating updatedMediaItemInstance
+    MediaItem updatedMediaItem = MediaItem(
+      id: streamingURL,
+      album: "OpenBeats Music",
+      title: arguments['title'],
+      duration: arguments['durationInMilliSeconds'],
+      artUri: arguments['thumbnail'],
+    );
+    // adding mediaITem to queue
+    _queue.add(updatedMediaItem);
     // setting URL for audio player
     await _audioPlayer.setUrl(streamingURL);
     // playing audio

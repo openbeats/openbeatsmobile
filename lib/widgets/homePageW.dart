@@ -66,13 +66,14 @@ Widget moreOptionsBtn() {
 }
 
 // holds the play controls for the collapsed slide up panel
-Widget collapsedSlideUpControls(BuildContext context) {
+Widget collapsedSlideUpControls(
+    PlaybackState state, BuildContext context, Function audioServicePlayPause) {
   return Container(
     width: MediaQuery.of(context).size.width * 0.2,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        playPauseBtn(),
+        playPauseBtn(state, audioServicePlayPause),
         queueBtn(),
       ],
     ),
@@ -80,10 +81,16 @@ Widget collapsedSlideUpControls(BuildContext context) {
 }
 
 // holds th play&pause btn for collapsed slideUpPanel
-Widget playPauseBtn() {
+Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause) {
   return IconButton(
-    icon: Icon(Icons.play_arrow),
-    onPressed: () {},
+    icon: Icon((state != null)
+        ? (state.basicState == BasicPlaybackState.paused)
+            ? Icons.play_arrow
+            : Icons.pause
+        : Icons.play_arrow),
+    onPressed: () {
+      audioServicePlayPause();
+    },
   );
 }
 
@@ -96,8 +103,8 @@ Widget queueBtn() {
 }
 
 // holds the row widget showing now playing media details in collapsed slideUpPanel
-Widget nowPlayingCollapsed(String audioThumbnail, String audioTitle,
-    BuildContext context, BehaviorSubject<double> dragPositionSubject) {
+Widget nowPlayingCollapsed(PlaybackState state, String audioThumbnail,
+    String audioTitle, BuildContext context, Function audioServicePlayPause) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: <Widget>[
@@ -120,7 +127,7 @@ Widget nowPlayingCollapsed(String audioThumbnail, String audioTitle,
       Flexible(
         flex: 2,
         fit: FlexFit.tight,
-        child: collapsedSlideUpControls(context),
+        child: collapsedSlideUpControls(state, context, audioServicePlayPause),
       ),
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.03,
