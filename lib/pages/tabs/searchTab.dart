@@ -66,7 +66,9 @@ class _SearchTabState extends State<SearchTab> {
         ),
         // space to compensate for the slideUpPanel
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.2,
+          height: (MediaQuery.of(context).orientation == Orientation.portrait)
+              ? MediaQuery.of(context).size.height * 0.2
+              : MediaQuery.of(context).size.height * 0.3,
         )
       ],
     );
@@ -81,7 +83,7 @@ class _SearchTabState extends State<SearchTab> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.03,
+            width: MediaQuery.of(context).size.width * 0.035,
           ),
           Flexible(
             flex: 2,
@@ -96,7 +98,7 @@ class _SearchTabState extends State<SearchTab> {
             width: MediaQuery.of(context).size.width * 0.03,
           ),
           Flexible(
-            flex: 8,
+            flex: 9,
             fit: FlexFit.tight,
             child: GestureDetector(
               child: Column(
@@ -119,7 +121,7 @@ class _SearchTabState extends State<SearchTab> {
             child: searchTabW.searchResultExtraOptions(),
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.03,
+            width: MediaQuery.of(context).size.width * 0.04,
           ),
         ],
       ),

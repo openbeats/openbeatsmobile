@@ -157,7 +157,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget homePageWidgets() {
     return SlidingUpPanel(
       maxHeight: MediaQuery.of(context).size.height,
-      minHeight: MediaQuery.of(context).size.height * 0.09,
+      minHeight: (MediaQuery.of(context).orientation == Orientation.portrait)
+          ? MediaQuery.of(context).size.height * 0.09
+          : MediaQuery.of(context).size.height * 0.25,
       collapsed: slideUpCollapsedW(),
       panel: slideUpPanelW(),
       body: homePageScaffold(),
