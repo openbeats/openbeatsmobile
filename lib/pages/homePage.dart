@@ -180,23 +180,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           if (state != null &&
               state.basicState != BasicPlaybackState.none &&
               state.basicState != BasicPlaybackState.stopped) {
-            if (AudioService.currentMediaItem != null) {
+            print(state.basicState);
+            if (AudioService.currentMediaItem != null &&
+                state.basicState != BasicPlaybackState.connecting) {
               // getting thumbNail image
               audioThumbnail = AudioService.currentMediaItem.artUri;
               // getting audioTitle
               audioTitle = AudioService.currentMediaItem.title;
+            }
+            // if the audio is connecting
+            else if (AudioService.currentMediaItem != null &&
+                state.basicState == BasicPlaybackState.connecting) {
+              // getting thumbNail image
+              audioThumbnail = AudioService.currentMediaItem.artUri;
+              audioTitle = "Please wait\nConnecting...";
             }
           } else {
             // resetting values
             audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF";
             audioTitle = "No audio playing";
           }
+
           return Container(
               decoration: BoxDecoration(
                 color: globalColors.homePageSlideUpCollapsedBG,
               ),
-              child: homePageW.nowPlayingCollapsed(state, audioThumbnail, audioTitle,
-                  context, widget.audioServicePlayPause));
+              child: homePageW.nowPlayingCollapsed(state, audioThumbnail,
+                  audioTitle, context, widget.audioServicePlayPause));
         });
   }
 

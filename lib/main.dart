@@ -388,6 +388,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // starts playback of single song
   void startSinglePlayback(arguments, bool shouldRepeat) async {
+    // pausing any current playback
+    if (!_isPaused) {
+      onPause();
+    }
     var state = BasicPlaybackState.connecting;
     var position = 0;
     // setting repeat status
