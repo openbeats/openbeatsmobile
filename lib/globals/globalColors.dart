@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // holds static properties
 Color _staticPrimaryDark = Color(0xFF14161c);
 Color _staticPrimaryLight = Color(0xFFFFFFFF);
+Color _openBeatsRed = Color(0xFFF32C2C);
 
 // holds the app global properties
 Brightness appBrightness = Brightness.light;

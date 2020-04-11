@@ -138,7 +138,7 @@ Widget nowPlayingCollapsed(
       Flexible(
         flex: 1,
         fit: FlexFit.tight,
-        child: globalWids.audioThumbnailW(audioThumbnail, context),
+        child: globalWids.audioThumbnailW(audioThumbnail, context, 0.15, globalVars.borderRadius),
       ),
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.03,
@@ -170,41 +170,6 @@ Widget slideUpPanelExpandedPanelTitle() {
       style: TextStyle(
         fontSize: 18.0,
         fontWeight: FontWeight.bold,
-      ),
-    ),
-  );
-}
-
-// holds the thumbnail of the current playing media for the slideUpPanelExpanded
-Widget slideUpPanelExpandedThumbnail(
-    String thumbnailURL, BuildContext context) {
-  return Container(
-    width: MediaQuery.of(context).size.width * 0.80,
-    height: MediaQuery.of(context).size.width * 0.80,
-    decoration: BoxDecoration(
-        boxShadow: [
-          new BoxShadow(
-            color: Colors.black,
-            blurRadius: 10.0,
-            offset: new Offset(0.0, 0.0),
-          ),
-        ],
-        borderRadius:
-            BorderRadius.circular(globalVars.borderRadiusNowPlayingPanel)),
-    child: ClipRRect(
-      borderRadius:
-          BorderRadius.circular(globalVars.borderRadiusNowPlayingPanel),
-      child: CachedNetworkImage(
-        fit: BoxFit.cover,
-        imageUrl: thumbnailURL,
-        placeholder: (context, url) => Center(
-          child: Container(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
       ),
     ),
   );

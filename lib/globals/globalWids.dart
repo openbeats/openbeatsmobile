@@ -18,31 +18,37 @@ Widget homePageLogo = Container(
 );
 
 // holds the thumbnail in audioTile listing view
-Widget audioThumbnailW(String thumbnailURL, BuildContext context) {
+Widget audioThumbnailW(String thumbnailURL, BuildContext context,
+    double sizeFactor, double borderRadius) {
   return Container(
-    width: MediaQuery.of(context).size.width * 0.15,
-    height: MediaQuery.of(context).size.width * 0.15,
+    width: MediaQuery.of(context).size.width * sizeFactor,
+    height: MediaQuery.of(context).size.width * sizeFactor,
     decoration: BoxDecoration(boxShadow: [
       new BoxShadow(
         color: Colors.black,
         blurRadius: 3.0,
         offset: new Offset(1.0, 1.0),
       ),
-    ], borderRadius: BorderRadius.circular(globalVars.borderRadius)),
+    ], borderRadius: BorderRadius.circular(borderRadius)),
     child: ClipRRect(
-      borderRadius: BorderRadius.circular(globalVars.borderRadius),
-      child: CachedNetworkImage(
-        fit: BoxFit.cover,
-        imageUrl: thumbnailURL,
-        placeholder: (context, url) => Center(
-          child: Container(
-            height: 20,
-            width: 20,
-            child: CircularProgressIndicator(),
-          ),
-        ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
-      ),
+      borderRadius: BorderRadius.circular(borderRadius),
+      child: (thumbnailURL != "placeholder")
+          ? CachedNetworkImage(
+              fit: BoxFit.cover,
+              imageUrl: thumbnailURL,
+              placeholder: (context, url) => Center(
+                child: Container(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            )
+          : Image.asset(
+              "assets/images/supplementary/dummyimage.png",
+              fit: BoxFit.cover,
+            ),
     ),
   );
 }

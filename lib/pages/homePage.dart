@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:openbeatsmobile/pages/samplePage.dart';
 import 'package:openbeatsmobile/pages/searchPage.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab.dart';
 import 'package:page_transition/page_transition.dart';
@@ -12,6 +13,7 @@ import '../globals/globalStrings.dart' as globalStrings;
 import '../globals/globalFun.dart' as globalFun;
 import '../globals/actions/globalVarsA.dart' as globalVarsA;
 import '../globals/globalWids.dart' as globalWids;
+import '../globals/globalVars.dart' as globalVars;
 
 class HomePage extends StatefulWidget {
   Function startAudioService, startSinglePlayback, audioServicePlayPause;
@@ -175,9 +177,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the widget to display when slideUp is collapsed
   Widget slideUpCollapsedW() {
-// setting default values
-    String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
-        audioTitle = "No audio playing";
+    // setting default values
+    String audioThumbnail = "placeholder", audioTitle = "No audio playing";
 
     return StreamBuilder(
         stream: AudioService.playbackStateStream,
@@ -199,11 +200,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 state.basicState == BasicPlaybackState.connecting) {
               // getting thumbNail image
               audioThumbnail = AudioService.currentMediaItem.artUri;
-              audioTitle = "Please wait\nConnecting...";
+              audioTitle = "Connecting...";
             }
           } else {
             // resetting values
-            audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF";
+            audioThumbnail = "placeholder";
             audioTitle = "No audio playing";
           }
 
@@ -255,7 +256,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           // resetting values
           audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF";
           audioTitle = "No audio playing";
-          audioPlays = "0";
+          audioPlays = "0 views";
         }
         return Container(
           child: Column(
@@ -269,7 +270,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.05,
               ),
-              homePageW.slideUpPanelExpandedThumbnail(audioThumbnail, context),
+              globalWids.audioThumbnailW(audioThumbnail, context, 0.80,
+                  globalVars.borderRadiusNowPlayingPanel),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.045,
               ),
@@ -296,12 +298,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         body: TabBarView(
           controller: tabController,
           children: <Widget>[
-            Center(
-              child: FlatButton(
-                onPressed: () => widget.startAudioService(),
-                child: Text("Start"),
-              ),
-            ),
+            Navigator(onGenerateRoute: (RouteSettings settings) {
+              return MaterialPageRoute(builder: (context) {
+                return Center(
+                  child: FlatButton(
+                    onPressed: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SamplePage())),
+                    child: Text("Start"),
+                  ),
+                );
+              });
+            }),
             Center(
               child: Text("Page 2"),
             ),

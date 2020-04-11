@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/tabsw/searchTabW.dart' as searchTabW;
 import '../../globals/globalWids.dart' as globalWids;
 import '../../globals/globalFun.dart' as globalFun;
+import '../../globals/globalVars.dart' as globalVars;
 
 class SearchTab extends StatefulWidget {
   // recieving passed values
@@ -112,7 +113,10 @@ class _SearchTabState extends State<SearchTab> {
             fit: FlexFit.tight,
             child: GestureDetector(
               child: globalWids.audioThumbnailW(
-                  widget.videosResponseList[index]["thumbnail"], context),
+                  widget.videosResponseList[index]["thumbnail"],
+                  context,
+                  0.15,
+                  globalVars.borderRadius),
               onTap: () => startSinglePlaybackOnTap(index),
             ),
           ),
