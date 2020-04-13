@@ -225,7 +225,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the widget in the slide up panel
   Widget slideUpPanelW() {
     // setting default values
-    String audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF",
+    String audioThumbnail = "placeholder",
         audioTitle = "No audio playing",
         audioPlays = "0";
     return StreamBuilder(
@@ -254,7 +254,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           }
         } else {
           // resetting values
-          audioThumbnail = "https://via.placeholder.com/150/000000/FFFFFF";
+          audioThumbnail = "placeholder";
           audioTitle = "No audio playing";
           audioPlays = "0 views";
         }
@@ -264,22 +264,35 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
+                height: MediaQuery.of(context).size.height * 0.03,
               ),
               homePageW.slideUpPanelExpandedPanelTitle(),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.05,
+                height: MediaQuery.of(context).size.height * 0.03,
               ),
               globalWids.audioThumbnailW(audioThumbnail, context, 0.80,
                   globalVars.borderRadiusNowPlayingPanel),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.045,
               ),
-              homePageW.slideUpPanelExpandedMediaTitle(audioTitle, context),
+              globalWids.audioTitleW(audioTitle, context, false, true),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.02,
+              ),
+              homePageW.slideUpPanelExpandedMediaViews(audioPlays, context),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.01,
               ),
-              homePageW.slideUpPanelExpandedMediaViews(audioPlays, context),
+              homePageW.slideUpPanelExpandedPositionIndicator(
+                  AudioService.currentMediaItem,
+                  state,
+                  widget.dragPositionSubject,
+                  context),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.01,
+              ),
+              homePageW.mainAudioControlsW(playPauseAnimationController, state,
+                  widget.audioServicePlayPause)
             ],
           ),
         );

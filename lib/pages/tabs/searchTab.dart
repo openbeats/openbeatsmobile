@@ -137,7 +137,8 @@ class _SearchTabState extends State<SearchTab> {
                       (currentPlayingMediaThumbnail ==
                               widget.videosResponseList[index]["thumbnail"])
                           ? true
-                          : false),
+                          : false,
+                      false),
                   globalWids.audioDetailsW(
                       widget.videosResponseList[index]["views"],
                       widget.videosResponseList[index]["duration"])

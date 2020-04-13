@@ -54,19 +54,37 @@ Widget audioThumbnailW(String thumbnailURL, BuildContext context,
 }
 
 // holds the audio title in audioTile listing view
-Widget audioTitleW(String title, BuildContext context, bool currentlyPlaying) {
+Widget audioTitleW(String title, BuildContext context, bool currentlyPlaying,
+    bool shouldScroll) {
   return Container(
-    child: Text(
-      title,
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 16.0,
-        color: (currentlyPlaying)
-            ? globalColors.resultNowPlayingTextColor
-            : globalColors.resultDefaultTextColor,
+      margin: EdgeInsets.symmetric(
+        horizontal:
+            (shouldScroll) ? MediaQuery.of(context).size.width * 0.15 : 0.0,
       ),
+      child: (shouldScroll)
+          ? SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              primary: true,
+              physics: BouncingScrollPhysics(),
+              child: audioTitleTextW(title, currentlyPlaying, shouldScroll),
+            )
+          : audioTitleTextW(title, currentlyPlaying, shouldScroll));
+}
+
+// holds the text widget for audioTitleW
+Widget audioTitleTextW(String title, bool currentlyPlaying, bool shouldScroll) {
+  return Text(
+    title,
+    maxLines: 2,
+    overflow: TextOverflow.ellipsis,
+    style: TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: (shouldScroll) ? 24.0 : 16.0,
+      color: (title != "No audio playing")
+          ? (currentlyPlaying)
+              ? globalColors.resultNowPlayingTextColor
+              : globalColors.resultDefaultTextColor
+          : globalColors.resultNoAudioPlayingTextColor,
     ),
   );
 }

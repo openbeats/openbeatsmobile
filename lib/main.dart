@@ -408,6 +408,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         artUri: arguments['thumbnail'],
         extras: {
           "views": arguments["views"],
+          "durationString": arguments["duration"],
         });
     // setting the current mediaItem
     await AudioServiceBackground.setMediaItem(tempMediaItem);
@@ -425,6 +426,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         artUri: arguments['thumbnail'],
         extras: {
           "views": arguments["views"],
+          "durationString": arguments["duration"],
         });
     // setting the current mediaItem
     await AudioServiceBackground.setMediaItem(updatedMediaItem);

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -72,15 +74,16 @@ Widget collapsedSlideUpControls(
     PlaybackState state,
     BuildContext context,
     Function audioServicePlayPause,
-    AnimationController playPauseAnimationController) {
+    AnimationController playPauseAnimationController,
+    bool noAudioPlaying) {
   return Container(
     width: MediaQuery.of(context).size.width * 0.2,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        playPauseBtn(
-            state, audioServicePlayPause, playPauseAnimationController),
-        queueBtn(),
+        playPauseBtn(state, audioServicePlayPause, playPauseAnimationController,
+            noAudioPlaying),
+        queueBtn(noAudioPlaying),
       ],
     ),
   );
@@ -88,7 +91,7 @@ Widget collapsedSlideUpControls(
 
 // holds th play&pause btn for collapsed slideUpPanel
 Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
-    AnimationController playPauseAnimationController) {
+    AnimationController playPauseAnimationController, bool noAudioPlaying) {
   // decides the animation for the animated icon
   if (state != null &&
       (state.basicState == BasicPlaybackState.paused ||
@@ -102,6 +105,9 @@ Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
   }
   return IconButton(
     iconSize: 35.0,
+    color: (noAudioPlaying)
+        ? globalColors.resultNoAudioPlayingIconColor
+        : globalColors.appIconColor,
     icon: AnimatedIcon(
       icon: AnimatedIcons.play_pause,
       progress: playPauseAnimationController,
@@ -113,9 +119,12 @@ Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
 }
 
 // holds the queue button for the collapsed slideUpPanel
-Widget queueBtn() {
+Widget queueBtn(bool noAudioPlaying) {
   return IconButton(
     iconSize: 35.0,
+    color: (noAudioPlaying)
+        ? globalColors.resultNoAudioPlayingIconColor
+        : globalColors.appIconColor,
     icon: Icon(Icons.queue_music),
     onPressed: () {},
   );
@@ -138,7 +147,8 @@ Widget nowPlayingCollapsed(
       Flexible(
         flex: 1,
         fit: FlexFit.tight,
-        child: globalWids.audioThumbnailW(audioThumbnail, context, 0.15, globalVars.borderRadius),
+        child: globalWids.audioThumbnailW(
+            audioThumbnail, context, 0.15, globalVars.borderRadius),
       ),
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.03,
@@ -146,13 +156,17 @@ Widget nowPlayingCollapsed(
       Flexible(
         flex: 3,
         fit: FlexFit.tight,
-        child: globalWids.audioTitleW(audioTitle, context, false),
+        child: globalWids.audioTitleW(audioTitle, context, false, false),
       ),
       Flexible(
         flex: 2,
         fit: FlexFit.tight,
-        child: collapsedSlideUpControls(state, context, audioServicePlayPause,
-            playPauseAnimationController),
+        child: collapsedSlideUpControls(
+            state,
+            context,
+            audioServicePlayPause,
+            playPauseAnimationController,
+            (audioThumbnail == "placeholder") ? true : false),
       ),
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.03,
@@ -170,29 +184,6 @@ Widget slideUpPanelExpandedPanelTitle() {
       style: TextStyle(
         fontSize: 18.0,
         fontWeight: FontWeight.bold,
-      ),
-    ),
-  );
-}
-
-// holds the title of the current playing media for the slideUpPanelExpanded
-Widget slideUpPanelExpandedMediaTitle(String title, BuildContext context) {
-  return Container(
-    margin: EdgeInsets.symmetric(
-      horizontal: MediaQuery.of(context).size.width * 0.15,
-    ),
-    child: SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      primary: true,
-      physics: BouncingScrollPhysics(),
-      child: Text(
-        title,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 24.0,
-        ),
       ),
     ),
   );
@@ -219,4 +210,134 @@ Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
       textAlign: TextAlign.center,
     ),
   );
+}
+
+// holds the sliderWidget to show the audio play progress slideUpPanelExpanded
+Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
+    PlaybackState state, dragPositionSubject, BuildContext context) {
+  double seekPos;
+  double position;
+  double duration;
+  String currentTimeStamp;
+  String durationInString;
+  return Container(
+    margin: EdgeInsets.symmetric(
+      horizontal: MediaQuery.of(context).size.width * 0.05,
+    ),
+    child: StreamBuilder(
+      stream: Rx.combineLatest2<double, double, double>(
+          dragPositionSubject.stream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (dragPosition, _) => dragPosition),
+      builder: (context, snapshot) {
+        if (state != null && state.basicState != BasicPlaybackState.none) {
+          position = snapshot.data ?? state.currentPosition.toDouble();
+          duration = mediaItem?.duration?.toDouble();
+          currentTimeStamp =
+              globalFun.getCurrentTimeStamp(state.currentPosition / 1000);
+          durationInString = mediaItem.extras["durationString"];
+        } else {
+          position = 0;
+          duration = 1000;
+          currentTimeStamp = "00:00";
+          durationInString = "--:--";
+        }
+
+        return Column(
+          children: [
+            if (duration != null)
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                    activeTrackColor: globalColors.openBeatsRed,
+                    trackHeight: 6.0,
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7.0)),
+                child: Slider(
+                  min: 0.0,
+                  max: duration,
+                  value: seekPos ?? max(0.0, min(position, duration)),
+                  onChanged: (value) {
+                    dragPositionSubject.add(value);
+                  },
+                  onChangeEnd: (value) {
+                    AudioService.seekTo(value.toInt());
+                    seekPos = value;
+                    dragPositionSubject.add(null);
+                  },
+                ),
+              ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.06),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(currentTimeStamp),
+                  Text(durationInString),
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    ),
+  );
+}
+
+// holds the mainControls for the audio play in the slideUpPanelExpanded
+Widget mainAudioControlsW(AnimationController playPauseAnimationController,
+    PlaybackState state, Function audioServicePlayPause) {
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        playPauseIconMainAudioControlsW(
+            playPauseAnimationController, state, audioServicePlayPause)
+      ],
+    ),
+  );
+}
+
+// holds the playPauseIcon for the mainAudioControlsW in slideUpPanelExpande
+Widget playPauseIconMainAudioControlsW(
+    AnimationController playPauseAnimationController,
+    PlaybackState state,
+    Function audioServicePlayPause) {
+  bool noAudioPlaying = true;
+  if (state != null &&
+      (state.basicState == BasicPlaybackState.paused ||
+          state.basicState == BasicPlaybackState.playing)) {
+    // setting no audioPlaying to false
+    noAudioPlaying = false;
+    if (state.basicState == BasicPlaybackState.paused)
+      playPauseAnimationController.reverse();
+    else
+      playPauseAnimationController.forward();
+  } else {
+    playPauseAnimationController.reverse();
+  } 
+  return Container(
+      child: ClipOval(
+    child: Material(
+      color: (noAudioPlaying)
+          ? globalColors.resultNoAudioPlayingIconColor
+          : globalColors.openBeatsRed, // button color
+      child: InkWell(
+        child: SizedBox(
+            width: 65,
+            height: 65,
+            child: Center(
+              child: AnimatedIcon(
+                size: 40.0,
+                icon: AnimatedIcons.play_pause,
+                progress: playPauseAnimationController,
+                color:
+                    globalColors.homePageSlideUpExpandedViewsPlayPauseIconColor,
+              ),
+            )),
+        onTap: () {
+          audioServicePlayPause();
+        },
+      ),
+    ),
+  ));
 }

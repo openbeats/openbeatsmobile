@@ -62,7 +62,7 @@ void showToastMessage(
   );
 }
 
-// return the current duration string in min:sec for bottomSheet slider
+// return the current duration string in min:sec 
 String getCurrentTimeStamp(double totalSeconds) {
   // variables holding separated time
   String min, sec, hour;
