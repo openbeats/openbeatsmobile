@@ -17,9 +17,6 @@ Widget homePageAppBar(
     context, Function navigateToSearchPage, TabController tabController) {
   return AppBar(
     elevation: 0,
-    backgroundColor: globalColors.homePageAppBarBG,
-    actionsIconTheme:
-        IconThemeData(color: globalColors.homePageAppBarIconColor),
     titleSpacing: 0.0,
     title: globalWids.homePageLogo,
     actions: <Widget>[
@@ -29,9 +26,9 @@ Widget homePageAppBar(
     bottom: TabBar(
       controller: tabController,
       isScrollable: true,
-      indicatorColor: globalColors.homePageAppBarIndicatorColor,
-      unselectedLabelColor: globalColors.homePageAppBarUnselectedLabelColor,
-      labelColor: globalColors.homePageAppBarLabelColor,
+      indicatorColor: globalColors.hPTabIndicatorColor,
+      unselectedLabelColor: globalColors.subtitleTextColor,
+      labelColor: globalColors.hpTabLabelColor,
       unselectedLabelStyle: TextStyle(
         fontSize: 28.0,
         fontWeight: FontWeight.bold,
@@ -106,8 +103,8 @@ Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
   return IconButton(
     iconSize: 35.0,
     color: (noAudioPlaying)
-        ? globalColors.resultNoAudioPlayingIconColor
-        : globalColors.appIconColor,
+        ? globalColors.iconDisabledColor
+        : globalColors.iconColor,
     icon: AnimatedIcon(
       icon: AnimatedIcons.play_pause,
       progress: playPauseAnimationController,
@@ -123,8 +120,8 @@ Widget queueBtn(bool noAudioPlaying) {
   return IconButton(
     iconSize: 35.0,
     color: (noAudioPlaying)
-        ? globalColors.resultNoAudioPlayingIconColor
-        : globalColors.appIconColor,
+        ? globalColors.iconDisabledColor
+        : globalColors.iconColor,
     icon: Icon(Icons.queue_music),
     onPressed: () {},
   );
@@ -189,13 +186,12 @@ Widget slideUpPanelExpandedPanelTitle() {
   );
 }
 
-// holds the view count of the current playing media for the slideUpPanelExpanded
 Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
   return Container(
     child: RichText(
       text: TextSpan(
           style: TextStyle(
-            color: globalColors.homePageSlideUpExpandedViewsTextColor,
+            color: globalColors.textDisabledColor,
             fontSize: 16.0,
           ),
           children: [
@@ -203,7 +199,7 @@ Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
                 child: Icon(
               Icons.play_circle_filled,
               size: 20.0,
-              color: globalColors.homePageSlideUpExpandedViewsIconColor,
+              color: globalColors.textDisabledColor,
             )),
             TextSpan(text: " " + views),
           ]),
@@ -248,7 +244,6 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
             if (duration != null)
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                    activeTrackColor: globalColors.openBeatsRed,
                     trackHeight: 6.0,
                     thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7.0)),
                 child: Slider(
@@ -314,13 +309,13 @@ Widget playPauseIconMainAudioControlsW(
       playPauseAnimationController.forward();
   } else {
     playPauseAnimationController.reverse();
-  } 
+  }
   return Container(
       child: ClipOval(
     child: Material(
       color: (noAudioPlaying)
-          ? globalColors.resultNoAudioPlayingIconColor
-          : globalColors.openBeatsRed, // button color
+          ? globalColors.iconDisabledColor
+          : globalColors.hPSlideUpPanelPlayBtnBG, // button color
       child: InkWell(
         child: SizedBox(
             width: 65,
@@ -330,8 +325,7 @@ Widget playPauseIconMainAudioControlsW(
                 size: 40.0,
                 icon: AnimatedIcons.play_pause,
                 progress: playPauseAnimationController,
-                color:
-                    globalColors.homePageSlideUpExpandedViewsPlayPauseIconColor,
+                color: globalColors.hPSlideUpPanelPlayBtnColor,
               ),
             )),
         onTap: () {

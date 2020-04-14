@@ -119,10 +119,21 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: globalStrings.mainAppTitleString,
-      color: globalColors.mainAppTitleColor,
+      color: globalColors.appTitleColor,
       theme: ThemeData(
         brightness: globalColors.appBrightness,
-        primarySwatch: globalColors.mainPrimarySwatch,
+        primarySwatch: Colors.red,
+        scaffoldBackgroundColor: globalColors.backgroundColor,
+        appBarTheme: AppBarTheme(
+          actionsIconTheme: IconThemeData(
+            color: globalColors.iconColor,
+          ),
+          iconTheme: IconThemeData(
+            color: globalColors.iconColor,
+          ),
+          color: globalColors.backgroundColor,
+          elevation: 0,
+        ),
       ),
       home: HomePage(startAudioService, startSinglePlayback,
           dragPositionSubject, audioServicePlayPause),

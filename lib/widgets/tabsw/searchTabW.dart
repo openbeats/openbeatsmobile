@@ -26,7 +26,7 @@ Widget searchTabDefault(BuildContext context) {
           textAlign: TextAlign.center,
           text: TextSpan(
             style: TextStyle(
-                color: globalColors.searchTabDefaultTextColor, fontSize: 25.0),
+                color: globalColors.subtitleTextColor, fontSize: 25.0),
             children: [
               TextSpan(
                 text: "Click on ",
@@ -34,6 +34,7 @@ Widget searchTabDefault(BuildContext context) {
               WidgetSpan(
                 child: Icon(
                   Icons.search,
+                  color: globalColors.subtitleIconColor,
                   size: 30.0,
                 ),
               ),

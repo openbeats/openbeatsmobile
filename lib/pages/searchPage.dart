@@ -123,7 +123,6 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: searchPageScaffoldKey,
-      backgroundColor: globalColors.appBackgroundColor,
       appBar: searchPageW.appBar(
           queryFieldController, getImmediateSuggestions, context),
       body: searchPageBody(),
@@ -193,7 +192,7 @@ class _SearchPageState extends State<SearchPage> {
               ? globalStrings.searchHistory[index]
               : suggestionResponseList[index][0],
           style: TextStyle(
-            color: globalColors.searchPageSuggestionsColor,
+            color: globalColors.subtitleTextColor,
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
@@ -201,7 +200,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       leading: Icon(
         Icons.search,
-        color: globalColors.searchPageSuggestionsIconColor,
+        color: globalColors.subtitleIconColor,
       ),
       trailing: SizedBox(
         width: MediaQuery.of(context).size.width * 0.3,
@@ -249,27 +248,27 @@ class _SearchPageState extends State<SearchPage> {
                 ? globalStrings.searchHistory[index]
                 : suggestionResponseList[index][0]);
           },
-          color: globalColors.searchPageSuggestionsIconColor,
+          color: globalColors.subtitleIconColor,
         ));
   }
 
-  Widget deleteSearchResultBtn(bool showHistory, int index) {
-    return Container(
-      child: (showHistory)
-          ? IconButton(
-              tooltip: "Delete Search Result",
-              icon: Icon(Icons.clear),
-              iconSize: 20.0,
-              onPressed: () {
-                setState(() {
-                  // removing search histoy listing
-                  globalStrings.searchHistory.removeAt(index);
-                });
-                globalFun.updateSearchHistorySharedPrefs();
-              },
-              color: globalColors.searchPageSuggestionsIconColor,
-            )
-          : null,
-    );
-  }
+  // Widget deleteSearchResultBtn(bool showHistory, int index) {
+  //   return Container(
+  //     child: (showHistory)
+  //          IconButton(
+  //             tooltip: "Delete Search Result",
+  //             icon: Icon(Icons.clear),
+  //             iconSize: 20.0,
+  //             onPressed: () {
+  //               setState(() {
+  //                 // removing search histoy listing
+  //                 globalStrings.searchHistory.removeAt(index);
+  //               });
+  //               globalFun.updateSearchHistorySharedPrefs();
+  //             },
+  //             color: globalColors.subtitleIconColor,
+  //           )
+  //         : null,
+  //   );
+  // }
 }

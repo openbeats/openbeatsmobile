@@ -7,16 +7,12 @@ Widget appBar(TextEditingController queryFieldController,
     getImmediateSuggestions, BuildContext context) {
   return AppBar(
     elevation: 0,
-    backgroundColor: globalColors.searchPageScaffoldBG,
     titleSpacing: 0.0,
-    iconTheme: IconThemeData(
-      color: globalColors.searchPageAppBarIconColor,
-    ),
     title: Container(
       padding: EdgeInsets.only(left: 10.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5.0),
-        color: globalColors.searchPageTextFieldBGColor,
+        color: globalColors.sPTextFieldBGColor,
       ),
       child: TextField(
         controller: queryFieldController,
@@ -24,9 +20,7 @@ Widget appBar(TextEditingController queryFieldController,
         autofocus: true,
         autocorrect: true,
         enableSuggestions: true,
-        cursorColor: globalColors.searchPageCursorColor,
         style: TextStyle(
-          color: globalColors.searchPageAppBarTextColor,
           fontSize: 18.0,
         ),
         onChanged: (String value) {
@@ -56,10 +50,8 @@ Widget appBar(TextEditingController queryFieldController,
                         (_) => queryFieldController.clear());
                   },
                   icon: Icon(Icons.clear),
-                  color: globalColors.searchPageAppBarIconColor,
                 ),
           hintStyle: TextStyle(
-            color: globalColors.searchPageAppBarHintColor,
             fontSize: 16.0,
           ),
         ),

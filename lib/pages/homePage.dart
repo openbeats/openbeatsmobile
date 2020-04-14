@@ -155,7 +155,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: globalColors.appBackgroundColor,
       body: SafeArea(
         child: homePageWidgets(),
       ),
@@ -210,7 +209,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
           return Container(
               decoration: BoxDecoration(
-                color: globalColors.homePageSlideUpCollapsedBG,
+                color: globalColors.backgroundColor,
               ),
               child: homePageW.nowPlayingCollapsed(
                   state,
@@ -305,7 +304,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       length: globalStrings.homePageTabTitles.length,
       child: Scaffold(
         key: tabScaffoldKey,
-        backgroundColor: globalColors.appBackgroundColor,
         appBar: homePageW.homePageAppBar(
             context, navigateToSearchPage, tabController),
         body: TabBarView(

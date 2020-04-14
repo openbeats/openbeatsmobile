@@ -1,45 +1,30 @@
 import 'package:flutter/material.dart';
 
-// holds static properties
-Color _staticPrimaryDark = Color(0xFF14161c);
+//? holds static properties
+Color _staticPrimaryDark = Color(0xFF202124);
 Color _staticPrimaryLight = Color(0xFFFFFFFF);
+Color _openBeatsRed = Color(0xFFF32C2C);
+Color _offWhite = Color(0xFFE6E6E6);
 
-// holds the app global properties
+//? holds the app global properties
 Brightness appBrightness = Brightness.light;
-Color appBackgroundColor = _staticPrimaryLight;
-Color appTextColor = _staticPrimaryDark;
-Color appIconColor = _staticPrimaryDark;
+Color backgroundColor = _staticPrimaryLight;
+Color textColor = _staticPrimaryDark;
+Color textDisabledColor = Colors.grey;
+Color subtitleTextColor = Colors.grey;
+Color iconColor = _staticPrimaryDark;
+Color iconDisabledColor = Colors.grey;
+Color subtitleIconColor = Colors.grey;
+Color textNowPlayingColor = _openBeatsRed;
 Color snackBarErrorMsgColor = Colors.red;
 Color snackBarWarningMsgColor = Colors.orange;
-Color resultDefaultTextColor = Colors.black;
-Color resultNowPlayingTextColor = Colors.red;
-Color resultNoAudioPlayingTextColor = Colors.grey;
-Color resultNoAudioPlayingIconColor = Colors.grey;
-Color openBeatsRed = Color(0xFFF32C2C);
+Color appTitleColor = _openBeatsRed;
 
-// main.dart
-Color mainAppTitleColor = Colors.red;
-Color mainPrimarySwatch = Colors.red;
-// homePage.dart
-Color homePageSlideUpCollapsedBG = appBackgroundColor;
-Color homePageSlideUpExpandedViewsDisabledTextColor = Colors.grey;
-Color homePageSlideUpExpandedViewsDisabledIconColor = Colors.grey;
-Color homePageSlideUpExpandedViewsTextColor = _staticPrimaryDark;
-Color homePageSlideUpExpandedViewsIconColor = _staticPrimaryDark;
-Color homePageSlideUpExpandedViewsPlayPauseIconColor = _staticPrimaryLight;
-Color homePageAppBarBG = appBackgroundColor;
-Color homePageAppBarIconColor = appIconColor;
-Color homePageAppBarIndicatorColor = Colors.transparent;
-Color homePageAppBarUnselectedLabelColor = Colors.grey;
-Color homePageAppBarLabelColor = Colors.red;
-// searchPage.dart
-Color searchPageScaffoldBG = appBackgroundColor;
-Color searchPageTextFieldBGColor = Color(0xFFE6E6E6);
-Color searchPageAppBarIconColor = appIconColor;
-Color searchPageAppBarTextColor = Colors.black;
-Color searchPageAppBarHintColor = Colors.grey;
-Color searchPageCursorColor = Colors.red;
-Color searchPageSuggestionsColor = Colors.grey;
-Color searchPageSuggestionsIconColor = Colors.grey;
-// searchTab.dart
-Color searchTabDefaultTextColor = Colors.grey;
+//? homePage.dart
+Color hPSlideUpPanelPlayBtnBG = _openBeatsRed;
+Color hPSlideUpPanelPlayBtnColor = _staticPrimaryLight;
+Color hPTabIndicatorColor = Colors.transparent;
+Color hpTabLabelColor = _openBeatsRed;
+
+//? searchPage.dart
+Color sPTextFieldBGColor = _offWhite;

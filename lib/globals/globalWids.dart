@@ -82,9 +82,9 @@ Widget audioTitleTextW(String title, bool currentlyPlaying, bool shouldScroll) {
       fontSize: (shouldScroll) ? 24.0 : 16.0,
       color: (title != "No audio playing")
           ? (currentlyPlaying)
-              ? globalColors.resultNowPlayingTextColor
-              : globalColors.resultDefaultTextColor
-          : globalColors.resultNoAudioPlayingTextColor,
+              ? globalColors.textNowPlayingColor
+              : globalColors.textColor
+          : globalColors.textDisabledColor,
     ),
   );
 }
