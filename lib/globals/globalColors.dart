@@ -23,6 +23,7 @@ Color appTitleColor = _openBeatsRed;
 //? homePage.dart
 Color hPSlideUpPanelPlayBtnBG = _openBeatsRed;
 Color hPSlideUpPanelPlayBtnColor = _staticPrimaryLight;
+Color hPSlideUpPanelTimingColor = _openBeatsRed;
 Color hPTabIndicatorColor = Colors.transparent;
 Color hpTabLabelColor = _openBeatsRed;
 

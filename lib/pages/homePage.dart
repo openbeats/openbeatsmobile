@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         vsync: this, length: globalStrings.homePageTabTitles.length);
     // initiating animation controller for play_pause button in the collapsed slideUpPanel
     playPauseAnimationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
   }
 
   @override
@@ -177,7 +177,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the widget to display when slideUp is collapsed
   Widget slideUpCollapsedW() {
     // setting default values
-    String audioThumbnail = "placeholder", audioTitle = "No audio playing";
+    String audioThumbnail = "placeholder",
+        audioTitle = globalStrings.noAudioPlayingString;
 
     return StreamBuilder(
         stream: AudioService.playbackStateStream,
@@ -204,7 +205,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           } else {
             // resetting values
             audioThumbnail = "placeholder";
-            audioTitle = "No audio playing";
+            audioTitle = globalStrings.noAudioPlayingString;
           }
 
           return Container(
@@ -225,7 +226,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget slideUpPanelW() {
     // setting default values
     String audioThumbnail = "placeholder",
-        audioTitle = "No audio playing",
+        audioTitle = globalStrings.noAudioPlayingString,
         audioPlays = "0";
     return StreamBuilder(
       stream: AudioService.playbackStateStream,
@@ -254,7 +255,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         } else {
           // resetting values
           audioThumbnail = "placeholder";
-          audioTitle = "No audio playing";
+          audioTitle = globalStrings.noAudioPlayingString;
           audioPlays = "0 views";
         }
         return Container(

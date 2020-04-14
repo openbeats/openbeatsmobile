@@ -192,13 +192,13 @@ Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
       text: TextSpan(
           style: TextStyle(
             color: globalColors.textDisabledColor,
-            fontSize: 16.0,
+            fontSize: 18.0,
           ),
           children: [
             WidgetSpan(
                 child: Icon(
               Icons.play_circle_filled,
-              size: 20.0,
+              size: 22.0,
               color: globalColors.textDisabledColor,
             )),
             TextSpan(text: " " + views),
@@ -231,14 +231,16 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
           duration = mediaItem?.duration?.toDouble();
           currentTimeStamp =
               globalFun.getCurrentTimeStamp(state.currentPosition / 1000);
-          durationInString = mediaItem.extras["durationString"];
+          if (mediaItem != null)
+            durationInString = mediaItem.extras["durationString"];
+          else
+            durationInString = "--:--";
         } else {
           position = 0;
-          duration = 1000;
+          duration = 10;
           currentTimeStamp = "00:00";
           durationInString = "--:--";
         }
-
         return Column(
           children: [
             if (duration != null)
@@ -250,9 +252,11 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
                   min: 0.0,
                   max: duration,
                   value: seekPos ?? max(0.0, min(position, duration)),
-                  onChanged: (value) {
-                    dragPositionSubject.add(value);
-                  },
+                  onChanged: (durationInString != "--:--")
+                      ? (value) {
+                          dragPositionSubject.add(value);
+                        }
+                      : null,
                   onChangeEnd: (value) {
                     AudioService.seekTo(value.toInt());
                     seekPos = value;
@@ -266,8 +270,24 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(currentTimeStamp),
-                  Text(durationInString),
+                  Text(
+                    currentTimeStamp,
+                    style: TextStyle(
+                      color: (durationInString == "--:--")
+                          ? globalColors.textDisabledColor
+                          : globalColors.hPSlideUpPanelTimingColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    durationInString,
+                    style: TextStyle(
+                      color: (durationInString == "--:--")
+                          ? globalColors.textDisabledColor
+                          : globalColors.hPSlideUpPanelTimingColor,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             )
@@ -316,7 +336,7 @@ Widget playPauseIconMainAudioControlsW(
       color: (noAudioPlaying)
           ? globalColors.iconDisabledColor
           : globalColors.hPSlideUpPanelPlayBtnBG, // button color
-      child: InkWell(
+      child: GestureDetector(
         child: SizedBox(
             width: 65,
             height: 65,
@@ -328,9 +348,11 @@ Widget playPauseIconMainAudioControlsW(
                 color: globalColors.hPSlideUpPanelPlayBtnColor,
               ),
             )),
-        onTap: () {
-          audioServicePlayPause();
-        },
+        onTap: (noAudioPlaying)
+            ? null
+            : () {
+                audioServicePlayPause();
+              },
       ),
     ),
   ));

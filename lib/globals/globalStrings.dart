@@ -15,6 +15,7 @@ List<String> homePageTabTitles = [
   "Library",
   "User"
 ];
+String noAudioPlayingString = "No Audio Playing";
 // searchPage.dart
 String searchPageCurrSearchQuery = "";
 List<String> searchHistory = new List();

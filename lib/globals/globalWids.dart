@@ -80,7 +80,7 @@ Widget audioTitleTextW(String title, bool currentlyPlaying, bool shouldScroll) {
     style: TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: (shouldScroll) ? 24.0 : 16.0,
-      color: (title != "No audio playing")
+      color: (title != globalStrings.noAudioPlayingString)
           ? (currentlyPlaying)
               ? globalColors.textNowPlayingColor
               : globalColors.textColor
