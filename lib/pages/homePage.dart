@@ -292,7 +292,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 height: MediaQuery.of(context).size.height * 0.01,
               ),
               homePageW.mainAudioControlsW(playPauseAnimationController, state,
-                  widget.audioServicePlayPause)
+                  widget.audioServicePlayPause, context)
             ],
           ),
         );
@@ -324,8 +324,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             Center(
               child: Text("Page 2"),
             ),
-            SearchTab(searchResultLoading, videosResponseList,
-                widget.startSinglePlayback),
+            searchPageNavigator(),
             Center(
               child: Text("Page 4"),
             ),
@@ -336,5 +335,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  // searchPageNavigator
+  Widget searchPageNavigator() {
+    return Navigator(onGenerateRoute: (RouteSettings settings) {
+      return PageRouteBuilder(
+        transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+          return new FadeTransition(opacity: animation, child: child);
+        },
+        pageBuilder: (BuildContext context, _, __) {
+          return SearchTab(searchResultLoading, videosResponseList,
+              widget.startSinglePlayback);
+        },
+        transitionDuration: Duration(milliseconds: 500),
+      );
+    });
   }
 }

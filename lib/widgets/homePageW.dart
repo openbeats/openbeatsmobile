@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:rxdart/rxdart.dart';
 import '../pages/searchPage.dart';
@@ -300,20 +301,26 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
 
 // holds the mainControls for the audio play in the slideUpPanelExpanded
 Widget mainAudioControlsW(AnimationController playPauseAnimationController,
-    PlaybackState state, Function audioServicePlayPause) {
+    PlaybackState state, Function audioServicePlayPause, BuildContext context) {
   return Container(
+    margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.05),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        playPauseIconMainAudioControlsW(
-            playPauseAnimationController, state, audioServicePlayPause)
+        forward10MainAudioControlsW(),
+        skipPreviousMainAudioControlsW(),
+        playPauseMainAudioControlsW(
+            playPauseAnimationController, state, audioServicePlayPause),
+        skipNextMainAudioControlsW(),
+        backward10MainAudioControlsW(),
       ],
     ),
   );
 }
 
-// holds the playPauseIcon for the mainAudioControlsW in slideUpPanelExpande
-Widget playPauseIconMainAudioControlsW(
+// holds the playPauseIcon for the mainAudioControlsW in slideUpPanelExpanded
+Widget playPauseMainAudioControlsW(
     AnimationController playPauseAnimationController,
     PlaybackState state,
     Function audioServicePlayPause) {
@@ -338,8 +345,8 @@ Widget playPauseIconMainAudioControlsW(
           : globalColors.hPSlideUpPanelPlayBtnBG, // button color
       child: GestureDetector(
         child: SizedBox(
-            width: 65,
-            height: 65,
+            width: 70,
+            height: 70,
             child: Center(
               child: AnimatedIcon(
                 size: 40.0,
@@ -357,3 +364,53 @@ Widget playPauseIconMainAudioControlsW(
     ),
   ));
 }
+
+// holds the skipPrevious button for the mainAudioControlsW in slideUpPanelExpanded
+Widget skipPreviousMainAudioControlsW() {
+  return Container(
+    child: IconButton(
+      iconSize: 45.0,
+      color: globalColors.iconColor,
+      icon: Icon(Icons.skip_previous),
+      onPressed: null,
+    ),
+  );
+}
+
+// holds the skipNext button for the mainAudioControlsW in slideUpPanelExpanded
+Widget skipNextMainAudioControlsW() {
+  return Container(
+    child: IconButton(
+      iconSize: 45.0,
+      color: globalColors.iconColor,
+      icon: Icon(Icons.skip_next),
+      onPressed: null,
+    ),
+  );
+}
+
+// holds the forward10 button for the mainAudioControlsW in slideUpPanelExpanded
+Widget forward10MainAudioControlsW() {
+  return Container(
+    child: IconButton(
+      iconSize: 35.0,
+      color: globalColors.iconColor,
+      icon: Icon(Icons.forward_10),
+      onPressed: null,
+    ),
+  );
+}
+
+// holds the backward10 button for the mainAudioControlsW in slideUpPanelExpanded
+Widget backward10MainAudioControlsW() {
+  return Container(
+    child: IconButton(
+      iconSize: 35.0,
+      color: globalColors.iconColor,
+      icon: Icon(Icons.replay_10),
+      onPressed: null,
+    ),
+  );
+}
+
+// holds the subControls for the audio play in the slideUpPanelExpanded

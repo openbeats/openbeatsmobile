@@ -23,8 +23,8 @@ dependencies:
   dio: ^3.0.9
   sliding_up_panel: ^1.0.1
   just_audio: ^0.1.4
-  audio_service: ^0.7.1
-  rxdart: ^0.23.1
+  audio_service: ^0.7.2
+  rxdart: ^0.24.0
   page_transition: ^1.1.5
   shared_preferences: ^0.5.6+3
   cached_network_image: ^2.0.0
