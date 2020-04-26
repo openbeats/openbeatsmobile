@@ -10,3 +10,5 @@ Color _offWhite = Color(0xFFE6E6E6);
 Brightness appBrightness = Brightness.light;
 Color backgroundClr = _staticPrimaryLight;
 Color primarySwatch = Colors.red;
+Color iconDefaultClr = _staticPrimaryDark;
+Color iconActiveClr = _openBeatsRed;

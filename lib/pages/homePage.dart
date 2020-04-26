@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
+import '../globals/globalVars.dart' as globalVars;
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,18 +10,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // holds the current index of the BottomNavBar
+  int _bottomNavBarCurrIndex = 0;
+
+  // handles tapping of BottomNavBar item
+  void bottomNavBarItemTap(int itemIndex) {
+    setState(() {
+      _bottomNavBarCurrIndex = itemIndex;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: homePageBottomAppBar(),
+      bottomNavigationBar: homePageBottomNavBar(),
       body: homePageBody(),
     );
   }
 
-  // holds the homePage BottomAppBar
-  Widget homePageBottomAppBar() {
-    return BottomAppBar(
-      child: homePageW.bottomAppBarRow(),
+  // holds the homePage BottomNavBar
+  Widget homePageBottomNavBar() {
+    return BottomNavigationBar(
+      elevation: 0,
+      currentIndex: _bottomNavBarCurrIndex,
+      backgroundColor: globalColors.backgroundClr,
+      showSelectedLabels: true,
+      showUnselectedLabels: true,
+      selectedItemColor: globalColors.iconActiveClr,
+      unselectedItemColor: globalColors.iconDefaultClr,
+      iconSize: globalVars.bottomNavBarIconSize,
+      type: BottomNavigationBarType.fixed,
+      items: homePageW.bottomNavBarItems(),
+      onTap: bottomNavBarItemTap,
     );
   }
 

@@ -14,15 +14,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "OpenBeats",
       home: HomePage(),
       theme: ThemeData(
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.primarySwatch,
         scaffoldBackgroundColor: globalColors.backgroundClr,
-        bottomAppBarTheme: BottomAppBarTheme(
-          color: globalColors.backgroundClr,
-          elevation: 0,
-        ),
       ),
     );
   }
