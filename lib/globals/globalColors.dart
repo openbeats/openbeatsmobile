@@ -24,8 +24,8 @@ Color appTitleColor = _openBeatsRed;
 Color hPSlideUpPanelPlayBtnBG = _openBeatsRed;
 Color hPSlideUpPanelPlayBtnColor = _staticPrimaryLight;
 Color hPSlideUpPanelTimingColor = _openBeatsRed;
-Color hPTabIndicatorColor = Colors.transparent;
-Color hpTabLabelColor = _openBeatsRed;
+Color hpSelectedBottomNavItemColor = _openBeatsRed;
+Color hpSelectedBottomNavTextColor = _openBeatsRed;
 
 //? searchPage.dart
 Color sPTextFieldBGColor = _offWhite;

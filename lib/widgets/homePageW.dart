@@ -24,28 +24,28 @@ Widget homePageAppBar(
       searchActBtn(context, navigateToSearchPage),
       moreOptionsBtn(),
     ],
-    bottom: TabBar(
-      controller: tabController,
-      isScrollable: true,
-      indicatorColor: globalColors.hPTabIndicatorColor,
-      unselectedLabelColor: globalColors.subtitleTextColor,
-      labelColor: globalColors.hpTabLabelColor,
-      unselectedLabelStyle: TextStyle(
-        fontSize: 28.0,
-        fontWeight: FontWeight.bold,
-      ),
-      labelStyle: TextStyle(
-        fontSize: 28.0,
-        fontWeight: FontWeight.bold,
-      ),
-      tabs: globalStrings.homePageTabTitles
-          .map(
-            (String title) => new Tab(
-              child: Text(title),
-            ),
-          )
-          .toList(),
-    ),
+    // bottom: TabBar(
+    //   controller: tabController,
+    //   isScrollable: true,
+    //   indicatorColor: globalColors.hPTabIndicatorColor,
+    //   unselectedLabelColor: globalColors.subtitleTextColor,
+    //   labelColor: globalColors.hpTabLabelColor,
+    //   unselectedLabelStyle: TextStyle(
+    //     fontSize: 28.0,
+    //     fontWeight: FontWeight.bold,
+    //   ),
+    //   labelStyle: TextStyle(
+    //     fontSize: 28.0,
+    //     fontWeight: FontWeight.bold,
+    //   ),
+    //   tabs: globalStrings.homePageTabTitles
+    //       .map(
+    //         (String title) => new Tab(
+    //           child: Text(title),
+    //         ),
+    //       )
+    //       .toList(),
+    // ),
   );
 }
 
@@ -308,12 +308,12 @@ Widget mainAudioControlsW(AnimationController playPauseAnimationController,
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        forward10MainAudioControlsW(),
+        backward10MainAudioControlsW(state),
         skipPreviousMainAudioControlsW(),
         playPauseMainAudioControlsW(
             playPauseAnimationController, state, audioServicePlayPause),
         skipNextMainAudioControlsW(),
-        backward10MainAudioControlsW(),
+        forward10MainAudioControlsW(state),
       ],
     ),
   );
@@ -390,25 +390,51 @@ Widget skipNextMainAudioControlsW() {
 }
 
 // holds the forward10 button for the mainAudioControlsW in slideUpPanelExpanded
-Widget forward10MainAudioControlsW() {
+Widget forward10MainAudioControlsW(PlaybackState state) {
   return Container(
     child: IconButton(
       iconSize: 35.0,
-      color: globalColors.iconColor,
+      color: (state != null &&
+              (state.basicState == BasicPlaybackState.playing ||
+                  state.basicState == BasicPlaybackState.paused))
+          ? globalColors.iconColor
+          : globalColors.iconDisabledColor,
       icon: Icon(Icons.forward_10),
-      onPressed: null,
+      onPressed: () {
+        // checking if audio is playing
+        if (state != null && (state.basicState == BasicPlaybackState.playing) ||
+            state.basicState == BasicPlaybackState.paused) {
+          // getting current position of audio
+          int currPosition = state.currentPosition;
+          // seeking audioService to 10 seconds behind the current position
+          AudioService.seekTo(currPosition + 10000);
+        }
+      },
     ),
   );
 }
 
 // holds the backward10 button for the mainAudioControlsW in slideUpPanelExpanded
-Widget backward10MainAudioControlsW() {
+Widget backward10MainAudioControlsW(PlaybackState state) {
   return Container(
     child: IconButton(
       iconSize: 35.0,
-      color: globalColors.iconColor,
+      color: (state != null &&
+              (state.basicState == BasicPlaybackState.playing ||
+                  state.basicState == BasicPlaybackState.paused))
+          ? globalColors.iconColor
+          : globalColors.iconDisabledColor,
       icon: Icon(Icons.replay_10),
-      onPressed: null,
+      onPressed: () {
+        // checking if audio is playing
+        if (state != null && (state.basicState == BasicPlaybackState.playing) ||
+            state.basicState == BasicPlaybackState.paused) {
+          // getting current position of audio
+          int currPosition = state.currentPosition;
+          // seeking audioService to 10 seconds behind the current position
+          AudioService.seekTo(currPosition - 10000);
+        }
+      },
     ),
   );
 }

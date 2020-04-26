@@ -37,6 +37,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController tabController;
   // holds the videos received for query
   List videosResponseList = new List();
+  // holds the current bottomNavItem
+  int _currBottomNavIndex = 0;
+  // holds the bottomBarItem icons
+  List<Icon> bottomBarItemIcons = [
+    Icon(Icons.explore),
+    Icon(Icons.trending_up),
+    Icon(Icons.search),
+    Icon(Icons.person)
+  ];
 
   // navigating to the searchPage
   void navigateToSearchPage() async {
@@ -154,10 +163,50 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: homePageWidgets(),
+    return DefaultTabController(
+      length: globalStrings.homePageTabTitles.length,
+      child: Scaffold(
+        key: tabScaffoldKey,
+        appBar: homePageW.homePageAppBar(
+            context, navigateToSearchPage, tabController),
+        bottomNavigationBar: bottomNavBarW(),
+        body: SafeArea(
+          child: homePageWidgets(),
+        ),
       ),
+    );
+  }
+
+  // holds the bottom navigationBar implementation
+  Widget bottomNavBarW() {
+    return BottomNavigationBar(
+      backgroundColor: globalColors.backgroundColor,
+      elevation: 0,
+      iconSize: 30.0,
+      currentIndex: _currBottomNavIndex,
+      selectedLabelStyle: TextStyle(
+        color: globalColors.hpSelectedBottomNavTextColor,
+      ),
+      selectedIconTheme: IconThemeData(
+        color: globalColors.hpSelectedBottomNavItemColor,
+      ),
+      unselectedIconTheme: IconThemeData(
+        color: globalColors.iconColor,
+      ),
+      onTap: (int itemIndex) {
+        setState(() {
+          _currBottomNavIndex = itemIndex;
+        });
+      },
+      items: bottomBarItemIcons
+          .map(
+            (Icon icon) => BottomNavigationBarItem(
+              backgroundColor: globalColors.backgroundColor,
+              icon: icon,
+              title: Text("Explore"),
+            ),
+          )
+          .toList(),
     );
   }
 
@@ -301,39 +350,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   Widget homePageScaffold() {
-    return DefaultTabController(
-      length: globalStrings.homePageTabTitles.length,
-      child: Scaffold(
-        key: tabScaffoldKey,
-        appBar: homePageW.homePageAppBar(
-            context, navigateToSearchPage, tabController),
-        body: TabBarView(
-          controller: tabController,
-          children: <Widget>[
-            Navigator(onGenerateRoute: (RouteSettings settings) {
-              return MaterialPageRoute(builder: (context) {
-                return Center(
-                  child: FlatButton(
-                    onPressed: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SamplePage())),
-                    child: Text("Start"),
-                  ),
-                );
-              });
-            }),
-            Center(
-              child: Text("Page 2"),
-            ),
-            searchPageNavigator(),
-            Center(
-              child: Text("Page 4"),
-            ),
-            Center(
-              child: Text("Page 5"),
-            )
-          ],
+    return TabBarView(
+      controller: tabController,
+      children: <Widget>[
+        Navigator(onGenerateRoute: (RouteSettings settings) {
+          return MaterialPageRoute(builder: (context) {
+            return Center(
+              child: FlatButton(
+                onPressed: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SamplePage())),
+                child: Text("Start"),
+              ),
+            );
+          });
+        }),
+        Center(
+          child: Text("Page 2"),
         ),
-      ),
+        searchPageNavigator(),
+        Center(
+          child: Text("Page 4"),
+        ),
+        Center(
+          child: Text("Page 5"),
+        )
+      ],
     );
   }
 
