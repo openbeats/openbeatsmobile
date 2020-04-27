@@ -27,7 +27,10 @@ class _HomePageState extends State<HomePage>
   // handles tapping of BottomNavBar item
   void _bottomNavBarItemTap(int itemIndex) {
     setState(() {
+      // setting the current BottomNavBar Item
       _bottomNavBarCurrIndex = itemIndex;
+      // animating the body pages to the desired page
+      _slidingUpPanelBodyTabViewController.animateTo(itemIndex);
     });
   }
 
@@ -94,7 +97,7 @@ class _HomePageState extends State<HomePage>
   Widget _slidingUpPanelBody() {
     return Container(
       child: TabBarView(
-        physics: BouncingScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         controller: _slidingUpPanelBodyTabViewController,
         children: [
           _exploreTab(),
