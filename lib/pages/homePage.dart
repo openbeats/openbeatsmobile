@@ -25,8 +25,6 @@ class _HomePageState extends State<HomePage>
   PanelController _slidingUpPanelController = new PanelController();
   // controller for the TabView in SlidingUpPanel Body
   TabController _slidingUpPanelBodyTabViewController;
-  // controls if the BottomNavBar should be shown
-  bool _showBottomNavBar = true;
 
   // handles tapping of BottomNavBar item
   void _bottomNavBarItemTap(int itemIndex) {

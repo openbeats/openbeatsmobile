@@ -5,3 +5,7 @@ String apiHostAddress = "";
 
 // holds the sizes for widgets of app
 double bottomNavBarIconSize = 27.0;
+
+// searchPage.dart
+// holds the current searched string
+String currSearchedString = "";
