@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import './tabs/searchTab/searchHomeView.dart';
 import './tabs/playlistsTab.dart';
 import './tabs/searchTab.dart';
 import './tabs/settingsTab.dart';
@@ -39,6 +41,11 @@ class _HomePageState extends State<HomePage>
       _slidingUpPanelController.close();
   }
 
+  // handles the onWillPop callback
+  Future<bool> _onWillPopCallbackHandler() async {
+    return false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -56,11 +63,12 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Container(
-        child: _homePageBottomNavBar(),
+    return WillPopScope(
+      onWillPop: _onWillPopCallbackHandler,
+      child: Scaffold(
+        bottomNavigationBar: _homePageBottomNavBar(),
+        body: _homePageBody(),
       ),
-      body: _homePageBody(),
     );
   }
 
@@ -127,7 +135,29 @@ class _HomePageState extends State<HomePage>
 
   // holds the SearchTab widget
   Widget _searchTab() {
-    return SearchTab();
+    return Navigator(
+      initialRoute: "/searchHome",
+      onGenerateRoute: (RouteSettings routeSettings) {
+        return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/searchHome':
+                return SearchHomeView();
+              case "/searchNow":
+                return SearchNowView();
+              default:
+                return SearchHomeView();
+            }
+          },
+          transitionDuration: Duration(milliseconds: 200),
+        );
+      },
+    );
   }
 
   // holds the PlaylistsTab widget
