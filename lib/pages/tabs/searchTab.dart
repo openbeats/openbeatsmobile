@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-class ExploreTab extends StatefulWidget {
+class SearchTab extends StatefulWidget {
   @override
-  _ExploreTabState createState() => _ExploreTabState();
+  _SearchTabState createState() => _SearchTabState();
 }
 
-class _ExploreTabState extends State<ExploreTab> {
+class _SearchTabState extends State<SearchTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         child: Center(
-          child: Text("Explore Tab"),
+          child: Text("Search Tab"),
         ),
       ),
     );

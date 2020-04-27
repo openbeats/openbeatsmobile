@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-import 'package:openbeatsmobile/pages/tabs/exploreTab.dart';
+import './tabs/playlistsTab.dart';
+import './tabs/searchTab.dart';
+import './tabs/settingsTab.dart';
+import './tabs/trendingTab.dart';
+import './tabs/exploreTab.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalVars.dart' as globalVars;
@@ -120,21 +124,21 @@ class _HomePageState extends State<HomePage>
 
   // holds the TrendingTab widget
   Widget _trendingTab() {
-    return ExploreTab();
+    return TrendingTab();
   }
 
   // holds the SearchTab widget
   Widget _searchTab() {
-    return ExploreTab();
+    return SearchTab();
   }
 
   // holds the PlaylistsTab widget
   Widget _playlistsTab() {
-    return ExploreTab();
+    return PlaylistsTab();
   }
 
   // holds the SettingsTab widget
   Widget _settingsTab() {
-    return ExploreTab();
+    return SettingsTab();
   }
 }
