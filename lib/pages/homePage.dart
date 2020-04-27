@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalVars.dart' as globalVars;
@@ -13,9 +14,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   // holds the current index of the BottomNavBar
   int _bottomNavBarCurrIndex = 0;
+  // controller for the SlidingUpPanel
+  PanelController _slidingUpPanelController = new PanelController();
+  // controls if the BottomNavBar should be shown
+  bool _showBottomNavBar = true;
 
   // handles tapping of BottomNavBar item
-  void bottomNavBarItemTap(int itemIndex) {
+  void _bottomNavBarItemTap(int itemIndex) {
     setState(() {
       _bottomNavBarCurrIndex = itemIndex;
     });
@@ -24,7 +29,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: homePageBottomNavBar(),
+      bottomNavigationBar: Container(
+        child: homePageBottomNavBar(),
+      ),
       body: homePageBody(),
     );
   }
@@ -44,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       iconSize: globalVars.bottomNavBarIconSize,
       type: BottomNavigationBarType.shifting,
       items: homePageW.bottomNavBarItems(),
-      onTap: bottomNavBarItemTap,
+      onTap: _bottomNavBarItemTap,
     );
   }
 
@@ -52,8 +59,20 @@ class _HomePageState extends State<HomePage> {
   Widget homePageBody() {
     return SafeArea(
       child: Container(
-        child: null,
+        child: SlidingUpPanel(
+          controller: _slidingUpPanelController,
+          defaultPanelState: PanelState.CLOSED,
+          minHeight: 60.0,
+          maxHeight: MediaQuery.of(context).size.height,
+          collapsed: homePageW.collapsedSlidingUpPanel(),
+          panel: homePageW.expandedSlidingUpPanel(),
+        ),
       ),
     );
+  }
+
+  // holds the SlidingUpPanel body
+  Widget slidingUpPanelBody() {
+    return null;
   }
 }

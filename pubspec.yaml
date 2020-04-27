@@ -21,7 +21,7 @@ dependencies:
     sdk: flutter
   font_awesome_flutter: ^8.8.1
   dio: ^3.0.9
-  sliding_up_panel: ^1.0.1
+  sliding_up_panel: ^1.0.2
   just_audio: ^0.1.4
   audio_service: ^0.7.2
   rxdart: ^0.24.0

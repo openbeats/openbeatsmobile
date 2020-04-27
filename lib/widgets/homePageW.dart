@@ -5,7 +5,7 @@ import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalStrings.dart' as globalStrings;
 import '../globals/globalColors.dart' as globalColors;
 
-// row of widgets for BottomNavBar
+// BottomNavBar items for BottomNavBar
 List<BottomNavigationBarItem> bottomNavBarItems() {
   // holds list of bottomNavBarItems
   List<BottomNavigationBarItem> bottomNavItemList = [];
@@ -23,4 +23,18 @@ List<BottomNavigationBarItem> bottomNavBarItems() {
         ),
       );
   return bottomNavItemList;
+}
+
+// collapsed widget for the SlidingUpPanel
+Widget collapsedSlidingUpPanel() {
+  return Container(
+    child: null,
+  );
+}
+
+//  expanded widget for the SlidingUpPanel
+Widget expandedSlidingUpPanel() {
+  return Container(
+    child: null,
+  );
 }
