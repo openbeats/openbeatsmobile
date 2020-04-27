@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import 'package:openbeatsmobile/pages/tabs/exploreTab.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalVars.dart' as globalVars;
 import '../globals/globalStyles.dart' as globalStyles;
+import '../globals/globalWids.dart' as globalWids;
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   // holds the current index of the BottomNavBar
   int _bottomNavBarCurrIndex = 0;
   // controller for the SlidingUpPanel
   PanelController _slidingUpPanelController = new PanelController();
+  // controller for the TabView in SlidingUpPanel Body
+  TabController _slidingUpPanelBodyTabViewController;
   // controls if the BottomNavBar should be shown
   bool _showBottomNavBar = true;
 
@@ -27,17 +32,32 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // initiating controller for the TabView in SlidingUpPanel Body
+    _slidingUpPanelBodyTabViewController = new TabController(
+        length: globalWids.bottomNavBarIcons.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    // disposing controller for the TabView in SlidingUpPanel Body
+    _slidingUpPanelBodyTabViewController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: Container(
-        child: homePageBottomNavBar(),
+        child: _homePageBottomNavBar(),
       ),
-      body: homePageBody(),
+      body: _homePageBody(),
     );
   }
 
   // holds the homePage BottomNavBar
-  Widget homePageBottomNavBar() {
+  Widget _homePageBottomNavBar() {
     return BottomNavigationBar(
       elevation: 0,
       currentIndex: _bottomNavBarCurrIndex,
@@ -56,23 +76,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   // holds the homePageBody
-  Widget homePageBody() {
+  Widget _homePageBody() {
     return SafeArea(
-      child: Container(
-        child: SlidingUpPanel(
-          controller: _slidingUpPanelController,
-          defaultPanelState: PanelState.CLOSED,
-          minHeight: 60.0,
-          maxHeight: MediaQuery.of(context).size.height,
-          collapsed: homePageW.collapsedSlidingUpPanel(),
-          panel: homePageW.expandedSlidingUpPanel(),
-        ),
+      child: SlidingUpPanel(
+        controller: _slidingUpPanelController,
+        defaultPanelState: PanelState.CLOSED,
+        minHeight: 60.0,
+        maxHeight: MediaQuery.of(context).size.height,
+        collapsed: homePageW.collapsedSlidingUpPanel(),
+        panel: homePageW.expandedSlidingUpPanel(),
+        body: _slidingUpPanelBody(),
       ),
     );
   }
 
   // holds the SlidingUpPanel body
-  Widget slidingUpPanelBody() {
-    return null;
+  Widget _slidingUpPanelBody() {
+    return Container(
+      child: TabBarView(
+        physics: BouncingScrollPhysics(),
+        controller: _slidingUpPanelBodyTabViewController,
+        children: [
+          _exploreTab(),
+          _trendingTab(),
+          _searchTab(),
+          _playlistsTab(),
+          _settingsTab(),
+        ],
+      ),
+    );
+  }
+
+  // holds the ExploreTab widget
+  Widget _exploreTab() {
+    return ExploreTab();
+  }
+
+  // holds the TrendingTab widget
+  Widget _trendingTab() {
+    return ExploreTab();
+  }
+
+  // holds the SearchTab widget
+  Widget _searchTab() {
+    return ExploreTab();
+  }
+
+  // holds the PlaylistsTab widget
+  Widget _playlistsTab() {
+    return ExploreTab();
+  }
+
+  // holds the SettingsTab widget
+  Widget _settingsTab() {
+    return ExploreTab();
   }
 }
