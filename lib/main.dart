@@ -20,6 +20,24 @@ class _MyAppState extends State<MyApp> {
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.primarySwatch,
         scaffoldBackgroundColor: globalColors.backgroundClr,
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          color: globalColors.backgroundClr,
+          textTheme: TextTheme(
+            title: TextStyle(
+              color: globalColors.textDefaultClr,
+              fontFamily: "Poppins",
+              fontSize: 35.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          iconTheme: IconThemeData(
+            color: globalColors.iconDefaultClr,
+          ),
+          actionsIconTheme: IconThemeData(
+            color: globalColors.iconDefaultClr,
+          ),
+        ),
       ),
     );
   }

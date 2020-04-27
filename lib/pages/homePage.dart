@@ -152,7 +152,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the SearchTab widget
   Widget _searchTab() {
     return Navigator(
-      initialRoute: "/searchHome",
       onGenerateRoute: (RouteSettings routeSettings) {
         return PageRouteBuilder(
           maintainState: true,
@@ -162,7 +161,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           },
           pageBuilder: (BuildContext context, _, __) {
             switch (routeSettings.name) {
-              case '/searchHome':
+              case '/':
                 return SearchHomeView();
               case "/searchNow":
                 return SearchNowView();
@@ -170,7 +169,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 return SearchHomeView();
             }
           },
-          transitionDuration: Duration(milliseconds: 200),
+          transitionDuration: Duration(milliseconds: 300),
         );
       },
     );

@@ -35,7 +35,6 @@ Widget collapsedSlidingUpPanel() {
 //  expanded widget for the SlidingUpPanel
 Widget expandedSlidingUpPanel() {
   return Container(
-    color: Colors.red,
     child: null,
   );
 }
