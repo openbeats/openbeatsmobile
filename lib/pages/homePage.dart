@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalVars.dart' as globalVars;
+import '../globals/globalStyles.dart' as globalStyles;
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,8 +39,10 @@ class _HomePageState extends State<HomePage> {
       showUnselectedLabels: true,
       selectedItemColor: globalColors.iconActiveClr,
       unselectedItemColor: globalColors.iconDefaultClr,
+      selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+      unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
       iconSize: globalVars.bottomNavBarIconSize,
-      type: BottomNavigationBarType.fixed,
+      type: BottomNavigationBarType.shifting,
       items: homePageW.bottomNavBarItems(),
       onTap: bottomNavBarItemTap,
     );
