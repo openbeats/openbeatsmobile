@@ -29,9 +29,12 @@ class _HomePageState extends State<HomePage>
     setState(() {
       // setting the current BottomNavBar Item
       _bottomNavBarCurrIndex = itemIndex;
-      // animating the body pages to the desired page
-      _slidingUpPanelBodyTabViewController.animateTo(itemIndex);
     });
+    // animating the body pages to the desired page
+    _slidingUpPanelBodyTabViewController.animateTo(itemIndex);
+    // checking if SlidingUpPanel is open
+    if (_slidingUpPanelController.isPanelOpen)
+      _slidingUpPanelController.close();
   }
 
   @override
