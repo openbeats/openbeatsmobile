@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 String apiHostAddress = "";
 
 // holds the sizes for widgets of app
-double bottomNavBarIconSize = 27.0;
+double bottomNavBarIconSize = 30.0;
 
 // searchPage.dart
 // holds the current searched string

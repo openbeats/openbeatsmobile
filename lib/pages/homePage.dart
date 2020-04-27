@@ -19,14 +19,15 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the current index of the BottomNavBar
   int _bottomNavBarCurrIndex = 0;
   // controller for the SlidingUpPanel
   PanelController _slidingUpPanelController = new PanelController();
   // controller for the TabView in SlidingUpPanel Body
   TabController _slidingUpPanelBodyTabViewController;
+  // animation controller to hide BottomNavBar
+  AnimationController _hideBottomNavBar;
 
   // handles tapping of BottomNavBar item
   void _bottomNavBarItemTap(int itemIndex) {
@@ -52,6 +53,11 @@ class _HomePageState extends State<HomePage>
     // initiating controller for the TabView in SlidingUpPanel Body
     _slidingUpPanelBodyTabViewController = new TabController(
         length: globalWids.bottomNavBarIcons.length, vsync: this);
+    // initiating animation controller to hide the BottomNavBar
+    _hideBottomNavBar =
+        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    // showing the BottomNavBar
+    _hideBottomNavBar.forward();
   }
 
   @override
@@ -74,20 +80,24 @@ class _HomePageState extends State<HomePage>
 
   // holds the homePage BottomNavBar
   Widget _homePageBottomNavBar() {
-    return BottomNavigationBar(
-      elevation: 0,
-      currentIndex: _bottomNavBarCurrIndex,
-      backgroundColor: globalColors.backgroundClr,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      selectedItemColor: globalColors.iconActiveClr,
-      unselectedItemColor: globalColors.iconDefaultClr,
-      selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
-      unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
-      iconSize: globalVars.bottomNavBarIconSize,
-      type: BottomNavigationBarType.shifting,
-      items: homePageW.bottomNavBarItems(),
-      onTap: _bottomNavBarItemTap,
+    return SizeTransition(
+      sizeFactor: _hideBottomNavBar,
+      axisAlignment: -1.0,
+      child: BottomNavigationBar(
+        elevation: 0,
+        currentIndex: _bottomNavBarCurrIndex,
+        backgroundColor: globalColors.backgroundClr,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedItemColor: globalColors.iconActiveClr,
+        unselectedItemColor: globalColors.iconDefaultClr,
+        selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+        unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+        iconSize: globalVars.bottomNavBarIconSize,
+        type: BottomNavigationBarType.shifting,
+        items: homePageW.bottomNavBarItems(),
+        onTap: _bottomNavBarItemTap,
+      ),
     );
   }
 
@@ -102,6 +112,12 @@ class _HomePageState extends State<HomePage>
         collapsed: homePageW.collapsedSlidingUpPanel(),
         panel: homePageW.expandedSlidingUpPanel(),
         body: _slidingUpPanelBody(),
+        onPanelOpened: () {
+          _hideBottomNavBar.reverse();
+        },
+        onPanelClosed: () {
+          _hideBottomNavBar.forward();
+        },
       ),
     );
   }
