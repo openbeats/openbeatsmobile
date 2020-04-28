@@ -28,6 +28,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _slidingUpPanelBodyTabViewController;
   // animation controller to hide BottomNavBar
   AnimationController _hideBottomNavBar;
+  // flag to indicate the last known stable position of the SlidingUpPanel
+  // true - open && false - closed
+  bool _slidingPanelLKSState;
 
   // handles tapping of BottomNavBar item
   void _bottomNavBarItemTap(int itemIndex) {
@@ -40,6 +43,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // checking if SlidingUpPanel is open
     if (_slidingUpPanelController.isPanelOpen)
       _slidingUpPanelController.close();
+  }
+
+  // handles the onPanelSlide callback from the SlidingUpPanel to hide or reveal the BottomNavBar
+  void _onPanelSlideCallbackHandler(double slideValue) {
+    // checking if the slide value has reached hide BottomAppBar threshold and check if LKS position of SlidingUpPanel is 'Closed'
+    if (slideValue > 0.2 && slideValue < 0.25 && !_slidingPanelLKSState) {
+      _hideBottomNavBar.reverse();
+    }
+    // check if the slide valie has reached show BottomAppBar threshold and check if LKS position of SlidingUpPanel is 'Open'
+    if (slideValue > 0.8 && slideValue < 0.85 && _slidingPanelLKSState) {
+      _hideBottomNavBar.forward();
+    }
+    // updating last known stable position of the SlidingUpPanel
+    else if (slideValue == 1.0)
+      _slidingPanelLKSState = true;
+    else if (slideValue == 0.0) _slidingPanelLKSState = false;
   }
 
   // handles the onWillPop callback
@@ -58,6 +77,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
     // showing the BottomNavBar
     _hideBottomNavBar.forward();
+    // marking the last known stable position as closed
+    _slidingPanelLKSState = false;
   }
 
   @override
@@ -112,12 +133,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         collapsed: homePageW.collapsedSlidingUpPanel(),
         panel: homePageW.expandedSlidingUpPanel(),
         body: _slidingUpPanelBody(),
-        onPanelOpened: () {
-          _hideBottomNavBar.reverse();
-        },
-        onPanelClosed: () {
-          _hideBottomNavBar.forward();
-        },
+        onPanelOpened: () => _hideBottomNavBar.reverse(),
+        onPanelClosed: () => _hideBottomNavBar.forward(),
+        onPanelSlide: _onPanelSlideCallbackHandler,
       ),
     );
   }
