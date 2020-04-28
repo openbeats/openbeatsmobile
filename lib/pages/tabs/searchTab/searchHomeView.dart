@@ -9,10 +9,15 @@ class SearchHomeView extends StatefulWidget {
 }
 
 class _SearchHomeViewState extends State<SearchHomeView> {
+  // navigate to searchNowView
+  void navigateToSearchNowView() {
+    Navigator.of(context).pushNamed('/searchNow');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: searchHomeViewW.appBar(),
+      appBar: searchHomeViewW.appBar(navigateToSearchNowView),
       body: searchHomeViewBody(),
     );
   }

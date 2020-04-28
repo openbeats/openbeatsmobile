@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // holds the API hostAddress
-String apiHostAddress = "";
+String apiHostAddress = "https://staging-api.openbeats.live";
 
 // holds the sizes for widgets of app
 double bottomNavBarIconSize = 30.0;

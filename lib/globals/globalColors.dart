@@ -16,5 +16,5 @@ Color textDefaultClr = _staticPrimaryDark;
 Color textActiveClr = _openBeatsRed;
 Color textDisabledClr = Colors.grey;
 
-// searchPage.dart
+// searchNowView.dart
 Color textFieldBgClr = _offWhite;

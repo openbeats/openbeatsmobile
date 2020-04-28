@@ -4,21 +4,21 @@ import 'package:flutter/material.dart';
 import '../../../globals/globalColors.dart' as globalColors;
 
 // holds the AppBar for the searchHomeView
-Widget appBar() {
+Widget appBar(Function navigateToSearchNowView) {
   return AppBar(
     title: Text("Search"),
-    actions: <Widget>[searchButtonAppBar()],
+    actions: <Widget>[searchButtonAppBar(navigateToSearchNowView)],
   );
 }
 
 // holds the search button for the AppBar
-Widget searchButtonAppBar() {
+Widget searchButtonAppBar(Function navigateToSearchNowView) {
   return IconButton(
     icon: Icon(
       Icons.search,
       size: 30.0,
     ),
-    onPressed: () {},
+    onPressed: navigateToSearchNowView,
   );
 }
 
