@@ -20,11 +20,7 @@ class _SearchHomeViewState extends State<SearchHomeView> {
   // holds the searchHomeView Body implementation
   Widget searchHomeViewBody() {
     return Container(
-      child: ListView(
-        children: <Widget>[
-          searchHomeViewW.searchHomeViewSearchInstruction(context)
-        ],
-      ),
+      child: searchHomeViewW.searchHomeViewSearchInstruction(context),
     );
   }
 }
