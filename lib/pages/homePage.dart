@@ -13,6 +13,7 @@ import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalVars.dart' as globalVars;
 import '../globals/globalStyles.dart' as globalStyles;
 import '../globals/globalWids.dart' as globalWids;
+import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 
 class HomePage extends StatefulWidget {
   @override
@@ -47,7 +48,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // handles the onWillPop callback
   Future<bool> _onWillPopCallbackHandler() async {
-    return false;
+    // checking which tab is in view
+    switch (_bottomNavBarCurrIndex) {
+      // if searchTab is in view
+      case 2:
+        // checking if searchNowView is still in use
+        if (globalScaffoldKeys.searchNowViewScaffoldKey.currentContext !=
+            null) {
+          Navigator.of(
+                  globalScaffoldKeys.searchNowViewScaffoldKey.currentContext)
+              .pop();
+          return false;
+        } else {
+          return true;
+        }
+        break;
+      default:
+        return true;
+    }
   }
 
   @override
