@@ -45,22 +45,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       _slidingUpPanelController.close();
   }
 
-  // handles the onPanelSlide callback from the SlidingUpPanel to hide or reveal the BottomNavBar
-  void _onPanelSlideCallbackHandler(double slideValue) {
-    // checking if the slide value has reached hide BottomAppBar threshold and check if LKS position of SlidingUpPanel is 'Closed'
-    if (slideValue > 0.2 && slideValue < 0.25 && !_slidingPanelLKSState) {
-      _hideBottomNavBar.reverse();
-    }
-    // check if the slide valie has reached show BottomAppBar threshold and check if LKS position of SlidingUpPanel is 'Open'
-    if (slideValue > 0.8 && slideValue < 0.85 && _slidingPanelLKSState) {
-      _hideBottomNavBar.forward();
-    }
-    // updating last known stable position of the SlidingUpPanel
-    else if (slideValue == 1.0)
-      _slidingPanelLKSState = true;
-    else if (slideValue == 0.0) _slidingPanelLKSState = false;
-  }
-
   // handles the onWillPop callback
   Future<bool> _onWillPopCallbackHandler() async {
     return false;
@@ -135,7 +119,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBar.reverse(),
         onPanelClosed: () => _hideBottomNavBar.forward(),
-        onPanelSlide: _onPanelSlideCallbackHandler,
       ),
     );
   }

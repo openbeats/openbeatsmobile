@@ -1,4 +1,3 @@
-import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 
 import '../../../widgets/tabW/searchTab/searchHomeViewW.dart'
@@ -21,19 +20,10 @@ class _SearchHomeViewState extends State<SearchHomeView> {
   // holds the searchHomeView Body implementation
   Widget searchHomeViewBody() {
     return Container(
-      child: Center(
-        child: searchInstructionFlareActor(),
-      ),
-    );
-  }
-
-  // holds the searchHomeView search instruction FlareActor
-  Widget searchInstructionFlareActor() {
-    return SizedBox(
-      height: 300.0,
-      child: FlareActor(
-        "assets/flareAssets/searchforsong.flr",
-        animation: "Searching",
+      child: ListView(
+        children: <Widget>[
+          searchHomeViewW.searchHomeViewSearchInstruction(context)
+        ],
       ),
     );
   }

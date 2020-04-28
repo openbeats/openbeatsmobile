@@ -27,8 +27,7 @@ class _MyAppState extends State<MyApp> {
             title: TextStyle(
               color: globalColors.textDefaultClr,
               fontFamily: "Poppins",
-              fontSize: 35.0,
-              fontWeight: FontWeight.bold,
+              fontSize: 26.0,
             ),
           ),
           iconTheme: IconThemeData(
