@@ -16,6 +16,14 @@
       "deviceId": "2228cdd13d027ece",
       "program": "lib/main.dart",
       "flutterMode": "release"
+    },
+    {
+      "name": "Flutter Debug",
+      "request": "launch",
+      "type": "dart",
+      "deviceId": "2228cdd13d027ece",
+      "program": "lib/main.dart",
+      "flutterMode": "debug"
     }
   ]
 }

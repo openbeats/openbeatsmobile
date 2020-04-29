@@ -121,8 +121,8 @@ Widget suggestionsListTile(BuildContext context, int index, bool showHistory,
       Icons.search,
       color: globalColors.iconDisabledClr,
     ),
-    trailing: updateQueryBtn(
-        showHistory, index, sendSuggestionToField, suggestionResponseList),
+    trailing: updateQueryBtn(context, showHistory, index, sendSuggestionToField,
+        suggestionResponseList),
     onTap: () {
       // setting global variable to persist search
       globalVarsA.updatecurrSearchedString((showHistory)
@@ -138,31 +138,31 @@ Widget suggestionsListTile(BuildContext context, int index, bool showHistory,
   );
 }
 
-Widget updateQueryBtn(bool showHistory, int index,
+Widget updateQueryBtn(BuildContext context, bool showHistory, int index,
     Function sendSuggestionToField, List suggestionResponseList) {
-  return Container(
-    alignment: Alignment.centerRight,
-    width: 40.0,
-    child: Transform.rotate(
-      angle: -50 * math.pi / 180,
-      child: InkWell(
+  return InkWell(
+    child: Container(
+      alignment: Alignment.centerRight,
+      width: MediaQuery.of(context).size.width * 0.07,
+      child: Transform.rotate(
+        angle: -50 * math.pi / 180,
         child: Icon(
           Icons.arrow_upward,
           size: 22.0,
           color: globalColors.iconDisabledClr,
         ),
-        onTap: () {
-          // setting global variable to persist search
-          globalVarsA.updatecurrSearchedString((showHistory)
-              ? globalVars.searchHistory[index]
-              : suggestionResponseList[index][0]);
-
-          // sending the current text to the search field
-          sendSuggestionToField((showHistory)
-              ? globalVars.searchHistory[index]
-              : suggestionResponseList[index][0]);
-        },
       ),
     ),
+    onTap: () {
+      // setting global variable to persist search
+      globalVarsA.updatecurrSearchedString((showHistory)
+          ? globalVars.searchHistory[index]
+          : suggestionResponseList[index][0]);
+
+      // sending the current text to the search field
+      sendSuggestionToField((showHistory)
+          ? globalVars.searchHistory[index]
+          : suggestionResponseList[index][0]);
+    },
   );
 }
