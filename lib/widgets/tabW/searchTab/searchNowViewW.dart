@@ -140,7 +140,7 @@ Widget suggestionsListTile(BuildContext context, int index, bool showHistory,
 
 Widget updateQueryBtn(BuildContext context, bool showHistory, int index,
     Function sendSuggestionToField, List suggestionResponseList) {
-  return InkWell(
+  return GestureDetector(
     child: Container(
       alignment: Alignment.centerRight,
       width: MediaQuery.of(context).size.width * 0.07,
