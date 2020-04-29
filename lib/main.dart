@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:openbeatsmobile/pages/homePage.dart';
 import './globals/globalColors.dart' as globalColors;
@@ -24,10 +25,12 @@ class _MyAppState extends State<MyApp> {
           elevation: 0,
           color: globalColors.backgroundClr,
           textTheme: TextTheme(
-            title: TextStyle(
-              color: globalColors.textDefaultClr,
-              fontFamily: "Poppins",
-              fontSize: 26.0,
+            title: GoogleFonts.poppins(
+              textStyle: TextStyle(
+                color: globalColors.textDefaultClr,
+                fontSize: 26.0,
+              ),
+              fontWeight: FontWeight.w600,
             ),
           ),
           iconTheme: IconThemeData(

@@ -140,7 +140,10 @@ Widget suggestionsListTile(BuildContext context, int index, bool showHistory,
 
 Widget updateQueryBtn(bool showHistory, int index,
     Function sendSuggestionToField, List suggestionResponseList) {
-  return Transform.rotate(
+  return Container(
+    alignment: Alignment.centerRight,
+    width: 40.0,
+    child: Transform.rotate(
       angle: -50 * math.pi / 180,
       child: InkWell(
         child: Icon(
@@ -159,5 +162,7 @@ Widget updateQueryBtn(bool showHistory, int index,
               ? globalVars.searchHistory[index]
               : suggestionResponseList[index][0]);
         },
-      ));
+      ),
+    ),
+  );
 }
