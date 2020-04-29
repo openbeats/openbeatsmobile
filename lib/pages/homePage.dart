@@ -3,11 +3,10 @@ import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import './tabs/searchTab/searchHomeView.dart';
-import './tabs/playlistsTab.dart';
-import './tabs/searchTab.dart';
-import './tabs/settingsTab.dart';
-import './tabs/trendingTab.dart';
-import './tabs/exploreTab.dart';
+import './tabs/playlistsTab/playlistsTab.dart';
+import './tabs/settingsTab/settingsTab.dart';
+import './tabs/trendingTab/trendingTab.dart';
+import './tabs/exploreTab/exploreTab.dart';
 import '../widgets/homePageW.dart' as homePageW;
 import '../globals/globalColors.dart' as globalColors;
 import '../globals/globalVars.dart' as globalVars;

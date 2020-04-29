@@ -2,6 +2,7 @@ import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 
 import '../../../globals/globalColors.dart' as globalColors;
+import '../../../globals/globalWids.dart' as globalWids;
 
 // holds the AppBar for the searchHomeView
 Widget appBar(Function navigateToSearchNowView) {
@@ -76,5 +77,124 @@ Widget searchInstructionText(BuildContext context) {
             ),
           )
         : null,
+  );
+}
+
+// holds the widget to show when the search results are loading
+Widget searchResultLoadingW(BuildContext context) {
+  return Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: <Widget>[
+      SizedBox(
+        height: MediaQuery.of(context).size.height * 0.3,
+      ),
+      SizedBox(
+        height: 100.0,
+        child: FlareActor(
+          "assets/flareAssets/loadinganim.flr",
+          animation: "loadnew",
+        ),
+      )
+    ],
+  );
+}
+
+// holds the listview containing the list of body contents in searchHomeView
+Widget listOfBodyContents(BuildContext context, List videosResponseList,
+    currentPlayingMediaThumbnail) {
+  return ListView(
+    physics: BouncingScrollPhysics(),
+    children: <Widget>[
+      SizedBox(
+        height: 15.0,
+      ),
+      ListView.separated(
+        shrinkWrap: true,
+        physics: BouncingScrollPhysics(),
+        separatorBuilder: (context, index) {
+          return Divider();
+        },
+        itemBuilder: (BuildContext context, int index) => searchResultListTile(
+            context, index, currentPlayingMediaThumbnail, videosResponseList),
+        itemCount: videosResponseList.length,
+      ),
+      // space to compensate for the slideUpPanel
+      SizedBox(
+        height: (MediaQuery.of(context).orientation == Orientation.portrait)
+            ? MediaQuery.of(context).size.height * 0.22
+            : MediaQuery.of(context).size.height * 0.33,
+      )
+    ],
+  );
+}
+
+// holds the listtile for the searchResults
+Widget searchResultListTile(BuildContext context, int index,
+    String currentPlayingMediaThumbnail, List videosResponseList) {
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.035,
+        ),
+        Flexible(
+          flex: 2,
+          fit: FlexFit.tight,
+          child: GestureDetector(
+            child: globalWids.audioThumbnailW(
+                videosResponseList[index]["thumbnail"], context, 0.15, 5),
+            // onTap: () => startSinglePlaybackOnTap(index),
+            onTap: () {},
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.03,
+        ),
+        Flexible(
+          flex: 9,
+          fit: FlexFit.tight,
+          child: GestureDetector(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                globalWids.audioTitleW(
+                    videosResponseList[index]["title"],
+                    context,
+                    (currentPlayingMediaThumbnail ==
+                            videosResponseList[index]["thumbnail"])
+                        ? true
+                        : false,
+                    false),
+                globalWids.audioDetailsW(videosResponseList[index]["views"],
+                    videosResponseList[index]["duration"])
+              ],
+            ),
+            // onTap: () => startSinglePlaybackOnTap(index),
+            onTap: () {},
+          ),
+        ),
+        Flexible(
+          flex: 1,
+          fit: FlexFit.tight,
+          child: searchResultExtraOptions(),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.04,
+        ),
+      ],
+    ),
+  );
+}
+
+// holds the extra options for searchResults
+Widget searchResultExtraOptions() {
+  return Container(
+    child: IconButton(
+      icon: Icon(Icons.more_vert),
+      onPressed: () {},
+    ),
   );
 }

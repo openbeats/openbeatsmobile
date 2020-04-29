@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:openbeatsmobile/pages/homePage.dart';
 import './globals/globalColors.dart' as globalColors;
+import './globals/globalStyles.dart' as globalStyles;
 
 void main() => runApp(MyApp());
 
@@ -21,25 +22,7 @@ class _MyAppState extends State<MyApp> {
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.primarySwatch,
         scaffoldBackgroundColor: globalColors.backgroundClr,
-        appBarTheme: AppBarTheme(
-          elevation: 0,
-          color: globalColors.backgroundClr,
-          textTheme: TextTheme(
-            title: GoogleFonts.poppins(
-              textStyle: TextStyle(
-                color: globalColors.textDefaultClr,
-                fontSize: 26.0,
-              ),
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          iconTheme: IconThemeData(
-            color: globalColors.iconDefaultClr,
-          ),
-          actionsIconTheme: IconThemeData(
-            color: globalColors.iconDefaultClr,
-          ),
-        ),
+        appBarTheme: globalStyles.mainAppBarTheme,
       ),
     );
   }

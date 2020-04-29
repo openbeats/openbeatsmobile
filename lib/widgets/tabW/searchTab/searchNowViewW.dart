@@ -10,6 +10,7 @@ Widget appBar(TextEditingController queryFieldController,
     Function getSearchSuggestions, BuildContext context) {
   return AppBar(
     titleSpacing: 0.0,
+    elevation: 0,
     title: _appBarTitle(queryFieldController, getSearchSuggestions, context),
     actions: <Widget>[searchButton(queryFieldController, context)],
   );
