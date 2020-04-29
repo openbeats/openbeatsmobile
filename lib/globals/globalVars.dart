@@ -9,3 +9,6 @@ double bottomNavBarIconSize = 30.0;
 // searchPage.dart
 // holds the current searched string
 String currSearchedString = "";
+
+// holds the seach history as a list of strings
+List<String> searchHistory = [];

@@ -20,9 +20,9 @@ class _SearchNowViewState extends State<SearchNowView> {
   // flag variable to solve the problem of delayed api calls
   // true - add suggestions to list
   // false - do not let suggestions to list
-  bool delayCallFlag = true;
+  bool _delayCallFlag = true;
   // holds data if the no internet snackbar is shown
-  bool noInternetSnackbarShown = false;
+  bool _noInternetSnackbarShown = false;
 
   // gets suggestions as the user is typing
   void getSearchSuggestions(String query) async {
@@ -33,12 +33,11 @@ class _SearchNowViewState extends State<SearchNowView> {
       // sending request through http as JSON
       var responseJSON = await Dio().get(url);
       // if delay flag is false, let value enter
-      if (!delayCallFlag) {
+      if (!_delayCallFlag) {
         setState(() {
           // getting the list of responses
           suggestionResponseList = responseJSON.data["data"] as List;
-          print(suggestionResponseList.length);
-          noInternetSnackbarShown = false;
+          _noInternetSnackbarShown = false;
         });
       }
       // removing the noInternet snackbar when internet connection is returned
@@ -46,7 +45,7 @@ class _SearchNowViewState extends State<SearchNowView> {
           .removeCurrentSnackBar();
     } on DioError {
       // catching dio error
-      if (!noInternetSnackbarShown) {
+      if (!_noInternetSnackbarShown) {
         globalFun.showSnackBars(
           globalScaffoldKeys.searchNowViewScaffoldKey,
           context,
@@ -55,7 +54,7 @@ class _SearchNowViewState extends State<SearchNowView> {
           Duration(minutes: 30),
         );
         setState(() {
-          noInternetSnackbarShown = true;
+          _noInternetSnackbarShown = true;
         });
       }
     }
@@ -69,17 +68,28 @@ class _SearchNowViewState extends State<SearchNowView> {
       if (queryFieldController.text.length == 0) {
         setState(() {
           // setting delay flag to block till the field has value again
-          delayCallFlag = true;
+          _delayCallFlag = true;
           // clearing the suggestion response list
           suggestionResponseList.clear();
         });
       } else {
         setState(() {
           // setting delay flag to let value enter
-          delayCallFlag = false;
+          _delayCallFlag = false;
         });
       }
     });
+  }
+
+  // sends suggestions to the textField
+  void sendSuggestionToField(String suggestion) {
+    // modifying query field value
+    queryFieldController.text = suggestion;
+    // sending cursor to end of queryField
+    queryFieldController.selection =
+        TextSelection.collapsed(offset: queryFieldController.text.length);
+    // calling function to update suggestions
+    getSearchSuggestions(suggestion);
   }
 
   @override
@@ -99,6 +109,13 @@ class _SearchNowViewState extends State<SearchNowView> {
   }
 
   @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree
+    queryFieldController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: globalScaffoldKeys.searchNowViewScaffoldKey,
@@ -110,8 +127,46 @@ class _SearchNowViewState extends State<SearchNowView> {
 
   // holds the SearchNowView Body
   Widget searchNowViewBody() {
-    return Center(
-      child: Text("SearchNow View"),
+    return Container(
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 500),
+        child: (suggestionResponseList.length != 0)
+            ? suggestionsListBuilder(false)
+            : AnimatedSwitcher(
+                duration: Duration(milliseconds: 500),
+                child: (globalVars.searchHistory.length != 0)
+                    ? suggestionsListBuilder(true)
+                    : Container(),
+              ),
+      ),
+    );
+  }
+
+  // holds the list view builder responsible for showing the suggestions and search history
+  Widget suggestionsListBuilder(showHistory) {
+    return ListView(
+      physics: BouncingScrollPhysics(),
+      children: <Widget>[
+        searchNowViewW.suggestionsTitleW(showHistory),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: BouncingScrollPhysics(),
+          itemBuilder: (context, index) => searchNowViewW.suggestionsListTile(
+              context,
+              index,
+              showHistory,
+              suggestionResponseList,
+              sendSuggestionToField),
+          itemCount: (showHistory)
+              ? (globalVars.searchHistory.length < 10)
+                  ? globalVars.searchHistory.length
+                  : 10
+              : suggestionResponseList.length,
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.25,
+        )
+      ],
     );
   }
 }

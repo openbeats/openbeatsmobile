@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
 import '../../../globals/globalColors.dart' as globalColors;
+import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/actions/globalVarsA.dart' as globalVarsA;
 
 // holds the AppBar for the searchNowView
@@ -19,7 +21,7 @@ Widget _appBarTitle(TextEditingController queryFieldController,
   return Container(
     padding: EdgeInsets.only(left: 10.0),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8.0),
+      borderRadius: BorderRadius.circular(5.0),
       color: globalColors.textFieldBgClr,
     ),
     child: TextField(
@@ -82,4 +84,91 @@ Widget searchButton(
       },
     ),
   );
+}
+
+// holds the title for the suggestions and searchHistory list titles
+Widget suggestionsTitleW(bool showHistory) {
+  return Container(
+    margin: EdgeInsets.only(left: 20.0, top: 10.0, bottom: 5.0),
+    child: Text(
+      (showHistory) ? "Search History" : "Suggestions",
+      style: TextStyle(
+        fontSize: 26.0,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  );
+}
+
+// holds the listTiles containing the suggestions and searchHistory
+Widget suggestionsListTile(BuildContext context, int index, bool showHistory,
+    List suggestionResponseList, Function sendSuggestionToField) {
+  return ListTile(
+    title: Container(
+      width: MediaQuery.of(context).size.width * 0.7,
+      child: Text(
+        (showHistory)
+            ? globalVars.searchHistory[index]
+            : suggestionResponseList[index][0],
+        style: TextStyle(
+          color: globalColors.textDisabledClr,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    leading: Icon(
+      Icons.search,
+      color: globalColors.iconDisabledClr,
+    ),
+    trailing: SizedBox(
+      width: MediaQuery.of(context).size.width * 0.3,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          updateQueryBtn(showHistory, index, sendSuggestionToField,
+              suggestionResponseList),
+          // SizedBox(
+          //   width: 2.0,
+          // ),
+          // deleteSearchResultBtn(showHistory, index),
+        ],
+      ),
+    ),
+    onTap: () {
+      // setting global variable to persist search
+      globalVarsA.updatecurrSearchedString((showHistory)
+          ? globalVars.searchHistory[index]
+          : suggestionResponseList[index][0]);
+      // going back to previous screen with the suggestion data
+      Navigator.pop(
+          context,
+          (showHistory)
+              ? globalVars.searchHistory[index]
+              : suggestionResponseList[index][0]);
+    },
+  );
+}
+
+Widget updateQueryBtn(bool showHistory, int index,
+    Function sendSuggestionToField, List suggestionResponseList) {
+  return Transform.rotate(
+      angle: -50 * math.pi / 180,
+      child: IconButton(
+        tooltip: "Update query",
+        icon: Icon(Icons.arrow_upward),
+        iconSize: 20.0,
+        onPressed: () {
+          // setting global variable to persist search
+          globalVarsA.updatecurrSearchedString((showHistory)
+              ? globalVars.searchHistory[index]
+              : suggestionResponseList[index][0]);
+
+          // sending the current text to the search field
+          sendSuggestionToField((showHistory)
+              ? globalVars.searchHistory[index]
+              : suggestionResponseList[index][0]);
+        },
+        color: globalColors.iconDisabledClr,
+      ));
 }

@@ -28,6 +28,9 @@ Widget searchHomeViewSearchInstruction(BuildContext context) {
     physics: BouncingScrollPhysics(),
     children: <Widget>[
       searchInstructionFlareActor(context),
+      SizedBox(
+        height: 10.0,
+      ),
       searchInstructionText(context),
     ],
   );
@@ -37,7 +40,7 @@ Widget searchHomeViewSearchInstruction(BuildContext context) {
 Widget searchInstructionFlareActor(BuildContext context) {
   return Container(
     margin: (MediaQuery.of(context).orientation == Orientation.portrait)
-        ? EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.13)
+        ? EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.11)
         : null,
     height: MediaQuery.of(context).size.height * 0.4,
     child: FlareActor(

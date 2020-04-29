@@ -15,6 +15,7 @@ Color iconActiveClr = _openBeatsRed;
 Color textDefaultClr = _staticPrimaryDark;
 Color textActiveClr = _openBeatsRed;
 Color textDisabledClr = Colors.grey;
+Color iconDisabledClr = Colors.grey;
 
 // searchNowView.dart
 Color textFieldBgClr = _offWhite;
