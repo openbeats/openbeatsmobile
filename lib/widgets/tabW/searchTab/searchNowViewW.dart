@@ -121,20 +121,8 @@ Widget suggestionsListTile(BuildContext context, int index, bool showHistory,
       Icons.search,
       color: globalColors.iconDisabledClr,
     ),
-    trailing: SizedBox(
-      width: MediaQuery.of(context).size.width * 0.3,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          updateQueryBtn(showHistory, index, sendSuggestionToField,
-              suggestionResponseList),
-          // SizedBox(
-          //   width: 2.0,
-          // ),
-          // deleteSearchResultBtn(showHistory, index),
-        ],
-      ),
-    ),
+    trailing: updateQueryBtn(
+        showHistory, index, sendSuggestionToField, suggestionResponseList),
     onTap: () {
       // setting global variable to persist search
       globalVarsA.updatecurrSearchedString((showHistory)
@@ -154,11 +142,13 @@ Widget updateQueryBtn(bool showHistory, int index,
     Function sendSuggestionToField, List suggestionResponseList) {
   return Transform.rotate(
       angle: -50 * math.pi / 180,
-      child: IconButton(
-        tooltip: "Update query",
-        icon: Icon(Icons.arrow_upward),
-        iconSize: 20.0,
-        onPressed: () {
+      child: InkWell(
+        child: Icon(
+          Icons.arrow_upward,
+          size: 22.0,
+          color: globalColors.iconDisabledClr,
+        ),
+        onTap: () {
           // setting global variable to persist search
           globalVarsA.updatecurrSearchedString((showHistory)
               ? globalVars.searchHistory[index]
@@ -169,6 +159,5 @@ Widget updateQueryBtn(bool showHistory, int index,
               ? globalVars.searchHistory[index]
               : suggestionResponseList[index][0]);
         },
-        color: globalColors.iconDisabledClr,
       ));
 }

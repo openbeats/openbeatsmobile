@@ -12,3 +12,4 @@ String currSearchedString = "";
 
 // holds the seach history as a list of strings
 List<String> searchHistory = [];
+

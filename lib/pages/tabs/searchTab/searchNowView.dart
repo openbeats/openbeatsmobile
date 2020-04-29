@@ -40,9 +40,10 @@ class _SearchNowViewState extends State<SearchNowView> {
           _noInternetSnackbarShown = false;
         });
       }
-      // removing the noInternet snackbar when internet connection is returned
-      globalScaffoldKeys.searchNowViewScaffoldKey.currentState
-          .removeCurrentSnackBar();
+      if (this.mounted)
+        // removing the noInternet snackbar when internet connection is returned
+        globalScaffoldKeys.searchNowViewScaffoldKey.currentState
+            .removeCurrentSnackBar();
     } on DioError {
       // catching dio error
       if (!_noInternetSnackbarShown) {
@@ -113,6 +114,13 @@ class _SearchNowViewState extends State<SearchNowView> {
     // Clean up the controller when the widget is removed from the widget tree
     queryFieldController.dispose();
     super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
