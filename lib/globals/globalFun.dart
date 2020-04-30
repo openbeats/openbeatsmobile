@@ -76,3 +76,60 @@ String reformatViews(String views) {
 
   return plays;
 }
+
+// reformats timestamp into seconds
+int reformatTimeStampToMilliSeconds(String timeStamp) {
+  // holds the seconds in integer format
+  int totalSeconds = 0;
+  // converting timeStamp into list of digits in integer format
+  List<int> timeStampLst = timeStamp
+      .split(":")
+      .map((digitString) => int.parse(digitString))
+      .toList();
+  if (timeStampLst.length == 2) {
+    // adding minutes and seconds to total seconds
+    totalSeconds += (timeStampLst[0] * 60000) + (timeStampLst[1] * 1000);
+  } else if (timeStampLst.length == 3) {
+    // adding hours and minutes and seconds to total seconds
+    totalSeconds += (timeStampLst[0] * 3600 * 1000) +
+        (timeStampLst[1] * 60) +
+        timeStampLst[2];
+  }
+  // return the total seconds
+  return (totalSeconds);
+}
+
+// return the current duration string in min:sec
+String getCurrentTimeStamp(double totalSeconds) {
+  // variables holding separated time
+  String min, sec, hour;
+  // holds the total seconds to help decide if I need to send hours or not at the end
+  double totalSecondsPlaceHolder = totalSeconds;
+  // check if it is greater than one hour
+  if (totalSeconds > 3600) {
+    // getting number of hours
+    hour = ((totalSeconds % (24 * 3600)) / 3600).floor().toString();
+    totalSeconds %= 3600;
+  }
+  // getting number of minutes
+  min = (totalSeconds / 60).floor().toString();
+  totalSeconds %= 60;
+  // getting number of seconds
+  sec = (totalSeconds).floor().toString();
+  // adding the necessary zeros
+  if (int.parse(sec) < 10) sec = "0" + sec;
+  // if the duration is greater than 1 hour, return with hour
+  if (totalSecondsPlaceHolder > 3600) {
+    if (double.parse(min) < 10.0) {
+      return (hour.toString() + ":0" + min.toString() + ":" + sec.toString());
+    } else {
+      return (hour.toString() + ":" + min.toString() + ":" + sec.toString());
+    }
+  } else {
+    if (double.parse(min) < 10.0) {
+      return ("0" + min.toString() + ":" + sec.toString());
+    } else {
+      return (min.toString() + ":" + sec.toString());
+    }
+  }
+}

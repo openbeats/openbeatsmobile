@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import './tabs/searchTab/searchHomeView.dart';
@@ -15,6 +16,8 @@ import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 
 class HomePage extends StatefulWidget {
+  BehaviorSubject<double> dragPositionSubject;
+  HomePage(this.dragPositionSubject);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -150,7 +153,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         maxHeight: MediaQuery.of(context).size.height,
         collapsed: homePageW.collapsedSlidingUpPanel(
             context, () {}, playPauseAnimationController),
-        panel: homePageW.expandedSlidingUpPanel(),
+        panel: homePageW.expandedSlidingUpPanel(
+            widget.dragPositionSubject, playPauseAnimationController),
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
         onPanelClosed: () => _hideBottomNavBarAnimController.forward(),
