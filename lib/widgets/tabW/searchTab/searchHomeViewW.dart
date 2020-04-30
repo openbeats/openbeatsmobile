@@ -102,7 +102,7 @@ Widget searchResultLoadingW(BuildContext context) {
 
 // holds the listview containing the list of body contents in searchHomeView
 Widget listOfBodyContents(BuildContext context, List videosResponseList,
-    currentPlayingMediaThumbnail) {
+    currentPlayingMediaThumbnail, Function startSinglePlaybackOnTap) {
   return ListView(
     physics: BouncingScrollPhysics(),
     children: <Widget>[
@@ -116,7 +116,11 @@ Widget listOfBodyContents(BuildContext context, List videosResponseList,
           return Divider();
         },
         itemBuilder: (BuildContext context, int index) => searchResultListTile(
-            context, index, currentPlayingMediaThumbnail, videosResponseList),
+            context,
+            index,
+            currentPlayingMediaThumbnail,
+            videosResponseList,
+            startSinglePlaybackOnTap),
         itemCount: videosResponseList.length,
       ),
       // space to compensate for the slideUpPanel
@@ -130,8 +134,12 @@ Widget listOfBodyContents(BuildContext context, List videosResponseList,
 }
 
 // holds the listtile for the searchResults
-Widget searchResultListTile(BuildContext context, int index,
-    String currentPlayingMediaThumbnail, List videosResponseList) {
+Widget searchResultListTile(
+    BuildContext context,
+    int index,
+    String currentPlayingMediaThumbnail,
+    List videosResponseList,
+    Function startSinglePlaybackOnTap) {
   return Container(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -145,8 +153,7 @@ Widget searchResultListTile(BuildContext context, int index,
           child: GestureDetector(
             child: globalWids.audioThumbnailW(
                 videosResponseList[index]["thumbnail"], context, 0.15, 5),
-            // onTap: () => startSinglePlaybackOnTap(index),
-            onTap: () {},
+            onTap: () => startSinglePlaybackOnTap(index),
           ),
         ),
         SizedBox(
@@ -172,8 +179,7 @@ Widget searchResultListTile(BuildContext context, int index,
                     videosResponseList[index]["duration"])
               ],
             ),
-            // onTap: () => startSinglePlaybackOnTap(index),
-            onTap: () {},
+            onTap: () => startSinglePlaybackOnTap(index),
           ),
         ),
         Flexible(

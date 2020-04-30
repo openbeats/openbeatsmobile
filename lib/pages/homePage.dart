@@ -16,8 +16,11 @@ import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 
 class HomePage extends StatefulWidget {
+  // behaviourSubject to monitor and control the seekBar
   BehaviorSubject<double> dragPositionSubject;
-  HomePage(this.dragPositionSubject);
+  // custom audioService control methods
+  Function startSinglePlayback;
+  HomePage(this.dragPositionSubject, this.startSinglePlayback);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -210,11 +213,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           pageBuilder: (BuildContext context, _, __) {
             switch (routeSettings.name) {
               case '/':
-                return SearchHomeView();
+                return SearchHomeView(widget.startSinglePlayback);
               case "/searchNow":
                 return SearchNowView(hideOrRevealSlidingUpPanel);
               default:
-                return SearchHomeView();
+                return SearchHomeView(widget.startSinglePlayback);
             }
           },
           transitionDuration: Duration(milliseconds: 400),

@@ -10,6 +10,9 @@ import '../../../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 import '../../../globals/globalWids.dart' as globalWids;
 
 class SearchHomeView extends StatefulWidget {
+  // custom AudioService methods
+  Function startSinglePlayback;
+  SearchHomeView(this.startSinglePlayback);
   @override
   _SearchHomeViewState createState() => _SearchHomeViewState();
 }
@@ -102,6 +105,39 @@ class _SearchHomeViewState extends State<SearchHomeView>
     }
   }
 
+  void startSinglePlaybackOnTap(int index) {
+    // constructing the mediaParameters object
+    Map<String, dynamic> mediaParameters = {
+      "title": videosResponseList[index]["title"],
+      "thumbnail": videosResponseList[index]["thumbnail"],
+      "duration": videosResponseList[index]["duration"],
+      "durationInMilliSeconds": globalFun.reformatTimeStampToMilliSeconds(
+          videosResponseList[index]["duration"]),
+      "videoId": videosResponseList[index]["videoId"],
+      "channelName": videosResponseList[index]["channelName"],
+      "views": globalFun.reformatViews(videosResponseList[index]["views"]),
+    };
+    // calling method to start media playback
+    widget.startSinglePlayback(mediaParameters);
+  }
+
+  // connects to the audio_service
+  void connect() async {
+    await AudioService.connect();
+  }
+
+  // disconnects from the audio_service
+  void disconnect() {
+    AudioService.disconnect();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    connect();
+  }
+
+  // override function to instruct the app to preserve state of page
   @override
   bool get wantKeepAlive => true;
 
@@ -151,7 +187,7 @@ class _SearchHomeViewState extends State<SearchHomeView>
           currentPlayingMediaThumbnail = AudioService.currentMediaItem.artUri;
         }
         return searchHomeViewW.listOfBodyContents(
-            context, videosResponseList, currentPlayingMediaThumbnail);
+            context, videosResponseList, currentPlayingMediaThumbnail,startSinglePlaybackOnTap);
       },
     );
   }
