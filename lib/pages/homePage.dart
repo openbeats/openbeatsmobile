@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 return SearchHomeView();
             }
           },
-          transitionDuration: Duration(milliseconds: 300),
+          transitionDuration: Duration(milliseconds: 400),
         );
       },
     );

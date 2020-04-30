@@ -111,7 +111,7 @@ Widget listOfBodyContents(BuildContext context, List videosResponseList,
       ),
       ListView.separated(
         shrinkWrap: true,
-        physics: BouncingScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         separatorBuilder: (context, index) {
           return Divider();
         },

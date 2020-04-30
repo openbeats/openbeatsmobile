@@ -14,7 +14,8 @@ class SearchHomeView extends StatefulWidget {
   _SearchHomeViewState createState() => _SearchHomeViewState();
 }
 
-class _SearchHomeViewState extends State<SearchHomeView> {
+class _SearchHomeViewState extends State<SearchHomeView>
+    with AutomaticKeepAliveClientMixin<SearchHomeView> {
   // flag used to indicate that the search results are loading
   bool searchResultLoading = false;
   // holds the videos received for query
@@ -102,7 +103,11 @@ class _SearchHomeViewState extends State<SearchHomeView> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       key: globalScaffoldKeys.searchHomeViewScaffoldKey,
       appBar: searchHomeViewW.appBar(navigateToSearchNowView),
