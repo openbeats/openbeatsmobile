@@ -61,23 +61,31 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // handles the onWillPop callback
   Future<bool> _onWillPopCallbackHandler() async {
-    // checking which tab is in view
-    switch (_bottomNavBarCurrIndex) {
-      // if searchTab is in view
-      case 2:
-        // checking if searchNowView is still in use
-        if (globalScaffoldKeys.searchNowViewScaffoldKey.currentContext !=
-            null) {
-          Navigator.of(
-                  globalScaffoldKeys.searchNowViewScaffoldKey.currentContext)
-              .pop();
-          return false;
-        } else {
+    // checking if the SlidingUpPanel is open
+    if (_slidingUpPanelController.isPanelOpen) {
+      _slidingUpPanelController.close();
+      return false;
+    }
+    // if SlideUpPanel is closed
+    else {
+      // checking which tab is in view
+      switch (_bottomNavBarCurrIndex) {
+        // if searchTab is in view
+        case 2:
+          // checking if searchNowView is still in use
+          if (globalScaffoldKeys.searchNowViewScaffoldKey.currentContext !=
+              null) {
+            Navigator.of(
+                    globalScaffoldKeys.searchNowViewScaffoldKey.currentContext)
+                .pop();
+            return false;
+          } else {
+            return true;
+          }
+          break;
+        default:
           return true;
-        }
-        break;
-      default:
-        return true;
+      }
     }
   }
 
