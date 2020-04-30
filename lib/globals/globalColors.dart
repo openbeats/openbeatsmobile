@@ -19,3 +19,6 @@ Color iconDisabledClr = Colors.grey;
 
 // searchNowView.dart
 Color textFieldBgClr = _offWhite;
+
+// homePage.dart
+Color darkBgIconClr = Colors.white;

@@ -22,12 +22,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: "OpenBeats",
       home: HomePage(dragPositionSubject),
-      theme: ThemeData(
-        brightness: globalColors.appBrightness,
-        primarySwatch: globalColors.primarySwatch,
-        scaffoldBackgroundColor: globalColors.backgroundClr,
-        appBarTheme: globalStyles.mainAppBarTheme,
-      ),
+      theme: globalStyles.applicationThemeData,
     );
   }
 }
+

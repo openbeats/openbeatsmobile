@@ -28,3 +28,11 @@ AppBarTheme mainAppBarTheme = AppBarTheme(
     color: globalColors.iconDefaultClr,
   ),
 );
+
+// holds the ThemeData for the application
+ThemeData applicationThemeData = ThemeData(
+  brightness: globalColors.appBrightness,
+  primarySwatch: globalColors.primarySwatch,
+  scaffoldBackgroundColor: globalColors.backgroundClr,
+  appBarTheme: mainAppBarTheme,
+);

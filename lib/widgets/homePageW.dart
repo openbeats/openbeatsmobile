@@ -515,7 +515,7 @@ Widget playPauseMainAudioControlsW(
                 size: 40.0,
                 icon: AnimatedIcons.play_pause,
                 progress: playPauseAnimationController,
-                color: globalColors.iconActiveClr,
+                color: globalColors.darkBgIconClr,
               ),
             )),
         onTap: (noAudioPlaying)
