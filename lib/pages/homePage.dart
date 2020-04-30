@@ -27,10 +27,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // controller for the TabView in SlidingUpPanel Body
   TabController _slidingUpPanelBodyTabViewController;
   // animation controller to hide BottomNavBar
-  AnimationController _hideBottomNavBar;
+  AnimationController _hideBottomNavBarAnimController;
   // flag to indicate the last known stable position of the SlidingUpPanel
   // true - open && false - closed
   bool _slidingPanelLKSState;
+  // flag used to indicate if the SlidingUpPanelCollapsedView should be shown
+  bool _showSlideUpPanelCollpasedView = true;
 
   // handles tapping of BottomNavBar item
   void _bottomNavBarItemTap(int itemIndex) {
@@ -43,6 +45,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // checking if SlidingUpPanel is open
     if (_slidingUpPanelController.isPanelOpen)
       _slidingUpPanelController.close();
+  }
+
+  // hides or reveals the SlidingUpPanel
+  void hideOrRevealSlidingUpPanel(showSlidingUpPanel) {
+    setState(() {
+      _showSlideUpPanelCollpasedView = showSlidingUpPanel;
+    });
   }
 
   // handles the onWillPop callback
@@ -74,10 +83,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _slidingUpPanelBodyTabViewController = new TabController(
         length: globalWids.bottomNavBarIcons.length, vsync: this);
     // initiating animation controller to hide the BottomNavBar
-    _hideBottomNavBar =
+    _hideBottomNavBarAnimController =
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
+
     // showing the BottomNavBar
-    _hideBottomNavBar.forward();
+    _hideBottomNavBarAnimController.forward();
+
     // marking the last known stable position as closed
     _slidingPanelLKSState = false;
   }
@@ -103,7 +114,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the homePage BottomNavBar
   Widget _homePageBottomNavBar() {
     return SizeTransition(
-      sizeFactor: _hideBottomNavBar,
+      sizeFactor: _hideBottomNavBarAnimController,
       axisAlignment: -1.0,
       child: BottomNavigationBar(
         elevation: 0,
@@ -129,13 +140,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: SlidingUpPanel(
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
-        minHeight: MediaQuery.of(context).size.height * 0.08,
+        minHeight: (_showSlideUpPanelCollpasedView)
+            ? MediaQuery.of(context).size.height * 0.08
+            : 0,
         maxHeight: MediaQuery.of(context).size.height,
         collapsed: homePageW.collapsedSlidingUpPanel(),
         panel: homePageW.expandedSlidingUpPanel(),
         body: _slidingUpPanelBody(),
-        onPanelOpened: () => _hideBottomNavBar.reverse(),
-        onPanelClosed: () => _hideBottomNavBar.forward(),
+        onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
+        onPanelClosed: () => _hideBottomNavBarAnimController.forward(),
       ),
     );
   }
@@ -182,7 +195,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               case '/':
                 return SearchHomeView();
               case "/searchNow":
-                return SearchNowView();
+                return SearchNowView(hideOrRevealSlidingUpPanel);
               default:
                 return SearchHomeView();
             }

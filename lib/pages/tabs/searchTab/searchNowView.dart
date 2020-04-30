@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:keyboard_visibility/keyboard_visibility.dart';
 
 import '../../../widgets/tabW/searchTab/searchNowViewW.dart' as searchNowViewW;
 import '../../../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
@@ -7,6 +8,9 @@ import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/globalFun.dart' as globalFun;
 
 class SearchNowView extends StatefulWidget {
+  // helps to toggle the SlidingUpPanelCollapsedView in and out of view
+  Function hideOrRevealSlidingUpPanel;
+  SearchNowView(this.hideOrRevealSlidingUpPanel);
   @override
   _SearchNowViewState createState() => _SearchNowViewState();
 }
@@ -107,6 +111,18 @@ class _SearchNowViewState extends State<SearchNowView> {
       queryFieldController.selection = TextSelection.fromPosition(
           TextPosition(offset: queryFieldController.text.length));
     }
+
+    // adding keyboard listener to hide the SlidingUpPanelCollapsedView when keyboard is visible
+    KeyboardVisibilityNotification().addNewListener(
+      onChange: (bool visible) {
+        if (visible)
+          // hiding the SlidingUpPanelCollapsedView
+          widget.hideOrRevealSlidingUpPanel(false);
+        else
+          // showing the SlidingUpPanelCollapsedView
+          widget.hideOrRevealSlidingUpPanel(true);
+      },
+    );
   }
 
   @override
