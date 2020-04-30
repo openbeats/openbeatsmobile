@@ -28,6 +28,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   TabController _slidingUpPanelBodyTabViewController;
   // animation controller to hide BottomNavBar
   AnimationController _hideBottomNavBarAnimController;
+  // controls the animation of the play_pause button
+  AnimationController playPauseAnimationController;
   // flag to indicate the last known stable position of the SlidingUpPanel
   // true - open && false - closed
   bool _slidingPanelLKSState;
@@ -85,7 +87,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // initiating animation controller to hide the BottomNavBar
     _hideBottomNavBarAnimController =
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
-
+    // initiating animation controller for play_pause button in the collapsed slideUpPanel
+    playPauseAnimationController =
+        AnimationController(vsync: this, duration: kThemeAnimationDuration);
     // showing the BottomNavBar
     _hideBottomNavBarAnimController.forward();
 
@@ -141,10 +145,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
         minHeight: (_showSlideUpPanelCollpasedView)
-            ? MediaQuery.of(context).size.height * 0.08
+            ? MediaQuery.of(context).size.height * 0.09
             : 0,
         maxHeight: MediaQuery.of(context).size.height,
-        collapsed: homePageW.collapsedSlidingUpPanel(),
+        collapsed: homePageW.collapsedSlidingUpPanel(
+            context, () {}, playPauseAnimationController),
         panel: homePageW.expandedSlidingUpPanel(),
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
