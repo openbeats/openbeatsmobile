@@ -111,18 +111,6 @@ class _SearchNowViewState extends State<SearchNowView> {
       queryFieldController.selection = TextSelection.fromPosition(
           TextPosition(offset: queryFieldController.text.length));
     }
-
-    // adding keyboard listener to hide the SlidingUpPanelCollapsedView when keyboard is visible
-    // KeyboardVisibilityNotification().addNewListener(
-    //   onChange: (bool visible) {
-    //     if (visible)
-    //       // hiding the SlidingUpPanelCollapsedView
-    //       widget.hideOrRevealSlidingUpPanel(false);
-    //     else
-    //       // showing the SlidingUpPanelCollapsedView
-    //       widget.hideOrRevealSlidingUpPanel(true);
-    //   },
-    // );
   }
 
   @override
