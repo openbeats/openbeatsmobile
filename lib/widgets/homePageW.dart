@@ -93,18 +93,18 @@ Widget nowPlayingCollapsedContent(
       Flexible(
         flex: 1,
         fit: FlexFit.tight,
-        child: globalWids.audioThumbnailW(audioThumbnail, context, 0.15, 5.0),
+        child: globalWids.audioThumbnailW(audioThumbnail, context, 0.11, 5.0),
       ),
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.03,
       ),
       Flexible(
-        flex: 3,
+        flex: 4,
         fit: FlexFit.tight,
         child: globalWids.audioTitleW(audioTitle, context, false, false),
       ),
       Flexible(
-        flex: 2,
+        flex: 3,
         fit: FlexFit.tight,
         child: collapsedSlideUpControls(
             state,
@@ -132,8 +132,8 @@ Widget collapsedSlideUpControls(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        playPauseBtn(state, audioServicePlayPause, playPauseAnimationController,
-            noAudioPlaying),
+        playPauseBtnCollapsedSlideUpPanel(state, audioServicePlayPause,
+            playPauseAnimationController, noAudioPlaying),
         queueBtnWCollapsedSlideUpPanel(noAudioPlaying),
       ],
     ),
@@ -141,8 +141,11 @@ Widget collapsedSlideUpControls(
 }
 
 // holds th play&pause btn for collapsed slideUpPanel
-Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
-    AnimationController playPauseAnimationController, bool noAudioPlaying) {
+Widget playPauseBtnCollapsedSlideUpPanel(
+    PlaybackState state,
+    Function audioServicePlayPause,
+    AnimationController playPauseAnimationController,
+    bool noAudioPlaying) {
   // decides the animation for the animated icon
   if (state != null &&
       (state.basicState == BasicPlaybackState.paused ||
@@ -155,7 +158,7 @@ Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
     playPauseAnimationController.reverse();
   }
   return IconButton(
-    iconSize: 35.0,
+    iconSize: 30.0,
     color: (noAudioPlaying)
         ? globalColors.iconDisabledClr
         : globalColors.iconDefaultClr,
@@ -172,7 +175,7 @@ Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
 // holds the queue button for the collapsed slideUpPanel
 Widget queueBtnWCollapsedSlideUpPanel(bool noAudioPlaying) {
   return IconButton(
-    iconSize: 35.0,
+    iconSize: 30.0,
     color: (noAudioPlaying)
         ? globalColors.iconDisabledClr
         : globalColors.iconDefaultClr,
@@ -232,7 +235,7 @@ Widget expandedSlidingUpPanel(
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.03,
             ),
-            audioThumbnailW(audioThumbnail, context, 0.80, 5.0),
+            globalWids.audioThumbnailW(audioThumbnail, context, 0.80, 5.0),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.045,
             ),
@@ -294,42 +297,6 @@ Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
             TextSpan(text: " " + views),
           ]),
       textAlign: TextAlign.center,
-    ),
-  );
-}
-
-// holds the thumbnail in audioTile listing view
-Widget audioThumbnailW(String thumbnailURL, BuildContext context,
-    double sizeFactor, double borderRadius) {
-  return Container(
-    width: MediaQuery.of(context).size.width * sizeFactor,
-    height: MediaQuery.of(context).size.width * sizeFactor,
-    decoration: BoxDecoration(boxShadow: [
-      new BoxShadow(
-        color: Colors.black,
-        blurRadius: 3.0,
-        offset: new Offset(1.0, 1.0),
-      ),
-    ], borderRadius: BorderRadius.circular(borderRadius)),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(borderRadius),
-      child: (thumbnailURL != "placeholder")
-          ? CachedNetworkImage(
-              fit: BoxFit.cover,
-              imageUrl: thumbnailURL,
-              placeholder: (context, url) => Center(
-                child: Container(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(),
-                ),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
-            )
-          : Image.asset(
-              "assets/images/supplementary/dummyimage.png",
-              fit: BoxFit.cover,
-            ),
     ),
   );
 }
@@ -562,7 +529,7 @@ Widget skipNextMainAudioControlsW() {
 Widget forward10MainAudioControlsW(PlaybackState state) {
   return Container(
     child: IconButton(
-      iconSize: 35.0,
+      iconSize: 30.0,
       color: (state != null &&
               (state.basicState == BasicPlaybackState.playing ||
                   state.basicState == BasicPlaybackState.paused))
@@ -587,7 +554,7 @@ Widget forward10MainAudioControlsW(PlaybackState state) {
 Widget backward10MainAudioControlsW(PlaybackState state) {
   return Container(
     child: IconButton(
-      iconSize: 35.0,
+      iconSize: 30.0,
       color: (state != null &&
               (state.basicState == BasicPlaybackState.playing ||
                   state.basicState == BasicPlaybackState.paused))

@@ -23,7 +23,7 @@ Widget audioThumbnailW(String thumbnailURL, BuildContext context,
     decoration: BoxDecoration(boxShadow: [
       new BoxShadow(
         color: Colors.black,
-        blurRadius: 3.0,
+        blurRadius: 2.5,
         offset: new Offset(1.0, 1.0),
       ),
     ], borderRadius: BorderRadius.circular(borderRadius)),

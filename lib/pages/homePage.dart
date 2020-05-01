@@ -160,7 +160,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
         minHeight: (_showSlideUpPanelCollpasedView)
-            ? MediaQuery.of(context).size.height * 0.09
+            ? MediaQuery.of(context).size.height * 0.075
             : 0,
         maxHeight: MediaQuery.of(context).size.height,
         collapsed: homePageW.collapsedSlidingUpPanel(context,
