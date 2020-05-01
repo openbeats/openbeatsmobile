@@ -11,7 +11,7 @@ List<IconData> bottomNavBarIcons = [
   Icons.whatshot,
   Icons.search,
   Icons.library_music,
-  Icons.settings
+  Icons.person_pin
 ];
 
 // holds the thumbnail in audioTile listing view

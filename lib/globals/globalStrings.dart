@@ -6,7 +6,7 @@ List<String> bottomNavBarItemLabels = [
   "Trending",
   "Search",
   "Playlists",
-  "Settings"
+  "Profile"
 ];
 
 String noAudioPlayingString = "No Audio Playing";
