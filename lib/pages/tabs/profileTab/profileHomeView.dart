@@ -13,9 +13,14 @@ class _ProfileHomeViewState extends State<ProfileHomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: profileHomeViewW.appBar(),
-      body: Container(
-        child: null,
-      ),
+      body: profileHomeViewBody(),
+    );
+  }
+
+  // holds the body of ProfileHomeView
+  Widget profileHomeViewBody() {
+    return Container(
+      child: null,
     );
   }
 }

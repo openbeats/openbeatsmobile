@@ -264,6 +264,25 @@ class _HomePageState extends State<HomePage>
 
   // holds the SettingsTab widget
   Widget _profileTab() {
-    return ProfileHomeView();
+    return Navigator(
+      onGenerateRoute: (RouteSettings routeSettings) {
+        return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return ProfileHomeView();
+              default:
+                return ProfileHomeView();
+            }
+          },
+          transitionDuration: Duration(milliseconds: 400),
+        );
+      },
+    );
   }
 }

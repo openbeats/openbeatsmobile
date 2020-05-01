@@ -380,6 +380,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // starts playback of single song
   void startSinglePlayback(arguments, bool shouldRepeat) async {
+    // temporary thumbnail url storage
+    String tempThumbNailUrl =
+        "https://img.youtube.com/vi/" + arguments["videoId"] + "/sddefault.jpg";
+
+    // initiating function to check if max res is available
+    _checkMaxResolutionAvailable(arguments["videoId"]).then((thumbURL) {
+      tempThumbNailUrl = thumbURL;
+    });
     // pausing any current playback
     if (!_isPaused) {
       onPause();
@@ -398,7 +406,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         album: "OpenBeats Music",
         title: arguments['title'],
         duration: arguments['durationInMilliSeconds'],
-        artUri: arguments['thumbnail'],
+        artUri: tempThumbNailUrl,
         extras: {
           "views": arguments["views"],
           "durationString": arguments["duration"],
@@ -416,7 +424,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         album: "OpenBeats Music",
         title: arguments['title'],
         duration: arguments['durationInMilliSeconds'],
-        artUri: arguments['thumbnail'],
+        artUri: tempThumbNailUrl,
         extras: {
           "views": arguments["views"],
           "durationString": arguments["duration"],
@@ -429,6 +437,29 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await _audioPlayer.setUrl(streamingURL);
     // playing audio
     onPlay();
+    print(tempThumbNailUrl);
+  }
+
+  // checks if max resolution thumbnail is available
+  Future<String> _checkMaxResolutionAvailable(String videoId) async {
+    // highRes URL
+    String highResURL =
+        "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
+    String lowResURL =
+        "https://img.youtube.com/vi/" + videoId + "/sddefault.jpg";
+    try {
+      final response = await Dio().get(highResURL);
+      print(response.statusCode);
+      if (response.statusCode == 200)
+        return highResURL;
+      else
+        return lowResURL;
+    } on DioError catch (e) {
+      if (e.response.statusCode == 404) {
+        print(e.response.statusCode);
+      }
+      return lowResURL;
+    }
   }
 
   // function to get the streaming URL for the audio
