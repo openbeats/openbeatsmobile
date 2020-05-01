@@ -116,7 +116,10 @@ Widget nowPlayingCollapsedContent(
       Flexible(
         flex: 4,
         fit: FlexFit.tight,
-        child: globalWids.audioTitleW(audioTitle, context, false, false),
+        child: GestureDetector(
+          child: globalWids.audioTitleW(audioTitle, context, false, false),
+          onTap: openSlideUpPanelToExpanded,
+        ),
       ),
       Flexible(
         flex: 3,
