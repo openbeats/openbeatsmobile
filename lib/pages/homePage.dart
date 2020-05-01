@@ -19,8 +19,9 @@ class HomePage extends StatefulWidget {
   // behaviourSubject to monitor and control the seekBar
   BehaviorSubject<double> dragPositionSubject;
   // custom audioService control methods
-  Function startSinglePlayback;
-  HomePage(this.dragPositionSubject, this.startSinglePlayback);
+  Function startSinglePlayback, audioServicePlayPause;
+  HomePage(this.dragPositionSubject, this.startSinglePlayback,
+      this.audioServicePlayPause);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -162,10 +163,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             ? MediaQuery.of(context).size.height * 0.09
             : 0,
         maxHeight: MediaQuery.of(context).size.height,
-        collapsed: homePageW.collapsedSlidingUpPanel(
-            context, () {}, playPauseAnimationController),
-        panel: homePageW.expandedSlidingUpPanel(
-            widget.dragPositionSubject, playPauseAnimationController),
+        collapsed: homePageW.collapsedSlidingUpPanel(context,
+            widget.audioServicePlayPause, playPauseAnimationController),
+        panel: homePageW.expandedSlidingUpPanel(widget.dragPositionSubject,
+            playPauseAnimationController, widget.audioServicePlayPause),
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
         onPanelClosed: () => _hideBottomNavBarAnimController.forward(),

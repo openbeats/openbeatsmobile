@@ -115,7 +115,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "OpenBeats",
-      home: HomePage(dragPositionSubject, startSinglePlayback),
+      home: HomePage(dragPositionSubject, startSinglePlayback,audioServicePlayPause),
       theme: globalStyles.applicationThemeData,
     );
   }

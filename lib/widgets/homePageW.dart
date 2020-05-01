@@ -134,7 +134,7 @@ Widget collapsedSlideUpControls(
       children: <Widget>[
         playPauseBtn(state, audioServicePlayPause, playPauseAnimationController,
             noAudioPlaying),
-        queueBtn(noAudioPlaying),
+        queueBtnWCollapsedSlideUpPanel(noAudioPlaying),
       ],
     ),
   );
@@ -170,7 +170,7 @@ Widget playPauseBtn(PlaybackState state, Function audioServicePlayPause,
 }
 
 // holds the queue button for the collapsed slideUpPanel
-Widget queueBtn(bool noAudioPlaying) {
+Widget queueBtnWCollapsedSlideUpPanel(bool noAudioPlaying) {
   return IconButton(
     iconSize: 35.0,
     color: (noAudioPlaying)
@@ -182,8 +182,10 @@ Widget queueBtn(bool noAudioPlaying) {
 }
 
 //  expanded widget for the SlidingUpPanel
-Widget expandedSlidingUpPanel(BehaviorSubject<double> dragPositionSubject,
-    AnimationController playPauseAnimationController) {
+Widget expandedSlidingUpPanel(
+    BehaviorSubject<double> dragPositionSubject,
+    AnimationController playPauseAnimationController,
+    Function audioServicePlayPause) {
   // setting default values
   String audioThumbnail = "placeholder",
       audioTitle = globalStrings.noAudioPlayingString,
@@ -247,8 +249,12 @@ Widget expandedSlidingUpPanel(BehaviorSubject<double> dragPositionSubject,
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.01,
             ),
-            mainAudioControlsW(
-                playPauseAnimationController, state, () {}, context)
+            mainAudioControlsW(playPauseAnimationController, state,
+                audioServicePlayPause, context),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            supplementaryAudioControlsW(context, state),
           ],
         ),
       );
@@ -533,9 +539,9 @@ Widget skipPreviousMainAudioControlsW() {
   return Container(
     child: IconButton(
       iconSize: 45.0,
-      color: globalColors.iconDefaultClr,
+      color: globalColors.iconDisabledClr,
       icon: Icon(Icons.skip_previous),
-      onPressed: null,
+      onPressed: () {},
     ),
   );
 }
@@ -599,5 +605,61 @@ Widget backward10MainAudioControlsW(PlaybackState state) {
         }
       },
     ),
+  );
+}
+
+// holds the supplementary controls for the audio play in slideUpPanelExpanded
+Widget supplementaryAudioControlsW(BuildContext context, PlaybackState state) {
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        favBtnW(),
+        shuffleBtnW(),
+        repeatBtnW(),
+        queueBtnWExpandedSlideUpPanel()
+      ],
+    ),
+  );
+}
+
+// holds the favorite button for the supplementaryAudioControlsW
+Widget favBtnW() {
+  return IconButton(
+    color: globalColors.iconDisabledClr,
+    iconSize: 25,
+    icon: Icon(Icons.favorite_border),
+    onPressed: () {},
+  );
+}
+
+// holds the shuffle button for the supplementaryAudioControlsW
+Widget shuffleBtnW() {
+  return IconButton(
+    icon: Icon(Icons.shuffle),
+    color: globalColors.iconDisabledClr,
+    iconSize: 25,
+    onPressed: () {},
+  );
+}
+
+// holds the repeat button for the supplementaryAudioControlsW
+Widget repeatBtnW() {
+  return IconButton(
+    color: globalColors.iconDisabledClr,
+    iconSize: 25,
+    icon: Icon(Icons.repeat),
+    onPressed: () {},
+  );
+}
+
+// holds the queue button for the supplementaryAudioControlsW
+Widget queueBtnWExpandedSlideUpPanel() {
+  return IconButton(
+    icon: Icon(Icons.queue_music),
+    color: globalColors.iconDisabledClr,
+    iconSize: 25,
+    onPressed: () {},
   );
 }
