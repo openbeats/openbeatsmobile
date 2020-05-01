@@ -10,6 +10,7 @@ import 'package:openbeatsmobile/pages/homePage.dart';
 import 'package:rxdart/rxdart.dart';
 import './globals/globalColors.dart' as globalColors;
 import './globals/globalStyles.dart' as globalStyles;
+import './globals/globalVars.dart' as globalVars;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -437,7 +438,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     try {
       // checking for link validity
       String url =
-          "https://api.openbeats.live/opencc/" + mediaParamters["videoId"];
+          globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
       // sending GET request
       responseJSON = await Dio().get(url);
       // checking conditions to make sure the streamingURL has been recieved

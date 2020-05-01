@@ -154,7 +154,7 @@ class _SearchHomeViewState extends State<SearchHomeView>
   // holds the searchHomeView Body implementation
   Widget searchHomeViewBody() {
     return AnimatedSwitcher(
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 300),
       child: (searchResultLoading)
           ? searchHomeViewW.searchResultLoadingW(context)
           : searchHomeViewContentInstructionSwitcher(),
@@ -186,8 +186,8 @@ class _SearchHomeViewState extends State<SearchHomeView>
         if (state != null && AudioService.currentMediaItem != null) {
           currentPlayingMediaThumbnail = AudioService.currentMediaItem.artUri;
         }
-        return searchHomeViewW.listOfBodyContents(
-            context, videosResponseList, currentPlayingMediaThumbnail,startSinglePlaybackOnTap);
+        return searchHomeViewW.listOfBodyContents(context, videosResponseList,
+            currentPlayingMediaThumbnail, startSinglePlaybackOnTap);
       },
     );
   }

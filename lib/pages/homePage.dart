@@ -36,8 +36,7 @@ class _HomePageState extends State<HomePage>
   int _bottomNavBarCurrIndex = 0;
   // controller for the SlidingUpPanel
   PanelController _slidingUpPanelController = new PanelController();
-  // controller for the TabView in SlidingUpPanel Body
-  TabController _slidingUpPanelBodyTabViewController;
+
   // animation controller to hide BottomNavBar
   AnimationController _hideBottomNavBarAnimController;
   // controls the animation of the play_pause button
@@ -58,8 +57,7 @@ class _HomePageState extends State<HomePage>
       // setting the current BottomNavBar Item
       _bottomNavBarCurrIndex = itemIndex;
     });
-    // animating the body pages to the desired page
-    _slidingUpPanelBodyTabViewController.animateTo(itemIndex);
+
     // checking if SlidingUpPanel is open
     if (_slidingUpPanelController.isPanelOpen)
       _slidingUpPanelController.close();
@@ -67,7 +65,6 @@ class _HomePageState extends State<HomePage>
 
   // hides or reveals the SlidingUpPanel
   void hideOrRevealSlidingUpPanel(showSlidingUpPanel) {
-    print(showSlidingUpPanel);
     if (showSlidingUpPanel)
       _slideUpPanelCollapsedHeightController.forward();
     else
@@ -112,9 +109,6 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    // initiating controller for the TabView in SlidingUpPanel Body
-    _slidingUpPanelBodyTabViewController = new TabController(
-        length: globalWids.bottomNavBarIcons.length, vsync: this);
     // initiating animation controller to hide the BottomNavBar
     _hideBottomNavBarAnimController =
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
@@ -138,8 +132,8 @@ class _HomePageState extends State<HomePage>
     _slideUpPanelCollapsedHeightAnimation = Tween<double>(
             begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
         .animate(_slideUpPanelCollapsedHeightController);
-    print(AudioService.playbackState);
-    // // checking playback state and hiding the SlidePanel
+
+    // checking playback state and hiding the SlidePanel
     if (AudioService.playbackState == null ||
         AudioService.playbackState.basicState == BasicPlaybackState.none)
       hideOrRevealSlidingUpPanel(false);
@@ -152,8 +146,6 @@ class _HomePageState extends State<HomePage>
 
   @override
   void dispose() {
-    // disposing controller for the TabView in SlidingUpPanel Body
-    _slidingUpPanelBodyTabViewController.dispose();
     super.dispose();
   }
 
@@ -216,18 +208,15 @@ class _HomePageState extends State<HomePage>
 
   // holds the SlidingUpPanel body
   Widget _slidingUpPanelBody() {
-    return Container(
-      child: TabBarView(
-        physics: NeverScrollableScrollPhysics(),
-        controller: _slidingUpPanelBodyTabViewController,
-        children: [
-          _exploreTab(),
-          _trendingTab(),
-          _searchTab(),
-          _playlistsTab(),
-          _settingsTab(),
-        ],
-      ),
+    return IndexedStack(
+      index: _bottomNavBarCurrIndex,
+      children: [
+        _exploreTab(),
+        _trendingTab(),
+        _searchTab(),
+        _playlistsTab(),
+        _settingsTab(),
+      ],
     );
   }
 

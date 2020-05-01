@@ -82,21 +82,14 @@ Widget searchInstructionText(BuildContext context) {
 
 // holds the widget to show when the search results are loading
 Widget searchResultLoadingW(BuildContext context) {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.start,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: <Widget>[
-      SizedBox(
-        height: MediaQuery.of(context).size.height * 0.3,
+  return Center(
+    child: SizedBox(
+      height: 100.0,
+      child: FlareActor(
+        "assets/flareAssets/loadinganim.flr",
+        animation: "loadnew",
       ),
-      SizedBox(
-        height: 100.0,
-        child: FlareActor(
-          "assets/flareAssets/loadinganim.flr",
-          animation: "loadnew",
-        ),
-      )
-    ],
+    ),
   );
 }
 
