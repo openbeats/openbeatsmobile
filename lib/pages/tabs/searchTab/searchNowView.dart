@@ -8,9 +8,6 @@ import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/globalFun.dart' as globalFun;
 
 class SearchNowView extends StatefulWidget {
-  // helps to toggle the SlidingUpPanelCollapsedView in and out of view
-  Function hideOrRevealSlidingUpPanel;
-  SearchNowView(this.hideOrRevealSlidingUpPanel);
   @override
   _SearchNowViewState createState() => _SearchNowViewState();
 }

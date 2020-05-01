@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:after_init/after_init.dart';
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
@@ -26,7 +30,8 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with TickerProviderStateMixin, AfterInitMixin {
   // holds the current index of the BottomNavBar
   int _bottomNavBarCurrIndex = 0;
   // controller for the SlidingUpPanel
@@ -37,6 +42,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AnimationController _hideBottomNavBarAnimController;
   // controls the animation of the play_pause button
   AnimationController playPauseAnimationController;
+  // controls the animation of the SlideUpPanel collapsedView depending on audioPlayback
+  AnimationController _slideUpPanelCollapsedHeightController;
+  // animation to move between values for SlideUpPanel collapsedView depending on audioPlayback
+  Animation _slideUpPanelCollapsedHeightAnimation;
   // flag to indicate the last known stable position of the SlidingUpPanel
   // true - open && false - closed
   bool _slidingPanelLKSState;
@@ -58,9 +67,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // hides or reveals the SlidingUpPanel
   void hideOrRevealSlidingUpPanel(showSlidingUpPanel) {
-    setState(() {
-      _showSlideUpPanelCollpasedView = showSlidingUpPanel;
-    });
+    print(showSlidingUpPanel);
+    if (showSlidingUpPanel)
+      _slideUpPanelCollapsedHeightController.forward();
+    else
+      _slideUpPanelCollapsedHeightController.reverse();
+  }
+
+  // opens the slideUpPanel completely (on tap of the collapsed panel)
+  void openSlideUpPanelToExpanded() {
+    _slidingUpPanelController.open();
   }
 
   // handles the onWillPop callback
@@ -113,6 +129,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   @override
+  void didInitState() {
+    // initiating the animation controller for SlideUpPanel collapsedView height depending on audioPlayback
+    _slideUpPanelCollapsedHeightController =
+        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+
+    // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
+    _slideUpPanelCollapsedHeightAnimation = Tween<double>(
+            begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
+        .animate(_slideUpPanelCollapsedHeightController);
+    print(AudioService.playbackState);
+    // // checking playback state and hiding the SlidePanel
+    if (AudioService.playbackState == null ||
+        AudioService.playbackState.basicState == BasicPlaybackState.none)
+      hideOrRevealSlidingUpPanel(false);
+
+    // adding state refresh listener for the controller to refresh the state everytime it runs
+    _slideUpPanelCollapsedHeightController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
     // disposing controller for the TabView in SlidingUpPanel Body
     _slidingUpPanelBodyTabViewController.dispose();
@@ -159,12 +197,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: SlidingUpPanel(
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
-        minHeight: (_showSlideUpPanelCollpasedView)
-            ? MediaQuery.of(context).size.height * 0.075
-            : 0,
+        minHeight: _slideUpPanelCollapsedHeightAnimation.value,
         maxHeight: MediaQuery.of(context).size.height,
-        collapsed: homePageW.collapsedSlidingUpPanel(context,
-            widget.audioServicePlayPause, playPauseAnimationController),
+        collapsed: homePageW.collapsedSlidingUpPanel(
+            context,
+            widget.audioServicePlayPause,
+            playPauseAnimationController,
+            openSlideUpPanelToExpanded,
+            hideOrRevealSlidingUpPanel),
         panel: homePageW.expandedSlidingUpPanel(widget.dragPositionSubject,
             playPauseAnimationController, widget.audioServicePlayPause),
         body: _slidingUpPanelBody(),
@@ -216,7 +256,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               case '/':
                 return SearchHomeView(widget.startSinglePlayback);
               case "/searchNow":
-                return SearchNowView(hideOrRevealSlidingUpPanel);
+                return SearchNowView();
               default:
                 return SearchHomeView(widget.startSinglePlayback);
             }

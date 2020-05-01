@@ -35,7 +35,9 @@ List<BottomNavigationBarItem> bottomNavBarItems() {
 Widget collapsedSlidingUpPanel(
     BuildContext context,
     Function audioServicePlayPause,
-    AnimationController playPauseAnimationController) {
+    AnimationController playPauseAnimationController,
+    Function openSlideUpPanelToExpanded,
+    Function hideOrRevealSlidingUpPanel) {
   // setting default values
   String audioThumbnail = "placeholder",
       audioTitle = globalStrings.noAudioPlayingString;
@@ -47,6 +49,7 @@ Widget collapsedSlidingUpPanel(
         if (state != null &&
             state.basicState != BasicPlaybackState.none &&
             state.basicState != BasicPlaybackState.stopped) {
+          hideOrRevealSlidingUpPanel(true);
           if (AudioService.currentMediaItem != null &&
               state.basicState != BasicPlaybackState.connecting) {
             // getting thumbNail image
@@ -62,17 +65,25 @@ Widget collapsedSlidingUpPanel(
             audioTitle = "Connecting...";
           }
         } else {
+          hideOrRevealSlidingUpPanel(false);
           // resetting values
           audioThumbnail = "placeholder";
           audioTitle = globalStrings.noAudioPlayingString;
         }
 
         return Container(
-            decoration: BoxDecoration(
-              color: globalColors.backgroundClr,
-            ),
-            child: nowPlayingCollapsedContent(state, audioThumbnail, audioTitle,
-                context, audioServicePlayPause, playPauseAnimationController));
+          decoration: BoxDecoration(
+            color: globalColors.backgroundClr,
+          ),
+          child: nowPlayingCollapsedContent(
+              state,
+              audioThumbnail,
+              audioTitle,
+              context,
+              audioServicePlayPause,
+              playPauseAnimationController,
+              openSlideUpPanelToExpanded),
+        );
       });
 }
 
@@ -83,7 +94,8 @@ Widget nowPlayingCollapsedContent(
     String audioTitle,
     BuildContext context,
     Function audioServicePlayPause,
-    AnimationController playPauseAnimationController) {
+    AnimationController playPauseAnimationController,
+    Function openSlideUpPanelToExpanded) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: <Widget>[
@@ -93,7 +105,10 @@ Widget nowPlayingCollapsedContent(
       Flexible(
         flex: 1,
         fit: FlexFit.tight,
-        child: globalWids.audioThumbnailW(audioThumbnail, context, 0.11, 5.0),
+        child: GestureDetector(
+          child: globalWids.audioThumbnailW(audioThumbnail, context, 0.11, 5.0),
+          onTap: openSlideUpPanelToExpanded,
+        ),
       ),
       SizedBox(
         width: MediaQuery.of(context).size.width * 0.03,
