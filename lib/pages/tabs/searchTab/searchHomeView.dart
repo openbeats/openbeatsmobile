@@ -75,13 +75,14 @@ class _SearchHomeViewState extends State<SearchHomeView>
           // removing loading animation from screen
           searchResultLoading = false;
         });
-        globalFun.showSnackBars(
-          globalScaffoldKeys.searchHomeViewScaffoldKey,
-          context,
-          "Could not get proper response from server. Please try another query",
-          Colors.orange,
-          Duration(seconds: 3),
-        );
+        getVideosForQuery(query);
+        // globalFun.showSnackBars(
+        //   globalScaffoldKeys.searchHomeViewScaffoldKey,
+        //   context,
+        //   "Could not get proper response from server. Please try another query",
+        //   Colors.orange,
+        //   Duration(seconds: 3),
+        // );
       }
     } catch (e) {
       // catching dio error
