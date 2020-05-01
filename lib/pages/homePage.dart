@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:after_init/after_init.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import './tabs/searchTab/searchHomeView.dart';
 import './tabs/playlistsTab/playlistsTab.dart';
-import './tabs/settingsTab/settingsTab.dart';
+
 import './tabs/trendingTab/trendingTab.dart';
 import './tabs/exploreTab/exploreTab.dart';
 import '../widgets/homePageW.dart' as homePageW;
@@ -215,7 +216,7 @@ class _HomePageState extends State<HomePage>
         _trendingTab(),
         _searchTab(),
         _playlistsTab(),
-        _settingsTab(),
+        _profileTab(),
       ],
     );
   }
@@ -262,7 +263,7 @@ class _HomePageState extends State<HomePage>
   }
 
   // holds the SettingsTab widget
-  Widget _settingsTab() {
-    return SettingsTab();
+  Widget _profileTab() {
+    return ProfileHomeView();
   }
 }

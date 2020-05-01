@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import './globalColors.dart' as globalColors;
 
@@ -12,9 +13,11 @@ AppBarTheme mainAppBarTheme = AppBarTheme(
   elevation: 2,
   color: globalColors.backgroundClr,
   textTheme: TextTheme(
-    title: TextStyle(
-      color: globalColors.textDefaultClr,
-      fontSize: 26.0,
+    title: GoogleFonts.poppins(
+      textStyle: TextStyle(
+        color: globalColors.textDefaultClr,
+        fontSize: 26.0,
+      ),
       fontWeight: FontWeight.w600,
     ),
   ),
