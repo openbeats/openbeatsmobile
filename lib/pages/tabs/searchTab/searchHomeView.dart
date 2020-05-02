@@ -23,6 +23,8 @@ class _SearchHomeViewState extends State<SearchHomeView>
   bool searchResultLoading = false;
   // holds the videos received for query
   List videosResponseList = new List();
+  // flag for recursion calls for the getVideosforQuery function
+  bool _recursionCountFlag = false;
 
   // navigate to searchNowView
   void navigateToSearchNowView() async {
@@ -60,6 +62,8 @@ class _SearchHomeViewState extends State<SearchHomeView>
       // checking if proper response is received
       if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
         setState(() {
+          // resetting recursion count flag
+          _recursionCountFlag = false;
           // response as list to iterate over
           videosResponseList = responseJSON["data"] as List;
 
@@ -75,7 +79,12 @@ class _SearchHomeViewState extends State<SearchHomeView>
           // removing loading animation from screen
           searchResultLoading = false;
         });
-        getVideosForQuery(query);
+        if (!_recursionCountFlag) {
+          // resetting recursion count flag
+          _recursionCountFlag = true;
+          getVideosForQuery(query);
+        }
+
         // globalFun.showSnackBars(
         //   globalScaffoldKeys.searchHomeViewScaffoldKey,
         //   context,

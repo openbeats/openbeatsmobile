@@ -382,7 +382,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void startSinglePlayback(arguments, bool shouldRepeat) async {
     // temporary thumbnail url storage
     String tempThumbNailUrl =
-        "https://img.youtube.com/vi/" + arguments["videoId"] + "/sddefault.jpg";
+        "https://img.youtube.com/vi/" + arguments["videoId"] + "/mqdefault.jpg";
 
     // initiating function to check if max res is available
     _checkMaxResolutionAvailable(arguments["videoId"]).then((thumbURL) {
@@ -446,7 +446,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     String highResURL =
         "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
     String lowResURL =
-        "https://img.youtube.com/vi/" + videoId + "/sddefault.jpg";
+        "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg";
     try {
       final response = await Dio().get(highResURL);
       print(response.statusCode);
