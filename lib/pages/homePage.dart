@@ -139,6 +139,15 @@ class _HomePageState extends State<HomePage>
         AudioService.playbackState.basicState == BasicPlaybackState.none)
       hideOrRevealSlidingUpPanel(false);
 
+    // adding state listeners to audio service to bring the SlideUpPanel into view if needed when the app starts
+    AudioService.playbackStateStream.listen((PlaybackState state) {
+      if (state == null || state.basicState == BasicPlaybackState.none) {
+        hideOrRevealSlidingUpPanel(false);
+      } else {
+        hideOrRevealSlidingUpPanel(true);
+      }
+    });
+
     // adding state refresh listener for the controller to refresh the state everytime it runs
     _slideUpPanelCollapsedHeightController.addListener(() {
       setState(() {});
