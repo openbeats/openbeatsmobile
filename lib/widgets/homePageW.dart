@@ -41,6 +41,7 @@ Widget collapsedSlidingUpPanel(
   // setting default values
   String audioThumbnail = "placeholder",
       audioTitle = globalStrings.noAudioPlayingString;
+  bool audioPlaying = false;
   return StreamBuilder(
       stream: AudioService.playbackStateStream,
       builder: (context, snapshot) {
@@ -56,6 +57,8 @@ Widget collapsedSlidingUpPanel(
             audioThumbnail = AudioService.currentMediaItem.artUri;
             // getting audioTitle
             audioTitle = AudioService.currentMediaItem.title;
+            //  replacing Connecting... string check
+            audioPlaying = true;
           }
           // if the audio is connecting
           else if (AudioService.currentMediaItem != null &&
@@ -63,12 +66,16 @@ Widget collapsedSlidingUpPanel(
             // getting thumbNail image
             audioThumbnail = AudioService.currentMediaItem.artUri;
             audioTitle = "Connecting...";
+            //  replacing Connecting... string check
+            audioPlaying = false;
           }
         } else {
           hideOrRevealSlidingUpPanel(false);
           // resetting values
           audioThumbnail = "placeholder";
           audioTitle = globalStrings.noAudioPlayingString;
+          //  replacing Connecting... string check
+          audioPlaying = true;
         }
 
         return Container(
@@ -82,7 +89,8 @@ Widget collapsedSlidingUpPanel(
               context,
               audioServicePlayPause,
               playPauseAnimationController,
-              openSlideUpPanelToExpanded),
+              openSlideUpPanelToExpanded,
+              audioPlaying),
         );
       });
 }
@@ -95,7 +103,8 @@ Widget nowPlayingCollapsedContent(
     BuildContext context,
     Function audioServicePlayPause,
     AnimationController playPauseAnimationController,
-    Function openSlideUpPanelToExpanded) {
+    Function openSlideUpPanelToExpanded,
+    bool audioPlaying) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: <Widget>[
@@ -117,7 +126,8 @@ Widget nowPlayingCollapsedContent(
         flex: 4,
         fit: FlexFit.tight,
         child: GestureDetector(
-          child: globalWids.audioTitleW(audioTitle, context, false, false),
+          child: globalWids.audioTitleW(
+              audioTitle, context, false, false, false, audioPlaying, false),
           onTap: openSlideUpPanelToExpanded,
         ),
       ),
@@ -211,6 +221,7 @@ Widget expandedSlidingUpPanel(
   String audioThumbnail = "placeholder",
       audioTitle = globalStrings.noAudioPlayingString,
       audioPlays = "0";
+  bool audioPlaying = false;
   return StreamBuilder(
     stream: AudioService.playbackStateStream,
     builder: (context, snapshot) {
@@ -226,20 +237,26 @@ Widget expandedSlidingUpPanel(
           audioTitle = AudioService.currentMediaItem.title;
           // getting audioViews
           audioPlays = AudioService.currentMediaItem.extras["views"];
+          //  replacing Connecting... string check
+          audioPlaying = true;
         }
         // if the audio is connecting
         else if (AudioService.currentMediaItem != null &&
             state.basicState == BasicPlaybackState.connecting) {
           // getting thumbNail image
           audioThumbnail = AudioService.currentMediaItem.artUri;
-          audioTitle = "Please wait\nConnecting...";
-          audioPlays = "0";
+          audioTitle = "Connecting...";
+          audioPlays = "No Views";
+          //  replacing Connecting... string check
+          audioPlaying = false;
         }
       } else {
         // resetting values
         audioThumbnail = "placeholder";
         audioTitle = globalStrings.noAudioPlayingString;
-        audioPlays = "0 views";
+        audioPlays = "No Views";
+        //  replacing Connecting... string check
+        audioPlaying = true;
       }
       return Container(
         child: Column(
@@ -257,7 +274,8 @@ Widget expandedSlidingUpPanel(
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.045,
             ),
-            audioTitleW(audioTitle, context, false, true),
+            globalWids.audioTitleW(
+                audioTitle, context, false, true, true, audioPlaying, true),
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.02,
             ),
@@ -316,50 +334,6 @@ Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
           ]),
       textAlign: TextAlign.center,
     ),
-  );
-}
-
-// holds the audio title in audioTile listing view
-Widget audioTitleW(String title, BuildContext context, bool currentlyPlaying,
-    bool shouldScroll) {
-  return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal:
-            (shouldScroll) ? MediaQuery.of(context).size.width * 0.15 : 0.0,
-      ),
-      child: (shouldScroll)
-          ? SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              primary: true,
-              physics: BouncingScrollPhysics(),
-              child: audioTitleTextW(title, currentlyPlaying, shouldScroll),
-            )
-          : audioTitleTextW(title, currentlyPlaying, shouldScroll));
-}
-
-// holds the text widget for audioTitleW
-Widget audioTitleTextW(String title, bool currentlyPlaying, bool shouldScroll) {
-  return Text(
-    title,
-    maxLines: 2,
-    overflow: TextOverflow.ellipsis,
-    style: TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: (shouldScroll) ? 24.0 : 16.0,
-      color: (title != globalStrings.noAudioPlayingString)
-          ? (currentlyPlaying)
-              ? globalColors.textActiveClr
-              : globalColors.textDefaultClr
-          : globalColors.textDisabledClr,
-    ),
-  );
-}
-
-// holds the audio details in audioTile listing view
-Widget audioDetailsW(String views, String duration) {
-  return Container(
-    margin: EdgeInsets.only(top: 5.0),
-    child: Text(duration + " | " + globalFun.reformatViews(views)),
   );
 }
 

@@ -167,6 +167,9 @@ Widget searchResultListTile(
                             videosResponseList[index]["thumbnail"])
                         ? true
                         : false,
+                    false,
+                    false,
+                    true,
                     false),
                 globalWids.audioDetailsW(videosResponseList[index]["views"],
                     videosResponseList[index]["duration"])

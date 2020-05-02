@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 
 import './globalStrings.dart' as globalStrings;
@@ -51,37 +52,69 @@ Widget audioThumbnailW(String thumbnailURL, BuildContext context,
 }
 
 // holds the audio title in audioTile listing view
-Widget audioTitleW(String title, BuildContext context, bool currentlyPlaying,
-    bool shouldScroll) {
+Widget audioTitleW(
+    String title,
+    BuildContext context,
+    bool currentlyPlaying,
+    bool shouldScroll,
+    bool shouldCenter,
+    bool audioPlaying,
+    bool showBiggerLoadingAnimation) {
+  return AnimatedSwitcher(
+    duration: kThemeAnimationDuration,
+    child: (audioPlaying)
+        ? (shouldScroll)
+            ? Container(
+                margin: EdgeInsets.symmetric(
+                  horizontal: (shouldScroll)
+                      ? MediaQuery.of(context).size.width * 0.15
+                      : 0.0,
+                ),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  primary: true,
+                  physics: BouncingScrollPhysics(),
+                  child: audioTitleTextW(title, currentlyPlaying, shouldScroll),
+                ),
+              )
+            : audioTitleTextW(
+                title,
+                currentlyPlaying,
+                shouldScroll,
+              )
+        : connectingWidget(shouldCenter, showBiggerLoadingAnimation),
+  );
+}
+
+// holds the Connecting widget to show instead of the title
+Widget connectingWidget(bool shouldCenter, bool showBiggerLoadingAnimation) {
   return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal:
-            (shouldScroll) ? MediaQuery.of(context).size.width * 0.15 : 0.0,
-      ),
-      child: (shouldScroll)
-          ? SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              primary: true,
-              physics: BouncingScrollPhysics(),
-              child: audioTitleTextW(title, currentlyPlaying, shouldScroll),
-            )
-          : audioTitleTextW(title, currentlyPlaying, shouldScroll));
+    height: (showBiggerLoadingAnimation) ? 40.0 : 30.0,
+    child: FlareActor(
+      "assets/flareAssets/logoanim.flr",
+      animation: "rotate",
+      alignment: (shouldCenter) ? Alignment.center : Alignment.centerLeft,
+    ),
+  );
 }
 
 // holds the text widget for audioTitleW
 Widget audioTitleTextW(String title, bool currentlyPlaying, bool shouldScroll) {
-  return Text(
-    title,
-    maxLines: 2,
-    overflow: TextOverflow.ellipsis,
-    style: TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: (shouldScroll) ? 24.0 : 16.0,
-      color: (title != globalStrings.noAudioPlayingString)
-          ? (currentlyPlaying)
-              ? globalColors.textActiveClr
-              : globalColors.textDefaultClr
-          : globalColors.textDisabledClr,
+  return Container(
+    margin: (shouldScroll) ? EdgeInsets.only(bottom: 6.0) : null,
+    child: Text(
+      title,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: (shouldScroll) ? 24.0 : 16.0,
+        color: (title != globalStrings.noAudioPlayingString)
+            ? (currentlyPlaying)
+                ? globalColors.textActiveClr
+                : globalColors.textDefaultClr
+            : globalColors.textDisabledClr,
+      ),
     ),
   );
 }
