@@ -216,7 +216,8 @@ Widget queueBtnWCollapsedSlideUpPanel(bool noAudioPlaying) {
 Widget expandedSlidingUpPanel(
     BehaviorSubject<double> dragPositionSubject,
     AnimationController playPauseAnimationController,
-    Function audioServicePlayPause) {
+    Function audioServicePlayPause,
+    Function toggleRepeatSong) {
   // setting default values
   String audioThumbnail = "placeholder",
       audioTitle = globalStrings.noAudioPlayingString,
@@ -293,7 +294,7 @@ Widget expandedSlidingUpPanel(
             SizedBox(
               height: MediaQuery.of(context).size.height * 0.02,
             ),
-            supplementaryAudioControlsW(context, state),
+            supplementaryAudioControlsW(context, state, toggleRepeatSong),
           ],
         ),
       );
@@ -568,7 +569,8 @@ Widget backward10MainAudioControlsW(PlaybackState state) {
 }
 
 // holds the supplementary controls for the audio play in slideUpPanelExpanded
-Widget supplementaryAudioControlsW(BuildContext context, PlaybackState state) {
+Widget supplementaryAudioControlsW(
+    BuildContext context, PlaybackState state, Function toggleRepeatSong) {
   return Container(
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -576,7 +578,7 @@ Widget supplementaryAudioControlsW(BuildContext context, PlaybackState state) {
       children: <Widget>[
         favBtnW(),
         shuffleBtnW(),
-        repeatBtnW(),
+        repeatBtnW(toggleRepeatSong),
         queueBtnWExpandedSlideUpPanel()
       ],
     ),
@@ -604,12 +606,12 @@ Widget shuffleBtnW() {
 }
 
 // holds the repeat button for the supplementaryAudioControlsW
-Widget repeatBtnW() {
+Widget repeatBtnW(Function toggleRepeatSong) {
   return IconButton(
     color: globalColors.iconDisabledClr,
     iconSize: 25,
     icon: Icon(Icons.repeat),
-    onPressed: () {},
+    onPressed: toggleRepeatSong,
   );
 }
 

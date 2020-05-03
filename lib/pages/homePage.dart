@@ -24,9 +24,9 @@ class HomePage extends StatefulWidget {
   // behaviourSubject to monitor and control the seekBar
   BehaviorSubject<double> dragPositionSubject;
   // custom audioService control methods
-  Function startSinglePlayback, audioServicePlayPause;
+  Function startSinglePlayback, audioServicePlayPause, toggleRepeatSong;
   HomePage(this.dragPositionSubject, this.startSinglePlayback,
-      this.audioServicePlayPause);
+      this.audioServicePlayPause, this.toggleRepeatSong);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -107,9 +107,20 @@ class _HomePageState extends State<HomePage>
     }
   }
 
+// connects to the audio_service
+  void connect() async {
+    await AudioService.connect();
+  }
+
+  // disconnects from the audio_service
+  void disconnect() {
+    AudioService.disconnect();
+  }
+
   @override
   void initState() {
     super.initState();
+    connect();
     // initiating animation controller to hide the BottomNavBar
     _hideBottomNavBarAnimController =
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
@@ -156,6 +167,7 @@ class _HomePageState extends State<HomePage>
 
   @override
   void dispose() {
+    disconnect();
     super.dispose();
   }
 
@@ -207,8 +219,11 @@ class _HomePageState extends State<HomePage>
             playPauseAnimationController,
             openSlideUpPanelToExpanded,
             hideOrRevealSlidingUpPanel),
-        panel: homePageW.expandedSlidingUpPanel(widget.dragPositionSubject,
-            playPauseAnimationController, widget.audioServicePlayPause),
+        panel: homePageW.expandedSlidingUpPanel(
+            widget.dragPositionSubject,
+            playPauseAnimationController,
+            widget.audioServicePlayPause,
+            widget.toggleRepeatSong),
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
         onPanelClosed: () => _hideBottomNavBarAnimController.forward(),

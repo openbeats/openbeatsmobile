@@ -116,8 +116,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "OpenBeats",
-      home: HomePage(
-          dragPositionSubject, startSinglePlayback, audioServicePlayPause),
+      home: HomePage(dragPositionSubject, startSinglePlayback,
+          audioServicePlayPause, () {}),
       theme: globalStyles.applicationThemeData,
     );
   }
@@ -472,10 +472,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
           globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
       // sending GET request
       responseJSON = await Dio().get(url);
+
       // checking conditions to make sure the streamingURL has been recieved
       if (responseJSON.data["status"] == true &&
           responseJSON.data["link"] != null) {
         return responseJSON.data["link"];
+      } else {
+        return globalVars.apiHostAddress +
+            "/fallback/" +
+            mediaParamters["videoId"];
       }
     } on DioError {
       // globalFun.showToastMessage(
