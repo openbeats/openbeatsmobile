@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    // execute function after building the widget
+    // execute function after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
       _slideUpPanelCollapsedHeightAnimation = Tween<double>(
@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         currentIndex: _bottomNavBarCurrIndex,
         backgroundColor: globalColors.backgroundClr,
         showSelectedLabels: true,
-        showUnselectedLabels: true,
+        showUnselectedLabels: false,
         selectedItemColor: globalColors.iconActiveClr,
         unselectedItemColor: globalColors.iconDefaultClr,
         selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,

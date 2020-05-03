@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 String apiHostAddress = "https://staging-api.openbeats.live";
 
 // holds the sizes for widgets of app
-double bottomNavBarIconSize = 30.0;
+double bottomNavBarIconSize = 28.0;
 
 // searchPage.dart
 // holds the current searched string

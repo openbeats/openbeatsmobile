@@ -10,7 +10,7 @@ TextStyle bottomNavBarItemLabelStyle = TextStyle(
 
 // holds the appBar theme for main.dart
 AppBarTheme mainAppBarTheme = AppBarTheme(
-  elevation: 2,
+  elevation: 0,
   color: globalColors.backgroundClr,
   textTheme: TextTheme(
     title: GoogleFonts.poppins(

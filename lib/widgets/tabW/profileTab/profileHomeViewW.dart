@@ -7,7 +7,6 @@ import '../../../globals/globalColors.dart' as globalColors;
 // holds the AppBar for the profileHomeView
 Widget appBar() {
   return AppBar(
-    centerTitle: true,
     title: Text("Profile"),
   );
 }

@@ -130,7 +130,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         unselectedLabelColor: globalColors.textDisabledClr,
         indicatorColor: Colors.transparent,
         tabs: [
-          Tab(text: "Login"),
+          Tab(text: "Log In"),
           Tab(text: "Sign Up"),
         ]);
   }
