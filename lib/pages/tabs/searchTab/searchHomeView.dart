@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 import 'package:audio_service/audio_service.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../../../widgets/tabW/searchTab/searchHomeViewW.dart'
     as searchHomeViewW;
+import 'package:http/http.dart' as http;
 import '../../../globals/globalFun.dart' as globalFun;
 import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
@@ -56,9 +58,9 @@ class _SearchHomeViewState extends State<SearchHomeView>
     String url = globalVars.apiHostAddress + "/ytcat?q=" + query + " audio";
     try {
       // sending http get request
-      var response = await Dio().get(url);
+      var response = await http.get(url);
       // decoding to json
-      var responseJSON = response.data;
+      var responseJSON = jsonDecode(response.body);
       // checking if proper response is received
       if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
         setState(() {
@@ -94,24 +96,21 @@ class _SearchHomeViewState extends State<SearchHomeView>
         // );
       }
     } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        // removing previous snackBar
-        globalScaffoldKeys.searchHomeViewScaffoldKey.currentState
-            .removeCurrentSnackBar();
-        globalFun.showSnackBars(
-          globalScaffoldKeys.searchHomeViewScaffoldKey,
-          context,
-          "Not able to connect to internet",
-          Colors.orange,
-          Duration(seconds: 5),
-        );
-        // removing the loading animation
-        setState(() {
-          // removing loading animation from screen
-          searchResultLoading = false;
-        });
-      }
+      // removing previous snackBar
+      globalScaffoldKeys.searchHomeViewScaffoldKey.currentState
+          .removeCurrentSnackBar();
+      globalFun.showSnackBars(
+        globalScaffoldKeys.searchHomeViewScaffoldKey,
+        context,
+        "Not able to connect to internet",
+        Colors.orange,
+        Duration(seconds: 5),
+      );
+      // removing the loading animation
+      setState(() {
+        // removing loading animation from screen
+        searchResultLoading = false;
+      });
     }
   }
 

@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 
 import 'package:just_audio/just_audio.dart';
@@ -418,6 +420,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         controls: getControls(state), basicState: state, position: position);
     // gets the mediaItem for the song to play with the valid streamingURL
     String streamingURL = await getStreamingURL(arguments);
+    print(streamingURL);
     // creating updatedMediaItemInstance
     MediaItem updatedMediaItem = MediaItem(
         id: streamingURL,
@@ -448,13 +451,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
     String lowResURL =
         "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg";
     try {
-      final response = await Dio().get(highResURL);
+      final response = await http.head(highResURL);
       print(response.statusCode);
       if (response.statusCode == 200)
         return highResURL;
       else
         return lowResURL;
-    } on DioError catch (e) {
+    } catch (e) {
       if (e.response.statusCode == 404) {
         print(e.response.statusCode);
       }
@@ -471,24 +474,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
       String url =
           globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
       // sending GET request
-      responseJSON = await Dio().get(url);
+      var response = await http.get(url);
+      responseJSON = jsonDecode(response.body);
 
       // checking conditions to make sure the streamingURL has been recieved
-      if (responseJSON.data["status"] == true &&
-          responseJSON.data["link"] != null) {
-        return responseJSON.data["link"];
+      if (responseJSON["status"] == true && responseJSON["link"] != null) {
+        return responseJSON["link"];
       } else {
         return globalVars.apiHostAddress +
             "/fallback/" +
             mediaParamters["videoId"];
       }
-    } on DioError {
+    } catch (e) {
       // globalFun.showToastMessage(
       //     "Sorry, not able to connect to OpenBeats server. Please try again",
       //     Colors.red,
       //     Colors.white,
       //     true);
-      onStop();
+      // onStop();
     }
     return null;
   }

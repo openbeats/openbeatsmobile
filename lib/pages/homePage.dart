@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:after_init/after_init.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
@@ -31,8 +30,7 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with TickerProviderStateMixin, AfterInitMixin {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the current index of the BottomNavBar
   int _bottomNavBarCurrIndex = 0;
   // controller for the SlidingUpPanel
@@ -127,23 +125,16 @@ class _HomePageState extends State<HomePage>
     // initiating animation controller for play_pause button in the collapsed slideUpPanel
     playPauseAnimationController =
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
-    // showing the BottomNavBar
-    _hideBottomNavBarAnimController.forward();
-
-    // marking the last known stable position as closed
-    _slidingPanelLKSState = false;
-  }
-
-  @override
-  void didInitState() {
     // initiating the animation controller for SlideUpPanel collapsedView height depending on audioPlayback
     _slideUpPanelCollapsedHeightController =
         AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    // showing the BottomNavBar
+    _hideBottomNavBarAnimController.forward();
 
     // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
-    _slideUpPanelCollapsedHeightAnimation = Tween<double>(
-            begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
-        .animate(_slideUpPanelCollapsedHeightController);
+    _slideUpPanelCollapsedHeightAnimation =
+        Tween<double>(begin: 0.0, end: 100.0)
+            .animate(_slideUpPanelCollapsedHeightController);
 
     // checking playback state and hiding the SlidePanel
     if (AudioService.playbackState == null ||
@@ -173,6 +164,13 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    // execute function after building the widget
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
+      _slideUpPanelCollapsedHeightAnimation = Tween<double>(
+              begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
+          .animate(_slideUpPanelCollapsedHeightController);
+    });
     return WillPopScope(
       onWillPop: _onWillPopCallbackHandler,
       child: Scaffold(

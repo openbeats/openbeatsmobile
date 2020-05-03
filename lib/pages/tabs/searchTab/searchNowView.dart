@@ -1,7 +1,7 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-// import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../../../widgets/tabW/searchTab/searchNowViewW.dart' as searchNowViewW;
 import '../../../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 import '../../../globals/globalVars.dart' as globalVars;
@@ -32,12 +32,13 @@ class _SearchNowViewState extends State<SearchNowView> {
     // setting up exception handlers to alert for network issues
     try {
       // sending request through http as JSON
-      var responseJSON = await Dio().get(url);
+      var response = await http.get(url);
+      var responseJSON = jsonDecode(response.body);
       // if delay flag is false, let value enter
       if (!_delayCallFlag) {
         setState(() {
           // getting the list of responses
-          suggestionResponseList = responseJSON.data["data"] as List;
+          suggestionResponseList = responseJSON["data"] as List;
           _noInternetSnackbarShown = false;
         });
       }
@@ -45,7 +46,7 @@ class _SearchNowViewState extends State<SearchNowView> {
         // removing the noInternet snackbar when internet connection is returned
         globalScaffoldKeys.searchNowViewScaffoldKey.currentState
             .removeCurrentSnackBar();
-    } on DioError {
+    } catch (e) {
       // catching dio error
       if (!_noInternetSnackbarShown) {
         globalFun.showSnackBars(
