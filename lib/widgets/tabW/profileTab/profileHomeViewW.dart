@@ -12,7 +12,7 @@ Widget appBar() {
 }
 
 // holds the email textfield for the tabView
-Widget emailTxtField(BuildContext context, bool isLogin,
+Widget emailTxtField(BuildContext context, bool issignIn,
     TextEditingController controller, bool autoValidate) {
   return Container(
     margin: EdgeInsets.symmetric(
@@ -38,7 +38,7 @@ Widget emailTxtField(BuildContext context, bool isLogin,
 }
 
 // holds the password textfield for the tabView
-Widget passwordTxtField(BuildContext context, bool isLogin,
+Widget passwordTxtField(BuildContext context, bool issignIn,
     TextEditingController controller, bool autoValidate) {
   return Container(
     margin: EdgeInsets.symmetric(
@@ -65,14 +65,15 @@ Widget passwordTxtField(BuildContext context, bool isLogin,
 }
 
 // holds the action button for the tabview
-Widget actionBtnW(BuildContext context, bool isLogin, Function callbackFun) {
+Widget actionBtnW(BuildContext context, bool issignIn, Function callbackFun) {
   return Container(
-    width: MediaQuery.of(context).size.width * 0.7,
+    padding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.15),
     height: 48,
     child: RaisedButton(
       textTheme: ButtonTextTheme.primary,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
-      child: (isLogin) ? Text("Login") : Text("Sign Up"),
+      child: (issignIn) ? Text("Sign In") : Text("Join"),
       color: globalColors.mainBtnClr,
       onPressed: callbackFun,
     ),
@@ -84,7 +85,8 @@ Widget fgtPasswordBtn(BuildContext context) {
   return GestureDetector(
     child: Text(
       "Forgot Password?",
-      style: GoogleFonts.poppins(),
+      textAlign: TextAlign.center,
+      style: GoogleFonts.openSans(),
     ),
     onTap: () {},
   );
@@ -111,6 +113,81 @@ Widget userNameTextField(
         else
           return null;
       },
+    ),
+  );
+}
+
+// holds the greeting message for the signIn tab
+Widget signInTabGreetingMessage() {
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 10.0),
+    child: Text(
+      "hello!",
+      textAlign: TextAlign.center,
+      style: GoogleFonts.montserrat(
+          fontWeight: FontWeight.w600,
+          fontSize: 60.0,
+          color: globalColors.textActiveClr),
+    ),
+  );
+}
+
+// hodls the greeting message subtitle for the signIn tab
+Widget signInTabGreetingSubtitleMessage() {
+  return Container(
+    child: Text(
+      "Sign In to your account",
+      textAlign: TextAlign.center,
+      style: GoogleFonts.openSans(
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+          color: globalColors.textActiveClr),
+    ),
+  );
+}
+
+// holds the greeitng messsage for the join tab
+Widget joinTabGreetingMessage() {
+  return Container(
+    child: RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        text: "Create\n",
+        style: GoogleFonts.openSans(
+            color: globalColors.textActiveClr,
+            fontWeight: FontWeight.bold,
+            fontSize: 60.0),
+        children: [
+          TextSpan(
+            text: "your own",
+            style: GoogleFonts.openSans(
+                color: globalColors.textDefaultClr,
+                fontWeight: FontWeight.normal,
+                fontSize: 16.0),
+          ),
+          TextSpan(
+            text: " Open",
+            style: GoogleFonts.roboto(
+                color: globalColors.textActiveClr,
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0),
+          ),
+          TextSpan(
+            text: "Beats",
+            style: GoogleFonts.roboto(
+                color: globalColors.textDefaultClr,
+                fontWeight: FontWeight.bold,
+                fontSize: 16.0),
+          ),
+          TextSpan(
+            text: " account",
+            style: GoogleFonts.openSans(
+                color: globalColors.textDefaultClr,
+                fontWeight: FontWeight.normal,
+                fontSize: 16.0),
+          ),
+        ],
+      ),
     ),
   );
 }

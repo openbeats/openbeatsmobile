@@ -18,8 +18,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   // dropDown banner navigator
   final _dropDownBannerNavigatorKey = GlobalKey<NavigatorState>();
   // form key for the textformfields
-  final GlobalKey<FormState> _loginFormKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _signUpFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _signInFormKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _joinFormKey = GlobalKey<FormState>();
   // controllers for the tabView
   TabController authTabController;
   // controllers for textfields
@@ -28,40 +28,40 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   TextEditingController passwordFieldController = new TextEditingController();
 
   // autoValidate flags for the forms
-  bool loginFormAutoValidate = false, signUpFormAutoValidate = false;
+  bool signInFormAutoValidate = false, joinFormAutoValidate = false;
 
   // validator method for the textfields
   void textFieldValidator() {
     // checking the current tab
     if (authTabController.index == 0) {
-      // validating login form
-      if (_loginFormKey.currentState.validate())
-        loginCallback();
+      // validating signIn form
+      if (_signInFormKey.currentState.validate())
+        signInCallback();
       else {
         setState(() {
-          loginFormAutoValidate = true;
+          signInFormAutoValidate = true;
         });
       }
     } else {
-      if (_signUpFormKey.currentState.validate())
-        signUpCallback();
+      if (_joinFormKey.currentState.validate())
+        joinCallback();
       else {
         setState(() {
-          signUpFormAutoValidate = true;
+          joinFormAutoValidate = true;
         });
       }
     }
   }
 
-  // login callback function
-  void loginCallback() {
+  // signIn callback function
+  void signInCallback() {
     // fetching values from controllers
     String userEmail = emailFieldController.text;
     String userPassword = passwordFieldController.text;
   }
 
-  // signup callback function
-  void signUpCallback() {
+  // join callback function
+  void joinCallback() {
     // fetching values from controllers
     String userName = userNameFieldController.text;
     String userEmail = emailFieldController.text;
@@ -100,12 +100,12 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   // holds the TabBarView for authTabW
   Widget tabBarViewAuthTabW(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.4,
+      height: MediaQuery.of(context).size.height * 0.6,
       child: TabBarView(
         controller: authTabController,
         children: <Widget>[
-          _loginWTabBarViewAuthTabW(context),
-          _signUpWTabBarViewAuthTabW(context),
+          _signInWTabBarViewAuthTabW(context),
+          _joinWTabBarViewAuthTabW(context),
         ],
       ),
     );
@@ -128,28 +128,39 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         controller: controller,
         labelColor: globalColors.textActiveClr,
         unselectedLabelColor: globalColors.textDisabledClr,
+        labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
         indicatorColor: Colors.transparent,
         tabs: [
-          Tab(text: "Log In"),
-          Tab(text: "Sign Up"),
+          Tab(text: "Sign In"),
+          Tab(text: "Join"),
         ]);
   }
 
-  // holds the login widgets for the authTabW
-  Widget _loginWTabBarViewAuthTabW(BuildContext context) {
+  // holds the signIn widgets for the authTabW
+  Widget _signInWTabBarViewAuthTabW(BuildContext context) {
     return Form(
-      key: _loginFormKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      key: _signInFormKey,
+      child: ListView(
+        physics: BouncingScrollPhysics(),
         children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.04,
+          ),
+          profileHomeViewW.signInTabGreetingMessage(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.0001,
+          ),
+          profileHomeViewW.signInTabGreetingSubtitleMessage(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.04,
+          ),
           profileHomeViewW.emailTxtField(
-              context, true, emailFieldController, loginFormAutoValidate),
+              context, true, emailFieldController, signInFormAutoValidate),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
-              context, true, passwordFieldController, loginFormAutoValidate),
+              context, true, passwordFieldController, signInFormAutoValidate),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.03,
           ),
@@ -164,29 +175,38 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   }
 
 // holds the sign up widgets for the authTabW
-  Widget _signUpWTabBarViewAuthTabW(BuildContext context) {
+  Widget _joinWTabBarViewAuthTabW(BuildContext context) {
     return Form(
-      key: _signUpFormKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      key: _joinFormKey,
+      child: ListView(
+        physics: BouncingScrollPhysics(),
         children: <Widget>[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
+          profileHomeViewW.joinTabGreetingMessage(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
           profileHomeViewW.userNameTextField(
-              context, userNameFieldController, signUpFormAutoValidate),
+              context, userNameFieldController, joinFormAutoValidate),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.emailTxtField(
-              context, false, emailFieldController, signUpFormAutoValidate),
+              context, false, emailFieldController, joinFormAutoValidate),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
-              context, false, passwordFieldController, signUpFormAutoValidate),
+              context, false, passwordFieldController, joinFormAutoValidate),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.03,
           ),
           profileHomeViewW.actionBtnW(context, false, textFieldValidator),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.05,
+          ),
         ],
       ),
     );

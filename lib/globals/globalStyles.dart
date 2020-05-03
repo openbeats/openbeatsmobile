@@ -13,12 +13,12 @@ AppBarTheme mainAppBarTheme = AppBarTheme(
   elevation: 0,
   color: globalColors.backgroundClr,
   textTheme: TextTheme(
-    title: GoogleFonts.poppins(
+    title: GoogleFonts.montserrat(
       textStyle: TextStyle(
         color: globalColors.textDefaultClr,
         fontSize: 26.0,
       ),
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w500,
     ),
   ),
   iconTheme: IconThemeData(
