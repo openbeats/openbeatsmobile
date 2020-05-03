@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../globals/actions/globalVarsA.dart' as globalVarsA;
 import '../globals/globalVars.dart' as globalVars;
+import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 
 // function to show snackBars
 void showSnackBars(GlobalKey<ScaffoldState> scaffoldKey, context,
@@ -51,7 +52,7 @@ void updateSearchHistorySharedPrefs() async {
 }
 
 // gets the the userDetails sharedPrefs value
-void getAuthTokenSharedPrefs(context) async {
+Future<bool> getUserDetailsSharedPrefs() async {
   // holds the json object holding the user details
   Map<String, String> userDetails;
   // creating sharedPreferences instance
@@ -66,8 +67,7 @@ void getAuthTokenSharedPrefs(context) async {
   };
   // updating global reference
   globalVarsA.updateUserDetails(userDetails);
-  // refreshing state
-  Scaffold.of(context).setState(() {});
+  return true;
 }
 
 // updates the userDetails sharedPrefs value
@@ -79,6 +79,17 @@ void updateUserDetailsSharedPrefs(Map<String, String> userDetails) async {
   prefs.setString("email", userDetails["email"]);
   prefs.setString("id", userDetails["id"]);
   prefs.setString("avatar", userDetails["avatar"]);
+}
+
+// clears the userDetails sharedPrefs values
+void clearUserDetailsSharedPrefs() async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove("token");
+  prefs.remove("name");
+  prefs.remove("email");
+  prefs.remove("id");
+  prefs.remove("avatar");
 }
 
 // reformats the views count to plays in the B,M,K format

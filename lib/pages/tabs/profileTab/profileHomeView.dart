@@ -88,6 +88,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         // adding token to shared preferences
         globalFun.updateUserDetailsSharedPrefs(
             Map<String, String>.from(responseJSON["data"]));
+        setState(() {});
         // showing dropdown banner
         initiateDropDownBanner(
             "Welcome back, ${responseJSON["data"]["name"]}",
@@ -134,6 +135,12 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
       // converting response to JSON
       var responseJSON = jsonDecode(response.body);
       if (responseJSON["status"]) {
+        // updating global reference
+        globalVarsA
+            .updateUserDetails(Map<String, String>.from(responseJSON["data"]));
+        // adding token to shared preferences
+        globalFun.updateUserDetailsSharedPrefs(
+            Map<String, String>.from(responseJSON["data"]));
         // showing dropdown banner
         initiateDropDownBanner(
             "Welcome to OpenBeats, ${responseJSON["data"]["name"]}",
@@ -156,6 +163,15 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     setState(() {
       isLoading = false;
     });
+  }
+
+  // signout callback
+  void signoutCallback() {
+    // clearing local storage
+    globalFun.clearUserDetailsSharedPrefs();
+    // clearing global values
+    globalVarsA.updateUserDetails(null);
+    setState(() {});
   }
 
   @override
@@ -202,7 +218,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
       duration: kThemeAnimationDuration,
       child: (globalVars.userDetails["token"] == null)
           ? authTabW()
-          : profileHomeViewW.profileView(context),
+          : profileHomeViewW.profileView(context, signoutCallback),
     );
   }
 

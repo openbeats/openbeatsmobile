@@ -208,7 +208,7 @@ Widget joinTabGreetingMessage() {
 }
 
 // holds the profileview
-Widget profileView(BuildContext context) {
+Widget profileView(BuildContext context, Function signoutCallback) {
   return Container(
     height: MediaQuery.of(context).size.height * 0.4,
     width: MediaQuery.of(context).size.width,
@@ -216,7 +216,7 @@ Widget profileView(BuildContext context) {
       elevation: 5.0,
       color: globalColors.profileBgClr,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           avatarImageView(),
@@ -224,7 +224,14 @@ Widget profileView(BuildContext context) {
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           nameofUser(),
-          emailOfUser()
+          emailOfUser(),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.03,
+          ),
+          logoutTxtBtn(signoutCallback),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
         ],
       ),
     ),
@@ -278,5 +285,20 @@ Widget emailOfUser() {
     globalVars.userDetails["email"],
     textAlign: TextAlign.center,
     style: GoogleFonts.openSans(fontSize: 16.0),
+  );
+}
+
+// holds the logout button for the profileView
+Widget logoutTxtBtn(Function logoutCallback) {
+  return GestureDetector(
+    child: Text(
+      "Sign Out",
+      style: GoogleFonts.openSans(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: globalColors.textActiveClr),
+      textAlign: TextAlign.center,
+    ),
+    onTap: logoutCallback,
   );
 }

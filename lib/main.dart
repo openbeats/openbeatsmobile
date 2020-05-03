@@ -13,6 +13,7 @@ import 'package:rxdart/rxdart.dart';
 import './globals/globalColors.dart' as globalColors;
 import './globals/globalStyles.dart' as globalStyles;
 import './globals/globalVars.dart' as globalVars;
+import './globals/globalFun.dart' as globalFun;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -112,6 +113,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     connect();
+    
   }
 
   @override
