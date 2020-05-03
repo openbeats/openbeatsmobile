@@ -6,6 +6,15 @@ String apiHostAddress = "https://staging-api.openbeats.live";
 // holds the sizes for widgets of app
 double bottomNavBarIconSize = 28.0;
 
+// holds the userAuthToken if authenticated
+Map<String, String> userDetails = {
+  "token": null,
+  "name": null,
+  "email": null,
+  "id": null,
+  "avatar": null
+};
+
 // searchPage.dart
 // holds the current searched string
 String currSearchedString = "";

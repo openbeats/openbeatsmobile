@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:dropdown_banner/dropdown_banner.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 import '../../../widgets/tabW/profileTab/profileHomeViewW.dart'
     as profileHomeViewW;
-
 import '../../../globals/globalColors.dart' as globalColors;
+import '../../../globals/globalVars.dart' as globalVars;
+import '../../../globals/actions/globalVarsA.dart' as globalVarsA;
+import '../../../globals/globalFun.dart' as globalFun;
 
 class ProfileHomeView extends StatefulWidget {
   @override
@@ -26,12 +32,15 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   TextEditingController userNameFieldController = new TextEditingController();
   TextEditingController emailFieldController = new TextEditingController();
   TextEditingController passwordFieldController = new TextEditingController();
-
   // autoValidate flags for the forms
   bool signInFormAutoValidate = false, joinFormAutoValidate = false;
+  // is loading flag for http requests
+  bool isLoading = false;
 
   // validator method for the textfields
   void textFieldValidator() {
+    // dismissing the keyboard
+    FocusScope.of(context).unfocus();
     // checking the current tab
     if (authTabController.index == 0) {
       // validating signIn form
@@ -54,18 +63,99 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   }
 
   // signIn callback function
-  void signInCallback() {
+  void signInCallback() async {
+    setState(() {
+      isLoading = true;
+    });
     // fetching values from controllers
-    String userEmail = emailFieldController.text;
-    String userPassword = passwordFieldController.text;
+    String _userEmail = emailFieldController.text.trim();
+    String _userPassword = passwordFieldController.text.trim();
+
+    try {
+      // sending http request
+      var response = await http.post(globalVars.apiHostAddress + "/auth/login",
+          body: {"email": _userEmail, "password": _userPassword});
+      // converting response to JSON
+      var responseJSON = jsonDecode(response.body);
+
+      // fixing the avatar URL bug
+      responseJSON["data"]["avatar"] = "http:" + responseJSON["data"]["avatar"];
+
+      if (responseJSON["status"]) {
+        // updating global reference
+        globalVarsA
+            .updateUserDetails(Map<String, String>.from(responseJSON["data"]));
+        // adding token to shared preferences
+        globalFun.updateUserDetailsSharedPrefs(
+            Map<String, String>.from(responseJSON["data"]));
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "Welcome back, ${responseJSON["data"]["name"]}",
+            globalColors.successClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 3));
+      } else {
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "Apologies, please verify credentials",
+            globalColors.errorClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 5));
+      }
+    } catch (e) {
+      print(e);
+      globalFun.showToastMessage("Unable to contact server", true,
+          globalColors.errorClr, globalColors.darkBgTextClr);
+    }
+    // refreshing state
+    setState(() {
+      isLoading = false;
+    });
   }
 
   // join callback function
-  void joinCallback() {
+  void joinCallback() async {
+    setState(() {
+      isLoading = true;
+    });
     // fetching values from controllers
-    String userName = userNameFieldController.text;
-    String userEmail = emailFieldController.text;
-    String userPassword = passwordFieldController.text;
+    String _userName = userNameFieldController.text.trim();
+    String _userEmail = emailFieldController.text.trim();
+    String _userPassword = passwordFieldController.text.trim();
+
+    try {
+      // sending http request
+      var response = await http
+          .post(globalVars.apiHostAddress + "/auth/register", body: {
+        "name": _userName,
+        "email": _userEmail,
+        "password": _userPassword
+      });
+      // converting response to JSON
+      var responseJSON = jsonDecode(response.body);
+      if (responseJSON["status"]) {
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "Welcome to OpenBeats, ${responseJSON["data"]["name"]}",
+            globalColors.successClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 3));
+      } else if (responseJSON["data"] ==
+          "User with that email id already exist") {
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "An user with the same email Id already exists",
+            globalColors.errorClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 5));
+      }
+    } catch (e) {
+      globalFun.showToastMessage("Unable to contact server", true,
+          globalColors.errorClr, globalColors.darkBgTextClr);
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -75,6 +165,16 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     _headerMode = "auth";
     // initiating tabController
     authTabController = TabController(length: 2, vsync: this);
+  }
+
+  // initiates the dropdownBanner
+  void initiateDropDownBanner(
+      String message, Color bgClr, Color txtClr, Duration showDuration) {
+    DropdownBanner.showBanner(
+        text: message,
+        color: bgClr,
+        duration: showDuration,
+        textStyle: GoogleFonts.openSans(color: txtClr));
   }
 
   @override
@@ -91,18 +191,28 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   // holds the body of ProfileHomeView
   Widget profileHomeViewBody() {
     return ListView(
-      children: <Widget>[
-        authTabW(context, tabBarViewAuthTabW(context), authTabController)
-      ],
+      physics: BouncingScrollPhysics(),
+      children: <Widget>[headerProfileHomeView()],
+    );
+  }
+
+  // holds the header for the ProfileHomeView
+  Widget headerProfileHomeView() {
+    return AnimatedSwitcher(
+      duration: kThemeAnimationDuration,
+      child: (globalVars.userDetails["token"] == null)
+          ? authTabW()
+          : profileHomeViewW.profileView(context),
     );
   }
 
   // holds the TabBarView for authTabW
-  Widget tabBarViewAuthTabW(BuildContext context) {
+  Widget tabBarViewAuthTabW() {
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
       child: TabBarView(
         controller: authTabController,
+        physics: BouncingScrollPhysics(),
         children: <Widget>[
           _signInWTabBarViewAuthTabW(context),
           _joinWTabBarViewAuthTabW(context),
@@ -112,12 +222,11 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   }
 
   // holds the authTabW
-  Widget authTabW(BuildContext context, Widget tabBarViewAuthTabW,
-      TabController authTabController) {
+  Widget authTabW() {
     return Column(
       children: <Widget>[
         _tabBarAuthTabW(authTabController),
-        tabBarViewAuthTabW,
+        tabBarViewAuthTabW(),
       ],
     );
   }
@@ -162,9 +271,10 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           profileHomeViewW.passwordTxtField(
               context, true, passwordFieldController, signInFormAutoValidate),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.03,
+            height: MediaQuery.of(context).size.height * 0.01,
           ),
-          profileHomeViewW.actionBtnW(context, true, textFieldValidator),
+          profileHomeViewW.actionBtnW(
+              context, true, textFieldValidator, isLoading),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.018,
           ),
@@ -201,9 +311,10 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           profileHomeViewW.passwordTxtField(
               context, false, passwordFieldController, joinFormAutoValidate),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.03,
+            height: MediaQuery.of(context).size.height * 0.01,
           ),
-          profileHomeViewW.actionBtnW(context, false, textFieldValidator),
+          profileHomeViewW.actionBtnW(
+              context, false, textFieldValidator, isLoading),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.05,
           ),

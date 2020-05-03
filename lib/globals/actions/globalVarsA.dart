@@ -20,3 +20,14 @@ void removeSearchHistoryValue(String value) {
 void setSearchHistoryFromList(List<String> historyPrefs) {
   globalVars.searchHistory = historyPrefs;
 }
+
+// updates the userDetails
+void updateUserDetails(Map<String, String> userDetails) {
+  globalVars.userDetails = {
+    "token": userDetails["token"],
+    "name": userDetails["name"],
+    "email": userDetails["email"],
+    "id": userDetails["id"],
+    "avatar": userDetails["avatar"]
+  };
+}
