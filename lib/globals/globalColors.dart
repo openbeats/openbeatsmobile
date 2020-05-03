@@ -21,4 +21,8 @@ Color iconDisabledClr = Colors.grey;
 Color textFieldBgClr = _offWhite;
 
 // homePage.dart
-Color darkBgIconClr = Colors.white;
+Color darkBgIconClr = _staticPrimaryLight;
+
+// profileHomeViewW.dart
+Color mainBtnClr = _openBeatsRed;
+Color mainBtnTextClr = _staticPrimaryLight;
