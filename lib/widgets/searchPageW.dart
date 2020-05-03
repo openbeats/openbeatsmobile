@@ -1,47 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../globalVars.dart' as globalVars;
+import '../globals/globalColors.dart' as globalColors;
+import '../globals/globalVars.dart' as globalVars;
+import '../globals/actions/globalVarsA.dart' as globalVarsA;
 
-// holds the searchPage appbar
-Widget appBarSearchPageW(queryFieldController,
-    getImmediateSuggestions, BuildContext context) {
+// holds the AppBar for the SearchPage
+Widget appBar(TextEditingController queryFieldController,
+    getImmediateSearchSuggestions, BuildContext context) {
   return AppBar(
-    elevation: 0.0,
-    backgroundColor: globalVars.primaryDark,
-    title: TextField(
-      style: TextStyle(color: Colors.white),
-      controller: queryFieldController,
-      onChanged: (String value) {
-        // updating the global variable for search text persistance
-        globalVars.currSearchText = value;
-        // getting length of input
-        int valueLen = value.length;
-        // checking if the input is not empty and if it is
-        // meeting parameters to help reduce network calls
-        if (valueLen > 0)
-          // calling function to immediately get suggestions
-          getImmediateSuggestions(value);
-      },
-      onSubmitted: (String value) {
-        // going back to previous screen with the suggestion data
-        Navigator.pop(context, value);
-      },
-      textInputAction: TextInputAction.search,
-      autofocus: true,
-      decoration: InputDecoration(
-        suffixIcon: (queryFieldController.text.length == 0)?null:IconButton(
-          onPressed: (){
-            globalVars.currSearchText = "";
-            WidgetsBinding.instance.addPostFrameCallback( (_) => queryFieldController.clear());
-            
-          },
-          icon: Icon(Icons.clear),
-          color: globalVars.accentWhite,
+    elevation: 0,
+    titleSpacing: 0.0,
+    backgroundColor: globalColors.textFieldBgClr,
+    title: Container(
+      child: TextField(
+        autofocus: true,
+        autocorrect: true,
+        enableSuggestions: true,
+        textInputAction: TextInputAction.search,
+        style: TextStyle(
+          fontSize: 18.0,
         ),
-        border: InputBorder.none,
-        hintText: "Search for songs, artists, audio books...",
-        hintStyle: TextStyle(color: Colors.white70),
+        decoration: InputDecoration(
+          border: InputBorder.none,
+          hintText: "Search for songs, artists, audio books...",
+          suffixIcon: (queryFieldController.text.length != 0)
+              ? IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    // clearing global instance of search string
+                    globalVarsA.updatecurrSearchedString("");
+                    // clearing value stored in the controller
+                    WidgetsBinding.instance.addPostFrameCallback(
+                        (_) => queryFieldController.clear());
+                  },
+                )
+              : null,
+        ),
+        onChanged: (String value) {
+          // updating the current string to the global instace
+          globalVarsA.updatecurrSearchedString(value);
+          // check if the current string is not empty
+          if (value.length != 0)
+            // get search suggestions for the search string
+            getImmediateSearchSuggestions(value);
+        },
+        onSubmitted: (String value) {},
       ),
     ),
   );

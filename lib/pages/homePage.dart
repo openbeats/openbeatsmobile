@@ -1,379 +1,159 @@
-import 'dart:math';
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
-import 'package:openbeatsmobile/pages/searchPage.dart';
-import 'package:package_info/package_info.dart';
-import 'package:rxdart/subjects.dart';
 import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:flutter/material.dart';
+import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
+import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:openbeatsmobile/widgets/homePageW.dart' as homePageW;
-import 'package:shared_preferences/shared_preferences.dart';
-import '../globalVars.dart' as globalVars;
-import '../globalFun.dart' as globalFun;
-import '../globalWids.dart' as globalWids;
-import '../actions/globalVarsA.dart' as globalVarsA;
-import '../audioServiceGlobalFun.dart' as audioServiceGlobalFun;
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
-// media item to indicate the current playing audio
-MediaItem currMediaItem;
+import './tabs/searchTab/searchHomeView.dart';
+import './tabs/playlistsTab/playlistsTab.dart';
 
-// media control objects for the various functionalities of the app
-MediaControl playControl = MediaControl(
-  androidIcon: 'drawable/ic_action_play_arrow',
-  label: 'Play',
-  action: MediaAction.play,
-);
-MediaControl pauseControl = MediaControl(
-  androidIcon: 'drawable/ic_action_pause',
-  label: 'Pause',
-  action: MediaAction.pause,
-);
-MediaControl skipToNextControl = MediaControl(
-  androidIcon: 'drawable/ic_action_skip_next',
-  label: 'Next',
-  action: MediaAction.skipToNext,
-);
-MediaControl skipToPreviousControl = MediaControl(
-  androidIcon: 'drawable/ic_action_skip_previous',
-  label: 'Previous',
-  action: MediaAction.skipToPrevious,
-);
-MediaControl stopControl = MediaControl(
-  androidIcon: 'drawable/ic_action_stop',
-  label: 'Stop',
-  action: MediaAction.stop,
-);
+import './tabs/trendingTab/trendingTab.dart';
+import './tabs/exploreTab/exploreTab.dart';
+import '../widgets/homePageW.dart' as homePageW;
+import '../globals/globalColors.dart' as globalColors;
+import '../globals/globalVars.dart' as globalVars;
+import '../globals/globalStyles.dart' as globalStyles;
+import '../globals/globalWids.dart' as globalWids;
+import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 
 class HomePage extends StatefulWidget {
+  // behaviourSubject to monitor and control the seekBar
+  BehaviorSubject<double> dragPositionSubject;
+  // custom audioService control methods
+  Function startSinglePlayback, audioServicePlayPause, toggleRepeatSong;
+  HomePage(this.dragPositionSubject, this.startSinglePlayback,
+      this.audioServicePlayPause, this.toggleRepeatSong);
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  final BehaviorSubject<double> _dragPositionSubject =
-      BehaviorSubject.seeded(null);
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  // holds the current index of the BottomNavBar
+  int _bottomNavBarCurrIndex = 0;
+  // controller for the SlidingUpPanel
+  PanelController _slidingUpPanelController = new PanelController();
 
-  final GlobalKey<ScaffoldState> _homePageScaffoldKey =
-      new GlobalKey<ScaffoldState>();
+  // animation controller to hide BottomNavBar
+  AnimationController _hideBottomNavBarAnimController;
+  // controls the animation of the play_pause button
+  AnimationController playPauseAnimationController;
+  // controls the animation of the SlideUpPanel collapsedView depending on audioPlayback
+  AnimationController _slideUpPanelCollapsedHeightController;
+  // animation to move between values for SlideUpPanel collapsedView depending on audioPlayback
+  Animation _slideUpPanelCollapsedHeightAnimation;
+  // flag to indicate the last known stable position of the SlidingUpPanel
+  // true - open && false - closed
+  bool _slidingPanelLKSState;
+  // flag used to indicate if the SlidingUpPanelCollapsedView should be shown
+  bool _showSlideUpPanelCollpasedView = true;
 
-  // tells if the query requests have finished downloading
-  bool searchResultLoading = false;
-  // holds the videos received for query
-  var videosResponseList = new List();
-  // holds the flag indicating that the media streaming is loading
-  bool streamLoading = false;
-
-  // starts media playback of shared media
-  void startSharedMediaPlayback(List<String> parameters) {
-    print(parameters);
-    getMp3URLShare(parameters[0],parameters[2],parameters[1],parameters[3],parameters[4]);
-  }
-
-  // checks for shared intent audio
-  void checkForShareIntent() async {
-    // querying native side to check for shared audio
-    String sharedParameters = await globalVars.platformMethodChannel
-        .invokeMethod("getSharedMediaParameters");
-    if (sharedParameters != null) {
-      // splitting the required parameters
-      List<String> parameters = sharedParameters.split("~~~");
-      // start media playback
-      startSharedMediaPlayback(parameters);
-    } else {
-      print("No share intent");
-    }
-  }
-
-  // initiates the app update verification process
-  void verifyAppVersion() async {
-    // setting callHandler to show rational dialog to get storage permissions
-    globalVars.platformMethodChannel.setMethodCallHandler(
-        (MethodCall methodCall) =>
-            globalFun.nativeMethodCallHandler(methodCall, context));
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    String versionName = packageInfo.version;
-    String versionCode = packageInfo.buildNumber;
-    try {
-      Response response =
-          await Dio().get("http://yagupdtserver.000webhostapp.com/api/");
-      if (response.data["versionName"] != versionName ||
-          response.data["versionCode"] != versionCode) {
-        globalVars.updateResponse = response;
-        globalFun.showUpdateAvailableDialog(response, context);
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  // navigates to the search page
-  void navigateToSearchPage() async {
-    // getting the search result history
-    globalFun.getSearchHistory();
-    // setting navResult value to know if it has changed
-    String selectedSearchResult = "";
-    // Navigate to the search page and wait for response
-    selectedSearchResult = await Navigator.of(context)
-        .push(globalWids.FadeRouteBuilder(page: SearchPage()));
-    // checking if the user has returned something
-    if (selectedSearchResult != null && selectedSearchResult.length > 0) {
-      // set the page to loading animation
-      setState(() {
-        searchResultLoading = true;
-      });
-      // adding the query to the search results history
-      globalFun.addToSearchHistory(selectedSearchResult);
-      // calling function to get videos for query
-      getVideosForQuery(selectedSearchResult);
-    }
-  }
-
-  // gets list of videos for query
-  void getVideosForQuery(String query) async {
-    // sanitizing query
-    query = query.replaceAll(new RegExp(r'[^\w\s]+'), '');
-    // constructing url to send request to to get list of videos
-    String url = "https://api.openbeats.live/ytcat?q=" + query + " audio";
-    try {
-      // sending http get request
-      var response = await Dio().get(url);
-      // decoding to json
-      var responseJSON = response.data;
-      // checking if proper response is received
-      if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
-        setState(() {
-          // response as list to iterate over
-          videosResponseList = responseJSON["data"] as List;
-          // calling function to set the videoResponseList globally for persistency
-          globalVarsA.setPersistentVideoList(videosResponseList);
-          // removing loading animation from screen
-          searchResultLoading = false;
-          // removing any snackbar
-          _homePageScaffoldKey.currentState.hideCurrentSnackBar();
-        });
-      } else {
-        setState(() {
-          // removing loading animation from screen
-          searchResultLoading = false;
-        });
-        globalFun.showToastMessage(
-            "Could not get proper response from server. Please try another query",
-            Colors.orange,
-            Colors.white,
-            false);
-      }
-    } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        // removing previous snackBar
-        _homePageScaffoldKey.currentState.removeCurrentSnackBar();
-        // showing snackBar to alert user about network status
-        _homePageScaffoldKey.currentState
-            .showSnackBar(globalWids.networkErrorSBar);
-        // removing the loading animation
-        setState(() {
-          // removing loading animation from screen
-          searchResultLoading = false;
-        });
-      }
-    }
-  }
-
-  // starts the share snackbar and also initiates the audio service and calls the customAction
-  void getMp3URLShare(String shareVideoId, String shareDuration,
-      String shareTitle, String shareThumbnail, String shareChannel) async {
-    // getting the current mp3 duration in milliseconds
-    int audioDuration = globalFun.getDurationMillis(shareDuration);
-
-    MediaItem currMediaItem = MediaItem(
-      id: shareVideoId,
-      album: "OpenBeats Music",
-      duration: audioDuration,
-      title: shareTitle,
-      artist: shareChannel,
-      artUri: shareThumbnail,
-    );
-
-    if (AudioService.playbackState != null) {
-      await AudioService.stop();
-      Timer(Duration(milliseconds: 500), () async {
-        await audioServiceStart(currMediaItem, false, 0);
-      });
-    } else {
-      await audioServiceStart(currMediaItem, false, 0);
-    }
-
-    // refreshing the UI build to update the thumbnail for now platying music
-    setState(() {});
-  }
-
-  // starts the snackbar and also initiates the audio service and calls the customAction
-  void getMp3URL(String videoId, int index, bool repeatSong) async {
-    // getting the current mp3 duration in milliseconds
-    int audioDuration =
-        globalFun.getDurationMillis(videosResponseList[index]["duration"]);
-
-    MediaItem currMediaItem = MediaItem(
-      id: videoId,
-      album: "OpenBeats Music",
-      duration: audioDuration,
-      title: videosResponseList[index]["title"],
-      artist: videosResponseList[index]["channelName"],
-      artUri: videosResponseList[index]["thumbnail"].toString(),
-    );
-
-    if (AudioService.playbackState != null) {
-      await AudioService.stop();
-      Timer(Duration(milliseconds: 500), () async {
-        await audioServiceStart(currMediaItem, repeatSong, index);
-      });
-    } else {
-      await audioServiceStart(currMediaItem, repeatSong, index);
-    }
-
-    // refreshing the UI build to update the thumbnail for now platying music
-    setState(() {});
-  }
-
-  // function that calls the bottomSheet
-  void settingModalBottomSheet(context) async {
-    if (AudioService.currentMediaItem != null) {
-      // bottomSheet definition
-      showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(globalVars.borderRadius),
-            topRight: Radius.circular(globalVars.borderRadius),
-          )),
-          backgroundColor: globalVars.primaryDark,
-          context: context,
-          elevation: 10.0,
-          builder: (BuildContext bc) {
-            return globalWids.bottomSheet(context, _dragPositionSubject);
-          });
-    }
-  }
-
-  // starts the audio service with notification
-  Future audioServiceStart(
-      MediaItem currMediaItem, bool repeatSong, int index) async {
+  // handles tapping of BottomNavBar item
+  void _bottomNavBarItemTap(int itemIndex) {
     setState(() {
-      // setting the page that is handling the audio service
-      globalVars.audioServicePage = "home";
+      // setting the current BottomNavBar Item
+      _bottomNavBarCurrIndex = itemIndex;
     });
-    // start the AudioService
-    await AudioService.start(
-      backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      resumeOnClick: true,
-      androidStopOnRemoveTask: true,
-      androidNotificationChannelName: 'OpenBeats Notification Channel',
-      notificationColor: 0xFF09090E,
-      enableQueue: true,
-      androidStopForegroundOnPause: true,
-      androidNotificationIcon: 'drawable/ic_stat_logoicon2',
-    );
 
-    Map<String, dynamic> parameters = {
-      'mediaID': currMediaItem.id,
-      'mediaTitle': currMediaItem.title,
-      'channelID': currMediaItem.artist,
-      'duration': currMediaItem.duration,
-      'thumbnailURI': currMediaItem.artUri
-    };
-    (repeatSong)
-        ? await AudioService.customAction(
-            'repeatSong', videosResponseList[index])
-        : await AudioService.customAction('playMedia2', parameters);
+    // checking if SlidingUpPanel is open
+    if (_slidingUpPanelController.isPanelOpen)
+      _slidingUpPanelController.close();
   }
 
-  // sets the status and navigation bar themes
-  void setStatusNaviThemes() async {
-    await FlutterStatusbarcolor.setStatusBarColor(globalVars.primaryDark);
-    await FlutterStatusbarcolor.setStatusBarWhiteForeground(true);
-    await FlutterStatusbarcolor.setNavigationBarColor(globalVars.primaryDark);
-    await FlutterStatusbarcolor.setNavigationBarWhiteForeground(true);
-  }
-
-  void getAuthStatus() async {
-    // creating sharedPreferences instance
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool loginStatus = prefs.getBool("loginStatus");
-    if (loginStatus != null && loginStatus) {
-      setState(() {});
-    }
-  }
-
-  // checks if there is persistent video result values to be inserted and insert if there are
-  void checkForVidResultPersistency() {
-    if (globalVars.videosResponseList.length != 0) {
-      setState(() {
-        videosResponseList = globalVars.videosResponseList;
-      });
-    }
-  }
-
-  // handles the back button press from exiting the app
-  Future<bool> _onWillPop() {
-    if (videosResponseList.length == 0)
-      return showDialog(
-            context: context,
-            builder: (context) => new AlertDialog(
-              backgroundColor: globalVars.primaryDark,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(globalVars.borderRadius)),
-              title: new Text('Are you sure?'),
-              content: new Text('This action will exit OpenBeats'),
-              actions: <Widget>[
-                new FlatButton(
-                  onPressed: () => Navigator.of(context).pop(false),
-                  child: new Text('Return to app'),
-                ),
-                new FlatButton(
-                  onPressed: () {
-                    SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-                  },
-                  child: new Text(
-                    'Exit app',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
-              ],
-            ),
-          ) ??
-          true;
+  // hides or reveals the SlidingUpPanel
+  void hideOrRevealSlidingUpPanel(showSlidingUpPanel) {
+    if (showSlidingUpPanel)
+      _slideUpPanelCollapsedHeightController.forward();
     else
-      setState(() {
-        globalVarsA.setPersistentVideoList([]);
-        videosResponseList = [];
-      });
+      _slideUpPanelCollapsedHeightController.reverse();
+  }
+
+  // opens the slideUpPanel completely (on tap of the collapsed panel)
+  void openSlideUpPanelToExpanded() {
+    _slidingUpPanelController.open();
+  }
+
+  // handles the onWillPop callback
+  Future<bool> _onWillPopCallbackHandler() async {
+    // checking if the SlidingUpPanel is open
+    if (_slidingUpPanelController.isPanelOpen) {
+      _slidingUpPanelController.close();
+      return false;
+    }
+    // if SlideUpPanel is closed
+    else {
+      // checking which tab is in view
+      switch (_bottomNavBarCurrIndex) {
+        // if searchTab is in view
+        case 2:
+          // checking if searchNowView is still in use
+          if (globalScaffoldKeys.searchNowViewScaffoldKey.currentContext !=
+              null) {
+            Navigator.of(
+                    globalScaffoldKeys.searchNowViewScaffoldKey.currentContext)
+                .pop();
+            return false;
+          } else {
+            return true;
+          }
+          break;
+        default:
+          return true;
+      }
+    }
+  }
+
+// connects to the audio_service
+  void connect() async {
+    await AudioService.connect();
+  }
+
+  // disconnects from the audio_service
+  void disconnect() {
+    AudioService.disconnect();
   }
 
   @override
   void initState() {
     super.initState();
     connect();
-    checkForShareIntent();
-    if (globalVars.chechForUpdate) {
-      // starts app version checking functionality
-      verifyAppVersion();
-      // setting to false to prevent retriggering until the app is restarted
-      globalVars.chechForUpdate = false;
-    }
-    // checks if there is persistent video result values to be inserted and insert if there are
-    checkForVidResultPersistency();
-    // getting authStatus to refresh app after restart
-    getAuthStatus();
+    // initiating animation controller to hide the BottomNavBar
+    _hideBottomNavBarAnimController =
+        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    // initiating animation controller for play_pause button in the collapsed slideUpPanel
+    playPauseAnimationController =
+        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    // initiating the animation controller for SlideUpPanel collapsedView height depending on audioPlayback
+    _slideUpPanelCollapsedHeightController =
+        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    // showing the BottomNavBar
+    _hideBottomNavBarAnimController.forward();
 
-    // setting callHandler to show rational dialog to get storage permissions
-    globalVars.platformMethodChannel.setMethodCallHandler(
-        (MethodCall methodCall) =>
-            globalFun.nativeMethodCallHandler(methodCall, context));
-    // sets the status and navigation bar themes
-    setStatusNaviThemes();
+    // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
+    _slideUpPanelCollapsedHeightAnimation =
+        Tween<double>(begin: 0.0, end: 100.0)
+            .animate(_slideUpPanelCollapsedHeightController);
+
+    // checking playback state and hiding the SlidePanel
+    if (AudioService.playbackState == null ||
+        AudioService.playbackState.basicState == BasicPlaybackState.none)
+      hideOrRevealSlidingUpPanel(false);
+
+    // adding state listeners to audio service to bring the SlideUpPanel into view if needed when the app starts
+    AudioService.playbackStateStream.listen((PlaybackState state) {
+      if (state == null || state.basicState == BasicPlaybackState.none) {
+        hideOrRevealSlidingUpPanel(false);
+      } else {
+        hideOrRevealSlidingUpPanel(true);
+      }
+    });
+
+    // adding state refresh listener for the controller to refresh the state everytime it runs
+    _slideUpPanelCollapsedHeightController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -382,631 +162,149 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // connects to the audio service
-  void connect() async {
-    await AudioService.connect();
-  }
-
-  // disconnects from the audio service
-  void disconnect() {
-    AudioService.disconnect();
-  }
-
   @override
   Widget build(BuildContext context) {
+    // execute function after build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
+      _slideUpPanelCollapsedHeightAnimation = Tween<double>(
+              begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
+          .animate(_slideUpPanelCollapsedHeightController);
+    });
     return WillPopScope(
-      onWillPop: _onWillPop,
-      child: SafeArea(
-        child: Scaffold(
-          key: _homePageScaffoldKey,
-          backgroundColor: globalVars.primaryDark,
-          floatingActionButton:
-              globalWids.fabView(settingModalBottomSheet, _homePageScaffoldKey),
-          appBar: homePageW.appBarW(
-              context, navigateToSearchPage, _homePageScaffoldKey),
-          drawer: globalFun.drawerW(1, context),
-          body: homePageBody(),
-        ),
+      onWillPop: _onWillPopCallbackHandler,
+      child: Scaffold(
+        bottomNavigationBar: _homePageBottomNavBar(),
+        body: _homePageBody(),
       ),
     );
   }
 
-  Widget homePageBody() {
-    return Container(
-        alignment: Alignment.center,
-        child: (searchResultLoading)
-            ? CircularProgressIndicator(
-                valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
-              )
-            : (videosResponseList.length == 0)
-                ? homePageW.homePageView()
-                : videoListView());
+  // holds the homePage BottomNavBar
+  Widget _homePageBottomNavBar() {
+    return SizeTransition(
+      sizeFactor: _hideBottomNavBarAnimController,
+      axisAlignment: -1.0,
+      child: BottomNavigationBar(
+        elevation: 0,
+        currentIndex: _bottomNavBarCurrIndex,
+        backgroundColor: globalColors.backgroundClr,
+        showSelectedLabels: true,
+        showUnselectedLabels: false,
+        selectedItemColor: globalColors.iconActiveClr,
+        unselectedItemColor: globalColors.iconDefaultClr,
+        selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+        unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+        iconSize: globalVars.bottomNavBarIconSize,
+        type: BottomNavigationBarType.shifting,
+        items: homePageW.bottomNavBarItems(),
+        onTap: _bottomNavBarItemTap,
+      ),
+    );
   }
 
-  // listView builder to construct list of videos
-  Widget videoListView() {
-    return ListView.builder(
-      physics: BouncingScrollPhysics(),
-      itemBuilder: (BuildContext context, int index) {
-        return globalWids.homePageVidResultContainerW(
+  // holds the homePageBody
+  Widget _homePageBody() {
+    return SafeArea(
+      child: SlidingUpPanel(
+        controller: _slidingUpPanelController,
+        defaultPanelState: PanelState.CLOSED,
+        minHeight: _slideUpPanelCollapsedHeightAnimation.value,
+        maxHeight: MediaQuery.of(context).size.height,
+        collapsed: homePageW.collapsedSlidingUpPanel(
             context,
-            videosResponseList[index],
-            index,
-            getMp3URL,
-            settingModalBottomSheet,
-            videosResponseList.length);
+            widget.audioServicePlayPause,
+            playPauseAnimationController,
+            openSlideUpPanelToExpanded,
+            hideOrRevealSlidingUpPanel),
+        panel: homePageW.expandedSlidingUpPanel(
+            widget.dragPositionSubject,
+            playPauseAnimationController,
+            widget.audioServicePlayPause,
+            widget.toggleRepeatSong),
+        body: _slidingUpPanelBody(),
+        onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
+        onPanelClosed: () => _hideBottomNavBarAnimController.forward(),
+      ),
+    );
+  }
+
+  // holds the SlidingUpPanel body
+  Widget _slidingUpPanelBody() {
+    return IndexedStack(
+      index: _bottomNavBarCurrIndex,
+      children: [
+        _exploreTab(),
+        _trendingTab(),
+        _searchTab(),
+        _playlistsTab(),
+        _profileTab(),
+      ],
+    );
+  }
+
+  // holds the ExploreTab widget
+  Widget _exploreTab() {
+    return ExploreTab();
+  }
+
+  // holds the TrendingTab widget
+  Widget _trendingTab() {
+    return TrendingTab();
+  }
+
+  // holds the SearchTab widget
+  Widget _searchTab() {
+    return Navigator(
+      onGenerateRoute: (RouteSettings routeSettings) {
+        return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return SearchHomeView(widget.startSinglePlayback);
+              case "/searchNow":
+                return SearchNowView();
+              default:
+                return SearchHomeView(widget.startSinglePlayback);
+            }
+          },
+          transitionDuration: Duration(milliseconds: 400),
+        );
       },
-      itemCount: videosResponseList.length,
-    );
-  }
-}
-/* --------------------------
-Audio Service implementation
------------------------------*/
-
-void _audioPlayerTaskEntrypoint() async {
-  AudioServiceBackground.run(() => AudioPlayerTask());
-}
-
-class AudioPlayerTask extends BackgroundAudioTask {
-  var _queue = <MediaItem>[];
-  // holds one attribute of the contents of MediaItems in _queue
-  var _queueMeta = <String>[];
-  int _queueIndex = 0;
-  AudioPlayer _audioPlayer = new AudioPlayer();
-  Completer _completer = Completer();
-  BasicPlaybackState _skipState;
-  bool _playing;
-  bool _shouldRepeat = true;
-  // used to differentiate normal pause from pause caused by audio focus lost
-  bool _isPaused = true;
-  // temporary mediaItem object to overcome parameter restrictons
-  MediaItem temp;
-
-  Map<String, dynamic> mediaIdParameters = {
-    'mediaID': null,
-    'mediaTitle': null,
-    'channelID': null,
-    'duration': null,
-    'thumbnailURI': null,
-  };
-
-  bool get hasNext => _queueIndex + 1 < _queue.length;
-
-  bool get hasPrevious => _queueIndex > 0;
-
-  MediaItem get mediaItem => _queue[_queueIndex];
-
-  BasicPlaybackState _stateToBasicState(AudioPlaybackState state) {
-    switch (state) {
-      case AudioPlaybackState.none:
-        return BasicPlaybackState.none;
-      case AudioPlaybackState.stopped:
-        return BasicPlaybackState.stopped;
-      case AudioPlaybackState.paused:
-        return BasicPlaybackState.paused;
-      case AudioPlaybackState.playing:
-        return BasicPlaybackState.playing;
-      case AudioPlaybackState.buffering:
-        return BasicPlaybackState.buffering;
-      case AudioPlaybackState.connecting:
-        return _skipState ?? BasicPlaybackState.connecting;
-      case AudioPlaybackState.completed:
-        return BasicPlaybackState.stopped;
-      default:
-        throw Exception("Illegal state");
-    }
-  }
-
-  @override
-  Future<void> onStart() async {
-    var playerStateSubscription = _audioPlayer.playbackStateStream
-        .where((state) => state == AudioPlaybackState.completed)
-        .listen((state) {
-      _handlePlaybackCompleted();
-    });
-    var eventSubscription = _audioPlayer.playbackEventStream.listen((event) {
-      final state = _stateToBasicState(event.state);
-      if (state != BasicPlaybackState.stopped) {
-        _setState(
-          state: state,
-          position: event.position.inMilliseconds,
-        );
-      }
-    });
-
-    // AudioServiceBackground.setQueue(_queue);
-    // await onSkipToNext();
-    await _completer.future;
-    playerStateSubscription.cancel();
-    eventSubscription.cancel();
-  }
-
-  @override
-  void onClick(MediaButton button) {
-    playPause();
-  }
-
-  @override
-  void onStop() {
-    _audioPlayer.stop();
-    _setState(state: BasicPlaybackState.stopped);
-    _completer.complete();
-  }
-
-  void _handlePlaybackCompleted() {
-    if (hasNext) {
-      onSkipToNext();
-    } else {
-      if (_shouldRepeat) {
-        _queueIndex = -1;
-        onSkipToNext();
-      } else {
-        onStop();
-      }
-    }
-  }
-
-  void playPause() {
-    print("PlayPause clicked");
-    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing) {
-      onPause();
-    } else
-      onPlay();
-  }
-
-  @override
-  Future<void> onSkipToNext() => _skip(1);
-
-  @override
-  Future<void> onSkipToPrevious() => _skip(-1);
-
-  Future<void> _skip(int offset) async {
-    if (_queueIndex == (_queue.length - 1) && offset == 1) {
-      _queueIndex = -1;
-    } else if (_queueIndex == 0 && offset == -1) {
-      _queueIndex = _queue.length;
-    }
-    final newPos = _queueIndex + offset;
-    if (!(newPos >= 0 && newPos < _queue.length)) return;
-    if (_playing == null) {
-      // First time, we want to start playing
-      _playing = true;
-    } else if (_playing) {
-      // Stop current item
-      await _audioPlayer.stop();
-    }
-    // Load next item
-    _queueIndex = newPos;
-    AudioServiceBackground.setMediaItem(mediaItem);
-    _skipState = offset > 0
-        ? BasicPlaybackState.skippingToNext
-        : BasicPlaybackState.skippingToPrevious;
-    await _audioPlayer.setUrl(mediaItem.id);
-    _skipState = null;
-    // Resume playback if we were playing
-    if (_playing) {
-      onPlay();
-    } else {
-      _setState(state: BasicPlaybackState.paused);
-    }
-  }
-
-  @override
-  void onPlay() {
-    if (_skipState == null) {
-      _playing = true;
-      _isPaused = false;
-      _audioPlayer.play();
-    }
-  }
-
-  @override
-  void onPause() {
-    if (_skipState == null) {
-      _playing = false;
-      _isPaused = true;
-      _audioPlayer.pause();
-    }
-  }
-
-  void onPauseAudioFocus() {
-    if (_skipState == null) {
-      _playing = false;
-      _audioPlayer.pause();
-    }
-  }
-
-  @override
-  void onSeekTo(int position) {
-    _audioPlayer.seek(Duration(milliseconds: position));
-  }
-
-  @override
-  void onAudioFocusLost() async {
-    onPauseAudioFocus();
-  }
-
-  @override
-  void onAudioBecomingNoisy() {
-    onPauseAudioFocus();
-  }
-
-  @override
-  void onAudioFocusLostTransient() async {
-    onPauseAudioFocus();
-  }
-
-  @override
-  void onAudioFocusLostTransientCanDuck() async {
-    _audioPlayer.setVolume(0);
-  }
-
-  @override
-  void onAudioFocusGained() async {
-    _audioPlayer.setVolume(1.0);
-    if (!_isPaused) onPlay();
-  }
-
-  List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_queue.length == 1) {
-      if (_playing != null && _playing) {
-        return [
-          pauseControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          playControl,
-          stopControl,
-        ];
-      }
-    } else {
-      if (_playing != null && _playing) {
-        return [
-          skipToPreviousControl,
-          pauseControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          skipToPreviousControl,
-          playControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      }
-    }
-  }
-
-  @override
-  void onCustomAction(String action, var parameters) async {
-    // if condition to play current media
-    if (action == "playMedia2") {
-      var state = BasicPlaybackState.connecting;
-      var position = 0;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-      _shouldRepeat = false;
-      getMp3URL(parameters['mediaID'], parameters);
-    } else if (action == "addItemToQueue") {
-      _shouldRepeat = true;
-      addItemToQueue(parameters);
-    } else if (action == "removeItemFromQueue") {
-      removeItemFromQueue(parameters);
-    } else if (action == "updateQueueOrder") {
-      updateQueueOrder(parameters);
-    } else if (action == "repeatSong") {
-      _shouldRepeat = true;
-      // true for repeating single song
-      // last parameter is if the song should be make now playing in queue
-      getMp3URLToQueue(parameters, true, false);
-    } else if (action == "addItemToQueueFront") {
-      // false cause this is not repeating single song
-      // last parameter is if the song should be make now playing in queue
-      getMp3URLToQueue(parameters["song"], false, true);
-    } else if (action == "addSongListToQueue") {
-      addSongListToQueue(parameters);
-    } else if (action == "jumpToQueueItem") {
-      jumpToQueueItem(parameters);
-    }
-  }
-
-  // customAction functions
-  void addItemToQueue(parameters) {
-    // false cause this is not repeating single song
-    // last parameter is if the song should be make now playing in queue
-    getMp3URLToQueue(parameters["song"], false, false);
-  }
-
-  void removeItemFromQueue(parameters) async {
-    // checking if queue length is just one
-    if (_queue.length == 1) {
-      onStop();
-    } else {
-      // checking if the item to be removed is the current playing item
-      if (parameters["currentArtURI"] == _queue[parameters["index"]].artUri) {
-        // correcting the queue index of the current playing song
-        for (int i = 0; i < _queue.length; i++) {
-          if (parameters["currentArtURI"] == _queue[i].artUri) {
-            _queueIndex = i;
-          }
-        }
-        await onSkipToNext();
-        _queueMeta.remove(_queue[parameters["index"]].artUri);
-        _queue.removeAt(parameters["index"]);
-        AudioServiceBackground.setQueue(_queue);
-      } else {
-        _queueMeta.remove(_queue[parameters["index"]].artUri);
-        _queue.removeAt(parameters["index"]);
-        AudioServiceBackground.setQueue(_queue);
-        var state = AudioServiceBackground.state.basicState;
-        var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-        AudioServiceBackground.setState(
-            controls: getControls(state),
-            basicState: state,
-            position: position);
-        // correcting the queue index of the current playing song
-        for (int i = 0; i < _queue.length; i++) {
-          if (parameters["currentArtURI"] == _queue[i].artUri) {
-            _queueIndex = i;
-          }
-        }
-      }
-    }
-  }
-
-  void updateQueueOrder(parameters) {
-    // checks if the rearrangement is upqueue or downqueue
-    if (parameters["newIndex"] < parameters["oldIndex"]) {
-      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-      _queue.removeAt(parameters["oldIndex"] + 1);
-    } else if (parameters["newIndex"] > parameters["oldIndex"]) {
-      _queue.insert(parameters["newIndex"], _queue[parameters["oldIndex"]]);
-      _queue.removeAt(parameters["oldIndex"]);
-    }
-
-    // correcting the queue index of the current playing song
-    for (int i = 0; i < _queue.length; i++) {
-      if (parameters["currentArtURI"] == _queue[i].artUri) {
-        print("New Queue Index: " + i.toString());
-        _queueIndex = i;
-      }
-    }
-    AudioServiceBackground.setQueue(_queue);
-    // refreshing the audioService state
-    var state = AudioServiceBackground.state.basicState;
-    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
-  }
-
-  void addSongListToQueue(parameters) async {
-    // checking if queue is empty
-    if (_queue.length == 0) {
-      var state = BasicPlaybackState.connecting;
-      var position = 0;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-    }
-    await audioServiceGlobalFun.addSongListToQueue(
-        parameters, getMp3URLSpecial, _queue);
-  }
-
-  void jumpToQueueItem(parameters) async {
-    int index = parameters["index"];
-    if (index == _queue.length)
-      _queueIndex = index - 1;
-    else if (index == 0)
-      _queueIndex = _queue.length - 1;
-    else
-      _queueIndex = index - 1;
-
-    await onSkipToNext();
-  }
-
-  void _setState({@required BasicPlaybackState state, int position}) {
-    if (position == null) {
-      position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    }
-    AudioServiceBackground.setState(
-      controls: getControls(state),
-      systemActions: [MediaAction.seekTo],
-      basicState: state,
-      position: position,
     );
   }
 
-  // gets the mp3URL using videoID and add to the queue
-  void getMp3URLToQueue(
-      parameter, bool singleSongRepeat, bool shouldBeNowPlaying) async {
-    // checking if media is present in the queueMeta list
-    if (!_queueMeta.contains(parameter["thumbnail"])) {
-      globalFun.showToastMessage(
-          "Adding song to queue...", Colors.orange, Colors.white, false);
-      // adding song thumbnail to the queueMeta list
-      _queueMeta.add(parameter['thumbnail']);
-      print("Added " + parameter['thumbnail']);
-      // holds the responseJSON for checking link validity
-      var responseJSON;
-      // pausing current playing media to provide instant feedback
-      if (shouldBeNowPlaying) onPause();
-      // getting the mp3URL
-      try {
-        // checking for link validity
-        String url =
-            "https://api.openbeats.live/opencc/" + parameter["videoId"];
-        // sending GET request
-        responseJSON = await Dio().get(url);
-      } catch (e) {
-        // catching dio error
-        if (e is DioError) {
-          globalFun.showToastMessage(
-              "Cannot connect to the server", Colors.red, Colors.white, false);
-          onStop();
-          return;
-        }
-      }
-      if (responseJSON.data["status"] == true &&
-          responseJSON.data["link"] != null) {
-        // setting the current mediaItem
-        temp = MediaItem(
-          id: responseJSON.data["link"],
-          album: "OpenBeats Music",
-          title: parameter['title'],
-          artist: parameter['channelName'],
-          duration: globalFun.getDurationMillis(parameter['duration']),
-          artUri: parameter['thumbnail'],
+  // holds the PlaylistsTab widget
+  Widget _playlistsTab() {
+    return PlaylistsTab();
+  }
+
+  // holds the SettingsTab widget
+  Widget _profileTab() {
+    return Navigator(
+      onGenerateRoute: (RouteSettings routeSettings) {
+        return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return ProfileHomeView();
+              default:
+                return ProfileHomeView();
+            }
+          },
+          transitionDuration: Duration(milliseconds: 400),
         );
-
-        (shouldBeNowPlaying)
-            ? _queue.insert(_queueIndex, temp)
-            : _queue.add(temp);
-
-        AudioServiceBackground.setQueue(_queue);
-        if (shouldBeNowPlaying) {
-          // starting playback again
-          onPlay();
-          int indexOfItem;
-          // finding the index of the element to play
-          for (int i = 0; i < _queue.length; i++) {
-            if (_queue[i].id == temp.id) indexOfItem = i;
-          }
-          _queueIndex = indexOfItem + 1;
-          onSkipToPrevious();
-        } else {
-          if (singleSongRepeat) onSkipToNext();
-        }
-        var state = AudioServiceBackground.state.basicState;
-        var position = (_audioPlayer.playbackEvent != null)
-            ? _audioPlayer.playbackEvent.position.inMilliseconds
-            : 0;
-        AudioServiceBackground.setState(
-            controls: getControls(state),
-            basicState: state,
-            position: position);
-        globalFun.showQueueBasedToasts(1);
-      } else {
-        onStop();
-      }
-    } else {
-      // index buffer to prevent modifying the _queueIndex value
-      int tempIndex = -1;
-      // finding index of the song clicked
-      for (int i = 0; i < _queue.length; i++) {
-        if (parameter["thumbnail"] == _queue[i].artUri) {
-          tempIndex = i;
-        }
-      }
-      // checking if song exists in queue
-      if (tempIndex != -1) {
-        _queueIndex = tempIndex + 1;
-        onSkipToPrevious();
-      }
-    }
-  }
-
-  // gets the mp3URL using videoID
-  void getMp3URL(videoId, parameter) async {
-    // holds the responseJSON for checking link validity
-    var responseJSON;
-    // getting the mp3URL
-    try {
-      // checking for link validity
-      String url = "https://api.openbeats.live/opencc/" + videoId.toString();
-      // sending GET request
-      responseJSON = await Dio().get(url);
-    } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white, false);
-        onStop();
-        return;
-      }
-    }
-    if (responseJSON.data["status"] == true &&
-        responseJSON.data["link"] != null) {
-      MediaItem temp = MediaItem(
-        id: responseJSON.data["link"],
-        album: "OpenBeats Music",
-        title: parameter['mediaTitle'],
-        artist: parameter['channelID'],
-        duration: parameter['duration'],
-        artUri: parameter['thumbnailURI'],
-      );
-      // adding song thumbnail to the queueMeta list
-      _queueMeta.add(parameter['thumbnailURI']);
-      // setting the current mediaItem
-      await AudioServiceBackground.setMediaItem(temp);
-      // setting URL for audio player
-      await _audioPlayer.setUrl(responseJSON.data["link"]);
-      _queue.add(temp);
-
-      AudioServiceBackground.setQueue(_queue);
-      if (_playing == null) {
-        // First time, we want to start playing
-        _playing = true;
-      }
-      // playing audio
-      onPlay();
-    } else {
-      onStop();
-    }
-    // refreshing the audioService state
-    var state = AudioServiceBackground.state.basicState;
-    var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
-  }
-
-  // gets the mp3URL using videoID and i parameter to start playback on true
-  Future getMp3URLSpecial(parameter, bool shouldPlay) async {
-    // holds the responseJSON for checking link validity
-    var responseJSON;
-    // getting the mp3URL
-    try {
-      // checking for link validity
-      String url = "https://api.openbeats.live/opencc/" +
-          parameter["videoId"].toString();
-      // sending GET request
-      responseJSON = await Dio().get(url);
-    } catch (e) {
-      // catching dio error
-      if (e is DioError) {
-        globalFun.showToastMessage(
-            "Cannot connect to the server", Colors.red, Colors.white, false);
-        return;
-      }
-    }
-    if (responseJSON.data["status"] == true &&
-        responseJSON.data["link"] != null) {
-      MediaItem mediaItem = MediaItem(
-        id: responseJSON.data["link"],
-        album: "OpenBeats Music",
-        title: parameter['title'],
-        duration: globalFun.getDurationMillis(parameter["duration"]),
-        artist: parameter['channelName'],
-        artUri: parameter['thumbnail'],
-      );
-      // adding song thumbnail to the queueMeta list
-      _queueMeta.add(parameter['thumbnail']);
-      _queue.add(mediaItem);
-      AudioServiceBackground.setQueue(_queue);
-
-      if (shouldPlay) {
-        await onSkipToNext();
-      }
-    } else {
-      onStop();
-    }
-    if (AudioService.playbackState != null) {
-      // refreshing the audioService state
-      var state = AudioServiceBackground.state.basicState;
-      var position = _audioPlayer.playbackEvent.position.inMilliseconds;
-      AudioServiceBackground.setState(
-          controls: getControls(state), basicState: state, position: position);
-    }
+      },
+    );
   }
 }
