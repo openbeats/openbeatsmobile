@@ -31,7 +31,7 @@ class _SearchHomeViewState extends State<SearchHomeView>
   // navigate to searchNowView
   void navigateToSearchNowView() async {
     // getting the latest search result history into the global variable
-    globalFun.getSearchHistory();
+    globalFun.getSearchHistorySharedPrefs();
     // navigating to searchNowView.dart and waiting for search query
     var selectedSearchString =
         await Navigator.of(context).pushNamed('/searchNow');
@@ -44,7 +44,7 @@ class _SearchHomeViewState extends State<SearchHomeView>
         searchResultLoading = true;
       });
       // adding the query to the search results history
-      globalFun.addToSearchHistory(selectedSearchString);
+      globalFun.addToSearchHistorySharedPrefs(selectedSearchString);
       // calling function to get videos for query
       getVideosForQuery(selectedSearchString);
     }

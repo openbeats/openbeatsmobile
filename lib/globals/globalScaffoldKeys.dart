@@ -7,3 +7,7 @@ final GlobalKey<ScaffoldState> searchNowViewScaffoldKey =
 // searchHomeView.dart
 final GlobalKey<ScaffoldState> searchHomeViewScaffoldKey =
     new GlobalKey<ScaffoldState>();
+
+// homePage.dart
+final GlobalKey<ScaffoldState> homePageScaffoldKey =
+    new GlobalKey<ScaffoldState>();

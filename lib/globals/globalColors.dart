@@ -16,6 +16,9 @@ Color textDefaultClr = _staticPrimaryDark;
 Color textActiveClr = _openBeatsRed;
 Color textDisabledClr = Colors.grey;
 Color iconDisabledClr = Colors.grey;
+Color errorClr = Colors.red;
+Color warningClr = Colors.orange;
+Color successClr = Colors.green;
 
 // searchNowView.dart
 Color textFieldBgClr = _offWhite;
@@ -26,3 +29,5 @@ Color darkBgIconClr = _staticPrimaryLight;
 // profileHomeViewW.dart
 Color mainBtnClr = _openBeatsRed;
 Color mainBtnTextClr = _staticPrimaryLight;
+Color darkBgTextClr = _staticPrimaryLight;
+Color profileBgClr = _staticPrimaryLight;

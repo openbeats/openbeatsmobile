@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../globals/actions/globalVarsA.dart' as globalVarsA;
 import '../globals/globalVars.dart' as globalVars;
+import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 
 // function to show snackBars
 void showSnackBars(GlobalKey<ScaffoldState> scaffoldKey, context,
@@ -20,7 +22,7 @@ void showSnackBars(GlobalKey<ScaffoldState> scaffoldKey, context,
 }
 
 // gets the search history from sharedPreferences
-void getSearchHistory() async {
+void getSearchHistorySharedPrefs() async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   List<String> searchHistoryPrefs = prefs.getStringList("searchStrings");
@@ -30,7 +32,7 @@ void getSearchHistory() async {
 }
 
 // adds value to search history
-void addToSearchHistory(String query) async {
+void addToSearchHistorySharedPrefs(String query) async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   if ((globalVars.searchHistory.length == 0) ||
@@ -47,6 +49,47 @@ void updateSearchHistorySharedPrefs() async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   prefs.setStringList("searchStrings", globalVars.searchHistory);
+}
+
+// gets the the userDetails sharedPrefs value
+Future<bool> getUserDetailsSharedPrefs() async {
+  // holds the json object holding the user details
+  Map<String, String> userDetails;
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // updating userDetailsValues
+  userDetails = {
+    "token": prefs.getString("token"),
+    "name": prefs.getString("name"),
+    "email": prefs.getString("email"),
+    "id": prefs.getString("id"),
+    "avatar": prefs.getString("avatar")
+  };
+  // updating global reference
+  globalVarsA.updateUserDetails(userDetails);
+  return true;
+}
+
+// updates the userDetails sharedPrefs value
+void updateUserDetailsSharedPrefs(Map<String, String> userDetails) async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString("token", userDetails["token"]);
+  prefs.setString("name", userDetails["name"]);
+  prefs.setString("email", userDetails["email"]);
+  prefs.setString("id", userDetails["id"]);
+  prefs.setString("avatar", userDetails["avatar"]);
+}
+
+// clears the userDetails sharedPrefs values
+void clearUserDetailsSharedPrefs() async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.remove("token");
+  prefs.remove("name");
+  prefs.remove("email");
+  prefs.remove("id");
+  prefs.remove("avatar");
 }
 
 // reformats the views count to plays in the B,M,K format
@@ -132,4 +175,16 @@ String getCurrentTimeStamp(double totalSeconds) {
       return (min.toString() + ":" + sec.toString());
     }
   }
+}
+
+// shows toast on screem
+void showToastMessage(String message, bool isLong, Color bgClr, Color txtClr) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: (isLong) ? Toast.LENGTH_SHORT : Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: bgClr,
+    textColor: txtClr,
+    fontSize: 18.0,
+  );
 }

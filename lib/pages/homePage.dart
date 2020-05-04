@@ -18,6 +18,7 @@ import '../globals/globalVars.dart' as globalVars;
 import '../globals/globalStyles.dart' as globalStyles;
 import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
+import '../globals/globalFun.dart' as globalFun;
 
 class HomePage extends StatefulWidget {
   // behaviourSubject to monitor and control the seekBar
@@ -118,6 +119,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     connect();
     // initiating animation controller to hide the BottomNavBar
     _hideBottomNavBarAnimController =
@@ -165,15 +167,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     // execute function after build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
       _slideUpPanelCollapsedHeightAnimation = Tween<double>(
               begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
           .animate(_slideUpPanelCollapsedHeightController);
+      // getting login details
+      await globalFun.getUserDetailsSharedPrefs();
+      setState(() {});
     });
+
     return WillPopScope(
       onWillPop: _onWillPopCallbackHandler,
       child: Scaffold(
+        key: globalScaffoldKeys.homePageScaffoldKey,
         bottomNavigationBar: _homePageBottomNavBar(),
         body: _homePageBody(),
       ),
