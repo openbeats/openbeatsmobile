@@ -32,8 +32,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   TextEditingController userNameFieldController = new TextEditingController();
   TextEditingController emailFieldController = new TextEditingController();
   TextEditingController passwordFieldController = new TextEditingController();
-  // autoValidate flags for the forms
-  bool signInFormAutoValidate = false, joinFormAutoValidate = false;
   // is loading flag for http requests
   bool isLoading = false;
   // show or hide the password field data
@@ -48,27 +46,46 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
 
   // validator method for the textfields
   void textFieldValidator() {
+    // validation passed
+    bool validationPassed = true;
     // dismissing the keyboard
     FocusScope.of(context).unfocus();
     // checking the current tab
-    if (authTabController.index == 0) {
-      // validating signIn form
-      if (_signInFormKey.currentState.validate())
-        signInCallback();
-      else {
-        setState(() {
-          signInFormAutoValidate = true;
-        });
-      }
+    if (authTabController.index == 1) {
+      validationPassed = false;
+      initiateDropDownBanner("Please enter your name", globalColors.warningClr,
+          globalColors.darkBgTextClr, Duration(seconds: 3));
     } else {
-      if (_joinFormKey.currentState.validate())
-        joinCallback();
-      else {
-        setState(() {
-          joinFormAutoValidate = true;
-        });
+      // check if all the fields are filled
+      if (emailFieldController.text.length == 0) {
+        validationPassed = false;
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "Please enter your email address",
+            globalColors.warningClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 3));
+      } else if (!emailFieldController.text.contains("@") ||
+          !emailFieldController.text.contains(".")) {
+        validationPassed = false;
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "Please enter valid email address",
+            globalColors.warningClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 3));
+      } else if (passwordFieldController.text.length == 0) {
+        validationPassed = false;
+        // showing dropdown banner
+        initiateDropDownBanner(
+            "Please enter your password",
+            globalColors.warningClr,
+            globalColors.darkBgTextClr,
+            Duration(seconds: 3));
       }
     }
+    if (validationPassed)
+      (authTabController == 0) ? signInCallback() : joinCallback();
   }
 
   // signIn callback function
@@ -241,7 +258,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   // holds the TabBarView for authTabW
   Widget tabBarViewAuthTabW() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.of(context).size.height * 0.55,
       child: TabBarView(
         controller: authTabController,
         physics: BouncingScrollPhysics(),
@@ -295,8 +312,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.04,
           ),
-          profileHomeViewW.emailTxtField(
-              context, true, emailFieldController, signInFormAutoValidate),
+          profileHomeViewW.emailTxtField(context, true, emailFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
@@ -304,7 +320,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
               context,
               true,
               passwordFieldController,
-              signInFormAutoValidate,
               hidePasswordField,
               togglePasswordVisibility),
           SizedBox(
@@ -316,9 +331,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             height: MediaQuery.of(context).size.height * 0.018,
           ),
           profileHomeViewW.fgtPasswordBtn(context),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-          ),
         ],
       ),
     );
@@ -338,13 +350,11 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.02,
           ),
-          profileHomeViewW.userNameTextField(
-              context, userNameFieldController, joinFormAutoValidate),
+          profileHomeViewW.userNameTextField(context, userNameFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
-          profileHomeViewW.emailTxtField(
-              context, false, emailFieldController, joinFormAutoValidate),
+          profileHomeViewW.emailTxtField(context, false, emailFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
@@ -352,7 +362,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
               context,
               false,
               passwordFieldController,
-              joinFormAutoValidate,
               hidePasswordField,
               togglePasswordVisibility),
           SizedBox(
@@ -360,9 +369,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           ),
           profileHomeViewW.actionBtnW(
               context, false, textFieldValidator, isLoading),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-          ),
         ],
       ),
     );

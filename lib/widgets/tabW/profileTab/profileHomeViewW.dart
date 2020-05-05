@@ -13,14 +13,13 @@ Widget appBar() {
 }
 
 // holds the email textfield for the tabView
-Widget emailTxtField(BuildContext context, bool issignIn,
-    TextEditingController controller, bool autoValidate) {
+Widget emailTxtField(
+    BuildContext context, bool issignIn, TextEditingController controller) {
   return Container(
     margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.15),
     child: TextFormField(
       controller: controller,
-      autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
@@ -29,12 +28,6 @@ Widget emailTxtField(BuildContext context, bool issignIn,
         icon: Icon(Icons.email),
         hintText: "Email Address",
       ),
-      validator: (String value) {
-        if (value.length == 0 || !value.contains("@"))
-          return 'Please enter valid email address';
-        else
-          return null;
-      },
     ),
   );
 }
@@ -44,7 +37,6 @@ Widget passwordTxtField(
     BuildContext context,
     bool issignIn,
     TextEditingController controller,
-    bool autoValidate,
     bool hidePasswordField,
     Function togglePasswordVisibility) {
   return Container(
@@ -52,7 +44,6 @@ Widget passwordTxtField(
         horizontal: MediaQuery.of(context).size.width * 0.15),
     child: TextFormField(
       controller: controller,
-      autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
       obscureText: hidePasswordField,
       decoration: InputDecoration(
@@ -67,12 +58,6 @@ Widget passwordTxtField(
         ),
         hintText: "Password",
       ),
-      validator: (String value) {
-        if (value.length == 0)
-          return 'Please enter valid password';
-        else
-          return null;
-      },
     ),
   );
 }
@@ -121,25 +106,18 @@ Widget fgtPasswordBtn(BuildContext context) {
 
 // holds the username textfield for the tabview
 Widget userNameTextField(
-    BuildContext context, TextEditingController controller, bool autoValidate) {
+    BuildContext context, TextEditingController controller) {
   return Container(
     margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.15),
     child: TextFormField(
       controller: controller,
-      autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
       decoration: InputDecoration(
         border: InputBorder.none,
         icon: Icon(Icons.person),
         hintText: "User Name",
       ),
-      validator: (String value) {
-        if (value.length == 0)
-          return 'Please enter your name';
-        else
-          return null;
-      },
     ),
   );
 }
