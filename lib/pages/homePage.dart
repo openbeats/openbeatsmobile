@@ -174,7 +174,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           .animate(_slideUpPanelCollapsedHeightController);
       // getting login details
       await globalFun.getUserDetailsSharedPrefs();
-      setState(() {});
     });
 
     return WillPopScope(
@@ -193,7 +192,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       sizeFactor: _hideBottomNavBarAnimController,
       axisAlignment: -1.0,
       child: BottomNavigationBar(
-        elevation: 0,
         currentIndex: _bottomNavBarCurrIndex,
         backgroundColor: globalColors.backgroundClr,
         showSelectedLabels: true,

@@ -25,6 +25,7 @@ Widget emailTxtField(BuildContext context, bool issignIn,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         border: InputBorder.none,
+        alignLabelWithHint: false,
         icon: Icon(Icons.email),
         hintText: "Email Address",
       ),
@@ -39,8 +40,13 @@ Widget emailTxtField(BuildContext context, bool issignIn,
 }
 
 // holds the password textfield for the tabView
-Widget passwordTxtField(BuildContext context, bool issignIn,
-    TextEditingController controller, bool autoValidate) {
+Widget passwordTxtField(
+    BuildContext context,
+    bool issignIn,
+    TextEditingController controller,
+    bool autoValidate,
+    bool hidePasswordField,
+    Function togglePasswordVisibility) {
   return Container(
     margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.15),
@@ -48,11 +54,17 @@ Widget passwordTxtField(BuildContext context, bool issignIn,
       controller: controller,
       autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
-      keyboardType: TextInputType.emailAddress,
-      obscureText: true,
+      obscureText: hidePasswordField,
       decoration: InputDecoration(
         border: InputBorder.none,
         icon: Icon(Icons.lock),
+        suffixIcon: IconButton(
+          icon: Icon(
+              (hidePasswordField) ? Icons.visibility_off : Icons.visibility),
+          iconSize: 20.0,
+          color: globalColors.iconDisabledClr,
+          onPressed: togglePasswordVisibility,
+        ),
         hintText: "Password",
       ),
       validator: (String value) {
@@ -154,9 +166,10 @@ Widget signInTabGreetingSubtitleMessage() {
       "Sign In to your account",
       textAlign: TextAlign.center,
       style: GoogleFonts.openSans(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-          color: globalColors.textActiveClr),
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
+        color: globalColors.textDefaultClr,
+      ),
     ),
   );
 }
@@ -167,17 +180,18 @@ Widget joinTabGreetingMessage() {
     child: RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        text: "Create\n",
+        text: "join!\n",
         style: GoogleFonts.openSans(
             color: globalColors.textActiveClr,
+            height: 1.6,
             fontWeight: FontWeight.bold,
             fontSize: 60.0),
         children: [
           TextSpan(
-            text: "your own",
+            text: "with your own",
             style: GoogleFonts.openSans(
                 color: globalColors.textDefaultClr,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w600,
                 fontSize: 16.0),
           ),
           TextSpan(
@@ -198,7 +212,7 @@ Widget joinTabGreetingMessage() {
             text: " account",
             style: GoogleFonts.openSans(
                 color: globalColors.textDefaultClr,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w600,
                 fontSize: 16.0),
           ),
         ],

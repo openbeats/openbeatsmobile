@@ -36,6 +36,15 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   bool signInFormAutoValidate = false, joinFormAutoValidate = false;
   // is loading flag for http requests
   bool isLoading = false;
+  // show or hide the password field data
+  bool hidePasswordField = true;
+
+  // toggles the visibility of the password field
+  void togglePasswordVisibility() {
+    setState(() {
+      hidePasswordField = !hidePasswordField;
+    });
+  }
 
   // validator method for the textfields
   void textFieldValidator() {
@@ -95,6 +104,9 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             globalColors.successClr,
             globalColors.darkBgTextClr,
             Duration(seconds: 3));
+        // clear text fields
+        emailFieldController.clear();
+        passwordFieldController.clear();
       } else {
         // showing dropdown banner
         initiateDropDownBanner(
@@ -155,6 +167,10 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             globalColors.errorClr,
             globalColors.darkBgTextClr,
             Duration(seconds: 5));
+        // clearing text fields
+        emailFieldController.clear();
+        passwordFieldController.clear();
+        userNameFieldController.clear();
       }
     } catch (e) {
       globalFun.showToastMessage("Unable to contact server", true,
@@ -285,7 +301,12 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
-              context, true, passwordFieldController, signInFormAutoValidate),
+              context,
+              true,
+              passwordFieldController,
+              signInFormAutoValidate,
+              hidePasswordField,
+              togglePasswordVisibility),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
@@ -295,6 +316,9 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             height: MediaQuery.of(context).size.height * 0.018,
           ),
           profileHomeViewW.fgtPasswordBtn(context),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.4,
+          ),
         ],
       ),
     );
@@ -308,7 +332,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         physics: BouncingScrollPhysics(),
         children: <Widget>[
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.02,
+            height: MediaQuery.of(context).size.height * 0,
           ),
           profileHomeViewW.joinTabGreetingMessage(),
           SizedBox(
@@ -325,14 +349,19 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
-              context, false, passwordFieldController, joinFormAutoValidate),
+              context,
+              false,
+              passwordFieldController,
+              joinFormAutoValidate,
+              hidePasswordField,
+              togglePasswordVisibility),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.actionBtnW(
               context, false, textFieldValidator, isLoading),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.05,
+            height: MediaQuery.of(context).size.height * 0.4,
           ),
         ],
       ),
