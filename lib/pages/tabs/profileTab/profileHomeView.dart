@@ -241,7 +241,11 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   Widget profileHomeViewBody() {
     return ListView(
       physics: BouncingScrollPhysics(),
-      children: <Widget>[headerProfileHomeView()],
+      children: <Widget>[
+        headerProfileHomeView(),
+        profileHomeViewW.settingsWTitle(),
+        profileHomeViewW.darkModeSettingsToggle(),
+      ],
     );
   }
 
@@ -336,7 +340,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     );
   }
 
-// holds the sign up widgets for the authTabW
+  // holds the sign up widgets for the authTabW
   Widget _joinWTabBarViewAuthTabW(BuildContext context) {
     return Form(
       key: _joinFormKey,

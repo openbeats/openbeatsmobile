@@ -202,7 +202,7 @@ Widget joinTabGreetingMessage() {
 // holds the profileview
 Widget profileView(BuildContext context, Function signoutCallback) {
   return Container(
-    height: MediaQuery.of(context).size.height * 0.4,
+    height: MediaQuery.of(context).size.height * 0.55,
     width: MediaQuery.of(context).size.width,
     child: Card(
       elevation: 5.0,
@@ -292,5 +292,31 @@ Widget logoutTxtBtn(Function logoutCallback) {
       textAlign: TextAlign.center,
     ),
     onTap: logoutCallback,
+  );
+}
+
+// app settings title
+Widget settingsWTitle() {
+  return Container(
+    margin: EdgeInsets.only(left: 17.0),
+    child: Text(
+      "Settings",
+      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24.0),
+    ),
+  );
+}
+
+// holds the dark mode settings toggle
+Widget darkModeSettingsToggle() {
+  return ListTile(
+    leading: Icon(
+      Icons.brightness_medium,
+      color: globalColors.iconDefaultClr,
+    ),
+    title: Text(
+      "Dark Mode",
+      style: GoogleFonts.openSans(fontWeight: FontWeight.w600),
+    ),
+    trailing: Switch(value: true, onChanged: (value) {}),
   );
 }
