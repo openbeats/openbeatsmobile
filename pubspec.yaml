@@ -49,6 +49,7 @@ flutter:
   assets:
     - assets/flareAssets/searchforsong.flr
     - assets/flareAssets/logoanim.flr
+    - assets/flareAssets/logoanimwhite.flr
     - assets/flareAssets/loadinganim.flr
     - assets/images/supplementary/dummyimage.png
   # An image asset can refer to one or more resolution-specific "variants", see

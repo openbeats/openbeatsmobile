@@ -22,7 +22,6 @@ Color successClr = Colors.green;
 
 // searchNowView.dart
 
-
 // homePage.dart
 Color darkBgIconClr = _staticPrimaryLight;
 

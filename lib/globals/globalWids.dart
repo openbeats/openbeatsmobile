@@ -91,7 +91,9 @@ Widget connectingWidget(bool shouldCenter, bool showBiggerLoadingAnimation) {
   return Container(
     height: (showBiggerLoadingAnimation) ? 40.0 : 30.0,
     child: FlareActor(
-      "assets/flareAssets/logoanim.flr",
+      (globalColors.appBrightness == Brightness.light)
+          ? "assets/flareAssets/logoanim.flr"
+          : "assets/flareAssets/logoanimwhite.flr",
       animation: "rotate",
       alignment: (shouldCenter) ? Alignment.center : Alignment.centerLeft,
     ),

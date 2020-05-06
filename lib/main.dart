@@ -127,7 +127,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // connecting to audio service
     connect();
+    // fetching app brightness values
     fetchAppBrightness();
   }
 
