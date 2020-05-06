@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../globals/globalColors.dart' as globalColors;
 import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/actions/globalColorsW.dart' as globalColorsW;
+import '../../../globals/globalFun.dart' as globalFun;
 
 // holds the AppBar for the profileHomeView
 Widget appBar() {
@@ -205,27 +206,24 @@ Widget profileView(BuildContext context, Function signoutCallback) {
   return Container(
     height: MediaQuery.of(context).size.height * 0.55,
     width: MediaQuery.of(context).size.width,
-    child: Card(
-      elevation: 5.0,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          avatarImageView(),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          nameofUser(),
-          emailOfUser(),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.03,
-          ),
-          logoutTxtBtn(signoutCallback),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.02,
-          ),
-        ],
-      ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        avatarImageView(),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
+        nameofUser(),
+        emailOfUser(),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.03,
+        ),
+        logoutTxtBtn(signoutCallback),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.02,
+        ),
+      ],
     ),
   );
 }
@@ -320,10 +318,12 @@ Widget darkModeSettingsToggle(Function refreshAppState) {
     trailing: Switch(
         value: (globalColors.appBrightness == Brightness.light) ? false : true,
         onChanged: (value) {
-          print(value);
           // changing global values
           globalColorsW.switchAppBrightness(
               (value) ? Brightness.dark : Brightness.light);
+          // saving theme data to persistent storage
+          globalFun
+              .saveAppBrightness((value) ? Brightness.dark : Brightness.light);
           // refreshing app state
           refreshAppState();
         }),

@@ -15,6 +15,7 @@ import './globals/globalColors.dart' as globalColors;
 import './globals/globalStyles.dart' as globalStyles;
 import './globals/globalVars.dart' as globalVars;
 import './globals/globalFun.dart' as globalFun;
+import './globals/actions/globalColorsW.dart' as globalColorsW;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -105,6 +106,14 @@ class _MyAppState extends State<MyApp> {
     setState(() {});
   }
 
+  // fetches app brigtness from local storage and applies it to the app
+  void fetchAppBrightness() async {
+    Brightness savedBrightness = await globalFun.getAppBrightness();
+    // setting global color values
+    globalColorsW.switchAppBrightness(savedBrightness);
+    refreshAppState();
+  }
+
   // connects to the audio_service
   void connect() async {
     await AudioService.connect();
@@ -119,6 +128,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     connect();
+    fetchAppBrightness();
   }
 
   @override

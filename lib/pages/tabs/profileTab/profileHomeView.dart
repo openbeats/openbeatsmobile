@@ -32,8 +32,13 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   TabController authTabController;
   // controllers for textfields
   TextEditingController userNameFieldController = new TextEditingController();
-  TextEditingController emailFieldController = new TextEditingController();
-  TextEditingController passwordFieldController = new TextEditingController();
+  TextEditingController signInEmailFieldController =
+      new TextEditingController();
+  TextEditingController signInPasswordFieldController =
+      new TextEditingController();
+  TextEditingController joinEmailFieldController = new TextEditingController();
+  TextEditingController joinPasswordFieldController =
+      new TextEditingController();
   // is loading flag for http requests
   bool isLoading = false;
   // show or hide the password field data
@@ -52,42 +57,55 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     bool validationPassed = true;
     // dismissing the keyboard
     FocusScope.of(context).unfocus();
-    // checking the current tab
-    if (authTabController.index == 1) {
+
+    // getting current index
+    int currTab = authTabController.index;
+
+    // getting values lengths of all fields
+    int signinEmailLen = signInEmailFieldController.text.length;
+    int signinPasswordLen = signInPasswordFieldController.text.length;
+    String signInEmailText = signInEmailFieldController.text;
+    String joinEmailText = joinEmailFieldController.text;
+    int joinNameLen = userNameFieldController.text.length;
+    int joinEmailLen = joinEmailFieldController.text.length;
+    int joinPasswordLen = joinPasswordFieldController.text.length;
+
+    // validating fields
+    if ((currTab == 0 && signinEmailLen == 0) ||
+        (currTab == 1 && joinEmailLen == 0)) {
+      validationPassed = false;
+      initiateDropDownBanner(
+          "Please enter your email address",
+          globalColors.warningClr,
+          globalColors.darkBgTextClr,
+          Duration(seconds: 3));
+    } else if ((currTab == 0 &&
+            (!signInEmailText.contains("@") ||
+                !signInEmailText.contains("."))) ||
+        (currTab == 1 &&
+            (!joinEmailText.contains("@") || !joinEmailText.contains(".")))) {
+      validationPassed = false;
+      initiateDropDownBanner(
+          "Please enter a valid email address",
+          globalColors.warningClr,
+          globalColors.darkBgTextClr,
+          Duration(seconds: 3));
+    } else if ((currTab == 0 && signinPasswordLen == 0) ||
+        (currTab == 1 && joinPasswordLen == 0)) {
+      validationPassed = false;
+      // showing dropdown banner
+      initiateDropDownBanner(
+          "Please enter your password",
+          globalColors.warningClr,
+          globalColors.darkBgTextClr,
+          Duration(seconds: 3));
+    } else if (currTab == 1 && joinNameLen == 0) {
       validationPassed = false;
       initiateDropDownBanner("Please enter your name", globalColors.warningClr,
           globalColors.darkBgTextClr, Duration(seconds: 3));
-    } else {
-      // check if all the fields are filled
-      if (emailFieldController.text.length == 0) {
-        validationPassed = false;
-        // showing dropdown banner
-        initiateDropDownBanner(
-            "Please enter your email address",
-            globalColors.warningClr,
-            globalColors.darkBgTextClr,
-            Duration(seconds: 3));
-      } else if (!emailFieldController.text.contains("@") ||
-          !emailFieldController.text.contains(".")) {
-        validationPassed = false;
-        // showing dropdown banner
-        initiateDropDownBanner(
-            "Please enter valid email address",
-            globalColors.warningClr,
-            globalColors.darkBgTextClr,
-            Duration(seconds: 3));
-      } else if (passwordFieldController.text.length == 0) {
-        validationPassed = false;
-        // showing dropdown banner
-        initiateDropDownBanner(
-            "Please enter your password",
-            globalColors.warningClr,
-            globalColors.darkBgTextClr,
-            Duration(seconds: 3));
-      }
     }
-    if (validationPassed)
-      (authTabController == 0) ? signInCallback() : joinCallback();
+    // checking the validation result
+    if (validationPassed) (currTab == 0) ? signInCallback() : joinCallback();
   }
 
   // signIn callback function
@@ -96,8 +114,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
       isLoading = true;
     });
     // fetching values from controllers
-    String _userEmail = emailFieldController.text.trim();
-    String _userPassword = passwordFieldController.text.trim();
+    String _userEmail = signInEmailFieldController.text.trim();
+    String _userPassword = signInPasswordFieldController.text.trim();
 
     try {
       // sending http request
@@ -105,9 +123,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           body: {"email": _userEmail, "password": _userPassword});
       // converting response to JSON
       var responseJSON = jsonDecode(response.body);
-
-      // fixing the avatar URL bug
-      responseJSON["data"]["avatar"] = "http:" + responseJSON["data"]["avatar"];
 
       if (responseJSON["status"]) {
         // updating global reference
@@ -124,8 +139,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             globalColors.darkBgTextClr,
             Duration(seconds: 3));
         // clear text fields
-        emailFieldController.clear();
-        passwordFieldController.clear();
+        signInEmailFieldController.clear();
+        signInPasswordFieldController.clear();
       } else {
         // showing dropdown banner
         initiateDropDownBanner(
@@ -152,8 +167,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     });
     // fetching values from controllers
     String _userName = userNameFieldController.text.trim();
-    String _userEmail = emailFieldController.text.trim();
-    String _userPassword = passwordFieldController.text.trim();
+    String _userEmail = joinEmailFieldController.text.trim();
+    String _userPassword = joinPasswordFieldController.text.trim();
 
     try {
       // sending http request
@@ -187,8 +202,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             globalColors.darkBgTextClr,
             Duration(seconds: 5));
         // clearing text fields
-        emailFieldController.clear();
-        passwordFieldController.clear();
+        joinEmailFieldController.clear();
+        joinPasswordFieldController.clear();
         userNameFieldController.clear();
       }
     } catch (e) {
@@ -247,6 +262,9 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         headerProfileHomeView(),
         profileHomeViewW.settingsWTitle(),
         profileHomeViewW.darkModeSettingsToggle(widget.refreshAppState),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.3,
+        ),
       ],
     );
   }
@@ -318,14 +336,15 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.04,
           ),
-          profileHomeViewW.emailTxtField(context, true, emailFieldController),
+          profileHomeViewW.emailTxtField(
+              context, true, signInEmailFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
               context,
               true,
-              passwordFieldController,
+              signInPasswordFieldController,
               hidePasswordField,
               togglePasswordVisibility),
           SizedBox(
@@ -360,14 +379,15 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
-          profileHomeViewW.emailTxtField(context, false, emailFieldController),
+          profileHomeViewW.emailTxtField(
+              context, false, joinEmailFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
               context,
               false,
-              passwordFieldController,
+              joinPasswordFieldController,
               hidePasswordField,
               togglePasswordVisibility),
           SizedBox(

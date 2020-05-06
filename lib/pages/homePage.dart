@@ -20,6 +20,7 @@ import '../globals/globalStyles.dart' as globalStyles;
 import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 import '../globals/globalFun.dart' as globalFun;
+import '../globals/actions/globalColorsW.dart' as globalColorsW;
 
 class HomePage extends StatefulWidget {
   // behaviourSubject to monitor and control the seekBar

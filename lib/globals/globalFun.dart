@@ -189,7 +189,20 @@ void showToastMessage(String message, bool isLong, Color bgClr, Color txtClr) {
   );
 }
 
-// toggle the app Brightness
-void toggleAppBrightness(bool value){
-  // 
+// save app brightness to persistent storage
+void saveAppBrightness(Brightness currBrightness) async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool("darkmode", (currBrightness == Brightness.dark) ? true : false);
+}
+
+// gets the saved app brightness value from persistent storage
+Future<Brightness> getAppBrightness() async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool darkMode = prefs.getBool("darkmode");
+  if (darkMode == null || darkMode == false)
+    return Brightness.light;
+  else
+    return Brightness.dark;
 }
