@@ -13,6 +13,8 @@ import '../../../globals/actions/globalVarsA.dart' as globalVarsA;
 import '../../../globals/globalFun.dart' as globalFun;
 
 class ProfileHomeView extends StatefulWidget {
+  Function refreshAppState;
+  ProfileHomeView(this.refreshAppState);
   @override
   _ProfileHomeViewState createState() => _ProfileHomeViewState();
 }
@@ -244,7 +246,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
       children: <Widget>[
         headerProfileHomeView(),
         profileHomeViewW.settingsWTitle(),
-        profileHomeViewW.darkModeSettingsToggle(),
+        profileHomeViewW.darkModeSettingsToggle(widget.refreshAppState),
       ],
     );
   }

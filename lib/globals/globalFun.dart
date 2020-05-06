@@ -188,3 +188,8 @@ void showToastMessage(String message, bool isLong, Color bgClr, Color txtClr) {
     fontSize: 18.0,
   );
 }
+
+// toggle the app Brightness
+void toggleAppBrightness(bool value){
+  // 
+}

@@ -23,7 +23,6 @@ Widget _appBarTitle(TextEditingController queryFieldController,
     padding: EdgeInsets.only(left: 10.0),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(5.0),
-      color: globalColors.textFieldBgClr,
     ),
     child: TextField(
       controller: queryFieldController,

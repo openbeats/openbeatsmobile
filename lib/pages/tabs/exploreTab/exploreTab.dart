@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../globals/globalColors.dart' as globalColors;
 
 class ExploreTab extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class _ExploreTabState extends State<ExploreTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
+        color: globalColors.backgroundClr,
         child: Center(
           child: Text("Explore Tab"),
         ),

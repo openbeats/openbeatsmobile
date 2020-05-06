@@ -79,9 +79,7 @@ Widget collapsedSlidingUpPanel(
         }
 
         return Container(
-          decoration: BoxDecoration(
-            color: globalColors.backgroundClr,
-          ),
+          color: globalColors.backgroundClr,
           child: nowPlayingCollapsedContent(
               state,
               audioThumbnail,
@@ -260,6 +258,7 @@ Widget expandedSlidingUpPanel(
         audioPlaying = true;
       }
       return Container(
+        color: globalColors.backgroundClr,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

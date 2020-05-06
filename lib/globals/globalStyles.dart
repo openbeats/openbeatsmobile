@@ -7,32 +7,3 @@ import './globalColors.dart' as globalColors;
 TextStyle bottomNavBarItemLabelStyle = TextStyle(
   fontSize: 12.0,
 );
-
-// holds the appBar theme for main.dart
-AppBarTheme mainAppBarTheme = AppBarTheme(
-  elevation: 0,
-  color: globalColors.backgroundClr,
-  textTheme: TextTheme(
-    title: GoogleFonts.montserrat(
-      textStyle: TextStyle(
-        color: globalColors.textDefaultClr,
-        fontSize: 26.0,
-      ),
-      fontWeight: FontWeight.w500,
-    ),
-  ),
-  iconTheme: IconThemeData(
-    color: globalColors.iconDefaultClr,
-  ),
-  actionsIconTheme: IconThemeData(
-    color: globalColors.iconDefaultClr,
-  ),
-);
-
-// holds the ThemeData for the application
-ThemeData applicationThemeData = ThemeData(
-  brightness: globalColors.appBrightness,
-  primarySwatch: globalColors.primarySwatch,
-  scaffoldBackgroundColor: globalColors.backgroundClr,
-  appBarTheme: mainAppBarTheme,
-);

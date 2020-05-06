@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../globals/globalColors.dart' as globalColors;
 import '../../../globals/globalVars.dart' as globalVars;
+import '../../../globals/actions/globalColorsW.dart' as globalColorsW;
 
 // holds the AppBar for the profileHomeView
 Widget appBar() {
@@ -206,7 +207,6 @@ Widget profileView(BuildContext context, Function signoutCallback) {
     width: MediaQuery.of(context).size.width,
     child: Card(
       elevation: 5.0,
-      color: globalColors.profileBgClr,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -307,7 +307,7 @@ Widget settingsWTitle() {
 }
 
 // holds the dark mode settings toggle
-Widget darkModeSettingsToggle() {
+Widget darkModeSettingsToggle(Function refreshAppState) {
   return ListTile(
     leading: Icon(
       Icons.brightness_medium,
@@ -317,6 +317,15 @@ Widget darkModeSettingsToggle() {
       "Dark Mode",
       style: GoogleFonts.openSans(fontWeight: FontWeight.w600),
     ),
-    trailing: Switch(value: true, onChanged: (value) {}),
+    trailing: Switch(
+        value: (globalColors.appBrightness == Brightness.light) ? false : true,
+        onChanged: (value) {
+          print(value);
+          // changing global values
+          globalColorsW.switchAppBrightness(
+              (value) ? Brightness.dark : Brightness.light);
+          // refreshing app state
+          refreshAppState();
+        }),
   );
 }

@@ -21,7 +21,7 @@ Color warningClr = Colors.orange;
 Color successClr = Colors.green;
 
 // searchNowView.dart
-Color textFieldBgClr = _offWhite;
+
 
 // homePage.dart
 Color darkBgIconClr = _staticPrimaryLight;
@@ -30,4 +30,3 @@ Color darkBgIconClr = _staticPrimaryLight;
 Color mainBtnClr = _openBeatsRed;
 Color mainBtnTextClr = _staticPrimaryLight;
 Color darkBgTextClr = _staticPrimaryLight;
-Color profileBgClr = _staticPrimaryLight;

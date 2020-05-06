@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -99,6 +100,11 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  // refresh the app state
+  void refreshAppState() {
+    setState(() {});
+  }
+
   // connects to the audio_service
   void connect() async {
     await AudioService.connect();
@@ -113,16 +119,39 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     connect();
-    
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "OpenBeats",
+      debugShowCheckedModeBanner: false,
       home: HomePage(dragPositionSubject, startSinglePlayback,
-          audioServicePlayPause, () {}),
-      theme: globalStyles.applicationThemeData,
+          audioServicePlayPause, refreshAppState, () {}),
+      theme: ThemeData(
+        brightness: globalColors.appBrightness,
+        primarySwatch: globalColors.primarySwatch,
+        scaffoldBackgroundColor: globalColors.backgroundClr,
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          color: globalColors.backgroundClr,
+          textTheme: TextTheme(
+            title: GoogleFonts.montserrat(
+              textStyle: TextStyle(
+                color: globalColors.textDefaultClr,
+                fontSize: 26.0,
+              ),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          iconTheme: IconThemeData(
+            color: globalColors.iconDefaultClr,
+          ),
+          actionsIconTheme: IconThemeData(
+            color: globalColors.iconDefaultClr,
+          ),
+        ),
+      ),
     );
   }
 }

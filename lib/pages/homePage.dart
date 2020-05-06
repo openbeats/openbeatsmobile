@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
@@ -24,9 +25,12 @@ class HomePage extends StatefulWidget {
   // behaviourSubject to monitor and control the seekBar
   BehaviorSubject<double> dragPositionSubject;
   // custom audioService control methods
-  Function startSinglePlayback, audioServicePlayPause, toggleRepeatSong;
+  Function startSinglePlayback,
+      audioServicePlayPause,
+      toggleRepeatSong,
+      refreshAppState;
   HomePage(this.dragPositionSubject, this.startSinglePlayback,
-      this.audioServicePlayPause, this.toggleRepeatSong);
+      this.audioServicePlayPause, this.refreshAppState, this.toggleRepeatSong);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -74,6 +78,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // opens the slideUpPanel completely (on tap of the collapsed panel)
   void openSlideUpPanelToExpanded() {
     _slidingUpPanelController.open();
+  }
+
+  // set status and navbar color
+  void _setStatusNavbarColor() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor:
+          globalColors.backgroundClr, // navigation bar color
+      statusBarColor: globalColors.backgroundClr, // status bar color
+      statusBarIconBrightness: (globalColors.appBrightness == Brightness.dark)
+          ? Brightness.light
+          : Brightness.dark, // status bar icons' color
+      systemNavigationBarIconBrightness:
+          (globalColors.appBrightness == Brightness.dark)
+              ? Brightness.light
+              : Brightness.dark,
+    ));
   }
 
   // handles the onWillPop callback
@@ -168,6 +188,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // execute function after build
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // setting the color of pheripheral components
+      _setStatusNavbarColor();
       // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
       _slideUpPanelCollapsedHeightAnimation = Tween<double>(
               begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
@@ -191,19 +213,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return SizeTransition(
       sizeFactor: _hideBottomNavBarAnimController,
       axisAlignment: -1.0,
-      child: BottomNavigationBar(
-        currentIndex: _bottomNavBarCurrIndex,
-        backgroundColor: globalColors.backgroundClr,
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        selectedItemColor: globalColors.iconActiveClr,
-        unselectedItemColor: globalColors.iconDefaultClr,
-        selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
-        unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
-        iconSize: globalVars.bottomNavBarIconSize,
-        type: BottomNavigationBarType.shifting,
-        items: homePageW.bottomNavBarItems(),
-        onTap: _bottomNavBarItemTap,
+      child: Theme(
+        data: new ThemeData(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _bottomNavBarCurrIndex,
+          backgroundColor: globalColors.backgroundClr,
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
+          selectedItemColor: globalColors.iconActiveClr,
+          unselectedItemColor: globalColors.iconDefaultClr,
+          selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+          unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+          iconSize: globalVars.bottomNavBarIconSize,
+          type: BottomNavigationBarType.shifting,
+          items: homePageW.bottomNavBarItems(),
+          onTap: _bottomNavBarItemTap,
+        ),
       ),
     );
   }
@@ -302,9 +330,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           pageBuilder: (BuildContext context, _, __) {
             switch (routeSettings.name) {
               case '/':
-                return ProfileHomeView();
+                return ProfileHomeView(widget.refreshAppState);
               default:
-                return ProfileHomeView();
+                return ProfileHomeView(widget.refreshAppState);
             }
           },
           transitionDuration: Duration(milliseconds: 400),

@@ -10,6 +10,7 @@ import '../../../globals/globalFun.dart' as globalFun;
 import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 import '../../../globals/globalWids.dart' as globalWids;
+import '../../../globals/globalColors.dart' as globalColors;
 
 class SearchHomeView extends StatefulWidget {
   // custom AudioService methods
@@ -162,11 +163,14 @@ class _SearchHomeViewState extends State<SearchHomeView>
 
   // holds the searchHomeView Body implementation
   Widget searchHomeViewBody() {
-    return AnimatedSwitcher(
-      duration: Duration(milliseconds: 300),
-      child: (searchResultLoading)
-          ? searchHomeViewW.searchResultLoadingW(context)
-          : searchHomeViewContentInstructionSwitcher(),
+    return Container(
+      color: globalColors.backgroundClr,
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        child: (searchResultLoading)
+            ? searchHomeViewW.searchResultLoadingW(context)
+            : searchHomeViewContentInstructionSwitcher(),
+      ),
     );
   }
 
