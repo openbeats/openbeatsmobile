@@ -415,7 +415,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  void onCustomAction(String action, arguments) async {
+  Future<void> onCustomAction(String action, arguments) async {
     super.onCustomAction(action, arguments);
     if (action == "startSinglePlayback") {
       // calling method to start playback with no repeat

@@ -375,8 +375,8 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
             if (duration != null)
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                    trackHeight: 6.0,
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7.0)),
+                    trackHeight: 5.0,
+                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0)),
                 child: Slider(
                   min: 0.0,
                   max: duration,

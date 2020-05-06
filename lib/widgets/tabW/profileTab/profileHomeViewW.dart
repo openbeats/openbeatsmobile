@@ -316,6 +316,7 @@ Widget darkModeSettingsToggle(Function refreshAppState) {
       style: GoogleFonts.openSans(fontWeight: FontWeight.w600),
     ),
     trailing: Switch(
+        activeColor: globalColors.iconActiveClr,
         value: (globalColors.appBrightness == Brightness.light) ? false : true,
         onChanged: (value) {
           // changing global values

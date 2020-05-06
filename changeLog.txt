@@ -1,0 +1,1 @@
+Changed the width of the seekbar|Fixed the color of the dark mode buttons|Updated to AndroidService 0.8.0|Added changeLogFile|
