@@ -9,7 +9,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import './tabs/searchTab/searchHomeView.dart';
-import './tabs/playlistsTab/playlistsTab.dart';
+import './tabs/collectionsTab/collectionsTab.dart';
 
 import './tabs/trendingTab/trendingTab.dart';
 import './tabs/exploreTab/exploreTab.dart';
@@ -271,7 +271,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _exploreTab(),
         _trendingTab(),
         _searchTab(),
-        _playlistsTab(),
+        _collectionsTab(),
         _profileTab(),
       ],
     );
@@ -314,8 +314,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   // holds the PlaylistsTab widget
-  Widget _playlistsTab() {
-    return PlaylistsTab();
+  Widget _collectionsTab() {
+    return CollectionsTab();
   }
 
   // holds the SettingsTab widget
