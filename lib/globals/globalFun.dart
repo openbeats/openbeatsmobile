@@ -115,6 +115,8 @@ String reformatViews(String views) {
     plays = views[0] + views[1] + "K plays";
   } else if (views.length > 3) {
     plays = views[0] + "K plays";
+  } else {
+    plays = views + " plays";
   }
 
   return plays;
