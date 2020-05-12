@@ -511,31 +511,39 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // function to get the streaming URL for the audio
   Future<String> getStreamingURL(mediaParamters) async {
+    // counts the number of iterations of getting the URL
+    int _iterationCount = 0;
     // holds the responseJSON containing the streaming URL
     var responseJSON;
     try {
-      // checking for link validity
-      String url =
-          globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
-      // sending GET request
-      var response = await http.get(url);
-      responseJSON = jsonDecode(response.body);
+      // iterating till the appropriate response is recieved or the iteration count is reached
+      while (_iterationCount < 10) {
+        // checking for link validity
+        String url =
+            globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
+        // sending GET request
+        var response = await http.get(url);
+        responseJSON = jsonDecode(response.body);
 
-      // checking conditions to make sure the streamingURL has been recieved
-      if (responseJSON["status"] == true && responseJSON["link"] != null) {
-        return responseJSON["link"];
-      } else {
-        return globalVars.apiHostAddress +
-            "/fallback/" +
-            mediaParamters["videoId"];
+        // checking conditions to make sure the streamingURL has been recieved
+        if (responseJSON["status"] == true && responseJSON["link"] != null) {
+          return responseJSON["link"];
+        } else {
+          // incrementing iteration count
+          _iterationCount += 1;
+        }
       }
+      // using fallback link if there is no other way
+      return globalVars.apiHostAddress +
+          "/fallback/" +
+          mediaParamters["videoId"];
     } catch (e) {
-      // globalFun.showToastMessage(
-      //     "Sorry, not able to connect to OpenBeats server. Please try again",
-      //     Colors.red,
-      //     Colors.white,
-      //     true);
-      // onStop();
+      globalFun.showToastMessage(
+          "Sorry, not able to connect to OpenBeats server. Please try again",
+          true,
+          Colors.red,
+          Colors.white);
+      onStop();
     }
     return null;
   }

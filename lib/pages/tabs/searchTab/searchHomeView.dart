@@ -56,7 +56,7 @@ class _SearchHomeViewState extends State<SearchHomeView>
     // sanitizing query to prevent rogue characters
     query = query.replaceAll(new RegExp(r'[^\w\s]+'), '');
     // constructing url to send request to to get list of videos
-    String url = globalVars.apiHostAddress + "/ytcat?q=" + query + " audio";
+    String url = globalVars.apiHostAddress + "/ytcat?q=" + query + " lyrics";
     try {
       // sending http get request
       var response = await http.get(url);
