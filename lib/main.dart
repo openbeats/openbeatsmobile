@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import './globals/globalColors.dart' as globalColors;
 import './globals/globalStyles.dart' as globalStyles;
 import './globals/globalVars.dart' as globalVars;
 import './globals/globalFun.dart' as globalFun;
+import './globals/actions/globalColorsW.dart' as globalColorsW;
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
@@ -99,6 +101,19 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
+  // refresh the app state
+  void refreshAppState() {
+    setState(() {});
+  }
+
+  // fetches app brigtness from local storage and applies it to the app
+  void fetchAppBrightness() async {
+    Brightness savedBrightness = await globalFun.getAppBrightness();
+    // setting global color values
+    globalColorsW.switchAppBrightness(savedBrightness);
+    refreshAppState();
+  }
+
   // connects to the audio_service
   void connect() async {
     await AudioService.connect();
@@ -112,17 +127,44 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // connecting to audio service
     connect();
-    
+    // // fetching app brightness values
+    // fetchAppBrightness();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "OpenBeats",
+      debugShowCheckedModeBanner: false,
       home: HomePage(dragPositionSubject, startSinglePlayback,
-          audioServicePlayPause, () {}),
-      theme: globalStyles.applicationThemeData,
+          audioServicePlayPause, refreshAppState, () {}),
+      theme: ThemeData(
+        brightness: globalColors.appBrightness,
+        primarySwatch: globalColors.primarySwatch,
+        scaffoldBackgroundColor: globalColors.backgroundClr,
+        accentColor: globalColors.primarySwatch,
+        appBarTheme: AppBarTheme(
+          elevation: 0,
+          color: globalColors.backgroundClr,
+          textTheme: TextTheme(
+            headline6: GoogleFonts.montserrat(
+              textStyle: TextStyle(
+                color: globalColors.textDefaultClr,
+                fontSize: 26.0,
+              ),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          iconTheme: IconThemeData(
+            color: globalColors.iconDefaultClr,
+          ),
+          actionsIconTheme: IconThemeData(
+            color: globalColors.iconDefaultClr,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -374,7 +416,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  void onCustomAction(String action, arguments) async {
+  Future<void> onCustomAction(String action, arguments) async {
     super.onCustomAction(action, arguments);
     if (action == "startSinglePlayback") {
       // calling method to start playback with no repeat
@@ -469,31 +511,39 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // function to get the streaming URL for the audio
   Future<String> getStreamingURL(mediaParamters) async {
+    // counts the number of iterations of getting the URL
+    int _iterationCount = 0;
     // holds the responseJSON containing the streaming URL
     var responseJSON;
     try {
-      // checking for link validity
-      String url =
-          globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
-      // sending GET request
-      var response = await http.get(url);
-      responseJSON = jsonDecode(response.body);
+      // iterating till the appropriate response is recieved or the iteration count is reached
+      while (_iterationCount < 10) {
+        // checking for link validity
+        String url =
+            globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
+        // sending GET request
+        var response = await http.get(url);
+        responseJSON = jsonDecode(response.body);
 
-      // checking conditions to make sure the streamingURL has been recieved
-      if (responseJSON["status"] == true && responseJSON["link"] != null) {
-        return responseJSON["link"];
-      } else {
-        return globalVars.apiHostAddress +
-            "/fallback/" +
-            mediaParamters["videoId"];
+        // checking conditions to make sure the streamingURL has been recieved
+        if (responseJSON["status"] == true && responseJSON["link"] != null) {
+          return responseJSON["link"];
+        } else {
+          // incrementing iteration count
+          _iterationCount += 1;
+        }
       }
+      // using fallback link if there is no other way
+      return globalVars.apiHostAddress +
+          "/fallback/" +
+          mediaParamters["videoId"];
     } catch (e) {
-      // globalFun.showToastMessage(
-      //     "Sorry, not able to connect to OpenBeats server. Please try again",
-      //     Colors.red,
-      //     Colors.white,
-      //     true);
-      // onStop();
+      globalFun.showToastMessage(
+          "Sorry, not able to connect to OpenBeats server. Please try again",
+          true,
+          Colors.red,
+          Colors.white);
+      onStop();
     }
     return null;
   }

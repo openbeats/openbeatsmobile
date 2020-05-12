@@ -10,7 +10,6 @@ Widget appBar(TextEditingController queryFieldController,
   return AppBar(
     elevation: 0,
     titleSpacing: 0.0,
-    backgroundColor: globalColors.textFieldBgClr,
     title: Container(
       child: TextField(
         autofocus: true,

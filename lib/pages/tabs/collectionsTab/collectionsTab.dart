@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class PlaylistsTab extends StatefulWidget {
+class CollectionsTab extends StatefulWidget {
   @override
-  _PlaylistsTabState createState() => _PlaylistsTabState();
+  _CollectionsTabState createState() => _CollectionsTabState();
 }
 
-class _PlaylistsTabState extends State<PlaylistsTab> {
+class _CollectionsTabState extends State<CollectionsTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -23,7 +23,6 @@ Widget _appBarTitle(TextEditingController queryFieldController,
     padding: EdgeInsets.only(left: 10.0),
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(5.0),
-      color: globalColors.textFieldBgClr,
     ),
     child: TextField(
       controller: queryFieldController,
@@ -94,7 +93,7 @@ Widget suggestionsTitleW(bool showHistory) {
     child: Text(
       (showHistory) ? "Search History" : "Suggestions",
       style: TextStyle(
-        fontSize: 26.0,
+        fontSize: 24.0,
         fontWeight: FontWeight.bold,
       ),
     ),

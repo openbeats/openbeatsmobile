@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
+import 'package:keyboard_utils/widgets.dart';
 import './tabs/searchTab/searchHomeView.dart';
-import './tabs/playlistsTab/playlistsTab.dart';
+import './tabs/collectionsTab/collectionsTab.dart';
 
 import './tabs/trendingTab/trendingTab.dart';
 import './tabs/exploreTab/exploreTab.dart';
@@ -19,14 +20,18 @@ import '../globals/globalStyles.dart' as globalStyles;
 import '../globals/globalWids.dart' as globalWids;
 import '../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 import '../globals/globalFun.dart' as globalFun;
+import '../globals/actions/globalColorsW.dart' as globalColorsW;
 
 class HomePage extends StatefulWidget {
   // behaviourSubject to monitor and control the seekBar
   BehaviorSubject<double> dragPositionSubject;
   // custom audioService control methods
-  Function startSinglePlayback, audioServicePlayPause, toggleRepeatSong;
+  Function startSinglePlayback,
+      audioServicePlayPause,
+      toggleRepeatSong,
+      refreshAppState;
   HomePage(this.dragPositionSubject, this.startSinglePlayback,
-      this.audioServicePlayPause, this.toggleRepeatSong);
+      this.audioServicePlayPause, this.refreshAppState, this.toggleRepeatSong);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -76,6 +81,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _slidingUpPanelController.open();
   }
 
+  // changes the status bar color based on the range of opening the SlideUpPanel
+  void changeStatusBarColorSlidePosition(double slidePosition) {
+    if (slidePosition <= 0.5)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[0]);
+    else if (slidePosition >= 0.5 && slidePosition <= 0.6)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[0]);
+    else if (slidePosition >= 0.6 && slidePosition <= 0.7)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[1]);
+    else if (slidePosition >= 0.7 && slidePosition <= 0.8)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[2]);
+    else if (slidePosition >= 0.8 && slidePosition <= 0.9)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[3]);
+    else if (slidePosition >= 0.9 && slidePosition <= 1.0)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[4]);
+  }
+
+  // set status and navbar color
+  void _setStatusNavbarColor() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor:
+          globalColors.mainAccentColor, // navigation bar color
+      statusBarColor: globalColors.backgroundClr, // status bar color
+      statusBarIconBrightness: (globalColors.appBrightness == Brightness.dark)
+          ? Brightness.light
+          : Brightness.dark, // status bar icons' color
+      systemNavigationBarIconBrightness:
+          (globalColors.appBrightness == Brightness.dark)
+              ? Brightness.light
+              : Brightness.dark,
+    ));
+  }
+
+  // sets the status bar color during slide up of SlideUpPanel
+  void _setStatusBarColor(Color color) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: color,
+    ));
+  }
+
   // handles the onWillPop callback
   Future<bool> _onWillPopCallbackHandler() async {
     // checking if the SlidingUpPanel is open
@@ -122,14 +166,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     connect();
     // initiating animation controller to hide the BottomNavBar
-    _hideBottomNavBarAnimController =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    _hideBottomNavBarAnimController = AnimationController(
+        vsync: this, duration: globalVars.animationDuration);
     // initiating animation controller for play_pause button in the collapsed slideUpPanel
-    playPauseAnimationController =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    playPauseAnimationController = AnimationController(
+        vsync: this, duration: globalVars.animationDuration);
     // initiating the animation controller for SlideUpPanel collapsedView height depending on audioPlayback
-    _slideUpPanelCollapsedHeightController =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    _slideUpPanelCollapsedHeightController = AnimationController(
+        vsync: this, duration: globalVars.animationDuration);
     // showing the BottomNavBar
     _hideBottomNavBarAnimController.forward();
 
@@ -168,13 +212,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // execute function after build
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // setting the color of pheripheral components
+      _setStatusNavbarColor();
       // initiating the tween animation and values for SlideUpPanel collapsedView height depending on audioPlayback
       _slideUpPanelCollapsedHeightAnimation = Tween<double>(
               begin: 0.0, end: MediaQuery.of(context).size.height * 0.075)
           .animate(_slideUpPanelCollapsedHeightController);
       // getting login details
       await globalFun.getUserDetailsSharedPrefs();
-      setState(() {});
     });
 
     return WillPopScope(
@@ -182,7 +227,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: Scaffold(
         key: globalScaffoldKeys.homePageScaffoldKey,
         bottomNavigationBar: _homePageBottomNavBar(),
-        body: _homePageBody(),
+        body: KeyboardAware(builder: (context, keyboardConfig) {
+          return _homePageBody(keyboardConfig.isKeyboardOpen);
+        }),
       ),
     );
   }
@@ -192,31 +239,38 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return SizeTransition(
       sizeFactor: _hideBottomNavBarAnimController,
       axisAlignment: -1.0,
-      child: BottomNavigationBar(
-        elevation: 0,
-        currentIndex: _bottomNavBarCurrIndex,
-        backgroundColor: globalColors.backgroundClr,
-        showSelectedLabels: true,
-        showUnselectedLabels: false,
-        selectedItemColor: globalColors.iconActiveClr,
-        unselectedItemColor: globalColors.iconDefaultClr,
-        selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
-        unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
-        iconSize: globalVars.bottomNavBarIconSize,
-        type: BottomNavigationBarType.shifting,
-        items: homePageW.bottomNavBarItems(),
-        onTap: _bottomNavBarItemTap,
+      child: Theme(
+        data: new ThemeData(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _bottomNavBarCurrIndex,
+          backgroundColor: globalColors.mainAccentColor,
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
+          selectedItemColor: globalColors.iconActiveClr,
+          unselectedItemColor: globalColors.iconDefaultClr,
+          selectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+          unselectedLabelStyle: globalStyles.bottomNavBarItemLabelStyle,
+          iconSize: globalVars.bottomNavBarIconSize,
+          type: BottomNavigationBarType.shifting,
+          items: homePageW.bottomNavBarItems(),
+          onTap: _bottomNavBarItemTap,
+        ),
       ),
     );
   }
 
   // holds the homePageBody
-  Widget _homePageBody() {
+  Widget _homePageBody(isKeyboardOpen) {
     return SafeArea(
       child: SlidingUpPanel(
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
-        minHeight: _slideUpPanelCollapsedHeightAnimation.value,
+        minHeight: (!isKeyboardOpen)
+            ? _slideUpPanelCollapsedHeightAnimation.value
+            : 0.0,
         maxHeight: MediaQuery.of(context).size.height,
         collapsed: homePageW.collapsedSlidingUpPanel(
             context,
@@ -232,6 +286,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
         onPanelClosed: () => _hideBottomNavBarAnimController.forward(),
+        onPanelSlide: changeStatusBarColorSlidePosition,
       ),
     );
   }
@@ -244,7 +299,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         _exploreTab(),
         _trendingTab(),
         _searchTab(),
-        _playlistsTab(),
+        _collectionsTab(),
         _profileTab(),
       ],
     );
@@ -287,8 +342,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   // holds the PlaylistsTab widget
-  Widget _playlistsTab() {
-    return PlaylistsTab();
+  Widget _collectionsTab() {
+    return CollectionsTab();
   }
 
   // holds the SettingsTab widget
@@ -304,9 +359,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           pageBuilder: (BuildContext context, _, __) {
             switch (routeSettings.name) {
               case '/':
-                return ProfileHomeView();
+                return ProfileHomeView(widget.refreshAppState);
               default:
-                return ProfileHomeView();
+                return ProfileHomeView(widget.refreshAppState);
             }
           },
           transitionDuration: Duration(milliseconds: 400),

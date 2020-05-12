@@ -23,7 +23,7 @@ List<BottomNavigationBarItem> bottomNavBarItems() {
               margin: EdgeInsets.only(bottom: 4.0),
               child: Icon(icon),
             ),
-            backgroundColor: globalColors.backgroundClr,
+            backgroundColor: globalColors.mainAccentColor,
             title: Text(globalStrings.bottomNavBarItemLabels[index]),
           ),
         ),
@@ -79,9 +79,7 @@ Widget collapsedSlidingUpPanel(
         }
 
         return Container(
-          decoration: BoxDecoration(
-            color: globalColors.backgroundClr,
-          ),
+          color: globalColors.mainAccentColor,
           child: nowPlayingCollapsedContent(
               state,
               audioThumbnail,
@@ -260,6 +258,7 @@ Widget expandedSlidingUpPanel(
         audioPlaying = true;
       }
       return Container(
+        color: globalColors.mainAccentColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -373,27 +372,26 @@ Widget slideUpPanelExpandedPositionIndicator(MediaItem mediaItem,
         }
         return Column(
           children: [
-            if (duration != null)
-              SliderTheme(
-                data: SliderTheme.of(context).copyWith(
-                    trackHeight: 6.0,
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 7.0)),
-                child: Slider(
-                  min: 0.0,
-                  max: duration,
-                  value: seekPos ?? max(0.0, min(position, duration)),
-                  onChanged: (durationInString != "--:--")
-                      ? (value) {
-                          dragPositionSubject.add(value);
-                        }
-                      : null,
-                  onChangeEnd: (value) {
-                    AudioService.seekTo(value.toInt());
-                    seekPos = value;
-                    dragPositionSubject.add(null);
-                  },
-                ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                  trackHeight: 5.0,
+                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0)),
+              child: Slider(
+                min: 0.0,
+                max: duration,
+                value: seekPos ?? max(0.0, min(position, duration)),
+                onChanged: (durationInString != "--:--")
+                    ? (value) {
+                        dragPositionSubject.add(value);
+                      }
+                    : null,
+                onChangeEnd: (value) {
+                  AudioService.seekTo(value.toInt());
+                  seekPos = value;
+                  dragPositionSubject.add(null);
+                },
               ),
+            ),
             Container(
               padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width * 0.06),

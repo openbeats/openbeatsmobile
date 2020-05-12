@@ -5,7 +5,7 @@ List<String> bottomNavBarItemLabels = [
   "Explore",
   "Trending",
   "Search",
-  "Playlists",
+  "Collections",
   "Profile"
 ];
 

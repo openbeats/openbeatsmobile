@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../globals/globalColors.dart' as globalColors;
 import '../../../globals/globalVars.dart' as globalVars;
+import '../../../globals/actions/globalColorsW.dart' as globalColorsW;
+import '../../../globals/globalFun.dart' as globalFun;
 
 // holds the AppBar for the profileHomeView
 Widget appBar() {
@@ -13,54 +15,51 @@ Widget appBar() {
 }
 
 // holds the email textfield for the tabView
-Widget emailTxtField(BuildContext context, bool issignIn,
-    TextEditingController controller, bool autoValidate) {
+Widget emailTxtField(
+    BuildContext context, bool issignIn, TextEditingController controller) {
   return Container(
     margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.15),
     child: TextFormField(
       controller: controller,
-      autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         border: InputBorder.none,
+        alignLabelWithHint: false,
         icon: Icon(Icons.email),
         hintText: "Email Address",
       ),
-      validator: (String value) {
-        if (value.length == 0 || !value.contains("@"))
-          return 'Please enter valid email address';
-        else
-          return null;
-      },
     ),
   );
 }
 
 // holds the password textfield for the tabView
-Widget passwordTxtField(BuildContext context, bool issignIn,
-    TextEditingController controller, bool autoValidate) {
+Widget passwordTxtField(
+    BuildContext context,
+    bool issignIn,
+    TextEditingController controller,
+    bool hidePasswordField,
+    Function togglePasswordVisibility) {
   return Container(
     margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.15),
     child: TextFormField(
       controller: controller,
-      autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
-      keyboardType: TextInputType.emailAddress,
-      obscureText: true,
+      obscureText: hidePasswordField,
       decoration: InputDecoration(
         border: InputBorder.none,
         icon: Icon(Icons.lock),
+        suffixIcon: IconButton(
+          icon: Icon(
+              (hidePasswordField) ? Icons.visibility_off : Icons.visibility),
+          iconSize: 20.0,
+          color: globalColors.iconDisabledClr,
+          onPressed: togglePasswordVisibility,
+        ),
         hintText: "Password",
       ),
-      validator: (String value) {
-        if (value.length == 0)
-          return 'Please enter valid password';
-        else
-          return null;
-      },
     ),
   );
 }
@@ -109,25 +108,18 @@ Widget fgtPasswordBtn(BuildContext context) {
 
 // holds the username textfield for the tabview
 Widget userNameTextField(
-    BuildContext context, TextEditingController controller, bool autoValidate) {
+    BuildContext context, TextEditingController controller) {
   return Container(
     margin: EdgeInsets.symmetric(
         horizontal: MediaQuery.of(context).size.width * 0.15),
     child: TextFormField(
       controller: controller,
-      autovalidate: autoValidate,
       cursorColor: globalColors.iconActiveClr,
       decoration: InputDecoration(
         border: InputBorder.none,
         icon: Icon(Icons.person),
         hintText: "User Name",
       ),
-      validator: (String value) {
-        if (value.length == 0)
-          return 'Please enter your name';
-        else
-          return null;
-      },
     ),
   );
 }
@@ -154,9 +146,10 @@ Widget signInTabGreetingSubtitleMessage() {
       "Sign In to your account",
       textAlign: TextAlign.center,
       style: GoogleFonts.openSans(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-          color: globalColors.textActiveClr),
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
+        color: globalColors.textDefaultClr,
+      ),
     ),
   );
 }
@@ -167,17 +160,18 @@ Widget joinTabGreetingMessage() {
     child: RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
-        text: "Create\n",
+        text: "join!\n",
         style: GoogleFonts.openSans(
             color: globalColors.textActiveClr,
+            height: 1.6,
             fontWeight: FontWeight.bold,
             fontSize: 60.0),
         children: [
           TextSpan(
-            text: "your own",
+            text: "with your own",
             style: GoogleFonts.openSans(
                 color: globalColors.textDefaultClr,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w600,
                 fontSize: 16.0),
           ),
           TextSpan(
@@ -198,7 +192,7 @@ Widget joinTabGreetingMessage() {
             text: " account",
             style: GoogleFonts.openSans(
                 color: globalColors.textDefaultClr,
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.w600,
                 fontSize: 16.0),
           ),
         ],
@@ -210,30 +204,26 @@ Widget joinTabGreetingMessage() {
 // holds the profileview
 Widget profileView(BuildContext context, Function signoutCallback) {
   return Container(
-    height: MediaQuery.of(context).size.height * 0.4,
+    height: MediaQuery.of(context).size.height * 0.62,
     width: MediaQuery.of(context).size.width,
-    child: Card(
-      elevation: 5.0,
-      color: globalColors.profileBgClr,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          avatarImageView(),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.01,
-          ),
-          nameofUser(),
-          emailOfUser(),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.03,
-          ),
-          logoutTxtBtn(signoutCallback),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.02,
-          ),
-        ],
-      ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        avatarImageView(),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
+        nameofUser(),
+        emailOfUser(),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.03,
+        ),
+        logoutTxtBtn(signoutCallback),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.02,
+        ),
+      ],
     ),
   );
 }

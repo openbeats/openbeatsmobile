@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import './globalStrings.dart' as globalStrings;
 import './globalColors.dart' as globalColors;
 import './globalFun.dart' as globalFun;
+import './globalVars.dart' as globalVars;
 
 // holds the list of BottomNaBar icons
 List<IconData> bottomNavBarIcons = [
@@ -61,7 +62,7 @@ Widget audioTitleW(
     bool audioPlaying,
     bool showBiggerLoadingAnimation) {
   return AnimatedSwitcher(
-    duration: kThemeAnimationDuration,
+    duration: globalVars.animationDuration,
     child: (audioPlaying)
         ? (shouldScroll)
             ? Container(
@@ -91,7 +92,9 @@ Widget connectingWidget(bool shouldCenter, bool showBiggerLoadingAnimation) {
   return Container(
     height: (showBiggerLoadingAnimation) ? 40.0 : 30.0,
     child: FlareActor(
-      "assets/flareAssets/logoanim.flr",
+      (globalColors.appBrightness == Brightness.light)
+          ? "assets/flareAssets/logoanim.flr"
+          : "assets/flareAssets/logoanimwhite.flr",
       animation: "rotate",
       alignment: (shouldCenter) ? Alignment.center : Alignment.centerLeft,
     ),

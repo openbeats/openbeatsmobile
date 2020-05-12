@@ -115,6 +115,8 @@ String reformatViews(String views) {
     plays = views[0] + views[1] + "K plays";
   } else if (views.length > 3) {
     plays = views[0] + "K plays";
+  } else {
+    plays = views + " plays";
   }
 
   return plays;
@@ -187,4 +189,22 @@ void showToastMessage(String message, bool isLong, Color bgClr, Color txtClr) {
     textColor: txtClr,
     fontSize: 18.0,
   );
+}
+
+// save app brightness to persistent storage
+void saveAppBrightness(Brightness currBrightness) async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool("darkmode", (currBrightness == Brightness.dark) ? true : false);
+}
+
+// gets the saved app brightness value from persistent storage
+Future<Brightness> getAppBrightness() async {
+  // creating sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool darkMode = prefs.getBool("darkmode");
+  if (darkMode == null || darkMode == false)
+    return Brightness.light;
+  else
+    return Brightness.dark;
 }

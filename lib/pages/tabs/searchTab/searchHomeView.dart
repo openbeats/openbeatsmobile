@@ -10,6 +10,7 @@ import '../../../globals/globalFun.dart' as globalFun;
 import '../../../globals/globalVars.dart' as globalVars;
 import '../../../globals/globalScaffoldKeys.dart' as globalScaffoldKeys;
 import '../../../globals/globalWids.dart' as globalWids;
+import '../../../globals/globalColors.dart' as globalColors;
 
 class SearchHomeView extends StatefulWidget {
   // custom AudioService methods
@@ -25,8 +26,6 @@ class _SearchHomeViewState extends State<SearchHomeView>
   bool searchResultLoading = false;
   // holds the videos received for query
   List videosResponseList = new List();
-  // flag for recursion calls for the getVideosforQuery function
-  bool _recursionCountFlag = false;
 
   // navigate to searchNowView
   void navigateToSearchNowView() async {
@@ -52,49 +51,42 @@ class _SearchHomeViewState extends State<SearchHomeView>
 
   // gets list of videos for query
   void getVideosForQuery(String query) async {
+    // holds the iteration count for the ytcat retrying logic
+    int _iterationCount = 0;
     // sanitizing query to prevent rogue characters
     query = query.replaceAll(new RegExp(r'[^\w\s]+'), '');
     // constructing url to send request to to get list of videos
     String url = globalVars.apiHostAddress + "/ytcat?q=" + query + " audio";
     try {
-      // sending http get request
-      var response = await http.get(url);
-      // decoding to json
-      var responseJSON = jsonDecode(response.body);
-      // checking if proper response is received
-      if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
-        setState(() {
-          // resetting recursion count flag
-          _recursionCountFlag = false;
-          // response as list to iterate over
-          videosResponseList = responseJSON["data"] as List;
-
-          // removing loading animation from screen
-          searchResultLoading = false;
-
-          // removing any snackbar
-          globalScaffoldKeys.searchHomeViewScaffoldKey.currentState
-              .hideCurrentSnackBar();
-        });
-      } else {
-        setState(() {
-          // removing loading animation from screen
-          searchResultLoading = false;
-        });
-        if (!_recursionCountFlag) {
-          // resetting recursion count flag
-          _recursionCountFlag = true;
-          getVideosForQuery(query);
+      while (_iterationCount < 5) {
+        // sending http get request
+        var response = await http.get(url);
+        // decoding to json
+        var responseJSON = jsonDecode(response.body);
+        // checking if proper response is received
+        if (responseJSON["status"] == true &&
+            responseJSON["data"].length != 0) {
+          setState(() {
+            // response as list to iterate over
+            videosResponseList = responseJSON["data"] as List;
+            // removing loading animation from screen
+            searchResultLoading = false;
+            // removing any snackbar
+            globalScaffoldKeys.searchHomeViewScaffoldKey.currentState
+                .hideCurrentSnackBar();
+          });
+          // breaking the loop
+          break;
+        } else {
+          // incrementing iteration count
+          _iterationCount += 1;
         }
-
-        // globalFun.showSnackBars(
-        //   globalScaffoldKeys.searchHomeViewScaffoldKey,
-        //   context,
-        //   "Could not get proper response from server. Please try another query",
-        //   Colors.orange,
-        //   Duration(seconds: 3),
-        // );
       }
+
+      setState(() {
+        // removing loading animation from screen
+        searchResultLoading = false;
+      });
     } catch (e) {
       // removing previous snackBar
       globalScaffoldKeys.searchHomeViewScaffoldKey.currentState
@@ -162,11 +154,14 @@ class _SearchHomeViewState extends State<SearchHomeView>
 
   // holds the searchHomeView Body implementation
   Widget searchHomeViewBody() {
-    return AnimatedSwitcher(
-      duration: Duration(milliseconds: 300),
-      child: (searchResultLoading)
-          ? searchHomeViewW.searchResultLoadingW(context)
-          : searchHomeViewContentInstructionSwitcher(),
+    return Container(
+      color: globalColors.backgroundClr,
+      child: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        child: (searchResultLoading)
+            ? searchHomeViewW.searchResultLoadingW(context)
+            : searchHomeViewContentInstructionSwitcher(),
+      ),
     );
   }
 

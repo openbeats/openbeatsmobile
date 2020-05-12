@@ -13,6 +13,8 @@ import '../../../globals/actions/globalVarsA.dart' as globalVarsA;
 import '../../../globals/globalFun.dart' as globalFun;
 
 class ProfileHomeView extends StatefulWidget {
+  Function refreshAppState;
+  ProfileHomeView(this.refreshAppState);
   @override
   _ProfileHomeViewState createState() => _ProfileHomeViewState();
 }
@@ -30,36 +32,80 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   TabController authTabController;
   // controllers for textfields
   TextEditingController userNameFieldController = new TextEditingController();
-  TextEditingController emailFieldController = new TextEditingController();
-  TextEditingController passwordFieldController = new TextEditingController();
-  // autoValidate flags for the forms
-  bool signInFormAutoValidate = false, joinFormAutoValidate = false;
+  TextEditingController signInEmailFieldController =
+      new TextEditingController();
+  TextEditingController signInPasswordFieldController =
+      new TextEditingController();
+  TextEditingController joinEmailFieldController = new TextEditingController();
+  TextEditingController joinPasswordFieldController =
+      new TextEditingController();
   // is loading flag for http requests
   bool isLoading = false;
+  // show or hide the password field data
+  bool hidePasswordField = true;
+
+  // toggles the visibility of the password field
+  void togglePasswordVisibility() {
+    setState(() {
+      hidePasswordField = !hidePasswordField;
+    });
+  }
 
   // validator method for the textfields
   void textFieldValidator() {
+    // validation passed
+    bool validationPassed = true;
     // dismissing the keyboard
     FocusScope.of(context).unfocus();
-    // checking the current tab
-    if (authTabController.index == 0) {
-      // validating signIn form
-      if (_signInFormKey.currentState.validate())
-        signInCallback();
-      else {
-        setState(() {
-          signInFormAutoValidate = true;
-        });
-      }
-    } else {
-      if (_joinFormKey.currentState.validate())
-        joinCallback();
-      else {
-        setState(() {
-          joinFormAutoValidate = true;
-        });
-      }
+
+    // getting current index
+    int currTab = authTabController.index;
+
+    // getting values lengths of all fields
+    int signinEmailLen = signInEmailFieldController.text.length;
+    int signinPasswordLen = signInPasswordFieldController.text.length;
+    String signInEmailText = signInEmailFieldController.text;
+    String joinEmailText = joinEmailFieldController.text;
+    int joinNameLen = userNameFieldController.text.length;
+    int joinEmailLen = joinEmailFieldController.text.length;
+    int joinPasswordLen = joinPasswordFieldController.text.length;
+
+    // validating fields
+    if ((currTab == 0 && signinEmailLen == 0) ||
+        (currTab == 1 && joinEmailLen == 0)) {
+      validationPassed = false;
+      initiateDropDownBanner(
+          "Please enter your email address",
+          globalColors.warningClr,
+          globalColors.darkBgTextClr,
+          Duration(seconds: 3));
+    } else if ((currTab == 0 &&
+            (!signInEmailText.contains("@") ||
+                !signInEmailText.contains("."))) ||
+        (currTab == 1 &&
+            (!joinEmailText.contains("@") || !joinEmailText.contains(".")))) {
+      validationPassed = false;
+      initiateDropDownBanner(
+          "Please enter a valid email address",
+          globalColors.warningClr,
+          globalColors.darkBgTextClr,
+          Duration(seconds: 3));
+    } else if ((currTab == 0 && signinPasswordLen == 0) ||
+        (currTab == 1 && joinPasswordLen == 0)) {
+      validationPassed = false;
+      // showing dropdown banner
+      initiateDropDownBanner(
+          "Please enter your password",
+          globalColors.warningClr,
+          globalColors.darkBgTextClr,
+          Duration(seconds: 3));
+    } else if (currTab == 1 && joinNameLen == 0) {
+      validationPassed = false;
+      initiateDropDownBanner("Please enter your name", globalColors.warningClr,
+          globalColors.darkBgTextClr, Duration(seconds: 3));
     }
+    // checking the validation result
+    if (validationPassed) (currTab == 0) ? signInCallback() : joinCallback();
   }
 
   // signIn callback function
@@ -68,8 +114,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
       isLoading = true;
     });
     // fetching values from controllers
-    String _userEmail = emailFieldController.text.trim();
-    String _userPassword = passwordFieldController.text.trim();
+    String _userEmail = signInEmailFieldController.text.trim();
+    String _userPassword = signInPasswordFieldController.text.trim();
 
     try {
       // sending http request
@@ -77,9 +123,6 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
           body: {"email": _userEmail, "password": _userPassword});
       // converting response to JSON
       var responseJSON = jsonDecode(response.body);
-
-      // fixing the avatar URL bug
-      responseJSON["data"]["avatar"] = "http:" + responseJSON["data"]["avatar"];
 
       if (responseJSON["status"]) {
         // updating global reference
@@ -95,6 +138,9 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             globalColors.successClr,
             globalColors.darkBgTextClr,
             Duration(seconds: 3));
+        // clear text fields
+        signInEmailFieldController.clear();
+        signInPasswordFieldController.clear();
       } else {
         // showing dropdown banner
         initiateDropDownBanner(
@@ -121,8 +167,8 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     });
     // fetching values from controllers
     String _userName = userNameFieldController.text.trim();
-    String _userEmail = emailFieldController.text.trim();
-    String _userPassword = passwordFieldController.text.trim();
+    String _userEmail = joinEmailFieldController.text.trim();
+    String _userPassword = joinPasswordFieldController.text.trim();
 
     try {
       // sending http request
@@ -155,6 +201,10 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             globalColors.errorClr,
             globalColors.darkBgTextClr,
             Duration(seconds: 5));
+        // clearing text fields
+        joinEmailFieldController.clear();
+        joinPasswordFieldController.clear();
+        userNameFieldController.clear();
       }
     } catch (e) {
       globalFun.showToastMessage("Unable to contact server", true,
@@ -208,14 +258,19 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   Widget profileHomeViewBody() {
     return ListView(
       physics: BouncingScrollPhysics(),
-      children: <Widget>[headerProfileHomeView()],
+      children: <Widget>[
+        headerProfileHomeView(),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.3,
+        ),
+      ],
     );
   }
 
   // holds the header for the ProfileHomeView
   Widget headerProfileHomeView() {
     return AnimatedSwitcher(
-      duration: kThemeAnimationDuration,
+      duration: globalVars.animationDuration,
       child: (globalVars.userDetails["token"] == null)
           ? authTabW()
           : profileHomeViewW.profileView(context, signoutCallback),
@@ -225,7 +280,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   // holds the TabBarView for authTabW
   Widget tabBarViewAuthTabW() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
+      height: MediaQuery.of(context).size.height * 0.55,
       child: TabBarView(
         controller: authTabController,
         physics: BouncingScrollPhysics(),
@@ -249,16 +304,19 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
 
   // holds the tabBar for authTabW
   Widget _tabBarAuthTabW(TabController controller) {
-    return TabBar(
-        controller: controller,
-        labelColor: globalColors.textActiveClr,
-        unselectedLabelColor: globalColors.textDisabledClr,
-        labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
-        indicatorColor: Colors.transparent,
-        tabs: [
-          Tab(text: "Sign In"),
-          Tab(text: "Join"),
-        ]);
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.07,
+      child: TabBar(
+          controller: controller,
+          labelColor: globalColors.textActiveClr,
+          unselectedLabelColor: globalColors.textDisabledClr,
+          labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
+          indicatorColor: Colors.transparent,
+          tabs: [
+            Tab(text: "Sign In"),
+            Tab(text: "Join"),
+          ]),
+    );
   }
 
   // holds the signIn widgets for the authTabW
@@ -280,12 +338,16 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
             height: MediaQuery.of(context).size.height * 0.04,
           ),
           profileHomeViewW.emailTxtField(
-              context, true, emailFieldController, signInFormAutoValidate),
+              context, true, signInEmailFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
-              context, true, passwordFieldController, signInFormAutoValidate),
+              context,
+              true,
+              signInPasswordFieldController,
+              hidePasswordField,
+              togglePasswordVisibility),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
@@ -300,7 +362,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
     );
   }
 
-// holds the sign up widgets for the authTabW
+  // holds the sign up widgets for the authTabW
   Widget _joinWTabBarViewAuthTabW(BuildContext context) {
     return Form(
       key: _joinFormKey,
@@ -308,32 +370,32 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         physics: BouncingScrollPhysics(),
         children: <Widget>[
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.02,
+            height: MediaQuery.of(context).size.height * 0.005,
           ),
           profileHomeViewW.joinTabGreetingMessage(),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.02,
           ),
-          profileHomeViewW.userNameTextField(
-              context, userNameFieldController, joinFormAutoValidate),
+          profileHomeViewW.userNameTextField(context, userNameFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.emailTxtField(
-              context, false, emailFieldController, joinFormAutoValidate),
+              context, false, joinEmailFieldController),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.passwordTxtField(
-              context, false, passwordFieldController, joinFormAutoValidate),
+              context,
+              false,
+              joinPasswordFieldController,
+              hidePasswordField,
+              togglePasswordVisibility),
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.01,
           ),
           profileHomeViewW.actionBtnW(
               context, false, textFieldValidator, isLoading),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.05,
-          ),
         ],
       ),
     );

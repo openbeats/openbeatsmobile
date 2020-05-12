@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../globals/globalColors.dart' as globalColors;
+
 class TrendingTab extends StatefulWidget {
   @override
   _TrendingTabState createState() => _TrendingTabState();
