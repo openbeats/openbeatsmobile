@@ -24,3 +24,6 @@ List<String> searchHistory = [];
 
 // holds persistent copy of the searchResults to help persist the data in the TabView
 List persistentSearchResultsList = [];
+
+// holds the animation duration for all components in the app
+Duration animationDuration = Duration(milliseconds: 500);

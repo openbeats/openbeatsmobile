@@ -204,7 +204,7 @@ Widget joinTabGreetingMessage() {
 // holds the profileview
 Widget profileView(BuildContext context, Function signoutCallback) {
   return Container(
-    height: MediaQuery.of(context).size.height * 0.55,
+    height: MediaQuery.of(context).size.height * 0.62,
     width: MediaQuery.of(context).size.width,
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,

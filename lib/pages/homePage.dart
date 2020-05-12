@@ -143,14 +143,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     connect();
     // initiating animation controller to hide the BottomNavBar
-    _hideBottomNavBarAnimController =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    _hideBottomNavBarAnimController = AnimationController(
+        vsync: this, duration: globalVars.animationDuration);
     // initiating animation controller for play_pause button in the collapsed slideUpPanel
-    playPauseAnimationController =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    playPauseAnimationController = AnimationController(
+        vsync: this, duration: globalVars.animationDuration);
     // initiating the animation controller for SlideUpPanel collapsedView height depending on audioPlayback
-    _slideUpPanelCollapsedHeightController =
-        AnimationController(vsync: this, duration: kThemeAnimationDuration);
+    _slideUpPanelCollapsedHeightController = AnimationController(
+        vsync: this, duration: globalVars.animationDuration);
     // showing the BottomNavBar
     _hideBottomNavBarAnimController.forward();
 

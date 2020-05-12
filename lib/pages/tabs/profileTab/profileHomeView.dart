@@ -270,7 +270,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
   // holds the header for the ProfileHomeView
   Widget headerProfileHomeView() {
     return AnimatedSwitcher(
-      duration: kThemeAnimationDuration,
+      duration: globalVars.animationDuration,
       child: (globalVars.userDetails["token"] == null)
           ? authTabW()
           : profileHomeViewW.profileView(context, signoutCallback),
@@ -304,16 +304,19 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
 
   // holds the tabBar for authTabW
   Widget _tabBarAuthTabW(TabController controller) {
-    return TabBar(
-        controller: controller,
-        labelColor: globalColors.textActiveClr,
-        unselectedLabelColor: globalColors.textDisabledClr,
-        labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
-        indicatorColor: Colors.transparent,
-        tabs: [
-          Tab(text: "Sign In"),
-          Tab(text: "Join"),
-        ]);
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.07,
+      child: TabBar(
+          controller: controller,
+          labelColor: globalColors.textActiveClr,
+          unselectedLabelColor: globalColors.textDisabledClr,
+          labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
+          indicatorColor: Colors.transparent,
+          tabs: [
+            Tab(text: "Sign In"),
+            Tab(text: "Join"),
+          ]),
+    );
   }
 
   // holds the signIn widgets for the authTabW
@@ -367,7 +370,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
         physics: BouncingScrollPhysics(),
         children: <Widget>[
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0,
+            height: MediaQuery.of(context).size.height * 0.005,
           ),
           profileHomeViewW.joinTabGreetingMessage(),
           SizedBox(
