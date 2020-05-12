@@ -144,11 +144,12 @@ class _MyAppState extends State<MyApp> {
         brightness: globalColors.appBrightness,
         primarySwatch: globalColors.primarySwatch,
         scaffoldBackgroundColor: globalColors.backgroundClr,
+        accentColor: globalColors.primarySwatch,
         appBarTheme: AppBarTheme(
           elevation: 0,
           color: globalColors.backgroundClr,
           textTheme: TextTheme(
-            title: GoogleFonts.montserrat(
+            headline6: GoogleFonts.montserrat(
               textStyle: TextStyle(
                 color: globalColors.textDefaultClr,
                 fontSize: 26.0,
