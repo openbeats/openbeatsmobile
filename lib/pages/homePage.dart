@@ -7,7 +7,7 @@ import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
+import 'package:keyboard_utils/widgets.dart';
 import './tabs/searchTab/searchHomeView.dart';
 import './tabs/collectionsTab/collectionsTab.dart';
 
@@ -81,11 +81,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     _slidingUpPanelController.open();
   }
 
+  // changes the status bar color based on the range of opening the SlideUpPanel
+  void changeStatusBarColorSlidePosition(double slidePosition) {
+    if (slidePosition <= 0.5)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[0]);
+    else if (slidePosition >= 0.5 && slidePosition <= 0.6)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[0]);
+    else if (slidePosition >= 0.6 && slidePosition <= 0.7)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[1]);
+    else if (slidePosition >= 0.7 && slidePosition <= 0.8)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[2]);
+    else if (slidePosition >= 0.8 && slidePosition <= 0.9)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[3]);
+    else if (slidePosition >= 0.9 && slidePosition <= 1.0)
+      _setStatusBarColor(globalColors.statusBarColorChangeLst[4]);
+  }
+
   // set status and navbar color
   void _setStatusNavbarColor() {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor:
-          globalColors.backgroundClr, // navigation bar color
+          globalColors.mainAccentColor, // navigation bar color
       statusBarColor: globalColors.backgroundClr, // status bar color
       statusBarIconBrightness: (globalColors.appBrightness == Brightness.dark)
           ? Brightness.light
@@ -94,6 +110,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           (globalColors.appBrightness == Brightness.dark)
               ? Brightness.light
               : Brightness.dark,
+    ));
+  }
+
+  // sets the status bar color during slide up of SlideUpPanel
+  void _setStatusBarColor(Color color) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: color,
     ));
   }
 
@@ -204,7 +227,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       child: Scaffold(
         key: globalScaffoldKeys.homePageScaffoldKey,
         bottomNavigationBar: _homePageBottomNavBar(),
-        body: _homePageBody(),
+        body: KeyboardAware(builder: (context, keyboardConfig) {
+          return _homePageBody(keyboardConfig.isKeyboardOpen);
+        }),
       ),
     );
   }
@@ -221,7 +246,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         ),
         child: BottomNavigationBar(
           currentIndex: _bottomNavBarCurrIndex,
-          backgroundColor: globalColors.backgroundClr,
+          backgroundColor: globalColors.mainAccentColor,
           showSelectedLabels: true,
           showUnselectedLabels: false,
           selectedItemColor: globalColors.iconActiveClr,
@@ -238,12 +263,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   // holds the homePageBody
-  Widget _homePageBody() {
+  Widget _homePageBody(isKeyboardOpen) {
     return SafeArea(
       child: SlidingUpPanel(
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
-        minHeight: _slideUpPanelCollapsedHeightAnimation.value,
+        minHeight: (!isKeyboardOpen)
+            ? _slideUpPanelCollapsedHeightAnimation.value
+            : 0.0,
         maxHeight: MediaQuery.of(context).size.height,
         collapsed: homePageW.collapsedSlidingUpPanel(
             context,
@@ -259,6 +286,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         body: _slidingUpPanelBody(),
         onPanelOpened: () => _hideBottomNavBarAnimController.reverse(),
         onPanelClosed: () => _hideBottomNavBarAnimController.forward(),
+        onPanelSlide: changeStatusBarColorSlidePosition,
       ),
     );
   }

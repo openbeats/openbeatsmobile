@@ -23,7 +23,7 @@ List<BottomNavigationBarItem> bottomNavBarItems() {
               margin: EdgeInsets.only(bottom: 4.0),
               child: Icon(icon),
             ),
-            backgroundColor: globalColors.backgroundClr,
+            backgroundColor: globalColors.mainAccentColor,
             title: Text(globalStrings.bottomNavBarItemLabels[index]),
           ),
         ),
@@ -79,7 +79,7 @@ Widget collapsedSlidingUpPanel(
         }
 
         return Container(
-          color: globalColors.backgroundClr,
+          color: globalColors.mainAccentColor,
           child: nowPlayingCollapsedContent(
               state,
               audioThumbnail,
@@ -258,7 +258,7 @@ Widget expandedSlidingUpPanel(
         audioPlaying = true;
       }
       return Container(
-        color: globalColors.backgroundClr,
+        color: globalColors.mainAccentColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,

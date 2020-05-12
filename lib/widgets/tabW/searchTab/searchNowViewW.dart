@@ -93,7 +93,7 @@ Widget suggestionsTitleW(bool showHistory) {
     child: Text(
       (showHistory) ? "Search History" : "Suggestions",
       style: TextStyle(
-        fontSize: 26.0,
+        fontSize: 24.0,
         fontWeight: FontWeight.bold,
       ),
     ),
