@@ -163,7 +163,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
     connect();
     // initiating animation controller to hide the BottomNavBar
     _hideBottomNavBarAnimController = AnimationController(
