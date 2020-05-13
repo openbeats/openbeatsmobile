@@ -26,4 +26,4 @@ List<String> searchHistory = [];
 List persistentSearchResultsList = [];
 
 // holds the animation duration for all components in the app
-Duration animationDuration = Duration(milliseconds: 500);
+Duration animationDuration = Duration(milliseconds: 200);

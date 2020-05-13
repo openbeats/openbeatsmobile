@@ -261,7 +261,7 @@ class _ProfileHomeViewState extends State<ProfileHomeView>
       children: <Widget>[
         headerProfileHomeView(),
         SizedBox(
-          height: MediaQuery.of(context).size.height * 0.3,
+          height: MediaQuery.of(context).size.height * 0.5,
         ),
       ],
     );

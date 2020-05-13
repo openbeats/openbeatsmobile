@@ -35,8 +35,8 @@ dependencies:
   google_fonts: ^1.0.0
   dropdown_banner: ^1.4.0
   fluttertoast: ^4.0.1
-  keyboard_utils: ^1.2.1
-  
+  flutter_keyboard_size: ^0.1.2+2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

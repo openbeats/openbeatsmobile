@@ -277,7 +277,7 @@ Widget expandedSlidingUpPanel(
             globalWids.audioTitleW(
                 audioTitle, context, false, true, true, audioPlaying, true),
             SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
+              height: MediaQuery.of(context).size.height * 0.001,
             ),
             slideUpPanelExpandedMediaViews(audioPlays, context),
             SizedBox(
@@ -324,12 +324,6 @@ Widget slideUpPanelExpandedMediaViews(String views, BuildContext context) {
             fontSize: 18.0,
           ),
           children: [
-            WidgetSpan(
-                child: Icon(
-              Icons.play_circle_filled,
-              size: 22.0,
-              color: globalColors.textDisabledClr,
-            )),
             TextSpan(text: " " + views),
           ]),
       textAlign: TextAlign.center,

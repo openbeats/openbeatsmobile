@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
 import 'package:openbeatsmobile/pages/tabs/profileTab/profileHomeView.dart';
 import 'package:openbeatsmobile/pages/tabs/searchTab/searchNowView.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:keyboard_utils/widgets.dart';
 import './tabs/searchTab/searchHomeView.dart';
 import './tabs/collectionsTab/collectionsTab.dart';
 
@@ -163,7 +163,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
     connect();
     // initiating animation controller to hide the BottomNavBar
     _hideBottomNavBarAnimController = AnimationController(
@@ -224,12 +223,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
     return WillPopScope(
       onWillPop: _onWillPopCallbackHandler,
-      child: Scaffold(
-        key: globalScaffoldKeys.homePageScaffoldKey,
-        bottomNavigationBar: _homePageBottomNavBar(),
-        body: KeyboardAware(builder: (context, keyboardConfig) {
-          return _homePageBody(keyboardConfig.isKeyboardOpen);
-        }),
+      child: KeyboardSizeProvider(
+        child: Scaffold(
+          key: globalScaffoldKeys.homePageScaffoldKey,
+          bottomNavigationBar: _homePageBottomNavBar(),
+          body: Consumer<ScreenHeight>(builder: (context, _res, child) {
+            return _homePageBody(_res.isOpen);
+          }),
+        ),
       ),
     );
   }
@@ -263,14 +264,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   // holds the homePageBody
-  Widget _homePageBody(isKeyboardOpen) {
+  Widget _homePageBody(bool isKeyboardOpen) {
     return SafeArea(
       child: SlidingUpPanel(
         controller: _slidingUpPanelController,
         defaultPanelState: PanelState.CLOSED,
-        minHeight: (!isKeyboardOpen)
-            ? _slideUpPanelCollapsedHeightAnimation.value
-            : 0.0,
+        minHeight: (isKeyboardOpen)
+            ? 0.0
+            : _slideUpPanelCollapsedHeightAnimation.value,
         maxHeight: MediaQuery.of(context).size.height,
         collapsed: homePageW.collapsedSlidingUpPanel(
             context,
