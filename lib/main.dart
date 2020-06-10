@@ -1,550 +1,117 @@
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:audio_service/audio_service.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-
 import 'package:flutter/material.dart';
 
-import 'package:just_audio/just_audio.dart';
-
-import 'package:openbeatsmobile/pages/homePage.dart';
-import 'package:rxdart/rxdart.dart';
-import './globals/globalColors.dart' as globalColors;
-import './globals/globalStyles.dart' as globalStyles;
-import './globals/globalVars.dart' as globalVars;
-import './globals/globalFun.dart' as globalFun;
-import './globals/actions/globalColorsW.dart' as globalColorsW;
-
-MediaControl playControl = MediaControl(
-  androidIcon: 'drawable/ic_action_play_arrow',
-  label: 'Play',
-  action: MediaAction.play,
-);
-MediaControl pauseControl = MediaControl(
-  androidIcon: 'drawable/ic_action_pause',
-  label: 'Pause',
-  action: MediaAction.pause,
-);
-MediaControl skipToNextControl = MediaControl(
-  androidIcon: 'drawable/ic_action_skip_next',
-  label: 'Next',
-  action: MediaAction.skipToNext,
-);
-MediaControl skipToPreviousControl = MediaControl(
-  androidIcon: 'drawable/ic_action_skip_previous',
-  label: 'Previous',
-  action: MediaAction.skipToPrevious,
-);
-MediaControl stopControl = MediaControl(
-  androidIcon: 'drawable/ic_action_stop',
-  label: 'Stop',
-  action: MediaAction.stop,
-);
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+void main() {
+  runApp(MyApp());
 }
 
-class _MyAppState extends State<MyApp> {
-  // behaviour subject to control the audioSeekBar
-  final BehaviorSubject<double> dragPositionSubject =
-      BehaviorSubject.seeded(null);
-
-  // starts single playback of audio
-  void startSinglePlayback(Map<String, dynamic> mediaParameters) async {
-    // getting instance of audioService playbackState
-    PlaybackState playbackState = AudioService.playbackState;
-    // check if the audioService is already running
-    if (playbackState != null &&
-        playbackState.basicState != BasicPlaybackState.none) {
-      await AudioService.customAction("startSinglePlayback", mediaParameters);
-    } else {
-      // if audioService isn't running, start it
-      await startAudioService(false);
-      // giving time for audioService to startup
-      Timer(Duration(seconds: 1), () async {
-        // calling custom action to start single audio playback
-        await AudioService.customAction("startSinglePlayback", mediaParameters);
-      });
-    }
-  }
-
-  // audioService playAndPause control callback
-  void audioServicePlayPause() {
-    // getting instance of audioService playbackState
-    PlaybackState playbackState = AudioService.playbackState;
-    // checking state of audioService
-    if (playbackState != null) {
-      // checking playbackState
-      if (playbackState.basicState == BasicPlaybackState.playing)
-        // pausing playback
-        AudioService.pause();
-      else if (playbackState.basicState == BasicPlaybackState.paused)
-        // resuming playback
-        AudioService.play();
-    }
-  }
-
-  // initiates the audioService
-  Future<void> startAudioService(bool enableQueue) async {
-    await AudioService.start(
-      backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      androidNotificationChannelName: 'OpenBeats Notification Channel',
-      notificationColor: 0xFF09090E,
-      androidNotificationIcon: 'mipmap/ic_launcher',
-      enableQueue: enableQueue,
+class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // Try running your application with "flutter run". You'll see the
+        // application has a blue toolbar. Then, without quitting the app, try
+        // changing the primarySwatch below to Colors.green and then invoke
+        // "hot reload" (press "r" in the console where you ran "flutter run",
+        // or simply save your changes to "hot reload" in a Flutter IDE).
+        // Notice that the counter didn't reset back to zero; the application
+        // is not restarted.
+        primarySwatch: Colors.blue,
+        // This makes the visual density adapt to the platform that you run
+        // the app on. For desktop platforms, the controls will be smaller and
+        // closer together (more dense) than on mobile platforms.
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
+}
 
-  // refresh the app state
-  void refreshAppState() {
-    setState(() {});
-  }
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
 
-  // fetches app brigtness from local storage and applies it to the app
-  void fetchAppBrightness() async {
-    Brightness savedBrightness = await globalFun.getAppBrightness();
-    // setting global color values
-    globalColorsW.switchAppBrightness(savedBrightness);
-    refreshAppState();
-  }
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
 
-  // connects to the audio_service
-  void connect() async {
-    await AudioService.connect();
-  }
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
 
-  // disconnects from the audio_service
-  void disconnect() {
-    AudioService.disconnect();
-  }
+  final String title;
 
   @override
-  void initState() {
-    super.initState();
-    // connecting to audio service
-    connect();
-    // // fetching app brightness values
-    // fetchAppBrightness();
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "OpenBeats",
-      debugShowCheckedModeBanner: false,
-      home: HomePage(dragPositionSubject, startSinglePlayback,
-          audioServicePlayPause, refreshAppState, () {}),
-      theme: ThemeData(
-        brightness: globalColors.appBrightness,
-        primarySwatch: globalColors.primarySwatch,
-        scaffoldBackgroundColor: globalColors.backgroundClr,
-        accentColor: globalColors.primarySwatch,
-        appBarTheme: AppBarTheme(
-          elevation: 0,
-          color: globalColors.backgroundClr,
-          textTheme: TextTheme(
-            headline6: GoogleFonts.montserrat(
-              textStyle: TextStyle(
-                color: globalColors.textDefaultClr,
-                fontSize: 26.0,
-              ),
-              fontWeight: FontWeight.w500,
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
+      ),
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Invoke "debug painting" (press "p" in the console, choose the
+          // "Toggle Debug Paint" action from the Flutter Inspector in Android
+          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+          // to see the wireframe for each widget.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'You have pushed the button this many times:',
             ),
-          ),
-          iconTheme: IconThemeData(
-            color: globalColors.iconDefaultClr,
-          ),
-          actionsIconTheme: IconThemeData(
-            color: globalColors.iconDefaultClr,
-          ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+          ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-}
-
-void _audioPlayerTaskEntrypoint() async {
-  AudioServiceBackground.run(() => AudioPlayerTask());
-}
-
-class AudioPlayerTask extends BackgroundAudioTask {
-  var _queue = <MediaItem>[];
-  // holds one attribute of the contents of MediaItems in _queue
-  var _queueMeta = <String>[];
-  int _queueIndex = 0;
-  AudioPlayer _audioPlayer = new AudioPlayer();
-  Completer _completer = Completer();
-  BasicPlaybackState _skipState;
-  bool _playing;
-  bool _shouldRepeat = true;
-  // used to differentiate normal pause from pause caused by audio focus lost
-  bool _isPaused = true;
-  // temporary mediaItem object to overcome parameter restrictons
-  MediaItem temp;
-
-  Map<String, dynamic> mediaIdParameters = {
-    'mediaID': null,
-    'mediaTitle': null,
-    'channelID': null,
-    'duration': null,
-    'thumbnailURI': null,
-  };
-
-  bool get hasNext => _queueIndex + 1 < _queue.length;
-
-  bool get hasPrevious => _queueIndex > 0;
-
-  MediaItem get mediaItem => _queue[_queueIndex];
-
-  BasicPlaybackState _stateToBasicState(AudioPlaybackState state) {
-    switch (state) {
-      case AudioPlaybackState.none:
-        return BasicPlaybackState.none;
-      case AudioPlaybackState.stopped:
-        return BasicPlaybackState.stopped;
-      case AudioPlaybackState.paused:
-        return BasicPlaybackState.paused;
-      case AudioPlaybackState.playing:
-        return BasicPlaybackState.playing;
-      case AudioPlaybackState.connecting:
-        return _skipState ?? BasicPlaybackState.connecting;
-      case AudioPlaybackState.completed:
-        return BasicPlaybackState.stopped;
-      default:
-        throw Exception("Illegal state");
-    }
-  }
-
-  @override
-  Future<void> onStart() async {
-    var playerStateSubscription = _audioPlayer.playbackStateStream
-        .where((state) => state == AudioPlaybackState.completed)
-        .listen((state) {
-      _handlePlaybackCompleted();
-    });
-    var eventSubscription = _audioPlayer.playbackEventStream.listen((event) {
-      final state = _stateToBasicState(event.state);
-      if (state != BasicPlaybackState.stopped) {
-        _setState(
-          state: state,
-          position: event.position.inMilliseconds,
-        );
-      }
-    });
-
-    // AudioServiceBackground.setQueue(_queue);
-    // await onSkipToNext();
-    await _completer.future;
-    playerStateSubscription.cancel();
-    eventSubscription.cancel();
-  }
-
-  @override
-  void onClick(MediaButton button) {
-    playPause();
-  }
-
-  @override
-  void onStop() {
-    _audioPlayer.stop();
-    _setState(state: BasicPlaybackState.stopped);
-    _completer.complete();
-  }
-
-  void _handlePlaybackCompleted() {
-    if (hasNext) {
-      onSkipToNext();
-    } else {
-      if (_shouldRepeat) {
-        _queueIndex = -1;
-        onSkipToNext();
-      } else {
-        onStop();
-      }
-    }
-  }
-
-  void playPause() {
-    print("PlayPause clicked");
-    if (AudioServiceBackground.state.basicState == BasicPlaybackState.playing) {
-      onPause();
-    } else
-      onPlay();
-  }
-
-  @override
-  Future<void> onSkipToNext() => _skip(1);
-
-  @override
-  Future<void> onSkipToPrevious() => _skip(-1);
-
-  Future<void> _skip(int offset) async {
-    if (_queueIndex == (_queue.length - 1) && offset == 1) {
-      _queueIndex = -1;
-    } else if (_queueIndex == 0 && offset == -1) {
-      _queueIndex = _queue.length;
-    }
-    final newPos = _queueIndex + offset;
-    if (!(newPos >= 0 && newPos < _queue.length)) return;
-    if (_playing == null) {
-      // First time, we want to start playing
-      _playing = true;
-    } else if (_playing) {
-      // Stop current item
-      await _audioPlayer.stop();
-    }
-    // Load next item
-    _queueIndex = newPos;
-    AudioServiceBackground.setMediaItem(mediaItem);
-    _skipState = offset > 0
-        ? BasicPlaybackState.skippingToNext
-        : BasicPlaybackState.skippingToPrevious;
-    await _audioPlayer.setUrl(mediaItem.id);
-    _skipState = null;
-    // Resume playback if we were playing
-    if (_playing) {
-      onPlay();
-    } else {
-      _setState(state: BasicPlaybackState.paused);
-    }
-  }
-
-  @override
-  void onPlay() {
-    if (_skipState == null) {
-      _playing = true;
-      _isPaused = false;
-      _audioPlayer.play();
-    }
-  }
-
-  @override
-  void onPause() {
-    if (_skipState == null) {
-      _playing = false;
-      _isPaused = true;
-      _audioPlayer.pause();
-    }
-  }
-
-  void onPauseAudioFocus() {
-    if (_skipState == null) {
-      _playing = false;
-      _audioPlayer.pause();
-    }
-  }
-
-  @override
-  void onSeekTo(int position) {
-    _audioPlayer.seek(Duration(milliseconds: position));
-  }
-
-  @override
-  void onAudioFocusLost() async {
-    onPauseAudioFocus();
-  }
-
-  @override
-  void onAudioBecomingNoisy() {
-    onPauseAudioFocus();
-  }
-
-  @override
-  void onAudioFocusLostTransient() async {
-    onPauseAudioFocus();
-  }
-
-  @override
-  void onAudioFocusLostTransientCanDuck() async {
-    _audioPlayer.setVolume(0);
-  }
-
-  @override
-  void onAudioFocusGained() async {
-    _audioPlayer.setVolume(1.0);
-    if (!_isPaused) onPlay();
-  }
-
-  List<MediaControl> getControls(BasicPlaybackState state) {
-    if (_queue.length <= 1) {
-      if (_playing != null && _playing) {
-        return [
-          pauseControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          playControl,
-          stopControl,
-        ];
-      }
-    } else {
-      if (_playing != null && _playing) {
-        return [
-          skipToPreviousControl,
-          pauseControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      } else {
-        return [
-          skipToPreviousControl,
-          playControl,
-          skipToNextControl,
-          stopControl,
-        ];
-      }
-    }
-  }
-
-  void _setState({@required BasicPlaybackState state, int position}) {
-    if (position == null) {
-      position = _audioPlayer.playbackEvent.position.inMilliseconds;
-    }
-    AudioServiceBackground.setState(
-      controls: getControls(state),
-      systemActions: [MediaAction.seekTo],
-      basicState: state,
-      position: position,
-    );
-  }
-
-  @override
-  Future<void> onCustomAction(String action, arguments) async {
-    super.onCustomAction(action, arguments);
-    if (action == "startSinglePlayback") {
-      // calling method to start playback with no repeat
-      startSinglePlayback(arguments, false);
-    }
-  }
-
-  // starts playback of single song
-  void startSinglePlayback(arguments, bool shouldRepeat) async {
-    // temporary thumbnail url storage
-    String tempThumbNailUrl =
-        "https://img.youtube.com/vi/" + arguments["videoId"] + "/mqdefault.jpg";
-
-    // initiating function to check if max res is available
-    _checkMaxResolutionAvailable(arguments["videoId"]).then((thumbURL) {
-      tempThumbNailUrl = thumbURL;
-    });
-    // pausing any current playback
-    if (!_isPaused) {
-      onPause();
-    }
-    var state = BasicPlaybackState.connecting;
-    var position = 0;
-    // setting repeat status
-    _shouldRepeat = shouldRepeat;
-    // clearing current queue
-    _queue.clear();
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
-    // creating mediaItem instance to immidiately show response to user
-    MediaItem tempMediaItem = MediaItem(
-        id: arguments["videoId"],
-        album: "OpenBeats Music",
-        title: arguments['title'],
-        duration: arguments['durationInMilliSeconds'],
-        artUri: tempThumbNailUrl,
-        extras: {
-          "views": arguments["views"],
-          "durationString": arguments["duration"],
-        });
-    // setting the current mediaItem
-    await AudioServiceBackground.setMediaItem(tempMediaItem);
-    // refreshing state to update mediaItem details
-    AudioServiceBackground.setState(
-        controls: getControls(state), basicState: state, position: position);
-    // gets the mediaItem for the song to play with the valid streamingURL
-    String streamingURL = await getStreamingURL(arguments);
-    print(streamingURL);
-    // creating updatedMediaItemInstance
-    MediaItem updatedMediaItem = MediaItem(
-        id: streamingURL,
-        album: "OpenBeats Music",
-        title: arguments['title'],
-        duration: arguments['durationInMilliSeconds'],
-        artUri: tempThumbNailUrl,
-        extras: {
-          "views": arguments["views"],
-          "durationString": arguments["duration"],
-        });
-    // setting the current mediaItem
-    await AudioServiceBackground.setMediaItem(updatedMediaItem);
-    // adding mediaITem to queue
-    _queue.add(updatedMediaItem);
-    // setting URL for audio player
-    await _audioPlayer.setUrl(streamingURL);
-    // playing audio
-    onPlay();
-    print(tempThumbNailUrl);
-  }
-
-  // checks if max resolution thumbnail is available
-  Future<String> _checkMaxResolutionAvailable(String videoId) async {
-    // highRes URL
-    String highResURL =
-        "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
-    String lowResURL =
-        "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg";
-    try {
-      final response = await http.head(highResURL);
-      print(response.statusCode);
-      if (response.statusCode == 200)
-        return highResURL;
-      else
-        return lowResURL;
-    } catch (e) {
-      if (e.response.statusCode == 404) {
-        print(e.response.statusCode);
-      }
-      return lowResURL;
-    }
-  }
-
-  // function to get the streaming URL for the audio
-  Future<String> getStreamingURL(mediaParamters) async {
-    // counts the number of iterations of getting the URL
-    int _iterationCount = 0;
-    // holds the responseJSON containing the streaming URL
-    var responseJSON;
-    try {
-      // iterating till the appropriate response is recieved or the iteration count is reached
-      while (_iterationCount < 10) {
-        // checking for link validity
-        String url =
-            globalVars.apiHostAddress + "/opencc/" + mediaParamters["videoId"];
-        // sending GET request
-        var response = await http.get(url);
-        responseJSON = jsonDecode(response.body);
-
-        // checking conditions to make sure the streamingURL has been recieved
-        if (responseJSON["status"] == true && responseJSON["link"] != null) {
-          return responseJSON["link"];
-        } else {
-          // incrementing iteration count
-          _iterationCount += 1;
-        }
-      }
-      // using fallback link if there is no other way
-      return globalVars.apiHostAddress +
-          "/fallback/" +
-          mediaParamters["videoId"];
-    } catch (e) {
-      globalFun.showToastMessage(
-          "Sorry, not able to connect to OpenBeats server. Please try again",
-          true,
-          Colors.red,
-          Colors.white);
-      onStop();
-    }
-    return null;
   }
 }
