@@ -7,9 +7,26 @@ const Schema = mongoose.Schema;
 // creating model structure
 const otaUpdateSchema = new Schema({
     versionCode: {
-        type: String,
-        required: true,
-        unique: true
+        vCode1: {
+            type: Number,
+            required: true,
+            unique: false
+        },
+        vCode2: {
+            type: Number,
+            required: true,
+            unique: false
+        },
+        vCode3: {
+            type: Number,
+            required: true,
+            unique: false
+        },
+        buildNumber: {
+            type: Number,
+            required: true,
+            unique: false
+        }
     },
     accessLink: {
         type: String,

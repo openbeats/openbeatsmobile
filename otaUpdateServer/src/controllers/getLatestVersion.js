@@ -21,22 +21,36 @@ const responseSendHandler = (responseBody) => {
 }
 
 // declaring main controller function
-exports.getLatestVersion = (req, res) => {
+exports.getLatestVersion = async (req, res) => {
     try {
 
         // initiating global response instance
         globalRes = res;
 
-        responseSendHandler({
-            status: true,
-            message: "Hi there!"
-        });
+        // getting the latest update from the database
+        const latestUpdate = await OTAUpdate.findOne().sort({
+            _id: -1
+        }).limit(1).exec();
+
+        if (latestUpdate !== null) {
+            responseSendHandler({
+                status: true,
+                data: latestUpdate
+            });
+        } else {
+            responseSendHandler({
+                status: false,
+                message: "No versioning data found on server"
+            });
+        }
+
+
 
     } catch (error) {
         consoleLogHandler("Fatal error in main Try/Catch: " + error, true);
         responseSendHandler({
             status: false,
-            error: error
+            Error: error.toString()
         });
     }
 };

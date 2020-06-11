@@ -12,6 +12,7 @@ import otaUpdateRoute from "./routes/otaUpdate";
 
 // creating middleware instances
 const app = express();
+app.use(express.json());
 
 // initiating database connection 
 dbconfig();
