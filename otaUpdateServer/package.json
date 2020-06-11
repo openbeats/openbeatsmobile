@@ -4,7 +4,8 @@
   "description": "On the Air updation server for OBS Mobile application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "Rohit Raj",
   "license": "ISC",
@@ -21,7 +22,6 @@
     "babel-register": "^6.26.0",
     "express": "^4.17.1",
     "mongodb": "^3.5.8",
-    "mongoose": "^5.9.18",
-    "multer": "^1.4.2"
+    "mongoose": "^5.9.18"
   }
 }
