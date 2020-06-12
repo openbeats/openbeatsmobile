@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "OpenBeats",
       theme: Provider.of<ApplicationTheme>(context).getCurrentTheme(),
-      home: indexScreen.IndexScreen(),
+      home: AudioServiceWidget(
+        child: indexScreen.IndexScreen(),
+      ),
     );
   }
 }
