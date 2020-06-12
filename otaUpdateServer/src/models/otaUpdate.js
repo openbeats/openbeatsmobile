@@ -34,7 +34,7 @@ const otaUpdateSchema = new Schema({
         unique: true
     },
     changeLog: {
-        type: Schema.Types.Array,
+        type: Schema.Types.Mixed,
         required: true
     }
 }, {

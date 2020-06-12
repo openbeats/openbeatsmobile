@@ -1,6 +1,8 @@
-# openbeatsmobile
+# OpenBeats Mobile
 
-A new Flutter project.
+[![Codemagic build status](https://api.codemagic.io/apps/5ee365bf4d6c12001970c896/5ee365bf4d6c12001970c895/status_badge.svg)](https://codemagic.io/apps/5ee365bf4d6c12001970c896/5ee365bf4d6c12001970c895/latest_build)
+
+A opensouce, flutter based frontend implementation of OpenBeats Music Streaming service for android and iOS.
 
 ## Getting Started
 

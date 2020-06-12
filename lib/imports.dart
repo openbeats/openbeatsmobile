@@ -16,6 +16,11 @@ export 'package:openbeatsmobile/screens/pages/library/libraryPage.dart';
 export 'package:openbeatsmobile/screens/pages/profile/profilePage.dart';
 export 'package:openbeatsmobile/screens/pages/search/searchPage.dart';
 export 'package:openbeatsmobile/util/indexPage/indexPageFunc.dart';
+export 'package:ota_update/ota_update.dart';
+export 'package:http/http.dart';
+export 'dart:convert';
+export 'package:package_info/package_info.dart';
+export 'package:openbeatsmobile/util/updateFuncs.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
