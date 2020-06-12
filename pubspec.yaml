@@ -28,13 +28,13 @@ dependencies:
   sliding_up_panel: ^1.0.2
   rxdart: ^0.24.1
   http: ^0.12.1
-  google_fonts: ^1.1.0
   shared_preferences: ^0.5.7+3
   cached_network_image: ^2.2.0+1
   audio_service: ^0.11.0
   flutter_keyboard_size: ^0.1.2+2
   ota_update: ^2.2.1
   package_info: ^0.4.1
+  oktoast: ^2.3.2
 
 dev_dependencies:
  
