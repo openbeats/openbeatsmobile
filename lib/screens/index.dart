@@ -17,8 +17,14 @@ class _IndexScreenState extends State<IndexScreen> {
 
   Widget _indexPageBody() {
     return Container(
-      child: Center(
-        child: Text("Hi"),
+      child: SlidingUpPanel(
+        color: Provider.of<ApplicationTheme>(context).getBottomAppBarColor(),
+        panel: Center(
+          child: Text("This is the sliding Widget"),
+        ),
+        body: Center(
+          child: Text("This is the Widget behind the sliding panel"),
+        ),
       ),
     );
   }

@@ -1,12 +1,14 @@
 import './screens/index.dart' as indexScreen;
 import './imports.dart';
 
-void main() => runApp(
-      ChangeNotifierProvider<ApplicationTheme>(
-        create: (_) => ApplicationTheme(),
-        child: MyApp(),
-      ),
-    );
+void main() => runApp(MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ApplicationTheme>(
+          create: (_) => ApplicationTheme(),
+        ),
+      ],
+      child: MyApp(),
+    ));
 
 class MyApp extends StatelessWidget {
   @override
