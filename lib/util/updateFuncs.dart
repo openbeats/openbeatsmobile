@@ -24,9 +24,9 @@ checkForUpdate() async {
     var response =
         await get(_baseUpdateURL + "/obsmobileserver/getlatestVersion");
     var jsonResponse = json.decode(response.body);
-    var rVersionCode = jsonResponse["data"]["versionCode"];
 
     if (jsonResponse["status"] == true) {
+      var rVersionCode = jsonResponse["data"]["versionCode"];
       // getting present version
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       // splitting version code into list
@@ -37,6 +37,20 @@ checkForUpdate() async {
         "vCode3": int.parse(versionCodeList[2]),
         "buildNumber": int.parse(packageInfo.buildNumber)
       };
+      // var path = await ExtStorage.getExternalStoragePublicDirectory(
+      //     ExtStorage.DIRECTORY_DOWNLOADS);
+      // print(path);
+      // var file = new File(path +
+      //     "/openbeats" +
+      //     rVersionCode["vCode1"].toString() +
+      //     "." +
+      //     rVersionCode["vCode2"].toString() +
+      //     "." +
+      //     rVersionCode["vCode2"].toString() +
+      //     "+" +
+      //     rVersionCode["buildNumber"].toString() +
+      //     ".apk");
+      // print(file.delete());
 
       // comparing the present versions
       bool shouldUpdate =

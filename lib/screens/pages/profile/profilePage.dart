@@ -15,6 +15,7 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () async {
             Map<String, dynamic> _updateCheckResponse = await checkForUpdate();
             showUpdateDialog(_updateCheckResponse,context);
+            
           },
           child: Text("Update App Now!"),
         ),
