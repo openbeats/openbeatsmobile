@@ -27,7 +27,7 @@ class _ProfilePageState extends State<ProfilePage> {
       title: Text(
         "Profile",
         style: TextStyle(
-          color: Colors.blue,
+          color: allDestinations[3].color,
           fontSize: Provider.of<ApplicationTheme>(context)
               .getAppBarTextTheme()
               .headline6

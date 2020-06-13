@@ -8,7 +8,7 @@ class Destination {
 }
 
 const List<Destination> allDestinations = <Destination>[
-  Destination('Explore', Icons.explore, Colors.teal),
+  Destination('Explore', Icons.explore, Colors.lightGreen),
   Destination('Search', Icons.search, Colors.cyan),
   Destination('Library', Icons.library_music, Colors.orange),
   Destination('Profile', Icons.person, Colors.blue)

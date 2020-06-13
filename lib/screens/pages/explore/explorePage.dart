@@ -21,7 +21,7 @@ class _ExplorePageState extends State<ExplorePage> {
       title: Text(
         "Explore",
         style: TextStyle(
-          color: Colors.teal,
+          color: allDestinations[0].color,
           fontSize: Provider.of<ApplicationTheme>(context)
               .getAppBarTextTheme()
               .headline6

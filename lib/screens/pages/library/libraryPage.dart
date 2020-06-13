@@ -21,7 +21,7 @@ class _LibraryPageState extends State<LibraryPage> {
       title: Text(
         "Library",
         style: TextStyle(
-          color: Colors.orange,
+          color: allDestinations[2].color,
           fontSize: Provider.of<ApplicationTheme>(context)
               .getAppBarTextTheme()
               .headline6
