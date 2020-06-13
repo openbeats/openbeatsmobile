@@ -15,6 +15,7 @@ export 'package:package_info/package_info.dart';
 export 'package:oktoast/oktoast.dart';
 export 'package:ext_storage/ext_storage.dart';
 export 'dart:io';
+export 'package:shared_preferences/shared_preferences.dart';
 
 // file imports
 export 'package:openbeatsmobile/models/app/state.dart';
