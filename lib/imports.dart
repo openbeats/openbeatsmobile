@@ -27,6 +27,7 @@ export 'package:openbeatsmobile/screens/pages/search/searchPage.dart';
 export 'package:openbeatsmobile/util/indexPage/indexPageFunc.dart';
 export 'package:openbeatsmobile/util/updateFuncs.dart';
 export 'package:openbeatsmobile/screens/pages/profile/components.dart';
+export 'package:openbeatsmobile/screens/pages/search/components.dart';
 export 'package:openbeatsmobile/models/app/theme.dart';
 
 MediaControl playControl = MediaControl(
