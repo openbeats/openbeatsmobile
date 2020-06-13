@@ -1,8 +1,5 @@
 import '../imports.dart';
 
-// holds the base url for the update server
-String _baseUpdateURL = "https://obsmobileupdateserver.herokuapp.com";
-
 // compare too versions of application to see if an update is necessary
 bool _compareVersions(var rVersion, Map<String, int> pVersion) {
   if (rVersion["vCode1"] > pVersion["vCode1"])
@@ -20,10 +17,7 @@ bool _compareVersions(var rVersion, Map<String, int> pVersion) {
 // checks for update to app in server
 checkForUpdate() async {
   try {
-    // getting update version
-    var response =
-        await get(_baseUpdateURL + "/obsmobileserver/getlatestVersion");
-    var jsonResponse = json.decode(response.body);
+    var jsonResponse = getUpdateFromServer();
 
     if (jsonResponse["status"] == true) {
       var rVersionCode = jsonResponse["data"]["versionCode"];
