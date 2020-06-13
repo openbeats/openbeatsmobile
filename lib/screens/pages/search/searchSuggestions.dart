@@ -8,8 +8,6 @@ class SearchSuggestions extends StatefulWidget {
 class _SearchSuggestionsState extends State<SearchSuggestions> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      
-    );
+    return Scaffold();
   }
 }
