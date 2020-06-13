@@ -17,7 +17,7 @@ bool _compareVersions(var rVersion, Map<String, int> pVersion) {
 // checks for update to app in server
 checkForUpdate() async {
   try {
-    var jsonResponse = getUpdateFromServer();
+    var jsonResponse = await getUpdateFromServer();
 
     if (jsonResponse["status"] == true) {
       var rVersionCode = jsonResponse["data"]["versionCode"];
