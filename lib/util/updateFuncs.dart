@@ -86,7 +86,12 @@ void initiateAppUpdate(String accessLink, String newVersionCode) async {
       (OtaEvent event) {
         print('EVENT: ${event.status} : ${event.value}');
       },
-    );
+    ).onDone(() {
+      showToast(
+        "OpenBeats Update Downloaded",
+        position: ToastPosition.bottom,
+      );
+    });
   } catch (e) {
     print('Failed to make OTA update. Details: $e');
   }

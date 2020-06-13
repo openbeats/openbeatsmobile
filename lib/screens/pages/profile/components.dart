@@ -51,7 +51,7 @@ void showUpdateDialog(Map<String, dynamic> response, BuildContext context) {
                     onPressed: () {
                       initiateAppUpdate(response["accessLink"], response["newVersionCode"]);
                       showToast("Initiated App Update",
-                          position: ToastPosition.bottom);
+                          position: ToastPosition.bottom,);
                       Navigator.of(context).pop();
                     },
                     textColor: Colors.green,

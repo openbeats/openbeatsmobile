@@ -1,5 +1,3 @@
-
-
 import './screens/index.dart' as indexScreen;
 import './imports.dart';
 
@@ -17,7 +15,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return OKToast(
       dismissOtherOnShow: true,
+      radius: 5.0,
+      backgroundColor: Colors.blue,
+      textStyle: TextStyle(color: Colors.white),
       handleTouth: true,
+      textPadding: EdgeInsets.all(10.0),
       child: MaterialApp(
         title: "OpenBeats",
         theme: Provider.of<ApplicationTheme>(context).getCurrentTheme(),
