@@ -18,27 +18,6 @@ export 'dart:io';
 export 'package:shared_preferences/shared_preferences.dart';
 
 // file imports
-export 'package:openbeatsmobile/models/app/state.dart';
-export 'package:openbeatsmobile/components/bottomNavDestinations.dart';
-export 'package:openbeatsmobile/services/audio/streaming.dart';
-export 'package:openbeatsmobile/screens/pages/explore/explorePage.dart';
-export 'package:openbeatsmobile/screens/pages/library/libraryPage.dart';
-export 'package:openbeatsmobile/screens/pages/profile/profilePage.dart';
-export 'package:openbeatsmobile/screens/pages/search/searchPage.dart';
-export 'package:openbeatsmobile/util/indexPage/indexPageFunc.dart';
-export 'package:openbeatsmobile/util/updateFuncs.dart';
-export 'package:openbeatsmobile/screens/pages/profile/components.dart';
-export 'package:openbeatsmobile/screens/pages/search/components.dart';
-export 'package:openbeatsmobile/services/httpRequests/appUpdate/appUpdate.dart';
-export 'package:openbeatsmobile/models/app/theme.dart';
-export 'package:openbeatsmobile/models/searchPage/searchPageProvider.dart';
-export 'package:openbeatsmobile/models/searchPage/searchSuggestion.dart';
-export 'package:openbeatsmobile/services/sharedPrefs/SearchPage/searchPageSharedPrefs.dart';
-export 'package:openbeatsmobile/services/httpRequests/searchPage/searchPageService.dart';
-export 'package:openbeatsmobile/util/searchPage/searchPageUtil.dart';
-export 'package:openbeatsmobile/models/app/scaffoldKeys.dart';
-export 'package:openbeatsmobile/models/app/scaffoldKeys.dart';
-export 'package:openbeatsmobile/screens/pages/search/searchSuggestions.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
