@@ -9,8 +9,8 @@ void manageBottomNavVisibility(
 }
 
 // handles the onWillPop callback
-Future<bool> onWillPopCallbackHandler(
-    BuildContext context, PanelController _panelController) async {
+Future<bool> onWillPopCallbackHandler(BuildContext context,
+    PanelController _panelController, int navBarCurrentIndex) async {
   // checking if the SlidingUpPanel is open
   if (_panelController.isPanelOpen) {
     _panelController.close();
@@ -19,12 +19,11 @@ Future<bool> onWillPopCallbackHandler(
   // if SlideUpPanel is closed
   else {
     // checking which tab is in view
-    switch (Provider.of<AppState>(context).getBottomNavBarCurrentIndex()) {
+    switch (navBarCurrentIndex) {
       // if searchTab is in view
       case 1:
         // checking if searchNowView is still in use
         if (homePageScaffoldKey.currentContext != null) {
-          print("Got here");
           Navigator.of(searchNowPageScaffoldKey.currentContext).pop();
           return false;
         } else {

@@ -26,13 +26,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // print debug message
     DebugFunctions().printMessage("=======HOMEPAGE BUILD=======");
-    return WillPopScope(
-      child: Scaffold(
-        key: homePageScaffoldKey,
-        body: _homePageBody(),
-        bottomNavigationBar: _bottomNavBar(),
-      ),
-      onWillPop: () => onWillPopCallbackHandler(context, _panelController),
+    return Consumer<AppState>(
+      builder: (context, data, _) {
+        return WillPopScope(
+          child: Scaffold(
+            key: homePageScaffoldKey,
+            body: _homePageBody(),
+            bottomNavigationBar: _bottomNavBar(),
+          ),
+          onWillPop: () => onWillPopCallbackHandler(
+              context, _panelController, data.getBottomNavBarCurrentIndex()),
+        );
+      },
     );
   }
 
