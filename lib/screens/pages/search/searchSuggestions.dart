@@ -10,7 +10,11 @@ class _SearchSuggestionsState extends State<SearchSuggestions> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => SearchSuggestionsProvider(),
-      child: Scaffold(),
+      child: Scaffold(
+        key: Provider.of<ScaffoldKeys>(context)
+            .getScaffoldKey("searchSuggestionsPage"),
+        appBar: AppBar(),
+      ),
     );
   }
 }

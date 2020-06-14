@@ -34,13 +34,19 @@ class _IndexScreenState extends State<IndexScreen>
         ChangeNotifierProvider<Streaming>(
           create: (_) => Streaming(),
         ),
+        Provider.value(
+          value: (_) => ScaffoldKeys(),
+        )
       ],
-      child: Scaffold(
-        key: Provider.of<ScaffoldKeys>(context).getScaffoldKey("indexPage"),
-        body: SafeArea(
-          child: _indexPageBody(),
+      child: WillPopScope(
+        onWillPop: () => onWillPopCallbackHandler(context, _panelController),
+        child: Scaffold(
+          key: Provider.of<ScaffoldKeys>(context).getScaffoldKey("indexPage"),
+          body: SafeArea(
+            child: _indexPageBody(),
+          ),
+          bottomNavigationBar: _bottomNavBar(),
         ),
-        bottomNavigationBar: _bottomNavBar(),
       ),
     );
   }
