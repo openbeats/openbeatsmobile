@@ -1,7 +1,19 @@
+import 'package:openbeatsmobile/models/AppState/appState.dart';
+
 import './imports.dart';
 
 void main() {
-  return runApp(MyApp());
+  return runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider<HomePageModel>(
+        create: (_) => HomePageModel(),
+      ),
+      ChangeNotifierProvider<AppState>(
+        create: (_) => AppState(),
+      ),
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

@@ -22,6 +22,8 @@ export 'package:openbeatsmobile/pages/homePage.dart';
 export 'package:openbeatsmobile/components/themeComponents/themeComponents.dart';
 export 'package:openbeatsmobile/services/streamingService/streamingService.dart';
 export 'package:openbeatsmobile/functions/appFunctions/debugFunctions.dart';
+export 'package:openbeatsmobile/components/bottomNavBarDestinations/bottomNavBarDestinations.dart';
+export 'package:openbeatsmobile/models/homePageModels/homePageModel.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
