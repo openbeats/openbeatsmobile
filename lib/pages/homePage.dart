@@ -120,7 +120,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               case '/':
                 return SearchPage();
               case "/searchNow":
-                return SearchNow();
+                return SearchNowPage();
               default:
                 return SearchPage();
             }

@@ -12,6 +12,9 @@ void main() {
       ChangeNotifierProvider<SearchPageProvider>(
         create: (_) => SearchPageProvider(),
       ),
+      ChangeNotifierProvider<SearchNowProvider>(
+        create: (_) => SearchNowProvider(),
+      ),
     ],
     child: MyApp(),
   ));

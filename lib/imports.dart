@@ -36,6 +36,7 @@ export 'package:openbeatsmobile/services/sharedPrefsService/searchPage/searchPag
 export 'package:openbeatsmobile/components/appComponents/appComponents.dart';
 export 'package:openbeatsmobile/models/SearchPageModels/searchPageModel.dart';
 export 'package:openbeatsmobile/services/httpService/searchPage/searchPageHttpService.dart';
+export 'package:openbeatsmobile/models/SearchPageModels/searchNowPageModel.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
