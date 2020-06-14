@@ -1,4 +1,4 @@
-import '../../imports.dart';
+import 'package:openbeatsmobile/imports.dart';
 
 // home page
 final GlobalKey<ScaffoldState> homePageScaffoldKey =

@@ -1,6 +1,4 @@
-import 'package:openbeatsmobile/models/AppState/appState.dart';
-
-import '../imports.dart';
+import 'package:openbeatsmobile/imports.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -55,8 +53,67 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the homePage body
   Widget _homePageBody() => Container(
-        child: Center(
-          child: Text("Hi there"),
+        child: Container(
+          child: SlidingUpPanel(
+            controller: _panelController,
+            color: ThemeComponents().getAppTheme().bottomAppBarColor,
+            minHeight: 60.0,
+            maxHeight: MediaQuery.of(context).size.height,
+            panel: _slideUpPanel(),
+            onPanelSlide: (slidePosition) => manageBottomNavVisibility(
+                slidePosition, _bottomNavBarAnimController),
+            body: _slideUpBack(),
+          ),
         ),
       );
+
+  // contains the content in the slideUpPanel
+  Widget _slideUpPanel() {
+    return Center(
+      child: Text("This is the sliding Widget"),
+    );
+  }
+
+  // contains the content behind the slideUpPanel
+  Widget _slideUpBack() {
+    return Container(
+      child: Center(
+        child: IndexedStack(
+          index: Provider.of<AppState>(context).getBottomNavBarCurrentIndex(),
+          children: <Widget>[
+            ExplorePage(),
+            _searchPageNavigator(),
+            LibraryPage(),
+            ProfilePage()
+          ],
+        ),
+      ),
+    );
+  }
+
+  // holds the custom navigator instance for SearchPage
+  Widget _searchPageNavigator() {
+    return Navigator(
+      onGenerateRoute: (RouteSettings routeSettings) {
+        return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return SearchPage();
+              case "/searchNow":
+                return SearchNow();
+              default:
+                return SearchPage();
+            }
+          },
+          transitionDuration: Duration(milliseconds: 400),
+        );
+      },
+    );
+  }
 }

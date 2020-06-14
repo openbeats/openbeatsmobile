@@ -1,6 +1,4 @@
-import 'package:openbeatsmobile/models/AppState/appState.dart';
-
-import './imports.dart';
+import 'package:openbeatsmobile/imports.dart';
 
 void main() {
   return runApp(MultiProvider(
@@ -22,7 +20,7 @@ class MyApp extends StatelessWidget {
     // printing debug message
     DebugFunctions().printMessage("=======MyAPP BUILD=======");
     // getting the toast theme data
-    Map<String, dynamic> _toastThemedata = ThemeComponents().toastThemeData;
+    Map<String, dynamic> _toastThemedata = ThemeComponents().getToastTheme();
     return OKToast(
       backgroundColor: _toastThemedata["backgroundColor"],
       duration: _toastThemedata["duration"],
@@ -31,7 +29,7 @@ class MyApp extends StatelessWidget {
       dismissOtherOnShow: _toastThemedata["dismissOtherOnShow"],
       child: MaterialApp(
         title: "OpenBeats",
-        theme: ThemeComponents().themeData,
+        theme: ThemeComponents().getAppTheme(),
         home: AudioServiceWidget(
           child: HomePage(),
         ),

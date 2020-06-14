@@ -1,4 +1,4 @@
-import '../../imports.dart';
+import 'package:openbeatsmobile/imports.dart';
 
 // template for bottomNavBar destinations
 class Destination {
