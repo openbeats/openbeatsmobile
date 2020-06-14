@@ -1,3 +1,5 @@
+import 'package:openbeatsmobile/screens/pages/search/searchSuggestions.dart';
+
 import '../imports.dart';
 
 class IndexScreen extends StatefulWidget {
@@ -102,13 +104,39 @@ class _IndexScreenState extends State<IndexScreen>
                 .getBottomNavBarCurrentIndex(),
             children: <Widget>[
               ExplorePage(),
-              SearchPage(),
+              _searchPageNavigator(),
               LibraryPage(),
               ProfilePage()
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // holds the custom navigator instance for SearchPage
+  Widget _searchPageNavigator() {
+    return Navigator(
+      onGenerateRoute: (RouteSettings routeSettings) {
+        return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return SearchPage();
+              case "/searchNow":
+                return SearchSuggestions();
+              default:
+                return SearchPage();
+            }
+          },
+          transitionDuration: Duration(milliseconds: 400),
+        );
+      },
     );
   }
 }
