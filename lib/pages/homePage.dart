@@ -26,10 +26,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     // print debug message
     DebugFunctions().printMessage("=======HOMEPAGE BUILD=======");
-    return Scaffold(
-      key: homePageScaffoldKey,
-      body: _homePageBody(),
-      bottomNavigationBar: _bottomNavBar(),
+    return WillPopScope(
+      child: Scaffold(
+        key: homePageScaffoldKey,
+        body: _homePageBody(),
+        bottomNavigationBar: _bottomNavBar(),
+      ),
+      onWillPop: () => onWillPopCallbackHandler(context, _panelController),
     );
   }
 
@@ -38,16 +41,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // getting required values
     int _bottomNavBarCurrIndex =
         Provider.of<AppState>(context).getBottomNavBarCurrentIndex();
-    return BottomNavigationBar(
-      onTap: (tappedIndex) => Provider.of<AppState>(context, listen: false)
-          .setBottomNavBarCurrentIndex(tappedIndex),
-      currentIndex: _bottomNavBarCurrIndex,
-      items: allDestinations.map((Destination destination) {
-        return BottomNavigationBarItem(
-            icon: Icon(destination.icon),
-            backgroundColor: destination.color,
-            title: Text(destination.title));
-      }).toList(),
+    return SizeTransition(
+      sizeFactor: _bottomNavBarAnimController,
+      axisAlignment: -1.0,
+      child: BottomNavigationBar(
+        onTap: (tappedIndex) => Provider.of<AppState>(context, listen: false)
+            .setBottomNavBarCurrentIndex(tappedIndex),
+        currentIndex: _bottomNavBarCurrIndex,
+        items: allDestinations.map(
+          (Destination destination) {
+            return BottomNavigationBarItem(
+                icon: Icon(destination.icon),
+                backgroundColor: destination.color,
+                title: Text(destination.title));
+          },
+        ).toList(),
+      ),
     );
   }
 
