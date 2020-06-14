@@ -17,6 +17,10 @@ export 'package:ext_storage/ext_storage.dart';
 export 'dart:io';
 export 'package:shared_preferences/shared_preferences.dart';
 
+export 'package:openbeatsmobile/pages/homePage.dart';
+export 'package:openbeatsmobile/components/themeComponents/themeComponents.dart';
+export 'package:openbeatsmobile/services/streamingService/streamingService.dart';
+
 // file imports
 
 MediaControl playControl = MediaControl(
