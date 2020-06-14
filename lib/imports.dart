@@ -21,8 +21,7 @@ export 'package:shared_preferences/shared_preferences.dart';
 export 'package:openbeatsmobile/pages/homePage.dart';
 export 'package:openbeatsmobile/components/themeComponents/themeComponents.dart';
 export 'package:openbeatsmobile/services/streamingService/streamingService.dart';
-
-
+export 'package:openbeatsmobile/functions/appFunctions/debugFunctions.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',

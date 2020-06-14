@@ -8,6 +8,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
+    // print debug message
+    DebugFunctions().printMessage("=======HOMEPAGE BUILD=======");
     return Scaffold(
       body: _homePageBody(),
     );

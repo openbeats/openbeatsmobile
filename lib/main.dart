@@ -7,6 +7,8 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // printing debug message
+    DebugFunctions().printMessage("=======MyAPP BUILD=======");
     // getting the toast theme data
     Map<String, dynamic> _toastThemedata = ThemeComponents().toastThemeData;
     return OKToast(
