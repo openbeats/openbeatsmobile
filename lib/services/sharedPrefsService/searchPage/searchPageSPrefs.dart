@@ -4,15 +4,13 @@ import 'package:openbeatsmobile/imports.dart';
 void addToSearchHistorySharedPrefs(BuildContext context, String query) async {
   // creating sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  List<String> searchHistory =
-      Provider.of<SearchNowProvider>(context).getSearchHistory();
+  List<String> searchHistory = getSearchHistory();
   if ((searchHistory.length == 0) || (searchHistory[0] != query)) {
     // removing the instance of the same query in the searchHistory list if it is at the top
     searchHistory.remove(query);
     searchHistory.insert(0, query);
     // updating search string reference in provider
-    Provider.of<SearchNowProvider>(context)
-        .updateSearchHistory(searchHistory);
+    updateSearchHistory(searchHistory);
     // updating search history value in shared preference
     prefs.setStringList("searchStrings", searchHistory);
   }

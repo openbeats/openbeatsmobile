@@ -16,6 +16,7 @@ export 'package:oktoast/oktoast.dart';
 export 'dart:io';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
+export 'dart:math';
 
 // file imports
 export 'package:openbeatsmobile/pages/homePage.dart';

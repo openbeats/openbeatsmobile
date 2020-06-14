@@ -17,11 +17,11 @@ void getVideosForQuery(BuildContext context, String query) async {
       // checking if proper response is received
       if (responseJSON["status"] == true && responseJSON["data"].length != 0) {
         // response as list to iterate over
-        Provider.of<SearchPageProvider>(context)
+        Provider.of<SearchPageProvider>(context, listen: false)
             .setVideoResponseList(responseJSON["data"] as List);
-
         // removing loading animation from screen
-        Provider.of<SearchPageProvider>(context).setSearchResultLoading(false);
+        Provider.of<SearchPageProvider>(context, listen: false)
+            .setSearchResultLoading(false);
 
         // breaking the loop
         break;
@@ -32,9 +32,11 @@ void getVideosForQuery(BuildContext context, String query) async {
     }
 
     // removing loading animation from screen
-    Provider.of<SearchPageProvider>(context).setSearchResultLoading(false);
+    Provider.of<SearchPageProvider>(context, listen: false)
+        .setSearchResultLoading(false);
   } catch (e) {
     // removing loading animation from screen
-    Provider.of<SearchPageProvider>(context).setSearchResultLoading(false);
+    Provider.of<SearchPageProvider>(context, listen: false)
+        .setSearchResultLoading(false);
   }
 }

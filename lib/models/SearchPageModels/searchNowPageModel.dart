@@ -1,24 +1,22 @@
-import 'package:openbeatsmobile/imports.dart';
+// holds the current searched string
+String _currSearchString = "";
+// holds the list of strings as search history
+List<String> _searchHistory = new List();
 
-class SearchNowProvider extends ChangeNotifier {
-  // holds the current searched string
-  String _currSearchString = "";
-  // holds the list of strings as search history
-  List<String> _searchHistory = new List();
+// used to get the current searched string
+String getCurrSearchString() {
+  print("Sending " + _currSearchString);
+  return _currSearchString;
+}
 
-  // used to get the current searched string
-  String getCurrSearchString() => _currSearchString;
-  // used to set the current searched string
-  void setCurrSearchString(String value) {
-    _currSearchString = value;
-    notifyListeners();
-  }
+// used to set the current searched string
+void setCurrSearchString(String value) {
+  _currSearchString = value;
+}
 
-  // used to get the search history list
-  List<String> getSearchHistory() => _searchHistory;
-  // used to set/update the search history
-  void updateSearchHistory(List<String> values) {
-    _searchHistory = values;
-    notifyListeners();
-  }
+// used to get the search history list
+List<String> getSearchHistory() => _searchHistory;
+// used to set/update the search history
+void updateSearchHistory(List<String> values) {
+  _searchHistory = values;
 }
