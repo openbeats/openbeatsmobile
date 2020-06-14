@@ -29,10 +29,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return Consumer<AppState>(
       builder: (context, data, _) {
         return WillPopScope(
-          child: Scaffold(
-            key: homePageScaffoldKey,
-            body: _homePageBody(),
-            bottomNavigationBar: _bottomNavBar(),
+          child: KeyboardSizeProvider(
+            child: Scaffold(
+              key: homePageScaffoldKey,
+              body: _homePageBody(),
+              bottomNavigationBar: _bottomNavBar(),
+            ),
           ),
           onWillPop: () => onWillPopCallbackHandler(
               context, _panelController, data.getBottomNavBarCurrentIndex()),
@@ -68,15 +70,19 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the homePage body
   Widget _homePageBody() => Container(
         child: Container(
-          child: SlidingUpPanel(
-            controller: _panelController,
-            color: ThemeComponents().getAppTheme().bottomAppBarColor,
-            minHeight: 60.0,
-            maxHeight: MediaQuery.of(context).size.height,
-            panel: _slideUpPanel(),
-            onPanelSlide: (slidePosition) => manageBottomNavVisibility(
-                slidePosition, _bottomNavBarAnimController),
-            body: _slideUpBack(),
+          child: Consumer<ScreenHeight>(
+            builder: (context, _res, child) {
+              return SlidingUpPanel(
+                controller: _panelController,
+                color: ThemeComponents().getAppTheme().bottomAppBarColor,
+                minHeight: (_res.isOpen) ? 0.0 : 60.0,
+                maxHeight: MediaQuery.of(context).size.height,
+                panel: _slideUpPanel(),
+                onPanelSlide: (slidePosition) => manageBottomNavVisibility(
+                    slidePosition, _bottomNavBarAnimController),
+                body: _slideUpBack(),
+              );
+            },
           ),
         ),
       );

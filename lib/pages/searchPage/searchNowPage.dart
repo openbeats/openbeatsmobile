@@ -6,6 +6,7 @@ class SearchNowPage extends StatefulWidget {
 }
 
 class _SearchNowPageState extends State<SearchNowPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
