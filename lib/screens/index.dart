@@ -1,5 +1,3 @@
-import 'package:openbeatsmobile/screens/pages/search/searchSuggestions.dart';
-
 import '../imports.dart';
 
 class IndexScreen extends StatefulWidget {
@@ -38,6 +36,7 @@ class _IndexScreenState extends State<IndexScreen>
         ),
       ],
       child: Scaffold(
+        key: Provider.of<ScaffoldKeys>(context).getScaffoldKey("indexPage"),
         body: SafeArea(
           child: _indexPageBody(),
         ),

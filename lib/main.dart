@@ -1,3 +1,5 @@
+import 'package:openbeatsmobile/models/app/scaffoldKeys.dart';
+
 import './screens/index.dart' as indexScreen;
 import './imports.dart';
 
@@ -6,6 +8,9 @@ void main() => runApp(MultiProvider(
         ChangeNotifierProvider<ApplicationTheme>(
           create: (_) => ApplicationTheme(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ScaffoldKeys(),
+        )
       ],
       child: MyApp(),
     ));

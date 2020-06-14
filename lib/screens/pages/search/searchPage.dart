@@ -8,9 +8,13 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: searchPageAppBar(),
-      body: _searchPageBody(),
+    return ChangeNotifierProvider(
+      create: (context) => SearchPageProvider(),
+      child: Scaffold(
+        key: Provider.of<ScaffoldKeys>(context).getScaffoldKey("searchPage"),
+        appBar: searchPageAppBar(),
+        body: _searchPageBody(),
+      ),
     );
   }
 
@@ -27,7 +31,9 @@ class _SearchPageState extends State<SearchPage> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () {},
+          onPressed: () {
+            navigateToSearchNowView(context);
+          },
         )
       ],
     );
