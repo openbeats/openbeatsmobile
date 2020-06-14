@@ -9,6 +9,9 @@ void main() {
       ChangeNotifierProvider<AppState>(
         create: (_) => AppState(),
       ),
+      ChangeNotifierProvider<SearchPageProvider>(
+        create: (_) => SearchPageProvider(),
+      ),
     ],
     child: MyApp(),
   ));
