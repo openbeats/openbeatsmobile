@@ -16,7 +16,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    // initiating animation controller to hide the BottomNavBar
+    // initiating ani`mation controller to hide the BottomNavBar
     _bottomNavBarAnimController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 200),
@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     // print debug message
     DebugFunctions().printMessage("=======HOMEPAGE BUILD=======");
     return Scaffold(
+      key: homePageScaffoldKey,
       body: _homePageBody(),
       bottomNavigationBar: _bottomNavBar(),
     );
