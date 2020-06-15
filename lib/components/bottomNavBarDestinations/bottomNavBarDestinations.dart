@@ -10,12 +10,8 @@ class Destination {
 
 // holds all the destinations for bottomNabBar
 List<Destination> allDestinations = <Destination>[
-  Destination('Explore', Icons.explore,
-      ThemeComponents().getAppTheme().bottomAppBarColor),
-  Destination('Search', Icons.search,
-      ThemeComponents().getAppTheme().bottomAppBarColor),
-  Destination('Library', Icons.library_music,
-      ThemeComponents().getAppTheme().bottomAppBarColor),
-  Destination('Profile', Icons.person,
-      ThemeComponents().getAppTheme().bottomAppBarColor)
+  Destination('Explore', Icons.explore, Colors.red),
+  Destination('Search', Icons.search, Colors.cyan),
+  Destination('Library', Icons.library_music, Colors.teal),
+  Destination('Profile', Icons.person, Colors.blue)
 ];

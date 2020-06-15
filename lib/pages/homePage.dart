@@ -59,9 +59,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       sizeFactor: _bottomNavBarAnimController,
       axisAlignment: -1.0,
       child: BottomNavigationBar(
-        selectedItemColor: ThemeComponents().getAppTheme().primaryColor,
         onTap: (tappedIndex) => Provider.of<AppState>(context, listen: false)
             .setBottomNavBarCurrentIndex(tappedIndex),
+        backgroundColor: allDestinations[_bottomNavBarCurrIndex].color,
         currentIndex: _bottomNavBarCurrIndex,
         items: allDestinations.map(
           (Destination destination) {
