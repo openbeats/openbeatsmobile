@@ -17,6 +17,8 @@ export 'dart:io';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
 export 'dart:math';
+export 'package:flare_flutter/flare_actor.dart';
+export 'package:flutter/services.dart';
 
 // file imports
 export 'package:openbeatsmobile/pages/homePage.dart';
@@ -38,6 +40,8 @@ export 'package:openbeatsmobile/components/appComponents/appComponents.dart';
 export 'package:openbeatsmobile/models/SearchPageModels/searchPageModel.dart';
 export 'package:openbeatsmobile/services/httpService/searchPage/searchPageHttpService.dart';
 export 'package:openbeatsmobile/models/SearchPageModels/searchNowPageModel.dart';
+export 'package:openbeatsmobile/functions/searchPage/searchPageFunctions.dart';
+export 'package:openbeatsmobile/components/themeComponents/themeComponents.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',

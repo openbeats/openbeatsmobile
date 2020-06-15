@@ -18,4 +18,15 @@ class AppComponents {
     // showing new snackBar
     scaffoldKey.currentState.showSnackBar(statusSnackBar);
   }
+
+  // holds the loading animation for the application
+  Widget loadingAnimation() {
+    return Container(
+      height: 100.0,
+      child: FlareActor(
+        'assets/flareAssets/loadinganim.flr',
+        animation: 'loadnew',
+      ),
+    );
+  }
 }

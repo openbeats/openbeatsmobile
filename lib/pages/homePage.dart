@@ -20,6 +20,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       duration: Duration(milliseconds: 200),
     );
     _bottomNavBarAnimController.forward();
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: ThemeComponents().getAppTheme().scaffoldBackgroundColor,
+      statusBarBrightness: Brightness.dark,
+    ));
   }
 
   @override
@@ -52,6 +57,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       sizeFactor: _bottomNavBarAnimController,
       axisAlignment: -1.0,
       child: BottomNavigationBar(
+        selectedItemColor: ThemeComponents().getAppTheme().primaryColor,
         onTap: (tappedIndex) => Provider.of<AppState>(context, listen: false)
             .setBottomNavBarCurrentIndex(tappedIndex),
         currentIndex: _bottomNavBarCurrIndex,

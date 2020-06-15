@@ -1,5 +1,5 @@
-import 'package:openbeatsmobile/functions/searchPage/searchPageFunctions.dart';
 import 'package:openbeatsmobile/imports.dart';
+import './widgets/searchPageW.dart' as searchPageW;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -11,26 +11,39 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _searchPageAppBar(),
+      body: _searchPageBody(),
     );
   }
 
   Widget _searchPageAppBar() {
     // getting the appBar theme
-    AppBarTheme appBarTheme = ThemeComponents().getAppTheme().appBarTheme;
     return AppBar(
       title: Text(
         "Search",
-        style: TextStyle(
-          color: allDestinations[1].color,
-          fontSize: appBarTheme.textTheme.headline6.fontSize,
-          fontWeight: appBarTheme.textTheme.headline6.fontWeight,
-        ),
       ),
       actions: <Widget>[
         IconButton(
             icon: Icon(Icons.search),
             onPressed: () => navigateToSearchNowView(context)),
       ],
+    );
+  }
+
+  // holds the body of the searchPage
+  Widget _searchPageBody() {
+    // fetching required values
+    bool searchResultLoading =
+        Provider.of<SearchPageProvider>(context).getSearchResultLoading();
+    List videResponseResult =
+        Provider.of<SearchPageProvider>(context).getVideoResponseList();
+    return Center(
+      child: (searchResultLoading)
+          ? AppComponents().loadingAnimation()
+          : (videResponseResult.length == 0)
+              ? searchPageW.askUserToSearchFlareActor()
+              : Container(
+                  child: null,
+                ),
     );
   }
 }

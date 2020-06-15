@@ -17,16 +17,9 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   Widget _explorePageAppBar() {
-    // getting the appBar theme
-    AppBarTheme appBarTheme = ThemeComponents().getAppTheme().appBarTheme;
     return AppBar(
       title: Text(
         "Explore",
-        style: TextStyle(
-          color: allDestinations[0].color,
-          fontSize: appBarTheme.textTheme.headline6.fontSize,
-          fontWeight: appBarTheme.textTheme.headline6.fontWeight,
-        ),
       ),
     );
   }

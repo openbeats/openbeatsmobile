@@ -14,18 +14,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _profilePageAppBar() {
-    // getting the appBar theme
-    AppBarTheme appBarTheme = ThemeComponents().getAppTheme().appBarTheme;
     return AppBar(
       title: Text(
         "Profile",
-        style: TextStyle(
-          color: allDestinations[3].color,
-          fontSize: appBarTheme.textTheme.headline6.fontSize,
-          fontWeight: appBarTheme.textTheme.headline6.fontWeight,
-        ),
       ),
-      
     );
   }
 }

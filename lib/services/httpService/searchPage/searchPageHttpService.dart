@@ -2,6 +2,9 @@ import 'package:openbeatsmobile/imports.dart';
 
 // gets list of videos for query
 void getVideosForQuery(BuildContext context, String query) async {
+  // add loading animation from screen
+  Provider.of<SearchPageProvider>(context, listen: false)
+      .setSearchResultLoading(true);
   // holds the iteration count for the ytcat retrying logic
   int _iterationCount = 0;
   // sanitizing query to prevent rogue characters
