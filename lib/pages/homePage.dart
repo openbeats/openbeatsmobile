@@ -14,6 +14,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // getting values from shared preferences
+    StartUpSharedPrefs().loadSharedPrefsData();
     // initiating ani`mation controller to hide the BottomNavBar
     _bottomNavBarAnimController = AnimationController(
       vsync: this,
