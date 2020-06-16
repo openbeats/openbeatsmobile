@@ -6,7 +6,6 @@ export 'package:flutter/services.dart';
 export 'package:sliding_up_panel/sliding_up_panel.dart';
 export 'dart:async';
 export 'package:audio_service/audio_service.dart';
-import 'package:audio_service/audio_service.dart';
 export 'package:just_audio/just_audio.dart';
 export 'package:ota_update/ota_update.dart';
 export 'package:http/http.dart';
@@ -19,30 +18,10 @@ export 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
 export 'dart:math';
 export 'package:flare_flutter/flare_actor.dart';
 export 'package:flutter/services.dart';
+export 'package:cached_network_image/cached_network_image.dart';
 
-// file imports
-export 'package:openbeatsmobile/pages/homePage.dart';
-export 'package:openbeatsmobile/components/themeComponents/themeComponents.dart';
-export 'package:openbeatsmobile/services/streamingService/streamingService.dart';
-export 'package:openbeatsmobile/functions/appFunctions/debugFunctions.dart';
-export 'package:openbeatsmobile/components/bottomNavBarDestinations/bottomNavBarDestinations.dart';
-export 'package:openbeatsmobile/models/homePageModels/homePageModel.dart';
-export 'package:openbeatsmobile/components/scaffoldKeys/scaffoldKeysComponent.dart';
-export 'package:openbeatsmobile/pages/explorePage/explorePage.dart';
-export 'package:openbeatsmobile/pages/searchPage/searchPage.dart';
-export 'package:openbeatsmobile/pages/libraryPage/libraryPage.dart';
-export 'package:openbeatsmobile/pages/profilePage/profilePage.dart';
-export 'package:openbeatsmobile/models/AppState/appState.dart';
-export 'package:openbeatsmobile/functions/homePage/homePageFunctions.dart';
-export 'package:openbeatsmobile/pages/searchPage/searchNowPage.dart';
-export 'package:openbeatsmobile/services/sharedPrefsService/searchPage/searchPageSPrefs.dart';
-export 'package:openbeatsmobile/components/appComponents/appComponents.dart';
-export 'package:openbeatsmobile/models/SearchPageModels/searchPageModel.dart';
-export 'package:openbeatsmobile/services/httpService/searchPage/searchPageHttpService.dart';
-export 'package:openbeatsmobile/models/SearchPageModels/searchNowPageModel.dart';
-export 'package:openbeatsmobile/functions/searchPage/searchPageFunctions.dart';
-export 'package:openbeatsmobile/components/themeComponents/themeComponents.dart';
-export 'package:openbeatsmobile/services/sharedPrefsService/appServices/startupSPrefs.dart';
+// audio service exports
+import 'package:audio_service/audio_service.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
