@@ -18,9 +18,11 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     print("homePage REBUILT");
-    return Scaffold(
-      body: _homePageBody(),
-      bottomNavigationBar: _bottomNavBar(),
+    return KeyboardSizeProvider(
+      child: Scaffold(
+        body: _homePageBody(),
+        bottomNavigationBar: _bottomNavBar(),
+      ),
     );
   }
 
@@ -45,13 +47,18 @@ class _HomePageState extends State<HomePage> {
 
   // holds the body of the homePage
   Widget _homePageBody() {
-    return SlidingUpPanel(
-      minHeight: 70.0,
-      maxHeight: MediaQuery.of(context).size.height,
-      parallaxEnabled: true,
-      collapsed: _slideUpPanelCollapsed(),
-      panel: _slideUpPanel(),
-      body: _underneathSlideUpPanel(),
+    return Consumer<ScreenHeight>(
+      builder: (context, _res, child) {
+        print(_res.isOpen);
+        return SlidingUpPanel(
+          minHeight: (_res.isOpen) ? 0.0 : 70.0,
+          maxHeight: MediaQuery.of(context).size.height,
+          parallaxEnabled: true,
+          collapsed: _slideUpPanelCollapsed(),
+          panel: _slideUpPanel(),
+          body: _underneathSlideUpPanel(),
+        );
+      },
     );
   }
 
