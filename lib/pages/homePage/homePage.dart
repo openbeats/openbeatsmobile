@@ -73,14 +73,26 @@ class _HomePageState extends State<HomePage> {
       minHeight: 60.0,
       maxHeight: MediaQuery.of(context).size.height,
       parallaxEnabled: true,
+      collapsed: _slideUpPanelCollapsed(),
       panel: _slideUpPanel(),
       body: _underneathSlideUpPanel(),
     );
   }
 
-  // holds the slideUpPanel
+  // holds the collapsed SlideUpPanel
+  Widget _slideUpPanelCollapsed() {
+    return Container(
+      color: GlobalThemes().getAppTheme().accentColor,
+      child: Center(
+        child: Text("Collapsed SlideUpPanel"),
+      ),
+    );
+  }
+
+  // holds the SlideUpPanel
   Widget _slideUpPanel() {
     return Container(
+      color: GlobalThemes().getAppTheme().accentColor,
       child: Center(
         child: Text("SlideUpPanel"),
       ),

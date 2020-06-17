@@ -14,7 +14,7 @@ class GlobalThemes {
           fontSize: 30.0,
         ))),
     primaryColor: Color(0xFFF32C2C),
-    accentColor: Colors.redAccent,
+    accentColor: Color(0xFF212229),
     bottomAppBarColor: Color(0xFF212229),
   );
 
