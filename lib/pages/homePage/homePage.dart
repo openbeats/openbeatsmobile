@@ -47,31 +47,52 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // holds the body of the homePage
-  Widget _homePageBody() {
-    return Container(
-      child: Center(
-        child: RaisedButton(
-          onPressed: () => _audioServiceTest(),
-          child: Text("Start Audio"),
-        ),
-      ),
-    );
-  }
-
   // holds the bottomNavBar for the homePage
   Widget _bottomNavBar() {
     // getting required data from data models
     int _currIndex = Provider.of<HomePageData>(context).getBNavBarCurrIndex();
-    return BottomNavigationBar(
-      currentIndex: _currIndex,
-      onTap: (index) => Provider.of<HomePageData>(context, listen: false)
-          .setBNavBarCurrIndex(index),
-      items: allDestinations
-          .map(
-            (destination) => widgets.bottomNavBarItem(destination),
-          )
-          .toList(),
+    return SizedBox(
+      height: 60,
+      child: BottomNavigationBar(
+        currentIndex: _currIndex,
+        onTap: (index) => Provider.of<HomePageData>(context, listen: false)
+            .setBNavBarCurrIndex(index),
+        items: allDestinations
+            .map(
+              (destination) => widgets.bottomNavBarItem(destination),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  // holds the body of the homePage
+  Widget _homePageBody() {
+    return SlidingUpPanel(
+      backdropEnabled: true,
+      minHeight: 60.0,
+      maxHeight: MediaQuery.of(context).size.height,
+      parallaxEnabled: true,
+      panel: _slideUpPanel(),
+      body: _underneathSlideUpPanel(),
+    );
+  }
+
+  // holds the slideUpPanel
+  Widget _slideUpPanel() {
+    return Container(
+      child: Center(
+        child: Text("SlideUpPanel"),
+      ),
+    );
+  }
+
+  // holds the widget underneath SlideUpPanel
+  Widget _underneathSlideUpPanel() {
+    return Container(
+      child: Center(
+        child: Text("Underneath Slide Panel"),
+      ),
     );
   }
 }
