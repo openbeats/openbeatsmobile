@@ -14,6 +14,7 @@ class _SearchNowPageState extends State<SearchNowPage> {
     return Scaffold(
       key: searchNowPageScaffoldKey,
       appBar: _searchNowPageAppBar(),
+      body: _searchNowPageBody(),
     );
   }
 
@@ -40,8 +41,9 @@ class _SearchNowPageState extends State<SearchNowPage> {
           controller: _searchFieldController,
           cursorColor: GlobalThemes().getAppTheme().primaryColor,
           style: TextStyle(fontSize: 18.0),
-          onChanged: (String value) {
+          onChanged: (String value) async {
             data.setCurrentSearchString(value);
+            getSearchSuggestion(context);
           },
           decoration: InputDecoration(
             border: InputBorder.none,
@@ -58,6 +60,31 @@ class _SearchNowPageState extends State<SearchNowPage> {
           ),
         );
       },
+    );
+  }
+
+  // holds the search suggestions listview
+  Widget _searchSuggestionsListBuilder(BuildContext context, int index) {
+    return ListTile(
+      leading: Icon(Icons.search),
+      title: Text(Provider.of<SearchTabModel>(context, listen: false)
+          .getSearchSuggestions()[index][0]),
+    );
+  }
+
+  // holds the searchNowPage body
+  Widget _searchNowPageBody() {
+    return Container(
+      child:
+          (Provider.of<SearchTabModel>(context).getSearchSuggestions().length !=
+                  0)
+              ? ListView.builder(
+                  itemBuilder: _searchSuggestionsListBuilder,
+                  itemCount: Provider.of<SearchTabModel>(context)
+                      .getSearchSuggestions()
+                      .length,
+                )
+              : null,
     );
   }
 }
