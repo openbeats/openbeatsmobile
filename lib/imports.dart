@@ -29,6 +29,12 @@ export 'package:obsmobile/services/audioServiceOps.dart';
 export 'package:obsmobile/services/networkOps.dart';
 export 'package:obsmobile/services/sharedprefOps.dart';
 
+// file imports
+export 'package:obsmobile/pages/tabs/exploreTab/exploreTab.dart';
+export 'package:obsmobile/pages/tabs/libraryTab/libraryTab.dart';
+export 'package:obsmobile/pages/tabs/profileTab/profileTab.dart';
+export 'package:obsmobile/pages/tabs/searchTab/searchTab.dart';
+
 // data model imports
 export 'package:obsmobile/models/homePageModels/homePageData.dart';
 
