@@ -1,8 +1,7 @@
 import 'package:obsmobile/imports.dart';
-
-import './widgets.dart' as widgets;
 import 'package:obsmobile/functions/homePageFun.dart';
 import 'package:obsmobile/models/homePageModels/bottomNavBarDest.dart';
+import './widgets.dart' as widgets;
 
 class HomePage extends StatefulWidget {
   @override
@@ -48,7 +47,6 @@ class _HomePageState extends State<HomePage> {
   // holds the body of the homePage
   Widget _homePageBody() {
     return SlidingUpPanel(
-      backdropEnabled: true,
       minHeight: 70.0,
       maxHeight: MediaQuery.of(context).size.height,
       parallaxEnabled: true,
