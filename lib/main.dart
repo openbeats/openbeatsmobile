@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: GlobalThemes().getAppTheme(),
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: AudioServiceWidget(
+        child: HomePage(),
+      ),
     );
   }
 }

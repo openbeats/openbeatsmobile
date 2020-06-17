@@ -12,6 +12,17 @@ class AudioServiceOps {
       androidEnableQueue: true,
     );
   }
+
+  // used to start a single song playback
+  Future<void> startSingleSongPlayback(Map<String, String> songObject) async {
+    // checking if audioService is running
+    if (AudioService.playbackState == null) {
+      // starting audioService
+      await _startAudioService();
+
+      AudioService.customAction("startSinglePlayback", 0.5);
+    } else {}
+  }
 }
 
 // NOTE: Your entrypoint MUST be a top-level function.
@@ -20,26 +31,7 @@ void _audioPlayerTaskEntrypoint() async {
 }
 
 class AudioPlayerTask extends BackgroundAudioTask {
-  final _queue = <MediaItem>[
-    MediaItem(
-      id: "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
-      album: "Science Friday",
-      title: "A Salute To Head-Scratching Science",
-      artist: "Science Friday and WNYC Studios",
-      duration: Duration(milliseconds: 5739820),
-      artUri:
-          "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-    ),
-    MediaItem(
-      id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-      album: "Science Friday",
-      title: "From Cat Rheology To Operatic Incompetence",
-      artist: "Science Friday and WNYC Studios",
-      duration: Duration(milliseconds: 2856950),
-      artUri:
-          "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg",
-    ),
-  ];
+  final _queue = <MediaItem>[];
   int _queueIndex = -1;
   AudioPlayer _audioPlayer = new AudioPlayer();
   AudioProcessingState _skipState;
@@ -251,6 +243,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
       bufferedPosition: bufferedPosition ?? position,
       speed: _audioPlayer.speed,
     );
+  }
+
+  @override
+  void onCustomAction(String name, dynamic arguments) {
+    if (name == 'setVolume') {
+      _audioPlayer.setVolume(arguments);
+    }
   }
 
   List<MediaControl> getControls() {
