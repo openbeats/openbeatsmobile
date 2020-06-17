@@ -38,8 +38,12 @@ class _HomePageState extends State<HomePage> {
       height: 60,
       child: BottomNavigationBar(
         currentIndex: _currIndex,
-        onTap: (index) => Provider.of<HomePageData>(context, listen: false)
-            .setBNavBarCurrIndex(index),
+        onTap: (index) {
+          if (getSlidingUpPanelController().isPanelOpen)
+            getSlidingUpPanelController().close();
+          Provider.of<HomePageData>(context, listen: false)
+              .setBNavBarCurrIndex(index);
+        },
         items: allDestinations
             .map(
               (destination) => widgets.bottomNavBarItem(destination),
@@ -61,6 +65,7 @@ class _HomePageState extends State<HomePage> {
           collapsed: _slideUpPanelCollapsed(),
           panel: _slideUpPanel(),
           body: _underneathSlideUpPanel(),
+          onPanelSlide: (double position) {},
         );
       },
     );
@@ -115,6 +120,8 @@ class _HomePageState extends State<HomePage> {
                 return SearchTab();
               case '/searchNowPage':
                 return SearchNowPage();
+              default:
+                return SearchTab();
             }
           });
     });
