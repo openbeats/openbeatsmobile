@@ -1,12 +1,18 @@
 import 'package:obsmobile/imports.dart';
 
 class AudioServiceOps {
-
-  
-
+  // starts the audioService
+  Future<void> _startAudioService() async {
+    await AudioService.start(
+      backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
+      androidNotificationChannelName: 'OBSMobile',
+      androidStopForegroundOnPause: true,
+      androidNotificationColor: 0xFF2196f3,
+      androidNotificationIcon: 'mipmap/ic_launcher',
+      androidEnableQueue: true,
+    );
+  }
 }
-
-
 
 // NOTE: Your entrypoint MUST be a top-level function.
 void _audioPlayerTaskEntrypoint() async {
