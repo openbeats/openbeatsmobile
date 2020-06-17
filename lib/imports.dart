@@ -29,6 +29,9 @@ export 'package:obsmobile/services/audioServiceOps.dart';
 export 'package:obsmobile/services/networkOps.dart';
 export 'package:obsmobile/services/sharedprefOps.dart';
 
+// data model imports
+export 'package:obsmobile/models/homePageModels/homePageData.dart';
+
 // audio service exports
 import 'package:audio_service/audio_service.dart';
 
