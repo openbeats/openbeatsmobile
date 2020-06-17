@@ -29,7 +29,10 @@ class _HomePageState extends State<HomePage> {
   Widget _homePageBody() {
     return Container(
       child: Center(
-        child: Text("HomePage"),
+        child: RaisedButton(
+          onPressed: () {},
+          child: Text("Start Audio"),
+        ),
       ),
     );
   }
