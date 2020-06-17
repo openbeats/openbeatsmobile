@@ -9,6 +9,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // temp audioService testing function
+  void _audioServiceTest() {
+
+    
+
+  }
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +37,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       child: Center(
         child: RaisedButton(
-          onPressed: () {},
+          onPressed: () => _audioServiceTest(),
           child: Text("Start Audio"),
         ),
       ),
