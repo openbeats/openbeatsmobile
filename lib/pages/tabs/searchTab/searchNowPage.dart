@@ -10,6 +10,12 @@ class _SearchNowPageState extends State<SearchNowPage> {
   TextEditingController _searchFieldController = new TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _searchFieldController.text = getCurrentSearchString();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: searchNowPageScaffoldKey,
@@ -21,6 +27,8 @@ class _SearchNowPageState extends State<SearchNowPage> {
   // holds the appBar for SearchNowPage
   Widget _searchNowPageAppBar() {
     return AppBar(
+      titleSpacing: 0.0,
+      elevation: 0,
       title: _appBarTextField(),
       actions: <Widget>[
         IconButton(
@@ -35,28 +43,35 @@ class _SearchNowPageState extends State<SearchNowPage> {
   Widget _appBarTextField() {
     return Consumer<SearchTabModel>(
       builder: (context, data, child) {
-        return TextField(
-          autofocus: true,
-          textInputAction: TextInputAction.search,
-          controller: _searchFieldController,
-          cursorColor: GlobalThemes().getAppTheme().primaryColor,
-          style: TextStyle(fontSize: 18.0),
-          onChanged: (String value) async {
-            data.setCurrentSearchString(value);
-            getSearchSuggestion(context);
-          },
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            suffixIcon: (_searchFieldController.text.length == 0)
-                ? null
-                : GestureDetector(
-                    child: Icon(
-                      Icons.clear,
-                      color: Colors.red,
+        return Container(
+          padding: EdgeInsets.only(left: 10.0),
+          child: TextField(
+            autofocus: true,
+            textInputAction: TextInputAction.search,
+            controller: _searchFieldController,
+            cursorColor: GlobalThemes().getAppTheme().primaryColor,
+            style: TextStyle(fontSize: 18.0),
+            onChanged: (String value) async {
+              setCurrentSearchString(value);
+              getSearchSuggestion(context);
+            },
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              suffixIcon: (_searchFieldController.text.length == 0)
+                  ? null
+                  : GestureDetector(
+                      child: Icon(
+                        Icons.clear,
+                        color: Colors.red,
+                      ),
+                      onTap: () {
+                        setCurrentSearchString("");
+                        WidgetsBinding.instance.addPostFrameCallback(
+                            (_) => _searchFieldController.clear());
+                      },
                     ),
-                    onTap: () {},
-                  ),
-            hintText: "Search for songs, artists, audio books...",
+              hintText: "Search for songs, artists, audio books...",
+            ),
           ),
         );
       },
