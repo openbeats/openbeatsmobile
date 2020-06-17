@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("homePage REBUILT");
     return Scaffold(
       body: _homePageBody(),
       bottomNavigationBar: _bottomNavBar(),
@@ -35,7 +36,12 @@ class _HomePageState extends State<HomePage> {
 
   // holds the bottomNavBar for the homePage
   Widget _bottomNavBar() {
+    // getting required data from data models
+    int _currIndex = Provider.of<HomePageData>(context).getBNavBarCurrIndex();
     return BottomNavigationBar(
+      currentIndex: _currIndex,
+      onTap: (index) => Provider.of<HomePageData>(context, listen: false)
+          .setBNavBarCurrIndex(index),
       items: allDestinations
           .map(
             (destination) => widgets.bottomNavBarItem(destination),

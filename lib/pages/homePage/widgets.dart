@@ -6,5 +6,6 @@ BottomNavigationBarItem bottomNavBarItem(Destination destination) {
   return BottomNavigationBarItem(
     icon: Icon(destination.icon),
     title: Text(destination.title),
+    backgroundColor: destination.color
   );
 }
