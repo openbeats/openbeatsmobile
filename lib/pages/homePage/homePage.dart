@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage> {
     print("homePage REBUILT");
     return KeyboardSizeProvider(
       child: Scaffold(
+        key: homePageScaffoldKey,
         body: _homePageBody(),
         bottomNavigationBar: _bottomNavBar(),
       ),
@@ -49,7 +50,6 @@ class _HomePageState extends State<HomePage> {
   Widget _homePageBody() {
     return Consumer<ScreenHeight>(
       builder: (context, _res, child) {
-        print(_res.isOpen);
         return SlidingUpPanel(
           minHeight: (_res.isOpen) ? 0.0 : 70.0,
           maxHeight: MediaQuery.of(context).size.height,

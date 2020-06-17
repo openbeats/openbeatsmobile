@@ -9,6 +9,7 @@ class _SearchTabState extends State<SearchTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: searchTabScaffoldKey,
       appBar: _searchTabAppBar(),
       body: _searchTabBody(),
     );

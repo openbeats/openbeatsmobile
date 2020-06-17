@@ -12,6 +12,7 @@ class _SearchNowPageState extends State<SearchNowPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: searchNowPageScaffoldKey,
       appBar: _searchNowPageAppBar(),
     );
   }

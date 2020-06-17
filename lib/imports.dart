@@ -25,6 +25,7 @@ export 'package:obsmobile/globals/globalFuncs.dart';
 export 'package:obsmobile/globals/globalThemes.dart';
 export 'package:obsmobile/globals/globalVars.dart';
 export 'package:obsmobile/globals/globalWidgets.dart';
+export 'package:obsmobile/globals/globalScaffoldKeys.dart';
 export 'package:obsmobile/services/audioServiceOps.dart';
 export 'package:obsmobile/services/networkOps.dart';
 export 'package:obsmobile/services/sharedprefOps.dart';
