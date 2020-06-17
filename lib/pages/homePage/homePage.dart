@@ -1,6 +1,5 @@
 import 'package:obsmobile/imports.dart';
 import 'package:obsmobile/functions/homePageFun.dart';
-import 'package:obsmobile/models/homePageModels/bottomNavBarDest.dart';
 import './widgets.dart' as widgets;
 
 class HomePage extends StatefulWidget {
@@ -92,7 +91,22 @@ class _HomePageState extends State<HomePage> {
 
   // holds the navigator for SearchTab
   Widget _searchTabNavigator() {
-    return SearchTab();
+    return Navigator(onGenerateRoute: (RouteSettings routeSettings) {
+      return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return SearchTab();
+              case '/searchNowPage':
+                return SearchNowPage();
+            }
+          });
+    });
   }
 
   // holds the navigator for exploreTab

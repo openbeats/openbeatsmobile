@@ -21,7 +21,7 @@ class _SearchTabState extends State<SearchTab> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () {},
+          onPressed: () => Navigator.pushNamed(context, "/searchNowPage"),
         ),
       ],
     );
