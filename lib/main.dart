@@ -5,6 +5,8 @@ void main() => runApp(
       MultiProvider(
         providers: [
           ChangeNotifierProvider<HomePageData>(create: (_) => HomePageData()),
+          ChangeNotifierProvider<SearchTabModel>(
+              create: (_) => SearchTabModel()),
         ],
         child: MyApp(),
       ),
