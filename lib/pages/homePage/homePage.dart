@@ -18,12 +18,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     print("homePage REBUILT");
-    return KeyboardSizeProvider(
-      child: Scaffold(
-        key: homePageScaffoldKey,
-        body: _homePageBody(),
-        bottomNavigationBar: _bottomNavBar(),
+    return WillPopScope(
+      child: KeyboardSizeProvider(
+        child: Scaffold(
+          key: homePageScaffoldKey,
+          body: _homePageBody(),
+          bottomNavigationBar: _bottomNavBar(),
+        ),
       ),
+      onWillPop: () => GlobalFuncs().willPopScopeHandler(),
     );
   }
 
@@ -51,6 +54,7 @@ class _HomePageState extends State<HomePage> {
     return Consumer<ScreenHeight>(
       builder: (context, _res, child) {
         return SlidingUpPanel(
+          controller: getSlidingUpPanelController(),
           minHeight: (_res.isOpen) ? 0.0 : 70.0,
           maxHeight: MediaQuery.of(context).size.height,
           parallaxEnabled: true,
