@@ -20,6 +20,15 @@ export 'package:flare_flutter/flare_actor.dart';
 export 'package:flutter/services.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 
+// global dart file imports
+export 'package:obsmobile/globals/globalFuncs.dart';
+export 'package:obsmobile/globals/globalThemes.dart';
+export 'package:obsmobile/globals/globalVars.dart';
+export 'package:obsmobile/globals/globalWidgets.dart';
+export 'package:obsmobile/services/audioServiceOps.dart';
+export 'package:obsmobile/services/networkOps.dart';
+export 'package:obsmobile/services/sharedprefOps.dart';
+
 // audio service exports
 import 'package:audio_service/audio_service.dart';
 
