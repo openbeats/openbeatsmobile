@@ -7,12 +7,24 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  // controller for the bottomAppBarSizeTransition
+  AnimationController _bottomAppBarAnimController;
+  Animation<double> _bottomNavAnimation;
+
   @override
   void initState() {
     super.initState();
     // changing the status bar color
     changeStatusBarColor();
+    // instantiating animation controllers
+    _bottomAppBarAnimController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _bottomNavAnimation = CurvedAnimation(
+      parent: _bottomAppBarAnimController,
+      curve: Curves.ease,
+    );
+    _bottomAppBarAnimController.forward();
   }
 
   @override
@@ -34,21 +46,25 @@ class _HomePageState extends State<HomePage> {
   Widget _bottomNavBar() {
     // getting required data from data models
     int _currIndex = Provider.of<HomePageData>(context).getBNavBarCurrIndex();
-    return SizedBox(
-      height: 60,
-      child: BottomNavigationBar(
-        currentIndex: _currIndex,
-        onTap: (index) {
-          if (getSlidingUpPanelController().isPanelOpen)
-            getSlidingUpPanelController().close();
-          Provider.of<HomePageData>(context, listen: false)
-              .setBNavBarCurrIndex(index);
-        },
-        items: allDestinations
-            .map(
-              (destination) => widgets.bottomNavBarItem(destination),
-            )
-            .toList(),
+    return SizeTransition(
+      sizeFactor: _bottomNavAnimation,
+      axisAlignment: -1.0,
+      child: SizedBox(
+        height: 60,
+        child: BottomNavigationBar(
+          currentIndex: _currIndex,
+          onTap: (index) {
+            if (getSlidingUpPanelController().isPanelOpen)
+              getSlidingUpPanelController().close();
+            Provider.of<HomePageData>(context, listen: false)
+                .setBNavBarCurrIndex(index);
+          },
+          items: allDestinations
+              .map(
+                (destination) => widgets.bottomNavBarItem(destination),
+              )
+              .toList(),
+        ),
       ),
     );
   }
@@ -65,7 +81,11 @@ class _HomePageState extends State<HomePage> {
           collapsed: _slideUpPanelCollapsed(),
           panel: _slideUpPanel(),
           body: _underneathSlideUpPanel(),
-          onPanelSlide: (double position) {},
+          onPanelSlide: (double position) {
+            if (position > 0.4)
+              _bottomAppBarAnimController.reverse();
+            else if (position < 0.4) _bottomAppBarAnimController.forward();
+          },
         );
       },
     );
