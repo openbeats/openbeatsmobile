@@ -12,6 +12,12 @@ BottomNavigationBarItem bottomNavBarItem(Destination destination) {
 // holds the widget to show in SlidingUpPanelCollapsed when no audio is playing
 Widget slidingUpPanelCollapsedDefault() {
   return Center(
-    child: Text("Collapsed SlideUpPanel"),
+    child: Container(
+      height: 35.0,
+      child: FlareActor(
+        "assets/flareAssets/logoanimwhite.flr",
+        animation: "rotate",
+      ),
+    ),
   );
 }

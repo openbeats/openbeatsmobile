@@ -105,37 +105,43 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       stream: Rx.combineLatest3(
           AudioService.currentMediaItemStream,
           AudioService.playbackStateStream,
-          Stream.periodic(Duration(seconds: 1)),
+          Stream.periodic(Duration(milliseconds: 200)),
           (mediaItemStream, playbackStream, perodic) {
         _state = playbackStream;
         _currMediaItem = mediaItemStream;
       }),
       builder: (context, snapshot) {
-        double position = _state?.currentPosition?.inSeconds?.toDouble();
-        double duration = _currMediaItem?.duration?.inSeconds?.toDouble();
+        double _position = _state?.currentPosition?.inSeconds?.toDouble();
+        double _duration = _currMediaItem?.duration?.inSeconds?.toDouble();
         return Container(
           color: GlobalThemes().getAppTheme().bottomAppBarColor,
-          child: (_currMediaItem != null)
-              ? ListTile(
-                  leading: cachedNetworkImageW(_currMediaItem.artUri),
-                  title: Text(
-                    _currMediaItem.title,
-                    maxLines: 2,
-                  ),
-                  subtitle: Container(
-                    margin: EdgeInsets.only(top: 3.0),
-                    child: Text(getCurrentTimeStamp(position) +
-                        " | " +
-                        getCurrentTimeStamp(duration)),
-                  ),
-                  trailing: IconButton(
-                    icon: Icon(_state.playing ? Icons.pause : Icons.play_arrow),
-                    onPressed: () => _state.playing
-                        ? AudioService.pause()
-                        : AudioService.play(),
-                  ),
-                )
-              : widgets.slidingUpPanelCollapsedDefault(),
+          child: AnimatedSwitcher(
+            duration: Duration(milliseconds: 300),
+            child: (_currMediaItem != null)
+                ? ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
+                    leading: cachedNetworkImageW(_currMediaItem.artUri),
+                    title: Text(
+                      _currMediaItem.title,
+                      maxLines: 2,
+                    ),
+                    subtitle: Container(
+                      margin: EdgeInsets.only(top: 3.0),
+                      child: Text(getCurrentTimeStamp(_position) +
+                          "  |  " +
+                          getCurrentTimeStamp(_duration)),
+                    ),
+                    trailing: IconButton(
+                      icon: Icon((_state != null && _state.playing)
+                          ? Icons.pause
+                          : Icons.play_arrow),
+                      onPressed: () => (_state != null && _state.playing)
+                          ? AudioService.pause()
+                          : AudioService.play(),
+                    ),
+                  )
+                : widgets.slidingUpPanelCollapsedDefault(),
+          ),
         );
       },
     );
