@@ -6,10 +6,13 @@ Future<void> navigateToSearchNowPage(BuildContext context) async {
   var query = await Navigator.pushNamed(context, "/searchNowPage");
   // checking if valid query has been returned
   if (query != null && query.toString().length > 0) {
+    // sanitizing query to prevent rogue characters
+    query = query.toString().replaceAll(new RegExp(r'[^\w\s]+'), '');
     // setting loading flag
     Provider.of<SearchTabModel>(context, listen: false).setLoadingFlag(true);
-
-    print(query.toString() + " Recieved");
+    // updating the currentSearch string
+    Provider.of<SearchTabModel>(context, listen: false)
+        .setCurrentSearchString(query);
     // getting current search history
     List<String> _searchHistory =
         Provider.of<SearchTabModel>(context, listen: false).getSearchHistory();

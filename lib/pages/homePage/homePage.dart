@@ -121,6 +121,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ? ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
                     leading: cachedNetworkImageW(_currMediaItem.artUri),
+                    onTap: () => getSlidingUpPanelController().open(),
                     title: Text(
                       _currMediaItem.title,
                       maxLines: 2,
@@ -150,7 +151,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the SlideUpPanel
   Widget _slideUpPanel() {
     return Container(
-      color: GlobalThemes().getAppTheme().accentColor,
+      color: GlobalThemes().getAppTheme().bottomAppBarColor,
       child: Center(
         child: Text("SlideUpPanel"),
       ),
