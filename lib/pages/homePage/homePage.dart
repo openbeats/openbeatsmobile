@@ -1,6 +1,7 @@
 import 'package:obsmobile/imports.dart';
 import 'package:obsmobile/functions/homePageFun.dart';
 import './widgets.dart' as widgets;
+import './functions.dart' as functions;
 
 class HomePage extends StatefulWidget {
   @override
@@ -38,7 +39,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           bottomNavigationBar: _bottomNavBar(),
         ),
       ),
-      onWillPop: () => GlobalFuncs().willPopScopeHandler(),
+      onWillPop: () => functions.willPopScopeHandler(),
     );
   }
 
