@@ -1,4 +1,5 @@
 import 'package:obsmobile/imports.dart';
+import './functions.dart' as functions;
 
 class SearchTab extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _SearchTabState extends State<SearchTab> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () => Navigator.pushNamed(context, "/searchNowPage"),
+          onPressed: () => functions.navigateToSearchNowPage(context),
         ),
       ],
     );

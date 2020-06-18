@@ -1,4 +1,5 @@
 import 'package:obsmobile/imports.dart';
+import './widgets.dart' as widgets;
 
 class SearchNowPage extends StatefulWidget {
   @override
@@ -56,7 +57,7 @@ class _SearchNowPageState extends State<SearchNowPage> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () {},
+          onPressed: () => Navigator.pop(context, _searchFieldController.text),
         )
       ],
     );
@@ -103,28 +104,23 @@ class _SearchNowPageState extends State<SearchNowPage> {
     );
   }
 
-  // holds the search suggestions listview
-  Widget _searchSuggestionsListBuilder(BuildContext context, int index) {
-    return ListTile(
-      leading: Icon(Icons.search),
-      title: Text(Provider.of<SearchTabModel>(context, listen: false)
-          .getSearchSuggestions()[index][0]),
-    );
-  }
-
   // holds the searchNowPage body
   Widget _searchNowPageBody() {
     return Container(
-      child:
-          (Provider.of<SearchTabModel>(context).getSearchSuggestions().length !=
-                  0)
-              ? ListView.builder(
-                  itemBuilder: _searchSuggestionsListBuilder,
-                  itemCount: Provider.of<SearchTabModel>(context)
-                      .getSearchSuggestions()
-                      .length,
-                )
-              : null,
+      child: ListView(
+        physics: BouncingScrollPhysics(),
+        children: <Widget>[
+          widgets.suggestionsTitleW(false),
+          ListView.builder(
+            physics: BouncingScrollPhysics(),
+            shrinkWrap: true,
+            itemBuilder: widgets.searchSuggestionsListBuilder,
+            itemCount: Provider.of<SearchTabModel>(context)
+                .getSearchSuggestions()
+                .length,
+          )
+        ],
+      ),
     );
   }
 }

@@ -100,7 +100,7 @@ void getSearchSuggestion(BuildContext context) async {
 }
 
 // get ytcat search results
-void getYTCatSearchResults(BuildContext context) async {
+Future<void> getYTCatSearchResults(BuildContext context) async {
   try {
     // getting the current search string
     String query = Provider.of<SearchTabModel>(context, listen: false)
