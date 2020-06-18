@@ -1,5 +1,6 @@
 import 'package:obsmobile/imports.dart';
 import './functions.dart' as functions;
+import './widgets.dart' as widgets;
 
 class SearchTab extends StatefulWidget {
   @override
@@ -32,9 +33,39 @@ class _SearchTabState extends State<SearchTab> {
   // holds the body of searchTab
   Widget _searchTabBody() {
     return Container(
-      child: Center(
-        child: Text("Search Tab"),
+      child: Consumer<SearchTabModel>(
+        builder: (context, data, child) {
+          return AnimatedSwitcher(
+            duration: Duration(milliseconds: 300),
+            child: (data.getLoadingFlag())
+                ? Center(
+                    child: loadingAnimationW(),
+                  )
+                : (data.getSearchResults().length > 0)
+                    ? searchResultsListView()
+                    : widgets.searchInstructionW(context),
+          );
+        },
       ),
+    );
+  }
+
+  // holds the search results listview
+  Widget searchResultsListView() {
+    return Container(
+      child: ListView.builder(
+        itemBuilder: searchResultsListBuilder,
+        itemCount:
+            Provider.of<SearchTabModel>(context).getSearchResults().length,
+      ),
+    );
+  }
+
+  // holds the searchResults builder widget
+  Widget searchResultsListBuilder(BuildContext context, int index) {
+    return ListTile(
+      title: Text(Provider.of<SearchTabModel>(context).getSearchResults()[index]
+          ["title"]),
     );
   }
 }
