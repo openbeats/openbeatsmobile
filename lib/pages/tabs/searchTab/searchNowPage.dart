@@ -12,7 +12,30 @@ class _SearchNowPageState extends State<SearchNowPage> {
   @override
   void initState() {
     super.initState();
-    _searchFieldController.text = getCurrentSearchString();
+
+    // after state is initialized
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // filing the previous search string into the textfield
+      _searchFieldController.text =
+          Provider.of<SearchTabModel>(context, listen: false)
+              .getCurrentSearchString();
+      // adding listener to the search field
+      _searchFieldController.addListener(() {
+        // if the field is empty
+        if (_searchFieldController.text.length == 0) {
+          // clearing the searchSuggestions
+          Provider.of<SearchTabModel>(context, listen: false)
+              .updateSearchSuggestions([]);
+          // setting the delayFlag to keep the queued updating of the searchSuggestions after we clear them
+          Provider.of<SearchTabModel>(context, listen: false)
+              .setDelayFlag(true);
+        } else {
+          // setting the delayFlag to let the searchSuggestions list to be updated
+          Provider.of<SearchTabModel>(context, listen: false)
+              .setDelayFlag(false);
+        }
+      });
+    });
   }
 
   @override
@@ -52,7 +75,8 @@ class _SearchNowPageState extends State<SearchNowPage> {
             cursorColor: GlobalThemes().getAppTheme().primaryColor,
             style: TextStyle(fontSize: 18.0),
             onChanged: (String value) async {
-              setCurrentSearchString(value);
+              Provider.of<SearchTabModel>(context, listen: false)
+                  .setCurrentSearchString(value);
               getSearchSuggestion(context);
             },
             decoration: InputDecoration(
@@ -65,7 +89,8 @@ class _SearchNowPageState extends State<SearchNowPage> {
                         color: Colors.red,
                       ),
                       onTap: () {
-                        setCurrentSearchString("");
+                        Provider.of<SearchTabModel>(context, listen: false)
+                            .setCurrentSearchString("");
                         WidgetsBinding.instance.addPostFrameCallback(
                             (_) => _searchFieldController.clear());
                       },

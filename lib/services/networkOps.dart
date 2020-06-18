@@ -76,14 +76,48 @@ dynamic _returnResponse(Response response, BuildContext context) {
 void getSearchSuggestion(BuildContext context) async {
   try {
     // getting the current search string
-    String query = getCurrentSearchString();
-    // sending http request
-    var response = await get(getApiEndpoint() + "/suggester?k=" + query);
-    var responseClassified = _returnResponse(response, context);
-    if (responseClassified["status"] == true) {
-      // updating the seacch suggestions list
-      Provider.of<SearchTabModel>(context, listen: false)
-          .updateSearchSuggestions(responseClassified["data"]["data"]);
+    String query = Provider.of<SearchTabModel>(context, listen: false).getCurrentSearchString();
+    // checking if the search results have got any value
+    for (int i = 0; i < 5; i++) {
+      // sending http request
+      var response = await get(getApiEndpoint() + "/suggester?k=" + query);
+      var responseClassified = _returnResponse(response, context);
+      if (responseClassified["status"] == true &&
+          responseClassified["data"]["data"].length != 0) {
+        // updating the seacch suggestions list
+        Provider.of<SearchTabModel>(context, listen: false)
+            .updateSearchSuggestions(responseClassified["data"]["data"]);
+        break;
+      }
+    }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context);
+  }
+}
+
+// get ytcat search results
+void getYTCatSearchResults(BuildContext context) async {
+  try {
+    // getting the current search string
+    String query = Provider.of<SearchTabModel>(context, listen: false)
+        .getCurrentSearchString();
+
+    // checking if the search results have got any value
+    for (int i = 0; i < 5; i++) {
+      // sending http request
+      var response = await get(getApiEndpoint() + "/ytcat?q=" + query);
+      var responseClassified = _returnResponse(response, context);
+      if (responseClassified["status"] == true &&
+          responseClassified["data"]["data"].length != 0) {
+        // updating the seacch suggestions list
+        Provider.of<SearchTabModel>(context, listen: false)
+            .updateSearchResults(responseClassified["data"]["data"]);
+        break;
+      }
     }
   } on SocketException {
     // no internet connection

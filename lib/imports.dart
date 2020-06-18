@@ -19,6 +19,7 @@ export 'dart:math';
 export 'package:flare_flutter/flare_actor.dart';
 export 'package:flutter/services.dart';
 export 'package:cached_network_image/cached_network_image.dart';
+export 'package:flutter/scheduler.dart';
 
 // global dart file imports
 export 'package:obsmobile/globals/globalFuncs.dart';
