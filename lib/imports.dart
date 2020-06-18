@@ -6,29 +6,45 @@ export 'package:flutter/services.dart';
 export 'package:sliding_up_panel/sliding_up_panel.dart';
 export 'dart:async';
 export 'package:audio_service/audio_service.dart';
-import 'package:audio_service/audio_service.dart';
 export 'package:just_audio/just_audio.dart';
 export 'package:ota_update/ota_update.dart';
 export 'package:http/http.dart';
 export 'dart:convert';
 export 'package:package_info/package_info.dart';
 export 'package:oktoast/oktoast.dart';
-export 'package:ext_storage/ext_storage.dart';
 export 'dart:io';
+export 'package:shared_preferences/shared_preferences.dart';
+export 'package:flutter_keyboard_size/flutter_keyboard_size.dart';
+export 'dart:math';
+export 'package:flare_flutter/flare_actor.dart';
+export 'package:flutter/services.dart';
+export 'package:cached_network_image/cached_network_image.dart';
+export 'package:flutter/scheduler.dart';
+
+// global dart file imports
+export 'package:obsmobile/globals/globalFuncs.dart';
+export 'package:obsmobile/globals/globalThemes.dart';
+export 'package:obsmobile/globals/globalVars.dart';
+export 'package:obsmobile/globals/globalWidgets.dart';
+export 'package:obsmobile/globals/globalScaffoldKeys.dart';
+export 'package:obsmobile/services/audioServiceOps.dart';
+export 'package:obsmobile/services/networkOps.dart';
+export 'package:obsmobile/services/sharedprefOps.dart';
 
 // file imports
-export 'package:openbeatsmobile/models/app/state.dart';
-export 'package:openbeatsmobile/components/bottomNavDestinations.dart';
-export 'package:openbeatsmobile/services/audio/streaming.dart';
-export 'package:openbeatsmobile/screens/pages/explore/explorePage.dart';
-export 'package:openbeatsmobile/screens/pages/library/libraryPage.dart';
-export 'package:openbeatsmobile/screens/pages/profile/profilePage.dart';
-export 'package:openbeatsmobile/screens/pages/search/searchPage.dart';
-export 'package:openbeatsmobile/util/indexPage/indexPageFunc.dart';
-export 'package:openbeatsmobile/util/updateFuncs.dart';
-export 'package:openbeatsmobile/screens/pages/profile/components.dart';
-export 'package:openbeatsmobile/screens/pages/search/components.dart';
-export 'package:openbeatsmobile/models/app/theme.dart';
+export 'package:obsmobile/pages/tabs/exploreTab/exploreTab.dart';
+export 'package:obsmobile/pages/tabs/libraryTab/libraryTab.dart';
+export 'package:obsmobile/pages/tabs/profileTab/profileTab.dart';
+export 'package:obsmobile/pages/tabs/searchTab/searchTab.dart';
+export 'package:obsmobile/models/homePageModels/bottomNavBarDest.dart';
+export 'package:obsmobile/pages/tabs/searchTab/searchNowPage.dart';
+
+// data model imports
+export 'package:obsmobile/models/homePageModels/homePageData.dart';
+export 'package:obsmobile/models/searchTabModels/searchTabModels.dart';
+
+// audio service exports
+import 'package:audio_service/audio_service.dart';
 
 MediaControl playControl = MediaControl(
   androidIcon: 'drawable/ic_action_play_arrow',
