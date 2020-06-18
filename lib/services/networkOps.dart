@@ -76,7 +76,8 @@ dynamic _returnResponse(Response response, BuildContext context) {
 void getSearchSuggestion(BuildContext context) async {
   try {
     // getting the current search string
-    String query = Provider.of<SearchTabModel>(context, listen: false).getCurrentSearchString();
+    String query = Provider.of<SearchTabModel>(context, listen: false)
+        .getCurrentSearchString();
     // checking if the search results have got any value
     for (int i = 0; i < 5; i++) {
       // sending http request
@@ -102,7 +103,6 @@ void getSearchSuggestion(BuildContext context) async {
 // get ytcat search results
 Future<void> getYTCatSearchResults(BuildContext context, String query) async {
   try {
-
     // checking if the search results have got any value
     for (int i = 0; i < 5; i++) {
       // sending http request
@@ -122,5 +122,60 @@ Future<void> getYTCatSearchResults(BuildContext context, String query) async {
   } on TimeoutException {
     // timeout exception
     _handleExceptionsRaised("TimeoutException", context);
+  }
+}
+
+// used to get the streamingUrl
+Future<String> getStreamingUrl(mediaParameters, BuildContext context) async {
+  try {
+    // checking if the search results have got any value
+    for (int i = 0; i < 5; i++) {
+      // sending http request
+      var response =
+          await get(getApiEndpoint() + "/opencc/" + mediaParameters["videoId"]);
+      var responseClassified = _returnResponse(response, context);
+      if (responseClassified["status"] == true &&
+          responseClassified["data"]["link"].length != 0 &&
+          responseClassified["data"]["link"] != null) {
+        // returning the streaming url
+        return responseClassified["data"]["link"];
+      }
+    }
+    return null;
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context);
+    return null;
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context);
+    return null;
+  }
+}
+
+// used to check if high resolution thumbnail is available for the song
+Future<String> checkHighResThumbnailAvailability(
+    String videoId, BuildContext context) async {
+  // constructing image urls
+  String _highResURL =
+      "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
+  String _lowResURL =
+      "https://img.youtube.com/vi/" + videoId + "/mqdefault.jpg";
+  try {
+    // sending http request
+    var response = await head(_highResURL);
+    // checking if image exists
+    if (response.statusCode == 200)
+      return _highResURL;
+    else
+      return _lowResURL;
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context);
+    return _lowResURL;
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context);
+    return _lowResURL;
   }
 }

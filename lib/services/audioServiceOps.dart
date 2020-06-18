@@ -247,45 +247,41 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<dynamic> onCustomAction(String name, dynamic args) async {
     super.onCustomAction(name, args);
-    print("REached here");
-    // creating updatedMediaItemInstance
-    MediaItem updatedMediaItem1 = MediaItem(
-      id: "https://r2---sn-cvh76nez.googlevideo.com/videoplayback?expire=1592415801&ei=2QHqXuW7LIri4-EPwPGRmAU&ip=15.206.204.126&id=o-AJkJhs3toPb0U-oYH7vpX8PJaLNQ9udRXM0BqfQ03UbZ&itag=251&source=youtube&requiressl=yes&mh=Ql&mm=31%2C29&mn=sn-cvh76nez%2Csn-cvh7knez&ms=au%2Crdu&mv=m&mvi=1&pl=18&initcwndbps=765000&vprv=1&mime=audio%2Fwebm&gir=yes&clen=4172349&dur=263.241&lmt=1574660327680872&mt=1592394097&fvip=6&keepalive=yes&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgebUvHpphdMb0_bMJFKA7hkUTDMSyEaXMUmv-KSxIThICIQCUPRji2qbMUwlZl9xyLg3fVlwqe0pNJdz2zCpS6yj0dg%3D%3D&ratebypass=yes&sig=AOq0QJ8wRAIgXj7rOQO3CnWa3RndrSymi_fv6rKmmmom3g8w6oi0EuICIB_VDKKN2UEvD9ZQpKWyucTVjqAMqFHryWvdwNIumaQ2",
-      album: "OpenBeats Music",
-      title: "Hi there",
-    );
-    MediaItem updatedMediaItem2 = MediaItem(
-      id: "https://r2---sn-cvh76nez.googlevideo.com/videoplayback?expire=1592415801&ei=2QHqXuW7LIri4-EPwPGRmAU&ip=15.206.204.126&id=o-AJkJhs3toPb0U-oYH7vpX8PJaLNQ9udRXM0BqfQ03UbZ&itag=251&source=youtube&requiressl=yes&mh=Ql&mm=31%2C29&mn=sn-cvh76nez%2Csn-cvh7knez&ms=au%2Crdu&mv=m&mvi=1&pl=18&initcwndbps=765000&vprv=1&mime=audio%2Fwebm&gir=yes&clen=4172349&dur=263.241&lmt=1574660327680872&mt=1592394097&fvip=6&keepalive=yes&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgebUvHpphdMb0_bMJFKA7hkUTDMSyEaXMUmv-KSxIThICIQCUPRji2qbMUwlZl9xyLg3fVlwqe0pNJdz2zCpS6yj0dg%3D%3D&ratebypass=yes&sig=AOq0QJ8wRAIgXj7rOQO3CnWa3RndrSymi_fv6rKmmmom3g8w6oi0EuICIB_VDKKN2UEvD9ZQpKWyucTVjqAMqFHryWvdwNIumaQ2",
-      album: "OpenBeats Music",
-      title: "Hi there",
-    );
-    // setting the current mediaItem
-    await AudioServiceBackground.setMediaItem(updatedMediaItem1);
-    // adding mediaITem to queue
-    _queue.add(updatedMediaItem1);
-    _queue.add(updatedMediaItem2);
-    // setting URL for audio player
-    await _audioPlayer.setUrl(
-        "https://r2---sn-cvh76nez.googlevideo.com/videoplayback?expire=1592415801&ei=2QHqXuW7LIri4-EPwPGRmAU&ip=15.206.204.126&id=o-AJkJhs3toPb0U-oYH7vpX8PJaLNQ9udRXM0BqfQ03UbZ&itag=251&source=youtube&requiressl=yes&mh=Ql&mm=31%2C29&mn=sn-cvh76nez%2Csn-cvh7knez&ms=au%2Crdu&mv=m&mvi=1&pl=18&initcwndbps=765000&vprv=1&mime=audio%2Fwebm&gir=yes&clen=4172349&dur=263.241&lmt=1574660327680872&mt=1592394097&fvip=6&keepalive=yes&c=WEB&txp=5531432&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cvprv%2Cmime%2Cgir%2Cclen%2Cdur%2Clmt&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgebUvHpphdMb0_bMJFKA7hkUTDMSyEaXMUmv-KSxIThICIQCUPRji2qbMUwlZl9xyLg3fVlwqe0pNJdz2zCpS6yj0dg%3D%3D&ratebypass=yes&sig=AOq0QJ8wRAIgXj7rOQO3CnWa3RndrSymi_fv6rKmmmom3g8w6oi0EuICIB_VDKKN2UEvD9ZQpKWyucTVjqAMqFHryWvdwNIumaQ2");
-    // playing audio
-    onPlay();
+    print("REached here");  
+    
   }
 
+  
+
   List<MediaControl> getControls() {
-    if (_playing) {
-      return [
-        skipToPreviousControl,
-        pauseControl,
-        stopControl,
-        skipToNextControl
-      ];
+   if (_queue.length <= 1) {
+      if (_playing != null && _playing) {
+        return [
+          pauseControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          playControl,
+          stopControl,
+        ];
+      }
     } else {
-      return [
-        skipToPreviousControl,
-        playControl,
-        stopControl,
-        skipToNextControl
-      ];
+      if (_playing != null && _playing) {
+        return [
+          skipToPreviousControl,
+          pauseControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      } else {
+        return [
+          skipToPreviousControl,
+          playControl,
+          skipToNextControl,
+          stopControl,
+        ];
+      }
     }
   }
 }

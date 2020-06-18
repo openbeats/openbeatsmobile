@@ -68,6 +68,9 @@ class _SearchTabState extends State<SearchTab> {
       BuildContext context, int index, SearchTabModel data) {
     return Container(
       child: ListTile(
+        onTap: () {
+          
+        },
         leading:
             cachedNetworkImageW(data.getSearchResults()[index]["thumbnail"]),
         title: Text(
