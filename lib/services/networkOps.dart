@@ -109,6 +109,8 @@ void getSearchSuggestion(BuildContext context) async {
 // get ytcat search results
 Future<void> getYTCatSearchResults(BuildContext context, String query) async {
   try {
+    // sanitizing query to prevent rogue characters
+    query = query.replaceAll(new RegExp(r'[^\w\s]+'), '');
     // checking if the search results have got any value
     for (int i = 0; i < 5; i++) {
       // sending http request
