@@ -52,22 +52,31 @@ class _SearchTabState extends State<SearchTab> {
   // holds the search results listview
   Widget searchResultsListView(SearchTabModel data) {
     return Container(
-      child: ListView.separated(
-        padding: EdgeInsets.only(bottom: 200.0),
-        separatorBuilder: (context, index) => Divider(),
-        physics: BouncingScrollPhysics(),
-        itemBuilder: (BuildContext context, int index) =>
-            _searchResultsListBuilder(context, index, data),
-        itemCount: data.getSearchResults().length,
-      ),
+      child: StreamBuilder(
+          stream: AudioService.currentMediaItemStream,
+          builder: (context, snapshot) {
+            MediaItem _currMediaItem = snapshot.data;
+            return ListView.separated(
+              padding: EdgeInsets.only(bottom: 200.0),
+              separatorBuilder: (context, index) => Divider(),
+              physics: BouncingScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) =>
+                  _searchResultsListBuilder(
+                      context, index, data, _currMediaItem),
+              itemCount: data.getSearchResults().length,
+            );
+          }),
     );
   }
 
   // holds the searchResults builder widget
-  Widget _searchResultsListBuilder(
-      BuildContext context, int index, SearchTabModel data) {
+  Widget _searchResultsListBuilder(BuildContext context, int index,
+      SearchTabModel data, MediaItem _currMediaItem) {
     return Container(
       child: ListTile(
+        selected: (_currMediaItem != null &&
+            _currMediaItem.extras["vidId"] ==
+                data.getSearchResults()[index]["videoId"]),
         onTap: () {
           // getting the songObject details to send to AudioService
           Map _songObj = data.getSearchResults()[index];

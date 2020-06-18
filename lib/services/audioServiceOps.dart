@@ -266,6 +266,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         duration: Duration(milliseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
         extras: {
+          "vidId": args["videoId"],
           "views": args["views"],
           "durationString": args["duration"],
         });
@@ -288,6 +289,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         duration: Duration(milliseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
         extras: {
+          "vidId": args["videoId"],
           "views": args["views"],
           "durationString": args["duration"],
         });
