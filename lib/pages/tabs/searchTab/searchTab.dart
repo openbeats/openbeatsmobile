@@ -33,16 +33,15 @@ class _SearchTabState extends State<SearchTab> {
   // holds the body of searchTab
   Widget _searchTabBody() {
     return Container(
+      height: MediaQuery.of(context).size.height,
       child: Consumer<SearchTabModel>(
         builder: (context, data, child) {
           return AnimatedSwitcher(
             duration: Duration(milliseconds: 300),
             child: (data.getLoadingFlag())
-                ? Center(
-                    child: loadingAnimationW(),
-                  )
+                ? loadingAnimationW()
                 : (data.getSearchResults().length > 0)
-                    ? searchResultsListView()
+                    ? searchResultsListView(data)
                     : widgets.searchInstructionW(context),
           );
         },
@@ -51,21 +50,41 @@ class _SearchTabState extends State<SearchTab> {
   }
 
   // holds the search results listview
-  Widget searchResultsListView() {
+  Widget searchResultsListView(SearchTabModel data) {
     return Container(
-      child: ListView.builder(
-        itemBuilder: searchResultsListBuilder,
-        itemCount:
-            Provider.of<SearchTabModel>(context).getSearchResults().length,
+      child: ListView.separated(
+        padding: EdgeInsets.only(bottom: 200.0),
+        separatorBuilder: (context, index) => Divider(),
+        physics: BouncingScrollPhysics(),
+        itemBuilder: (BuildContext context, int index) =>
+            _searchResultsListBuilder(context, index, data),
+        itemCount: data.getSearchResults().length,
       ),
     );
   }
 
   // holds the searchResults builder widget
-  Widget searchResultsListBuilder(BuildContext context, int index) {
-    return ListTile(
-      title: Text(Provider.of<SearchTabModel>(context).getSearchResults()[index]
-          ["title"]),
+  Widget _searchResultsListBuilder(
+      BuildContext context, int index, SearchTabModel data) {
+    return Container(
+      child: ListTile(
+        leading:
+            cachedNetworkImageW(data.getSearchResults()[index]["thumbnail"]),
+        title: Text(
+          data.getSearchResults()[index]["title"],
+          maxLines: 2,
+        ),
+        subtitle: Container(
+          margin: EdgeInsets.only(top: 5.0),
+          child: Text("10M views"),
+        ),
+        trailing: GestureDetector(
+          child: Icon(Icons.more_vert),
+          onTap: () {
+            print("MoreVert Tapped");
+          },
+        ),
+      ),
     );
   }
 }
