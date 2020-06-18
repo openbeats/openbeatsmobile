@@ -253,18 +253,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // starts singleplayback of audio
   void startSinglePlayback(dynamic args) async {
-    // holds the default thumbnail url for the media
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
-    // initiating check to see if high res thumbnail is available
     checkHighResThumbnailAvailability(args["videoId"])
         .then((value) => _defaultThumbnailUrl = value);
 
-    // pausing current audio if it is playing
-    if (_playing != null && _playing) onPause();
-
-    // creating mediaItem instance to immidiately show response to user
     MediaItem _songMediaItem = MediaItem(
         id: args["videoId"],
         album: "OpenBeats Music",
@@ -276,14 +270,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "durationString": args["duration"],
         });
 
-    // setting current media Item
-    await AudioServiceBackground.setMediaItem(_songMediaItem);
-    // setting audioService state
-    await AudioServiceBackground.setState(
-        controls: getControls(),
-        processingState: AudioProcessingState.connecting,
-        playing: false);
-    // fetch streaming url for the song
+    if (_playing == null) {
+      // First time, we want to start playing
+      _playing = true;
+    } else if (_playing) {
+      // Stop current item
+      await _audioPlayer.stop();
+    }
+    // Load next item
+    _queueIndex = 0;
+    AudioServiceBackground.setMediaItem(_songMediaItem);
     String streamingUrl = await getStreamingUrl(args);
     _songMediaItem = MediaItem(
         id: streamingUrl,
@@ -295,17 +291,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "views": args["views"],
           "durationString": args["duration"],
         });
-    // setting new mediaItem
-    await AudioServiceBackground.setMediaItem(_songMediaItem);
-    // setting audioService state
-    await AudioServiceBackground.setState(
-        controls: getControls(),
-        processingState: AudioProcessingState.buffering,
-        playing: false);
-    // adding mediaItem to queue
-    _queue.add(_songMediaItem);
-    AudioServiceBackground.setQueue(_queue);
-    onSkipToNext();
+    await _audioPlayer.setUrl(_songMediaItem.id);
+    onPlay();
   }
 
   List<MediaControl> getControls() {
