@@ -21,3 +21,33 @@ Widget slidingUpPanelCollapsedDefault() {
     ),
   );
 }
+
+// holds the nowPlayingThumbnailHolder
+Widget nowPlayingThumbnailHolder(
+    MediaItem _currMediaItem, BuildContext context) {
+  return Container(
+    margin: EdgeInsets.only(top: 50.0),
+    height: MediaQuery.of(context).size.height * 0.4,
+    width: MediaQuery.of(context).size.height * 0.4,
+    child: (_currMediaItem != null)
+        ? cachedNetworkImageW(_currMediaItem.artUri)
+        : Image.asset(
+            "assets/images/supplementary/dummyimage.png",
+            fit: BoxFit.cover,
+          ),
+  );
+}
+
+// holds the nowPlayingTitleHolder
+Widget nowPlayingTitleHolder(MediaItem _currMediaItem) {
+  return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Text(
+        (_currMediaItem != null)
+            ? _currMediaItem.title
+            : "Welcome to\nOpenBeats",
+        maxLines: 2,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26.0),
+      ));
+}

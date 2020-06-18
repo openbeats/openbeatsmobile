@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return Container(
           color: GlobalThemes().getAppTheme().bottomAppBarColor,
           child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 300),
+            duration: Duration(seconds: 1),
             child: (_currMediaItem != null)
                 ? ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
@@ -150,11 +150,36 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the SlideUpPanel
   Widget _slideUpPanel() {
-    return Container(
-      color: GlobalThemes().getAppTheme().bottomAppBarColor,
-      child: Center(
-        child: Text("SlideUpPanel"),
-      ),
+    PlaybackState _state;
+    MediaItem _currMediaItem;
+    return StreamBuilder(
+      stream: Rx.combineLatest3(
+          AudioService.currentMediaItemStream,
+          AudioService.playbackStateStream,
+          Stream.periodic(Duration(seconds: 1)),
+          (mediaItemStream, playbackStream, perodic) {
+        _state = playbackStream;
+        _currMediaItem = mediaItemStream;
+      }),
+      builder: (context, snapshot) {
+        double _position = _state?.currentPosition?.inSeconds?.toDouble();
+        double _duration = _currMediaItem?.duration?.inSeconds?.toDouble();
+        return Container(
+          color: GlobalThemes().getAppTheme().bottomAppBarColor,
+          height: MediaQuery.of(context).size.height,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              widgets.nowPlayingThumbnailHolder(_currMediaItem, context),
+              SizedBox(
+                height: 20.0,
+              ),
+              widgets.nowPlayingTitleHolder(_currMediaItem)
+            ],
+          ),
+        );
+      },
     );
   }
 
