@@ -11,6 +11,8 @@ class SearchTabModel extends ChangeNotifier {
   String _currentSearchString = "";
   // holds the current search history
   List<String> _searchHistory = new List();
+  // hold the loadingFlag for the searchTab
+  bool _loadingFlag = false;
 
   // used to get the search suggestions
   List getSearchSuggestions() => _searchSuggestions;
@@ -20,6 +22,8 @@ class SearchTabModel extends ChangeNotifier {
   String getCurrentSearchString() => _currentSearchString;
   // used to get the search history list
   List<String> getSearchHistory() => _searchHistory;
+  // used to get the loading flag
+  bool getLoadingFlag() => _loadingFlag;
 
   // used to update the search suggestions
   void updateSearchSuggestions(List value) {
@@ -43,5 +47,9 @@ class SearchTabModel extends ChangeNotifier {
   void updateSearchHistory(List<String> value){
     _searchHistory = value;
   } 
-
+  // used to set the loading flag
+  void setLoadingFlag(bool value){
+    _loadingFlag = value;
+    notifyListeners();
+  }
 }
