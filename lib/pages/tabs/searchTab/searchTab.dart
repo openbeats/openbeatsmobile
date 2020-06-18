@@ -92,8 +92,10 @@ class _SearchTabState extends State<SearchTab> {
         ),
         subtitle: Container(
           margin: EdgeInsets.only(top: 5.0),
-          child: Text(reformatViewstoHumanReadable(
-              data.getSearchResults()[index]["views"])),
+          child: Text(data.getSearchResults()[index]["duration"] +
+              " • " +
+              reformatViewstoHumanReadable(
+                  data.getSearchResults()[index]["views"])),
         ),
         trailing: GestureDetector(
           child: Icon(Icons.more_vert),
