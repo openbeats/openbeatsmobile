@@ -1,5 +1,5 @@
 import 'package:obsmobile/imports.dart';
-import 'package:obsmobile/functions/homePageFun.dart';
+import 'package:rxdart/rxdart.dart';
 import './widgets.dart' as widgets;
 import './functions.dart' as functions;
 
@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       getAllSharedPrefsData(context);
     });
     // changing the status bar color
-    changeStatusBarColor();
+    functions.changeStatusBarColor();
     // instantiating animation controllers
     _bottomAppBarAnimController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
@@ -99,11 +99,45 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the collapsed SlideUpPanel
   Widget _slideUpPanelCollapsed() {
-    return Container(
-      color: GlobalThemes().getAppTheme().accentColor,
-      child: Center(
-        child: Text("Collapsed SlideUpPanel"),
-      ),
+    PlaybackState _state;
+    MediaItem _currMediaItem;
+    return StreamBuilder(
+      stream: Rx.combineLatest3(
+          AudioService.currentMediaItemStream,
+          AudioService.playbackStateStream,
+          Stream.periodic(Duration(seconds: 1)),
+          (mediaItemStream, playbackStream, perodic) {
+        _state = playbackStream;
+        _currMediaItem = mediaItemStream;
+      }),
+      builder: (context, snapshot) {
+        double position = _state?.currentPosition?.inSeconds?.toDouble();
+        double duration = _currMediaItem?.duration?.inSeconds?.toDouble();
+        return Container(
+          color: GlobalThemes().getAppTheme().bottomAppBarColor,
+          child: (_currMediaItem != null)
+              ? ListTile(
+                  leading: cachedNetworkImageW(_currMediaItem.artUri),
+                  title: Text(
+                    _currMediaItem.title,
+                    maxLines: 2,
+                  ),
+                  subtitle: Container(
+                    margin: EdgeInsets.only(top: 5.0),
+                    child: Text(getCurrentTimeStamp(position) +
+                        " | " +
+                        getCurrentTimeStamp(duration)),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(_state.playing ? Icons.pause : Icons.play_arrow),
+                    onPressed: () => _state.playing
+                        ? AudioService.pause()
+                        : AudioService.play(),
+                  ),
+                )
+              : widgets.slidingUpPanelCollapsedDefault(),
+        );
+      },
     );
   }
 
