@@ -1,7 +1,8 @@
 import 'package:obsmobile/imports.dart';
 
 // used to handle the exceptions raised by the network request methods
-void _handleExceptionsRaised(String exception, BuildContext context) {
+void _handleExceptionsRaised(
+    String exception, BuildContext context, bool showToastMessage) {
   // holds the string to show the user
   String _userMessage;
   // constructing the right error message
@@ -19,34 +20,39 @@ void _handleExceptionsRaised(String exception, BuildContext context) {
   else
     _userMessage = "An unknown network error occurred. Please try again.";
 
-  // constructing snackbar to show error message
-  SnackBar _errorSnackBar = SnackBar(
-    content: Text(
-      _userMessage,
-      style: TextStyle(color: Colors.white),
-    ),
-    backgroundColor: Colors.red,
-    duration: Duration(seconds: 10),
-    action: SnackBarAction(
-        label: "Close",
-        textColor: Colors.white,
-        onPressed: () {
-          homePageScaffoldKey.currentState.hideCurrentSnackBar();
-        }),
-  );
+  // checking if toast should be shown instead of snackbar
+  if (showToastMessage) {
+    showToast(_userMessage);
+  } else {
+    // constructing snackbar to show error message
+    SnackBar _errorSnackBar = SnackBar(
+      content: Text(
+        _userMessage,
+        style: TextStyle(color: Colors.white),
+      ),
+      backgroundColor: Colors.red,
+      duration: Duration(seconds: 10),
+      action: SnackBarAction(
+          label: "Close",
+          textColor: Colors.white,
+          onPressed: () {
+            homePageScaffoldKey.currentState.hideCurrentSnackBar();
+          }),
+    );
 
-  // checking if snackbar should be shown
-  if (getCurrSnackBarErrorMsg() == null &&
-      getCurrSnackBarErrorMsg() != exception) {
-    // setting the current exception in global store
-    setCurrSnackBarErrorMsg(exception);
-    // hiding any present snackbars
-    homePageScaffoldKey.currentState.removeCurrentSnackBar();
-    // showing snackbar
-    homePageScaffoldKey.currentState
-        .showSnackBar(_errorSnackBar)
-        .closed
-        .then((value) => setCurrSnackBarErrorMsg(null));
+    // checking if snackbar should be shown
+    if (getCurrSnackBarErrorMsg() == null &&
+        getCurrSnackBarErrorMsg() != exception) {
+      // setting the current exception in global store
+      setCurrSnackBarErrorMsg(exception);
+      // hiding any present snackbars
+      homePageScaffoldKey.currentState.removeCurrentSnackBar();
+      // showing snackbar
+      homePageScaffoldKey.currentState
+          .showSnackBar(_errorSnackBar)
+          .closed
+          .then((value) => setCurrSnackBarErrorMsg(null));
+    }
   }
 }
 
@@ -57,15 +63,15 @@ dynamic _returnResponse(Response response, BuildContext context) {
       var responseJson = json.decode(response.body.toString());
       return {"status": true, "data": responseJson};
     case 400:
-      _handleExceptionsRaised("BadRequestException", context);
+      _handleExceptionsRaised("BadRequestException", context, false);
       return {"status": false, "error": "BadRequestException"};
     case 401:
     case 403:
-      _handleExceptionsRaised("UnauthorizedException", context);
+      _handleExceptionsRaised("UnauthorizedException", context, false);
       return {"status": false, "error": "UnauthorizedException"};
     case 500:
     default:
-      _handleExceptionsRaised("UnknownException", context);
+      _handleExceptionsRaised("UnknownException", context, false);
       return {
         "status": false,
       };
@@ -93,10 +99,10 @@ void getSearchSuggestion(BuildContext context) async {
     }
   } on SocketException {
     // no internet connection
-    _handleExceptionsRaised("SocketException", context);
+    _handleExceptionsRaised("SocketException", context, false);
   } on TimeoutException {
     // timeout exception
-    _handleExceptionsRaised("TimeoutException", context);
+    _handleExceptionsRaised("TimeoutException", context, false);
   }
 }
 
@@ -118,22 +124,22 @@ Future<void> getYTCatSearchResults(BuildContext context, String query) async {
     }
   } on SocketException {
     // no internet connection
-    _handleExceptionsRaised("SocketException", context);
+    _handleExceptionsRaised("SocketException", context, false);
   } on TimeoutException {
     // timeout exception
-    _handleExceptionsRaised("TimeoutException", context);
+    _handleExceptionsRaised("TimeoutException", context, false);
   }
 }
 
 // used to get the streamingUrl
-Future<String> getStreamingUrl(mediaParameters, BuildContext context) async {
+Future<String> getStreamingUrl(mediaParameters) async {
   try {
     // checking if the search results have got any value
     for (int i = 0; i < 5; i++) {
       // sending http request
       var response =
           await get(getApiEndpoint() + "/opencc/" + mediaParameters["videoId"]);
-      var responseClassified = _returnResponse(response, context);
+      var responseClassified = _returnResponse(response, null);
       if (responseClassified["status"] == true &&
           responseClassified["data"]["link"].length != 0 &&
           responseClassified["data"]["link"] != null) {
@@ -144,18 +150,17 @@ Future<String> getStreamingUrl(mediaParameters, BuildContext context) async {
     return null;
   } on SocketException {
     // no internet connection
-    _handleExceptionsRaised("SocketException", context);
+    _handleExceptionsRaised("SocketException", null, true);
     return null;
   } on TimeoutException {
     // timeout exception
-    _handleExceptionsRaised("TimeoutException", context);
+    _handleExceptionsRaised("TimeoutException", null, true);
     return null;
   }
 }
 
 // used to check if high resolution thumbnail is available for the song
-Future<String> checkHighResThumbnailAvailability(
-    String videoId, BuildContext context) async {
+Future<String> checkHighResThumbnailAvailability(String videoId) async {
   // constructing image urls
   String _highResURL =
       "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
@@ -171,11 +176,11 @@ Future<String> checkHighResThumbnailAvailability(
       return _lowResURL;
   } on SocketException {
     // no internet connection
-    _handleExceptionsRaised("SocketException", context);
+    _handleExceptionsRaised("SocketException", null, true);
     return _lowResURL;
   } on TimeoutException {
     // timeout exception
-    _handleExceptionsRaised("TimeoutException", context);
+    _handleExceptionsRaised("TimeoutException", null, true);
     return _lowResURL;
   }
 }

@@ -269,7 +269,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         id: args["videoId"],
         album: "OpenBeats Music",
         title: args['title'],
-        duration: Duration(milliseconds: args['durationInMilliSeconds']),
+        duration: Duration(microseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
         extras: {
           "views": args["views"],
@@ -289,7 +289,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         id: streamingUrl,
         album: "OpenBeats Music",
         title: args['title'],
-        duration: Duration(milliseconds: args['durationInMilliSeconds']),
+        duration: Duration(microseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
         extras: {
           "views": args["views"],
@@ -305,7 +305,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // adding mediaItem to queue
     _queue.add(_songMediaItem);
     AudioServiceBackground.setQueue(_queue);
-    onSkipToNext();
+    // setting streaming url
+    await _audioPlayer.setUrl(streamingUrl);
+    onPlay();
   }
 
   List<MediaControl> getControls() {
