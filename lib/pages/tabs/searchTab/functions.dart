@@ -13,8 +13,14 @@ Future<void> navigateToSearchNowPage(BuildContext context) async {
     // getting current search history
     List<String> _searchHistory =
         Provider.of<SearchTabModel>(context, listen: false).getSearchHistory();
-    // adding current query to search history
-    _searchHistory.add(query);
+    // checking if the query exists in search history
+    if (_searchHistory.contains(query)) {
+      // deleting the duplicate
+      _searchHistory.remove(query);
+      _searchHistory.insert(0, query);
+    } else
+      _searchHistory.insert(0, query);
+
     // updating providers
     Provider.of<SearchTabModel>(context, listen: false)
         .updateSearchHistory(_searchHistory);
@@ -23,7 +29,7 @@ Future<void> navigateToSearchNowPage(BuildContext context) async {
 
     // getting the audio search results for this query
     await getYTCatSearchResults(context, query);
-    
+
     // reset loading flag
     Provider.of<SearchTabModel>(context, listen: false).setLoadingFlag(false);
   }
