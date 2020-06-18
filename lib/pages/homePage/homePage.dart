@@ -123,7 +123,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     maxLines: 2,
                   ),
                   subtitle: Container(
-                    margin: EdgeInsets.only(top: 5.0),
+                    margin: EdgeInsets.only(top: 3.0),
                     child: Text(getCurrentTimeStamp(position) +
                         " | " +
                         getCurrentTimeStamp(duration)),
