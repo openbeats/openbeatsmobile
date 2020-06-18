@@ -9,6 +9,8 @@ class SearchTabModel extends ChangeNotifier {
   bool _delayFlag = false;
   // holds the current searched string
   String _currentSearchString = "";
+  // holds the current search history
+  List<String> _searchHistory = new List();
 
   // used to get the search suggestions
   List getSearchSuggestions() => _searchSuggestions;
@@ -16,6 +18,8 @@ class SearchTabModel extends ChangeNotifier {
   List getSearchResults() => _searchResults;
   // used to get the current search string
   String getCurrentSearchString() => _currentSearchString;
+  // used to get the search history list
+  List<String> getSearchHistory() => _searchHistory;
 
   // used to update the search suggestions
   void updateSearchSuggestions(List value) {
@@ -24,18 +28,20 @@ class SearchTabModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-
   // used to update the search results
   void updateSearchResults(List value) {
     _searchResults = value;
     notifyListeners();
   }
-
   // used to set the delay flag
   void setDelayFlag(bool value) => _delayFlag = value;
-
   // used to update the current search string
   void setCurrentSearchString(String value) {
     _currentSearchString = value;
   }
+  // used to update the search history
+  void updateSearchHistory(List<String> value){
+    _searchHistory = value;
+  } 
+
 }
