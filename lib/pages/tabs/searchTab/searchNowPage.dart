@@ -110,14 +110,43 @@ class _SearchNowPageState extends State<SearchNowPage> {
       child: ListView(
         physics: BouncingScrollPhysics(),
         children: <Widget>[
-          widgets.suggestionsTitleW(false),
-          ListView.builder(
-            physics: BouncingScrollPhysics(),
-            shrinkWrap: true,
-            itemBuilder: widgets.searchSuggestionsListBuilder,
-            itemCount: Provider.of<SearchTabModel>(context)
-                .getSearchSuggestions()
-                .length,
+          (_searchFieldController.text.length == 0)
+              ? widgets.suggestionsTitleW(true)
+              : widgets.suggestionsTitleW(false),
+          Container(
+            child: (Provider.of<SearchTabModel>(context)
+                            .getSearchHistory()
+                            .length >
+                        0 ||
+                    _searchFieldController.text.length != 0)
+                ? ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) =>
+                        (_searchFieldController.text.length == 0)
+                            ? widgets.searchSuggestionsListBuilder(
+                                context, index, true)
+                            : widgets.searchSuggestionsListBuilder(
+                                context, index, false),
+                    itemCount: (_searchFieldController.text.length == 0)
+                        ? Provider.of<SearchTabModel>(context)
+                            .getSearchHistory()
+                            .length
+                        : Provider.of<SearchTabModel>(context)
+                            .getSearchSuggestions()
+                            .length,
+                  )
+                : Container(
+                    margin: EdgeInsets.only(top: 30.0),
+                    child: Text(
+                      "No previous searches",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 22.0,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
           )
         ],
       ),

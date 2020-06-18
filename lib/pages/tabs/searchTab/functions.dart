@@ -12,7 +12,7 @@ Future<void> navigateToSearchNowPage(BuildContext context) async {
     // adding current query to search history
     _searchHistory.add(query);
     // updating providers
-    Provider.of<SearchTabModel>(context).updateSearchHistory(_searchHistory);
+    Provider.of<SearchTabModel>(context, listen: false).updateSearchHistory(_searchHistory);
     // updating shared preferences
     updateSearchHistorySharedPrefs(_searchHistory);
   }

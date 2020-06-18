@@ -16,6 +16,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    // after initstate is initialized
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // fetching all data stored in sharedPrefs
+      getAllSharedPrefsData(context);
+    });
     // changing the status bar color
     changeStatusBarColor();
     // instantiating animation controllers
