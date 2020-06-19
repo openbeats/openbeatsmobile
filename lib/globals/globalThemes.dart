@@ -19,7 +19,7 @@ class GlobalThemes {
       ),
     ),
     primaryColor: Color(0xFFF32C2C),
-    accentColor: Colors.amber,
+    accentColor: Colors.redAccent,
     bottomAppBarColor: Color(0xFF212229),
   );
 
