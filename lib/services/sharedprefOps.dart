@@ -5,8 +5,10 @@ void getAllSharedPrefsData(context) async {
   // getting sharedPreferences instance
   SharedPreferences prefs = await SharedPreferences.getInstance();
   // getting search history list
-  Provider.of<SearchTabModel>(context, listen: false)
-      .updateSearchHistory(prefs.getStringList("searchHistory"));
+  List<String> _searchHistoryList = prefs.getStringList("searchHistory");
+  if (_searchHistoryList != null)
+    Provider.of<SearchTabModel>(context, listen: false)
+        .updateSearchHistory(prefs.getStringList("searchHistory"));
 }
 
 // update the sharedpreferences list of search history
