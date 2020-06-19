@@ -256,9 +256,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
-    checkHighResThumbnailAvailability(args["videoId"])
-        .then((value) => _defaultThumbnailUrl = value);
-
     MediaItem _songMediaItem = MediaItem(
         id: args["videoId"],
         album: "OpenBeats Music",
@@ -282,6 +279,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     _queueIndex = 0;
     AudioServiceBackground.setMediaItem(_songMediaItem);
     String streamingUrl = await getStreamingUrl(args);
+    _defaultThumbnailUrl =
+        await checkHighResThumbnailAvailability(args["videoId"]);
     _songMediaItem = MediaItem(
         id: streamingUrl,
         album: "OpenBeats Music",
@@ -293,6 +292,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "views": args["views"],
           "durationString": args["duration"],
         });
+    AudioServiceBackground.setMediaItem(_songMediaItem);
     await _audioPlayer.setUrl(_songMediaItem.id);
     onPlay();
   }

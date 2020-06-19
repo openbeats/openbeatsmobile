@@ -13,6 +13,7 @@ Widget loadingAnimationW() {
 
 // holds the cachedNetworkImage for the entire application
 Widget cachedNetworkImageW(String imgUrl) {
+  print(imgUrl);
   return Container(
     width: 60,
     height: 60,
