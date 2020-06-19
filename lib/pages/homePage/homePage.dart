@@ -55,10 +55,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     return SizeTransition(
       sizeFactor: _bottomNavAnimation,
       axisAlignment: -1.0,
-      child: SizedBox(
-        height: 60,
+      child: Theme(
+        data: new ThemeData(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
         child: BottomNavigationBar(
           currentIndex: _currIndex,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
+          selectedItemColor: GlobalThemes().getAppTheme().primaryColor,
+          unselectedItemColor: Colors.white,
           onTap: (index) {
             if (getSlidingUpPanelController().isPanelOpen)
               getSlidingUpPanelController().close();
