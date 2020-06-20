@@ -11,7 +11,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // controller for the bottomAppBarSizeTransition
   AnimationController _bottomAppBarAnimController;
-  AnimationController _slideUpPanelAnimController;
   Animation<double> _bottomNavAnimation;
 
   @override
@@ -21,7 +20,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       // fetching all data stored in sharedPrefs
       getAllSharedPrefsData(context);
-      functions.shouldShowSlideUpPanel();
     });
     // changing the status bar color
     functions.changeStatusBarColor();
@@ -33,11 +31,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       curve: Curves.ease,
     );
     _bottomAppBarAnimController.forward();
+  }
 
-    // attaching listener to make the slideUpPanel respond to the AudioService events
-    AudioService.playbackStateStream.listen((event) {
-      functions.shouldShowSlideUpPanel();
-    });
+  @override
+  void dispose() {
+    _bottomAppBarAnimController.dispose();
+    super.dispose();
   }
 
   @override
@@ -113,14 +112,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the collapsed SlideUpPanel
   Widget _slideUpPanelCollapsed() {
-    functions.shouldShowSlideUpPanel();
+    PlaybackState _playbackState;
+    MediaItem _currMediaItem;
     return StreamBuilder(
-        stream: AudioService.playbackStateStream,
+        stream: Rx.combineLatest3(
+          AudioService.playbackStateStream,
+          AudioService.currentMediaItemStream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (_state, _mediaItem, c) {
+            _playbackState = _state;
+            _currMediaItem = _mediaItem;
+          },
+        ),
         builder: (context, snapshot) {
+          // holds the properties of the collapsed container
+          String _thumnbNailUrl =
+              (_currMediaItem == null) ? null : _currMediaItem.artUri;
+          String _title = (_currMediaItem == null)
+              ? "No Audio Playing"
+              : _currMediaItem.title;
+          String _subtitle =
+              (_currMediaItem == null) ? "00:00" : _currMediaItem.album;
           return Container(
             color: GlobalThemes().getAppTheme().bottomAppBarColor,
-            child: Center(
-              child: Text("Hi there!"),
+            child: ListTile(
+              leading: cachedNetworkImageW(_thumnbNailUrl),
+              title: Text(_title),
+              subtitle: Text(_subtitle),
             ),
           );
         });
