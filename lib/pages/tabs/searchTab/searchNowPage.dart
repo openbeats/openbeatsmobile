@@ -124,6 +124,8 @@ class _SearchNowPageState extends State<SearchNowPage> {
               return (data.getSearchHistory().length > 0 ||
                       _searchFieldController.text.length != 0)
                   ? ListView.builder(
+                      padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).size.height * 0.3),
                       physics: BouncingScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (BuildContext context, int index) =>
