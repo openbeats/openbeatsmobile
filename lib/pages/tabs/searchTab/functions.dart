@@ -37,3 +37,21 @@ Future<void> navigateToSearchNowPage(BuildContext context) async {
     Provider.of<SearchTabModel>(context, listen: false).setLoadingFlag(false);
   }
 }
+
+// used to start single song playback
+void startSingleSongPlayback(SearchTabModel data, int index) {
+  // getting the songObject details to send to AudioService
+  Map _songObj = data.getSearchResults()[index];
+  // constructing the mediaParameters object
+  Map<String, dynamic> mediaParameters = {
+    "title": _songObj["title"],
+    "thumbnail": _songObj["thumbnail"],
+    "duration": _songObj["duration"],
+    "durationInMilliSeconds":
+        reformatTimeStampToMilliSeconds(_songObj["duration"]),
+    "videoId": _songObj["videoId"],
+    "channelName": _songObj["channelName"],
+    "views": reformatViewstoHumanReadable(_songObj["views"]),
+  };
+  AudioServiceOps().startSingleSongPlayback(mediaParameters);
+}

@@ -89,10 +89,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return StreamBuilder(
           stream: AudioService.currentMediaItemStream,
           builder: (context, snapshot) {
-            MediaItem _currMediaItem = snapshot?.data;
             return SlidingUpPanel(
               controller: getSlidingUpPanelController(),
-              minHeight: (_res.isOpen || _currMediaItem != null) ? 0.0 : 70.0,
+              minHeight: (_res.isOpen) ? 0.0 : 70.0,
               maxHeight: MediaQuery.of(context).size.height,
               parallaxEnabled: true,
               collapsed: _slideUpPanelCollapsed(),
@@ -112,86 +111,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the collapsed SlideUpPanel
   Widget _slideUpPanelCollapsed() {
-    PlaybackState _state;
-    MediaItem _currMediaItem;
-    return StreamBuilder(
-      stream: Rx.combineLatest3(
-          AudioService.currentMediaItemStream,
-          AudioService.playbackStateStream,
-          Stream.periodic(Duration(milliseconds: 200)),
-          (mediaItemStream, playbackStream, perodic) {
-        _state = playbackStream;
-        _currMediaItem = mediaItemStream;
-      }),
-      builder: (context, snapshot) {
-        double _position = _state?.currentPosition?.inSeconds?.toDouble();
-        double _duration = _currMediaItem?.duration?.inSeconds?.toDouble();
-        return Container(
-          color: GlobalThemes().getAppTheme().bottomAppBarColor,
-          child: AnimatedSwitcher(
-            duration: Duration(milliseconds: 500),
-            child: ListTile(
-              contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
-              leading: cachedNetworkImageW(_currMediaItem?.artUri),
-              onTap: () => getSlidingUpPanelController().open(),
-              title: Text(
-                "_currMediaItem?.title",
-                maxLines: 2,
-              ),
-              subtitle: Container(
-                margin: EdgeInsets.only(top: 3.0),
-                child: Text("getCurrentTimeStamp(_position)" +
-                    "  |  " +
-                    "getCurrentTimeStamp(_duration)"),
-              ),
-              trailing: IconButton(
-                icon: Icon((_state != null && _state.playing)
-                    ? Icons.pause
-                    : Icons.play_arrow),
-                onPressed: () => (_state != null && _state.playing)
-                    ? AudioService.pause()
-                    : AudioService.play(),
-              ),
-            ),
-          ),
-        );
-      },
+    return Container(
+      color: GlobalThemes().getAppTheme().bottomAppBarColor,
+      child: null,
     );
   }
 
   // holds the SlideUpPanel
   Widget _slideUpPanel() {
-    PlaybackState _state;
-    MediaItem _currMediaItem;
-    return StreamBuilder(
-      stream: Rx.combineLatest3(
-          AudioService.currentMediaItemStream,
-          AudioService.playbackStateStream,
-          Stream.periodic(Duration(seconds: 1)),
-          (mediaItemStream, playbackStream, perodic) {
-        _state = playbackStream;
-        _currMediaItem = mediaItemStream;
-      }),
-      builder: (context, snapshot) {
-        double _position = _state?.currentPosition?.inSeconds?.toDouble();
-        double _duration = _currMediaItem?.duration?.inSeconds?.toDouble();
-        return Container(
-          color: GlobalThemes().getAppTheme().bottomAppBarColor,
-          height: MediaQuery.of(context).size.height,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              widgets.nowPlayingThumbnailHolder(
-                  _currMediaItem?.artUri, context),
-              SizedBox(
-                height: 20.0,
-              ),
-              widgets.nowPlayingTitleHolder(_currMediaItem)
-            ],
-          ),
-        );
-      },
+    return Container(
+      color: GlobalThemes().getAppTheme().bottomAppBarColor,
+      child: null,
     );
   }
 

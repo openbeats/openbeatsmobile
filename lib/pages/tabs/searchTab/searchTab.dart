@@ -77,22 +77,7 @@ class _SearchTabState extends State<SearchTab> {
         selected: (_currMediaItem != null &&
             _currMediaItem.extras["vidId"] ==
                 data.getSearchResults()[index]["videoId"]),
-        onTap: () {
-          // getting the songObject details to send to AudioService
-          Map _songObj = data.getSearchResults()[index];
-          // constructing the mediaParameters object
-          Map<String, dynamic> mediaParameters = {
-            "title": _songObj["title"],
-            "thumbnail": _songObj["thumbnail"],
-            "duration": _songObj["duration"],
-            "durationInMilliSeconds":
-                reformatTimeStampToMilliSeconds(_songObj["duration"]),
-            "videoId": _songObj["videoId"],
-            "channelName": _songObj["channelName"],
-            "views": reformatViewstoHumanReadable(_songObj["views"]),
-          };
-          AudioServiceOps().startSingleSongPlayback(mediaParameters);
-        },
+        onTap: () => functions.startSingleSongPlayback(data, index),
         leading:
             cachedNetworkImageW(data.getSearchResults()[index]["thumbnail"]),
         title: Text(
