@@ -11,6 +11,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // controller for the bottomAppBarSizeTransition
   AnimationController _bottomAppBarAnimController;
+  AnimationController _slideUpPanelAnimController;
   Animation<double> _bottomNavAnimation;
 
   @override
@@ -20,6 +21,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       // fetching all data stored in sharedPrefs
       getAllSharedPrefsData(context);
+      functions.shouldShowSlideUpPanel();
     });
     // changing the status bar color
     functions.changeStatusBarColor();
@@ -31,6 +33,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       curve: Curves.ease,
     );
     _bottomAppBarAnimController.forward();
+
+    // attaching listener to make the slideUpPanel respond to the AudioService events
+    AudioService.playbackStateStream.listen((event) {
+      functions.shouldShowSlideUpPanel();
+    });
   }
 
   @override
@@ -86,23 +93,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _homePageBody() {
     return Consumer<ScreenHeight>(
       builder: (context, _res, child) {
-        return StreamBuilder(
-          stream: AudioService.currentMediaItemStream,
-          builder: (context, snapshot) {
-            return SlidingUpPanel(
-              controller: getSlidingUpPanelController(),
-              minHeight: (_res.isOpen) ? 0.0 : 70.0,
-              maxHeight: MediaQuery.of(context).size.height,
-              parallaxEnabled: true,
-              collapsed: _slideUpPanelCollapsed(),
-              panel: _slideUpPanel(),
-              body: _underneathSlideUpPanel(),
-              onPanelSlide: (double position) {
-                if (position > 0.4)
-                  _bottomAppBarAnimController.reverse();
-                else if (position < 0.4) _bottomAppBarAnimController.forward();
-              },
-            );
+        return SlidingUpPanel(
+          controller: getSlidingUpPanelController(),
+          minHeight: (_res.isOpen) ? 0.0 : 70.0,
+          maxHeight: MediaQuery.of(context).size.height,
+          parallaxEnabled: true,
+          collapsed: _slideUpPanelCollapsed(),
+          panel: _slideUpPanel(),
+          body: _underneathSlideUpPanel(),
+          onPanelSlide: (double position) {
+            if (position > 0.4)
+              _bottomAppBarAnimController.reverse();
+            else if (position < 0.4) _bottomAppBarAnimController.forward();
           },
         );
       },
@@ -111,10 +113,17 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the collapsed SlideUpPanel
   Widget _slideUpPanelCollapsed() {
-    return Container(
-      color: GlobalThemes().getAppTheme().bottomAppBarColor,
-      child: null,
-    );
+    functions.shouldShowSlideUpPanel();
+    return StreamBuilder(
+        stream: AudioService.playbackStateStream,
+        builder: (context, snapshot) {
+          return Container(
+            color: GlobalThemes().getAppTheme().bottomAppBarColor,
+            child: Center(
+              child: Text("Hi there!"),
+            ),
+          );
+        });
   }
 
   // holds the SlideUpPanel

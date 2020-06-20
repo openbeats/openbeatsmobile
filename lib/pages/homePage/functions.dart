@@ -26,3 +26,15 @@ void changeStatusBarColor() {
     ),
   );
 }
+
+// general function used to check if the slideUpPanel should be visible or not
+void shouldShowSlideUpPanel() {
+  if (getSlidingUpPanelController().isAttached) {
+    // checking once if the AudioService panel should be shown
+    if (AudioService.running) {
+      getSlidingUpPanelController().show();
+    } else {
+      getSlidingUpPanelController().hide();
+    }
+  }
+}
