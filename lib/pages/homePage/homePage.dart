@@ -86,18 +86,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _homePageBody() {
     return Consumer<ScreenHeight>(
       builder: (context, _res, child) {
-        return SlidingUpPanel(
-          controller: getSlidingUpPanelController(),
-          minHeight: (_res.isOpen) ? 0.0 : 70.0,
-          maxHeight: MediaQuery.of(context).size.height,
-          parallaxEnabled: true,
-          collapsed: _slideUpPanelCollapsed(),
-          panel: _slideUpPanel(),
-          body: _underneathSlideUpPanel(),
-          onPanelSlide: (double position) {
-            if (position > 0.4)
-              _bottomAppBarAnimController.reverse();
-            else if (position < 0.4) _bottomAppBarAnimController.forward();
+        return StreamBuilder(
+          stream: AudioService.currentMediaItemStream,
+          builder: (context, snapshot) {
+            MediaItem _currMediaItem = snapshot?.data;
+            return SlidingUpPanel(
+              controller: getSlidingUpPanelController(),
+              minHeight: (_res.isOpen || _currMediaItem != null) ? 0.0 : 70.0,
+              maxHeight: MediaQuery.of(context).size.height,
+              parallaxEnabled: true,
+              collapsed: _slideUpPanelCollapsed(),
+              panel: _slideUpPanel(),
+              body: _underneathSlideUpPanel(),
+              onPanelSlide: (double position) {
+                if (position > 0.4)
+                  _bottomAppBarAnimController.reverse();
+                else if (position < 0.4) _bottomAppBarAnimController.forward();
+              },
+            );
           },
         );
       },
@@ -123,32 +129,30 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         return Container(
           color: GlobalThemes().getAppTheme().bottomAppBarColor,
           child: AnimatedSwitcher(
-            duration: Duration(seconds: 1),
-            child: (_currMediaItem != null)
-                ? ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
-                    leading: cachedNetworkImageW(_currMediaItem.artUri),
-                    onTap: () => getSlidingUpPanelController().open(),
-                    title: Text(
-                      _currMediaItem.title,
-                      maxLines: 2,
-                    ),
-                    subtitle: Container(
-                      margin: EdgeInsets.only(top: 3.0),
-                      child: Text(getCurrentTimeStamp(_position) +
-                          "  |  " +
-                          getCurrentTimeStamp(_duration)),
-                    ),
-                    trailing: IconButton(
-                      icon: Icon((_state != null && _state.playing)
-                          ? Icons.pause
-                          : Icons.play_arrow),
-                      onPressed: () => (_state != null && _state.playing)
-                          ? AudioService.pause()
-                          : AudioService.play(),
-                    ),
-                  )
-                : widgets.slidingUpPanelCollapsedDefault(),
+            duration: Duration(milliseconds: 500),
+            child: ListTile(
+              contentPadding: EdgeInsets.symmetric(horizontal: 5.0),
+              leading: cachedNetworkImageW(_currMediaItem?.artUri),
+              onTap: () => getSlidingUpPanelController().open(),
+              title: Text(
+                "_currMediaItem?.title",
+                maxLines: 2,
+              ),
+              subtitle: Container(
+                margin: EdgeInsets.only(top: 3.0),
+                child: Text("getCurrentTimeStamp(_position)" +
+                    "  |  " +
+                    "getCurrentTimeStamp(_duration)"),
+              ),
+              trailing: IconButton(
+                icon: Icon((_state != null && _state.playing)
+                    ? Icons.pause
+                    : Icons.play_arrow),
+                onPressed: () => (_state != null && _state.playing)
+                    ? AudioService.pause()
+                    : AudioService.play(),
+              ),
+            ),
           ),
         );
       },
@@ -178,7 +182,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              widgets.nowPlayingThumbnailHolder(_currMediaItem, context),
+              widgets.nowPlayingThumbnailHolder(
+                  _currMediaItem?.artUri, context),
               SizedBox(
                 height: 20.0,
               ),

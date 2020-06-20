@@ -23,19 +23,12 @@ Widget slidingUpPanelCollapsedDefault() {
 }
 
 // holds the nowPlayingThumbnailHolder
-Widget nowPlayingThumbnailHolder(
-    MediaItem _currMediaItem, BuildContext context) {
+Widget nowPlayingThumbnailHolder(String artUrl, BuildContext context) {
   return Container(
-    margin: EdgeInsets.only(top: 50.0),
-    height: MediaQuery.of(context).size.height * 0.4,
-    width: MediaQuery.of(context).size.height * 0.4,
-    child: (_currMediaItem != null)
-        ? cachedNetworkImageW(_currMediaItem.artUri)
-        : Image.asset(
-            "assets/images/supplementary/dummyimage.png",
-            fit: BoxFit.cover,
-          ),
-  );
+      margin: EdgeInsets.only(top: 50.0),
+      height: MediaQuery.of(context).size.height * 0.4,
+      width: MediaQuery.of(context).size.height * 0.4,
+      child: cachedNetworkImageW(artUrl));
 }
 
 // holds the nowPlayingTitleHolder
