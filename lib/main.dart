@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "OpenBeats",
       theme: GlobalThemes().getAppTheme(),
       debugShowCheckedModeBanner: false,
       home: AudioServiceWidget(

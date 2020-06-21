@@ -129,10 +129,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           String _thumnbNailUrl =
               (_currMediaItem == null) ? null : _currMediaItem.artUri;
           String _title = (_currMediaItem == null)
-              ? "No Audio Playing"
+              ? "Welcome to OpenBeats"
               : _currMediaItem.title;
-          String _subtitle =
-              (_currMediaItem == null) ? "00:00" : _currMediaItem.album;
+          String _subtitle = (_playbackState == null)
+              ? "00:00"
+              : getCurrentTimeStamp(
+                      _playbackState.currentPosition.inSeconds.toDouble()) +
+                  " | " +
+                  getCurrentTimeStamp(
+                      _currMediaItem.duration.inSeconds.toDouble());
           return Container(
             color: GlobalThemes().getAppTheme().bottomAppBarColor,
             child: ListTile(
