@@ -132,18 +132,26 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ? "Welcome to OpenBeats"
               : _currMediaItem.title;
           String _subtitle = (_playbackState == null)
-              ? "00:00"
+              ? "Free music, forever"
               : getCurrentTimeStamp(
-                      _playbackState.currentPosition.inSeconds.toDouble()) +
+                      _playbackState?.currentPosition?.inSeconds?.toDouble()) +
                   " | " +
                   getCurrentTimeStamp(
-                      _currMediaItem.duration.inSeconds.toDouble());
+                      _currMediaItem?.duration?.inSeconds?.toDouble());
           return Container(
             color: GlobalThemes().getAppTheme().bottomAppBarColor,
             child: ListTile(
+              onTap: () => getSlidingUpPanelController().open(),
               leading: cachedNetworkImageW(_thumnbNailUrl),
-              title: Text(_title),
+              title: Text(
+                _title,
+                maxLines: 2,
+                style: TextStyle(fontSize: 14.0),
+                overflow: TextOverflow.ellipsis,
+              ),
               subtitle: Text(_subtitle),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+              trailing: widgets.collapsedPanelSlideUpPanel(),
             ),
           );
         });

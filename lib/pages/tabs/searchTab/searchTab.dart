@@ -83,6 +83,8 @@ class _SearchTabState extends State<SearchTab> {
         title: Text(
           data.getSearchResults()[index]["title"],
           maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 14.0),
         ),
         subtitle: Container(
           margin: EdgeInsets.only(top: 5.0),

@@ -44,3 +44,36 @@ Widget nowPlayingTitleHolder(MediaItem _currMediaItem) {
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26.0),
       ));
 }
+
+// holds the play pause icon in the collapsed slideUpPanel
+Widget collapsedPanelSlideUpPanel() {
+  // sets the parameters
+  Icon _icon;
+  AudioProcessingState _processingState;
+  if (AudioService.playbackState != null) {
+    _processingState = AudioService.playbackState.processingState;
+    if (AudioService.playbackState.playing)
+      _icon = Icon(Icons.pause);
+    else
+      _icon = Icon(Icons.play_arrow);
+  } else
+    _icon = Icon(Icons.play_arrow);
+
+  return IconButton(
+      icon: (_processingState != AudioProcessingState.connecting ||
+              _processingState != AudioProcessingState.buffering)
+          ? _icon
+          : Container(
+              height: 20.0,
+              width: 20.0,
+              child: CircularProgressIndicator(),
+            ),
+      onPressed: () {
+        if (AudioService.playbackState != null) {
+          if (AudioService.playbackState.playing)
+            AudioService.pause();
+          else
+            AudioService.play();
+        }
+      });
+}
