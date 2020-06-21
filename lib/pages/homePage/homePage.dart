@@ -57,7 +57,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // holds the bottomNavBar for the homePage
   Widget _bottomNavBar() {
     // getting required data from data models
-    int _currIndex = Provider.of<HomePageData>(context).getBNavBarCurrIndex();
     return SizeTransition(
       sizeFactor: _bottomNavAnimation,
       axisAlignment: -1.0,
@@ -66,23 +65,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
         ),
-        child: BottomNavigationBar(
-          currentIndex: _currIndex,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
-          selectedItemColor: GlobalThemes().getAppTheme().primaryColor,
-          unselectedItemColor: Colors.white,
-          onTap: (index) {
-            if (getSlidingUpPanelController().isPanelOpen)
-              getSlidingUpPanelController().close();
-            Provider.of<HomePageData>(context, listen: false)
-                .setBNavBarCurrIndex(index);
-          },
-          items: allDestinations
-              .map(
-                (destination) => widgets.bottomNavBarItem(destination),
-              )
-              .toList(),
+        child: Consumer<HomePageData>(
+          builder: (context, data, child) => BottomNavigationBar(
+            currentIndex: data.getBNavBarCurrIndex(),
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
+            selectedItemColor: GlobalThemes().getAppTheme().primaryColor,
+            unselectedItemColor: Colors.white,
+            onTap: (index) {
+              if (getSlidingUpPanelController().isPanelOpen)
+                getSlidingUpPanelController().close();
+              data.setBNavBarCurrIndex(index);
+            },
+            items: allDestinations
+                .map(
+                  (destination) => widgets.bottomNavBarItem(destination),
+                )
+                .toList(),
+          ),
         ),
       ),
     );
@@ -154,16 +154,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the widget underneath SlideUpPanel
   Widget _underneathSlideUpPanel() {
-    return Container(
-        child: IndexedStack(
-      index: Provider.of<HomePageData>(context).getBNavBarCurrIndex(),
-      children: <Widget>[
-        _exploreTabNavigator(),
-        _searchTabNavigator(),
-        _libraryTabNavigator(),
-        _profileTabNavigator()
-      ],
-    ));
+    return Consumer<HomePageData>(
+      builder: (context, data, child) => Container(
+          child: IndexedStack(
+        index: data.getBNavBarCurrIndex(),
+        children: <Widget>[
+          _exploreTabNavigator(),
+          _searchTabNavigator(),
+          _libraryTabNavigator(),
+          _profileTabNavigator()
+        ],
+      )),
+    );
   }
 
   // holds the navigator for SearchTab

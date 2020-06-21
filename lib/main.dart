@@ -4,7 +4,6 @@ import 'package:obsmobile/pages/homePage/homePage.dart';
 void main() => runApp(
       MultiProvider(
         providers: [
-          ChangeNotifierProvider<HomePageData>(create: (_) => HomePageData()),
           ChangeNotifierProvider<SearchTabModel>(
               create: (_) => SearchTabModel()),
         ],
@@ -19,7 +18,10 @@ class MyApp extends StatelessWidget {
       theme: GlobalThemes().getAppTheme(),
       debugShowCheckedModeBanner: false,
       home: AudioServiceWidget(
-        child: HomePage(),
+        child: ChangeNotifierProvider<HomePageData>(
+          create: (_) => HomePageData(),
+          child: HomePage(),
+        ),
       ),
     );
   }
