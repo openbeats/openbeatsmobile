@@ -113,15 +113,15 @@ class _SearchNowPageState extends State<SearchNowPage> {
   // holds the searchNowPage body
   Widget _searchNowPageBody() {
     return Container(
-      child: ListView(
-        physics: BouncingScrollPhysics(),
-        children: <Widget>[
-          (_searchFieldController.text.length == 0)
-              ? widgets.suggestionsTitleW(true)
-              : widgets.suggestionsTitleW(false),
-          Consumer<SearchTabModel>(
-            builder: (context, data, child) {
-              return (data.getSearchHistory().length > 0 ||
+      child: Consumer<SearchTabModel>(
+        builder: (context, data, child) {
+          return ListView(
+            physics: BouncingScrollPhysics(),
+            children: <Widget>[
+              (_searchFieldController.text.length == 0)
+                  ? widgets.suggestionsTitleW(true)
+                  : widgets.suggestionsTitleW(false),
+              (data.getSearchHistory().length > 0 ||
                       _searchFieldController.text.length != 0)
                   ? ListView.builder(
                       padding: EdgeInsets.only(
@@ -152,10 +152,10 @@ class _SearchNowPageState extends State<SearchNowPage> {
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold),
                       ),
-                    );
-            },
-          )
-        ],
+                    )
+            ],
+          );
+        },
       ),
     );
   }
