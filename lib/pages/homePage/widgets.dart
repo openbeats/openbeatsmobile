@@ -1,5 +1,6 @@
 import 'package:obsmobile/imports.dart';
 import 'package:obsmobile/models/homePageModels/bottomNavBarDest.dart';
+import 'package:rxdart/rxdart.dart';
 
 // holds the bottomNavBarItem for the homePage
 BottomNavigationBarItem bottomNavBarItem(Destination destination) {
@@ -20,15 +21,6 @@ Widget slidingUpPanelCollapsedDefault() {
       ),
     ),
   );
-}
-
-// holds the nowPlayingThumbnailHolder
-Widget nowPlayingThumbnailHolder(String artUrl, BuildContext context) {
-  return Container(
-      margin: EdgeInsets.only(top: 50.0),
-      height: MediaQuery.of(context).size.height * 0.4,
-      width: MediaQuery.of(context).size.height * 0.4,
-      child: cachedNetworkImageW(artUrl));
 }
 
 // holds the nowPlayingTitleHolder
@@ -76,4 +68,69 @@ Widget collapsedPanelSlideUpPanel() {
             AudioService.play();
         }
       });
+}
+
+// holds the slideUpPanel thumbnail viewer
+Widget slideUpPanelThumbnail(BuildContext context, MediaItem _currMediaItem) {
+  return Container(
+    height: MediaQuery.of(context).size.height * 0.4,
+    width: MediaQuery.of(context).size.height * 0.4,
+    child: cachedNetworkImageW(_currMediaItem?.artUri),
+  );
+}
+
+// holds the slideUpPanel title viewer
+Widget slideUpPanelTitle(BuildContext context, MediaItem _currMediaItem) {
+  // holds the title to show to users
+  String _title = "Welcome to OpenBeats";
+  if (_currMediaItem != null) _title = _currMediaItem.title;
+  return Container(
+    height: MediaQuery.of(context).size.height * 0.4,
+    width: MediaQuery.of(context).size.height * 0.4,
+    child: Text(
+      _title,
+      style: TextStyle(
+        fontSize: 24.0,
+        fontWeight: FontWeight.bold,
+      ),
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    ),
+  );
+}
+
+// holds the slideUpPanel seek bar viewer
+Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
+    MediaItem _mediaItem, BehaviorSubject<double> _dragPositionSubject) {
+  // compiling values
+  double _position =
+      (_state != null) ? _state.currentPosition.inMilliseconds.toDouble() : 0.0;
+  double _audioDuration = (_mediaItem != null)
+      ? _mediaItem.duration.inMilliseconds.toDouble()
+      : 0.0;
+  double seekPos;
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 25.0),
+    child: SliderTheme(
+      data: SliderTheme.of(context).copyWith(
+        trackHeight: 5.0,
+        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
+      ),
+      child: Slider(
+        min: 0.0,
+        max: _audioDuration,
+        value: seekPos ?? max(0.0, min(_position, _audioDuration)),
+        onChanged: (value) {
+          _dragPositionSubject.add(value);
+        },
+        onChangeEnd: (value) {
+          AudioService.seekTo(Duration(milliseconds: value.toInt()));
+
+          seekPos = value;
+          _dragPositionSubject.add(null);
+        },
+      ),
+    ),
+  );
 }

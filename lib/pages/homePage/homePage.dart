@@ -13,6 +13,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   AnimationController _bottomAppBarAnimController;
   Animation<double> _bottomNavAnimation;
 
+  /// Tracks the position while the user drags the seek bar.
+  final BehaviorSubject<double> dragPositionSubject =
+      BehaviorSubject.seeded(null);
+
   @override
   void initState() {
     super.initState();
@@ -141,7 +145,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           return Container(
             color: GlobalThemes().getAppTheme().bottomAppBarColor,
             child: ListTile(
-              onTap: () => getSlidingUpPanelController().open(),
+              onTap: () {
+                print("Tapped on the collapsedPanek");
+                getSlidingUpPanelController().open();
+              },
               leading: cachedNetworkImageW(_thumnbNailUrl),
               title: Text(
                 _title,
@@ -159,10 +166,34 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the SlideUpPanel
   Widget _slideUpPanel() {
-    return Container(
-      color: GlobalThemes().getAppTheme().bottomAppBarColor,
-      child: null,
-    );
+    PlaybackState _playbackState;
+    MediaItem _currMediaItem;
+    return StreamBuilder(
+        stream: Rx.combineLatest3(
+          AudioService.playbackStateStream,
+          AudioService.currentMediaItemStream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (_state, _mediaItem, c) {
+            _playbackState = _state;
+            _currMediaItem = _mediaItem;
+          },
+        ),
+        builder: (context, snapshot) {
+          return Container(
+            color: GlobalThemes().getAppTheme().bottomAppBarColor,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                widgets.slideUpPanelThumbnail(context, _currMediaItem),
+                widgets.slideUpPanelTitle(context, _currMediaItem),
+                widgets.slideUpPanelSeekBar(context, _playbackState,
+                    _currMediaItem, dragPositionSubject)
+              ],
+            ),
+          );
+        });
   }
 
   // holds the widget underneath SlideUpPanel
