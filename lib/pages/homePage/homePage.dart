@@ -14,7 +14,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Animation<double> _bottomNavAnimation;
 
   /// Tracks the position while the user drags the seek bar.
-  final BehaviorSubject<double> dragPositionSubject =
+  final BehaviorSubject<double> _dragPositionSubject =
       BehaviorSubject.seeded(null);
 
   @override
@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   void dispose() {
     _bottomAppBarAnimController.dispose();
+    _dragPositionSubject.close();
     super.dispose();
   }
 
@@ -189,7 +190,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 widgets.slideUpPanelThumbnail(context, _currMediaItem),
                 widgets.slideUpPanelTitle(context, _currMediaItem),
                 widgets.slideUpPanelSeekBar(context, _playbackState,
-                    _currMediaItem, dragPositionSubject),
+                    _currMediaItem, _dragPositionSubject),
                 widgets.slideUpPanelMajorControls(context, _playbackState),
                 widgets.slideUpPanelMinorControls(context)
               ],

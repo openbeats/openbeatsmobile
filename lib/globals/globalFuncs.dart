@@ -1,5 +1,3 @@
-import 'package:obsmobile/imports.dart';
-
 // reformats the views count to plays in the B,M,K format
 String reformatViewstoHumanReadable(String views) {
   // string to return the final count
