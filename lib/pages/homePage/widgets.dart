@@ -158,3 +158,45 @@ Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
     ),
   );
 }
+
+// holds the major controls of the slideUpPanel
+Widget slideUpPanelMajorControls(BuildContext context, PlaybackState _state) {
+  // filtering required values
+  bool _isPlaying = (_state != null) ? _state.playing : null;
+  return Row(
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: <Widget>[_slideUpPanelPlayPauseBtn(_isPlaying)],
+  );
+}
+
+// holds the main play/pause button for slideUpPanel
+Widget _slideUpPanelPlayPauseBtn(bool _isPlaying) {
+  return Container(
+    child: ClipOval(
+      child: Material(
+        color: (_isPlaying != null) ? Colors.red : Colors.grey, // button color
+        child: GestureDetector(
+          child: SizedBox(
+            width: 70,
+            height: 70,
+            child: Center(
+              child: IconButton(
+                icon:
+                    Icon((_isPlaying == true) ? Icons.pause : Icons.play_arrow),
+                onPressed: (_isPlaying == null)
+                    ? null
+                    : () {
+                        if (_isPlaying)
+                          AudioService.pause();
+                        else
+                          AudioService.play();
+                      },
+                iconSize: 40.0,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}

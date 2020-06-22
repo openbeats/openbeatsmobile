@@ -188,7 +188,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 widgets.slideUpPanelThumbnail(context, _currMediaItem),
                 widgets.slideUpPanelTitle(context, _currMediaItem),
                 widgets.slideUpPanelSeekBar(context, _playbackState,
-                    _currMediaItem, dragPositionSubject)
+                    _currMediaItem, dragPositionSubject),
+                widgets.slideUpPanelMajorControls(context, _playbackState)
               ],
             ),
           );
