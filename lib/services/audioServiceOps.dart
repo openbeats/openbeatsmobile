@@ -269,6 +269,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "vidId": args["videoId"],
           "views": args["views"],
           "durationString": args["duration"],
+          "repeatSong": false,
+          "repeatQueue": false
         });
 
     if (_playing == null) {

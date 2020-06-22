@@ -112,7 +112,7 @@ Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
   String _currDurationTimeStamp = getCurrentTimeStamp(_audioDuration / 1000);
   double seekPos;
   return Container(
-    margin: EdgeInsets.symmetric(horizontal: 35.0),
+    margin: EdgeInsets.symmetric(horizontal: 15.0),
     child: Column(
       children: <Widget>[
         SliderTheme(
@@ -135,24 +135,27 @@ Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
             },
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              _currPositionTimeStamp,
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                _currPositionTimeStamp,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            Text(
-              _currDurationTimeStamp,
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
+              Text(
+                _currDurationTimeStamp,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         )
       ],
     ),
@@ -163,9 +166,34 @@ Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
 Widget slideUpPanelMajorControls(BuildContext context, PlaybackState _state) {
   // filtering required values
   bool _isPlaying = (_state != null) ? _state.playing : null;
-  return Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: <Widget>[_slideUpPanelPlayPauseBtn(_isPlaying)],
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 25.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        _slideUpPanelSeekBackwardBtn(),
+        _slideUpPanelPreviousSong(),
+        _slideUpPanelPlayPauseBtn(_isPlaying),
+        _slideUpPanelNextSong(),
+        _slideUpPanelSeekForwardBtn()
+      ],
+    ),
+  );
+}
+
+// holds the minor controls for the slideUpPanel
+Widget slideUpPanelMinorControls(BuildContext context) {
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 25.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        _slideUpPanelFavBtn(),
+        _slideUpPanelShuffleBtn(),
+        _slideUpPanelRepeatBtn(),
+        _slideUpPanelQueueBtn()
+      ],
+    ),
   );
 }
 
@@ -199,4 +227,68 @@ Widget _slideUpPanelPlayPauseBtn(bool _isPlaying) {
       ),
     ),
   );
+}
+
+// holds the main nextsong button for slideUpPanel
+Widget _slideUpPanelNextSong() {
+  return Container(
+    child: IconButton(
+      icon: Icon(Icons.skip_next),
+      onPressed: () {},
+      iconSize: 30.0,
+    ),
+  );
+}
+
+// holds the main previoussong button for slideUpPanel
+Widget _slideUpPanelPreviousSong() {
+  return Container(
+    child: IconButton(
+      icon: Icon(Icons.skip_previous),
+      onPressed: () {},
+      iconSize: 30.0,
+    ),
+  );
+}
+
+// holds the main seekforward button for slideUpPanel
+Widget _slideUpPanelSeekForwardBtn() {
+  return Container(
+    child: IconButton(
+      icon: Icon(Icons.forward_10),
+      onPressed: () {},
+      iconSize: 30.0,
+    ),
+  );
+}
+
+// holds the main seekbackward button for slideUpPanel
+Widget _slideUpPanelSeekBackwardBtn() {
+  return Container(
+    child: IconButton(
+      icon: Icon(Icons.replay_10),
+      onPressed: () {},
+      iconSize: 30.0,
+    ),
+  );
+}
+
+// holds the minor repeatsong button for slideUpPanel
+Widget _slideUpPanelRepeatBtn() {
+  return IconButton(icon: Icon(Icons.repeat), onPressed: null);
+}
+
+// holds the minor favorite button for slideUpPanel
+Widget _slideUpPanelFavBtn() {
+  return IconButton(icon: Icon(Icons.favorite_border), onPressed: null);
+}
+
+// holds the minor shuffle button for slideUpPanel
+Widget _slideUpPanelShuffleBtn() {
+  return IconButton(icon: Icon(Icons.shuffle), onPressed: null);
+}
+
+// holds the minor queue button for slideUpPanel
+Widget _slideUpPanelQueueBtn() {
+  return IconButton(icon: Icon(Icons.queue_music), onPressed: null);
 }

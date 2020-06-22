@@ -185,11 +185,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
+                SizedBox(height: 15.0),
                 widgets.slideUpPanelThumbnail(context, _currMediaItem),
                 widgets.slideUpPanelTitle(context, _currMediaItem),
                 widgets.slideUpPanelSeekBar(context, _playbackState,
                     _currMediaItem, dragPositionSubject),
-                widgets.slideUpPanelMajorControls(context, _playbackState)
+                widgets.slideUpPanelMajorControls(context, _playbackState),
+                widgets.slideUpPanelMinorControls(context)
               ],
             ),
           );
