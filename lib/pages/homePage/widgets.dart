@@ -75,7 +75,10 @@ Widget slideUpPanelThumbnail(BuildContext context, MediaItem _currMediaItem) {
   return Container(
     height: MediaQuery.of(context).size.height * 0.4,
     width: MediaQuery.of(context).size.height * 0.4,
-    child: cachedNetworkImageW(_currMediaItem?.artUri),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(5.0),
+      child: cachedNetworkImageW(_currMediaItem?.artUri),
+    ),
   );
 }
 
@@ -167,7 +170,7 @@ Widget slideUpPanelMajorControls(BuildContext context, PlaybackState _state) {
   // filtering required values
   bool _isPlaying = (_state != null) ? _state.playing : null;
   return Container(
-    margin: EdgeInsets.symmetric(horizontal: 25.0),
+    margin: EdgeInsets.symmetric(horizontal: 40.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -184,7 +187,7 @@ Widget slideUpPanelMajorControls(BuildContext context, PlaybackState _state) {
 // holds the minor controls for the slideUpPanel
 Widget slideUpPanelMinorControls(BuildContext context) {
   return Container(
-    margin: EdgeInsets.symmetric(horizontal: 25.0),
+    margin: EdgeInsets.symmetric(horizontal: 40.0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
