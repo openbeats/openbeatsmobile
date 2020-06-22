@@ -85,8 +85,7 @@ Widget slideUpPanelTitle(BuildContext context, MediaItem _currMediaItem) {
   String _title = "Welcome to OpenBeats";
   if (_currMediaItem != null) _title = _currMediaItem.title;
   return Container(
-    height: MediaQuery.of(context).size.height * 0.4,
-    width: MediaQuery.of(context).size.height * 0.4,
+    margin: EdgeInsets.symmetric(horizontal: 30.0),
     child: Text(
       _title,
       style: TextStyle(
@@ -109,28 +108,53 @@ Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
   double _audioDuration = (_mediaItem != null)
       ? _mediaItem.duration.inMilliseconds.toDouble()
       : 0.0;
+  String _currPositionTimeStamp = getCurrentTimeStamp(_position / 1000);
+  String _currDurationTimeStamp = getCurrentTimeStamp(_audioDuration / 1000);
   double seekPos;
   return Container(
-    margin: EdgeInsets.symmetric(horizontal: 25.0),
-    child: SliderTheme(
-      data: SliderTheme.of(context).copyWith(
-        trackHeight: 5.0,
-        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
-      ),
-      child: Slider(
-        min: 0.0,
-        max: _audioDuration,
-        value: seekPos ?? max(0.0, min(_position, _audioDuration)),
-        onChanged: (value) {
-          _dragPositionSubject.add(value);
-        },
-        onChangeEnd: (value) {
-          AudioService.seekTo(Duration(milliseconds: value.toInt()));
+    margin: EdgeInsets.symmetric(horizontal: 35.0),
+    child: Column(
+      children: <Widget>[
+        SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            trackHeight: 5.0,
+            thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
+          ),
+          child: Slider(
+            min: 0.0,
+            max: _audioDuration,
+            value: seekPos ?? max(0.0, min(_position, _audioDuration)),
+            onChanged: (value) {
+              _dragPositionSubject.add(value);
+            },
+            onChangeEnd: (value) {
+              AudioService.seekTo(Duration(milliseconds: value.toInt()));
 
-          seekPos = value;
-          _dragPositionSubject.add(null);
-        },
-      ),
+              seekPos = value;
+              _dragPositionSubject.add(null);
+            },
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              _currPositionTimeStamp,
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              _currDurationTimeStamp,
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        )
+      ],
     ),
   );
 }

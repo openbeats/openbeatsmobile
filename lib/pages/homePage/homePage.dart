@@ -182,7 +182,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           return Container(
             color: GlobalThemes().getAppTheme().bottomAppBarColor,
             child: Column(
-              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
