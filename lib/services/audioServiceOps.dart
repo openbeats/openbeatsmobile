@@ -253,6 +253,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // starts singleplayback of audio
   void startSinglePlayback(dynamic args) async {
+    // pausing playback if already playing
+    if (_playing) onPause();
+
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
