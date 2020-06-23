@@ -21,18 +21,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // used to modify the height of the slidingUpPanelCollapsed
   void _modifyCollapsedPanel() {
-    // if (AudioService.running) {
-    //   if (_collapsedSlideUpPanelHeight == 0.0) {
-    //     setState(() {
-    //       _collapsedSlideUpPanelHeight = 70.0;
-    //     });
-    //   }
-    // } else {
-    //   if (_collapsedSlideUpPanelHeight == 70.0)
-    //     setState(() {
-    //       _collapsedSlideUpPanelHeight = 0.0;
-    //     });
-    // }
+    if (AudioService.running) {
+      if (_collapsedSlideUpPanelHeight == 0.0) {
+        print("If Condition");
+        setState(() {
+          _collapsedSlideUpPanelHeight = 70.0;
+        });
+      }
+    } else {
+      if (_collapsedSlideUpPanelHeight == 70.0) {
+        print("Else Condition");
+        setState(() {
+          _collapsedSlideUpPanelHeight = 0.0;
+        });
+      } 
+    }
   }
 
   @override
@@ -42,7 +45,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       // fetching all data stored in sharedPrefs
       getAllSharedPrefsData(context);
-      _modifyCollapsedPanel();
+      Timer(Duration(seconds: 1), () {
+        _modifyCollapsedPanel();
+      });
     });
     // changing the status bar color
     functions.changeStatusBarColor();
@@ -58,6 +63,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     AudioService.playbackStateStream.listen((event) {
       _modifyCollapsedPanel();
     });
+    _modifyCollapsedPanel();
   }
 
   @override
@@ -147,61 +153,64 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget _slideUpPanelCollapsed() {
     PlaybackState _playbackState;
     MediaItem _currMediaItem;
-    return StreamBuilder(
-      stream: Rx.combineLatest3(
-        AudioService.playbackStateStream,
-        AudioService.currentMediaItemStream,
-        Stream.periodic(Duration(milliseconds: 200)),
-        (_state, _mediaItem, c) {
-          _playbackState = _state;
-          _currMediaItem = _mediaItem;
+    return SizeTransition(
+      sizeFactor: _bottomNavAnimation,
+      axisAlignment: -1.0,
+      child: StreamBuilder(
+        stream: Rx.combineLatest3(
+          AudioService.playbackStateStream,
+          AudioService.currentMediaItemStream,
+          Stream.periodic(Duration(milliseconds: 200)),
+          (_state, _mediaItem, c) {
+            _playbackState = _state;
+            _currMediaItem = _mediaItem;
+          },
+        ),
+        builder: (context, snapshot) {
+          // holds the properties of the collapsed container
+          String _thumnbNailUrl =
+              (_currMediaItem == null) ? null : _currMediaItem.artUri;
+          String _title = (_currMediaItem == null)
+              ? "Welcome to OpenBeats"
+              : _currMediaItem.title;
+          String _subtitle = (_playbackState == null)
+              ? "Free music, forever"
+              : getCurrentTimeStamp(
+                      _playbackState?.currentPosition?.inSeconds?.toDouble()) +
+                  " | " +
+                  getCurrentTimeStamp(
+                      _currMediaItem?.duration?.inSeconds?.toDouble());
+          return AnimatedSwitcher(
+            duration: Duration(milliseconds: 300),
+            child: (_thumnbNailUrl == null)
+                ? Container(
+                    key: ValueKey<int>(1),
+                    color: GlobalThemes().getAppTheme().bottomAppBarColor,
+                    child: null,
+                  )
+                : Container(
+                    key: ValueKey<int>(2),
+                    color: GlobalThemes().getAppTheme().bottomAppBarColor,
+                    child: ListTile(
+                      onTap: () {
+                        print("Tapped on the collapsedPanek");
+                        getSlidingUpPanelController().open();
+                      },
+                      leading: cachedNetworkImageW(_thumnbNailUrl),
+                      title: Text(
+                        _title,
+                        maxLines: 2,
+                        style: TextStyle(fontSize: 14.0),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      subtitle: Text(_subtitle),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                      trailing: widgets.collapsedPanelSlideUpPanel(),
+                    ),
+                  ),
+          );
         },
       ),
-      builder: (context, snapshot) {
-        // holds the properties of the collapsed container
-        String _thumnbNailUrl =
-            (_currMediaItem == null) ? null : _currMediaItem.artUri;
-        print(_thumnbNailUrl);
-        String _title = (_currMediaItem == null)
-            ? "Welcome to OpenBeats"
-            : _currMediaItem.title;
-        String _subtitle = (_playbackState == null)
-            ? "Free music, forever"
-            : getCurrentTimeStamp(
-                    _playbackState?.currentPosition?.inSeconds?.toDouble()) +
-                " | " +
-                getCurrentTimeStamp(
-                    _currMediaItem?.duration?.inSeconds?.toDouble());
-        return AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
-          child: (_thumnbNailUrl == null)
-              ? Container(
-                  key: ValueKey<int>(1),
-                  color: GlobalThemes().getAppTheme().bottomAppBarColor,
-                  child: SizedBox.expand(),
-                )
-              : Container(
-                  key: ValueKey<int>(2),
-                  color: GlobalThemes().getAppTheme().bottomAppBarColor,
-                  child: ListTile(
-                    onTap: () {
-                      print("Tapped on the collapsedPanek");
-                      getSlidingUpPanelController().open();
-                    },
-                    leading: cachedNetworkImageW(_thumnbNailUrl),
-                    title: Text(
-                      _title,
-                      maxLines: 2,
-                      style: TextStyle(fontSize: 14.0),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(_subtitle),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-                    trailing: widgets.collapsedPanelSlideUpPanel(),
-                  ),
-                ),
-        );
-      },
     );
   }
 
