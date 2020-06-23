@@ -21,18 +21,18 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // used to modify the height of the slidingUpPanelCollapsed
   void _modifyCollapsedPanel() {
-    if (AudioService.running) {
-      if (_collapsedSlideUpPanelHeight == 0.0) {
-        setState(() {
-          _collapsedSlideUpPanelHeight = 70.0;
-        });
-      }
-    } else {
-      if (_collapsedSlideUpPanelHeight == 70.0)
-        setState(() {
-          _collapsedSlideUpPanelHeight = 0.0;
-        });
-    }
+    // if (AudioService.running) {
+    //   if (_collapsedSlideUpPanelHeight == 0.0) {
+    //     setState(() {
+    //       _collapsedSlideUpPanelHeight = 70.0;
+    //     });
+    //   }
+    // } else {
+    //   if (_collapsedSlideUpPanelHeight == 70.0)
+    //     setState(() {
+    //       _collapsedSlideUpPanelHeight = 0.0;
+    //     });
+    // }
   }
 
   @override
@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       // fetching all data stored in sharedPrefs
       getAllSharedPrefsData(context);
+      _modifyCollapsedPanel();
     });
     // changing the status bar color
     functions.changeStatusBarColor();
@@ -57,7 +58,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     AudioService.playbackStateStream.listen((event) {
       _modifyCollapsedPanel();
     });
-    _modifyCollapsedPanel();
   }
 
   @override
@@ -126,6 +126,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           minHeight: (_res.isOpen) ? 0.0 : _collapsedSlideUpPanelHeight,
           maxHeight: MediaQuery.of(context).size.height,
           parallaxEnabled: true,
+          isDraggable:
+              (MediaQuery.of(context).orientation == Orientation.portrait)
+                  ? true
+                  : false,
           collapsed: _slideUpPanelCollapsed(),
           panel: _slideUpPanel(),
           body: _underneathSlideUpPanel(),

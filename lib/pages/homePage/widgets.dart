@@ -73,8 +73,8 @@ Widget collapsedPanelSlideUpPanel() {
 // holds the slideUpPanel thumbnail viewer
 Widget slideUpPanelThumbnail(BuildContext context, MediaItem _currMediaItem) {
   return Container(
-    height: MediaQuery.of(context).size.height * 0.4,
-    width: MediaQuery.of(context).size.height * 0.4,
+    height: MediaQuery.of(context).size.height * 0.35,
+    width: MediaQuery.of(context).size.height * 0.35,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(5.0),
       child: cachedNetworkImageW(_currMediaItem?.artUri),
@@ -170,7 +170,8 @@ Widget slideUpPanelMajorControls(BuildContext context, PlaybackState _state) {
   // filtering required values
   bool _isPlaying = (_state != null) ? _state.playing : null;
   return Container(
-    margin: EdgeInsets.symmetric(horizontal: 40.0),
+    margin: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.05),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[

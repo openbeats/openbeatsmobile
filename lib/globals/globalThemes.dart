@@ -6,7 +6,7 @@ class GlobalThemes {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: Color(0xFF14161C),
     appBarTheme: AppBarTheme(
-      color: Colors.transparent,
+      color: Color(0xFF14161C),
       actionsIconTheme: IconThemeData(
         size: 24.0,
       ),
