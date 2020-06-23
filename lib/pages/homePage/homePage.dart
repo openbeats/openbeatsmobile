@@ -16,6 +16,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   /// Tracks the position while the user drags the seek bar.
   final BehaviorSubject<double> _dragPositionSubject =
       BehaviorSubject.seeded(null);
+  // holds the height of the bottomAppBar
+  double _collapsedSlideUpPanelHeight = 70.0;
+
+  // used to modify the height of the slidingUpPanelCollapsed
+  void _modifyCollapsedPanel() {
+    if (AudioService.running) {
+      if (_collapsedSlideUpPanelHeight == 0.0) {
+        setState(() {
+          _collapsedSlideUpPanelHeight = 70.0;
+        });
+      }
+    } else {
+      if (_collapsedSlideUpPanelHeight == 70.0)
+        setState(() {
+          _collapsedSlideUpPanelHeight = 0.0;
+        });
+    }
+  }
 
   @override
   void initState() {
@@ -35,6 +53,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       curve: Curves.ease,
     );
     _bottomAppBarAnimController.forward();
+
+    AudioService.playbackStateStream.listen((event) {
+      _modifyCollapsedPanel();
+    });
+    _modifyCollapsedPanel();
   }
 
   @override
@@ -46,7 +69,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    print("homePage REBUILT");
+    _modifyCollapsedPanel();
     return WillPopScope(
       child: KeyboardSizeProvider(
         child: Scaffold(
@@ -95,11 +118,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the body of the homePage
   Widget _homePageBody() {
+    _modifyCollapsedPanel();
     return Consumer<ScreenHeight>(
       builder: (context, _res, child) {
         return SlidingUpPanel(
           controller: getSlidingUpPanelController(),
-          minHeight: (_res.isOpen) ? 0.0 : 70.0,
+          minHeight: (_res.isOpen) ? 0.0 : _collapsedSlideUpPanelHeight,
           maxHeight: MediaQuery.of(context).size.height,
           parallaxEnabled: true,
           collapsed: _slideUpPanelCollapsed(),
@@ -120,49 +144,61 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     PlaybackState _playbackState;
     MediaItem _currMediaItem;
     return StreamBuilder(
-        stream: Rx.combineLatest3(
-          AudioService.playbackStateStream,
-          AudioService.currentMediaItemStream,
-          Stream.periodic(Duration(milliseconds: 200)),
-          (_state, _mediaItem, c) {
-            _playbackState = _state;
-            _currMediaItem = _mediaItem;
-          },
-        ),
-        builder: (context, snapshot) {
-          // holds the properties of the collapsed container
-          String _thumnbNailUrl =
-              (_currMediaItem == null) ? null : _currMediaItem.artUri;
-          String _title = (_currMediaItem == null)
-              ? "Welcome to OpenBeats"
-              : _currMediaItem.title;
-          String _subtitle = (_playbackState == null)
-              ? "Free music, forever"
-              : getCurrentTimeStamp(
-                      _playbackState?.currentPosition?.inSeconds?.toDouble()) +
-                  " | " +
-                  getCurrentTimeStamp(
-                      _currMediaItem?.duration?.inSeconds?.toDouble());
-          return Container(
-            color: GlobalThemes().getAppTheme().bottomAppBarColor,
-            child: ListTile(
-              onTap: () {
-                print("Tapped on the collapsedPanek");
-                getSlidingUpPanelController().open();
-              },
-              leading: cachedNetworkImageW(_thumnbNailUrl),
-              title: Text(
-                _title,
-                maxLines: 2,
-                style: TextStyle(fontSize: 14.0),
-                overflow: TextOverflow.ellipsis,
-              ),
-              subtitle: Text(_subtitle),
-              contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
-              trailing: widgets.collapsedPanelSlideUpPanel(),
-            ),
-          );
-        });
+      stream: Rx.combineLatest3(
+        AudioService.playbackStateStream,
+        AudioService.currentMediaItemStream,
+        Stream.periodic(Duration(milliseconds: 200)),
+        (_state, _mediaItem, c) {
+          _playbackState = _state;
+          _currMediaItem = _mediaItem;
+        },
+      ),
+      builder: (context, snapshot) {
+        // holds the properties of the collapsed container
+        String _thumnbNailUrl =
+            (_currMediaItem == null) ? null : _currMediaItem.artUri;
+        print(_thumnbNailUrl);
+        String _title = (_currMediaItem == null)
+            ? "Welcome to OpenBeats"
+            : _currMediaItem.title;
+        String _subtitle = (_playbackState == null)
+            ? "Free music, forever"
+            : getCurrentTimeStamp(
+                    _playbackState?.currentPosition?.inSeconds?.toDouble()) +
+                " | " +
+                getCurrentTimeStamp(
+                    _currMediaItem?.duration?.inSeconds?.toDouble());
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: (_thumnbNailUrl == null)
+              ? Container(
+                  key: ValueKey<int>(1),
+                  color: GlobalThemes().getAppTheme().bottomAppBarColor,
+                  child: SizedBox.expand(),
+                )
+              : Container(
+                  key: ValueKey<int>(2),
+                  color: GlobalThemes().getAppTheme().bottomAppBarColor,
+                  child: ListTile(
+                    onTap: () {
+                      print("Tapped on the collapsedPanek");
+                      getSlidingUpPanelController().open();
+                    },
+                    leading: cachedNetworkImageW(_thumnbNailUrl),
+                    title: Text(
+                      _title,
+                      maxLines: 2,
+                      style: TextStyle(fontSize: 14.0),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Text(_subtitle),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10.0),
+                    trailing: widgets.collapsedPanelSlideUpPanel(),
+                  ),
+                ),
+        );
+      },
+    );
   }
 
   // holds the SlideUpPanel
@@ -186,7 +222,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 15.0),
+                SizedBox(height: 35.0),
                 widgets.slideUpPanelThumbnail(context, _currMediaItem),
                 widgets.slideUpPanelTitle(context, _currMediaItem),
                 widgets.slideUpPanelSeekBar(context, _playbackState,

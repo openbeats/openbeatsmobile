@@ -1,15 +1,9 @@
 import 'package:obsmobile/imports.dart';
 import 'package:obsmobile/pages/homePage/homePage.dart';
 
-void main() => runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<SearchTabModel>(
-              create: (_) => SearchTabModel()),
-        ],
-        child: MyApp(),
-      ),
-    );
+void main() => runApp(AudioServiceWidget(
+      child: MyApp(),
+    ));
 
 class MyApp extends StatelessWidget {
   @override
@@ -18,11 +12,15 @@ class MyApp extends StatelessWidget {
       title: "OpenBeats",
       theme: GlobalThemes().getAppTheme(),
       debugShowCheckedModeBanner: false,
-      home: AudioServiceWidget(
-        child: ChangeNotifierProvider<HomePageData>(
-          create: (_) => HomePageData(),
-          child: HomePage(),
-        ),
+      home: MultiProvider(
+        providers: [
+          ChangeNotifierProvider<SearchTabModel>(
+              create: (_) => SearchTabModel()),
+          ChangeNotifierProvider<HomePageData>(
+            create: (_) => HomePageData(),
+          ),
+        ],
+        child: HomePage(),
       ),
     );
   }
