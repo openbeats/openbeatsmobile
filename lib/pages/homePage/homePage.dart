@@ -22,19 +22,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // used to modify the height of the slidingUpPanelCollapsed
   void _modifyCollapsedPanel() {
     if (AudioService.running) {
-      if (_collapsedSlideUpPanelHeight == 0.0) {
-        print("If Condition");
+      if (_collapsedSlideUpPanelHeight == 0.0)
         setState(() {
           _collapsedSlideUpPanelHeight = 70.0;
         });
-      }
     } else {
-      if (_collapsedSlideUpPanelHeight == 70.0) {
-        print("Else Condition");
+      if (_collapsedSlideUpPanelHeight == 70.0)
         setState(() {
           _collapsedSlideUpPanelHeight = 0.0;
         });
-      } 
     }
   }
 
