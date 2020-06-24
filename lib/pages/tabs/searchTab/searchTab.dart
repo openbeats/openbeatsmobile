@@ -8,6 +8,7 @@ class SearchTab extends StatefulWidget {
 }
 
 class _SearchTabState extends State<SearchTab> {
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

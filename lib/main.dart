@@ -19,6 +19,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<HomePageData>(
             create: (_) => HomePageData(),
           ),
+          ChangeNotifierProvider<ProfileTabData>(
+            create: (_) => ProfileTabData(),
+          ),
         ],
         child: HomePage(),
       ),

@@ -43,6 +43,7 @@ export 'package:obsmobile/pages/tabs/searchTab/searchNowPage.dart';
 // data model imports
 export 'package:obsmobile/models/homePageModels/homePageData.dart';
 export 'package:obsmobile/models/searchTabModels/searchTabModels.dart';
+export 'package:obsmobile/models/profileTabModels/profileTabData.dart';
 
 // audio service exports
 import 'package:audio_service/audio_service.dart';
