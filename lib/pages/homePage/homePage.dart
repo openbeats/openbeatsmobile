@@ -102,6 +102,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
             selectedItemColor: GlobalThemes().getAppTheme().primaryColor,
             unselectedItemColor: Colors.white,
+            showUnselectedLabels: false,
             onTap: (index) {
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();
