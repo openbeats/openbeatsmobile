@@ -19,6 +19,7 @@ class AudioServiceOps {
     if (await _startAudioService() == true ||
         await _startAudioService() == false) {
       AudioService.customAction("startSinglePlayback", mediaParameters);
+      
     }
   }
 }
@@ -256,6 +257,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // pausing playback if already playing
     if (_playing != null) onPause();
 
+    print("Reached Spot 1");
+
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
@@ -273,6 +276,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "repeatQueue": false
         });
 
+    AudioServiceBackground.setMediaItem(_songMediaItem);
+
+    print("Reached Spot 2");
+
     if (_playing == null) {
       // First time, we want to start playing
       _playing = true;
@@ -283,9 +290,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // Load next item
     _queueIndex = 0;
     AudioServiceBackground.setMediaItem(_songMediaItem);
+
     String streamingUrl = await getStreamingUrl(args);
+
+    print("Reached Spot 3");
+
     _defaultThumbnailUrl =
         await checkHighResThumbnailAvailability(args["videoId"]);
+
     _songMediaItem = MediaItem(
         id: streamingUrl,
         album: "OpenBeats Music",
@@ -297,9 +309,18 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "views": args["views"],
           "durationString": args["duration"],
         });
+
     AudioServiceBackground.setMediaItem(_songMediaItem);
+
+    print("Reached Spot 4");
+
     await _audioPlayer.setUrl(_songMediaItem.id);
+
+    print("Reached Spot 5");
+
     onPlay();
+
+    print("Reached Spot 6");
   }
 
   List<MediaControl> getControls() {
