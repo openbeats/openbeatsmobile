@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     color: GlobalThemes().getAppTheme().bottomAppBarColor,
                     child: ListTile(
                       onTap: () {
-                        print("Tapped on the collapsedPanek");
+                  
                         getSlidingUpPanelController().open();
                       },
                       leading: cachedNetworkImageW(_thumnbNailUrl),

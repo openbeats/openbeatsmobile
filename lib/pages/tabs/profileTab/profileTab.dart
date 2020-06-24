@@ -1,6 +1,5 @@
 import 'package:obsmobile/imports.dart';
 import './widgets.dart' as widgets;
-import './functions.dart' as fuctions;
 
 class ProfileTab extends StatefulWidget {
   @override

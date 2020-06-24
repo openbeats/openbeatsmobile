@@ -8,7 +8,6 @@ class SearchTab extends StatefulWidget {
 }
 
 class _SearchTabState extends State<SearchTab> {
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +96,7 @@ class _SearchTabState extends State<SearchTab> {
         trailing: GestureDetector(
           child: Icon(Icons.more_vert),
           onTap: () {
-            print("MoreVert Tapped");
+           
           },
         ),
       ),
