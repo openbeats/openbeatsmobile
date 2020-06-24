@@ -17,7 +17,7 @@ class _ExploreTabState extends State<ExploreTab> {
   Widget _exploreTabBody() {
     return Container(
       child: Center(
-        child: Text("Explore Tab"),
+        child: Icon(Icons.music_note),
       ),
     );
   }

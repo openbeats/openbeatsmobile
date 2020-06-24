@@ -72,9 +72,13 @@ Widget collapsedPanelSlideUpPanel() {
 
 // holds the slideUpPanel thumbnail viewer
 Widget slideUpPanelThumbnail(BuildContext context, MediaItem _currMediaItem) {
+  Orientation _currOrientation = MediaQuery.of(context).orientation;
+  double _dimensions = (_currOrientation == Orientation.portrait)
+      ? MediaQuery.of(context).size.height * 0.35
+      : MediaQuery.of(context).size.height * 0.25;
   return Container(
-    height: MediaQuery.of(context).size.height * 0.35,
-    width: MediaQuery.of(context).size.height * 0.35,
+    height: _dimensions,
+    width: _dimensions,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(5.0),
       child: cachedNetworkImageW(_currMediaItem?.artUri),
@@ -87,12 +91,17 @@ Widget slideUpPanelTitle(BuildContext context, MediaItem _currMediaItem) {
   // holds the title to show to users
   String _title = "Welcome to OpenBeats";
   if (_currMediaItem != null) _title = _currMediaItem.title;
+  double _containerWidth = MediaQuery.of(context).size.width;
+  Orientation _currOrientation = MediaQuery.of(context).orientation;
   return Container(
     margin: EdgeInsets.symmetric(horizontal: 30.0),
+    width: (_currOrientation == Orientation.portrait)
+        ? null
+        : _containerWidth * 0.5,
     child: Text(
       _title,
       style: TextStyle(
-        fontSize: 24.0,
+        fontSize: 20.0,
         fontWeight: FontWeight.bold,
       ),
       textAlign: TextAlign.center,

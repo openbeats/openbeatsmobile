@@ -190,7 +190,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     color: GlobalThemes().getAppTheme().bottomAppBarColor,
                     child: ListTile(
                       onTap: () {
-                  
                         getSlidingUpPanelController().open();
                       },
                       leading: cachedNetworkImageW(_thumnbNailUrl),
@@ -226,6 +225,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           },
         ),
         builder: (context, snapshot) {
+          Orientation _currOrientation = MediaQuery.of(context).orientation;
           return Container(
             color: GlobalThemes().getAppTheme().bottomAppBarColor,
             child: Column(
@@ -233,8 +233,28 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: 35.0),
-                widgets.slideUpPanelThumbnail(context, _currMediaItem),
-                widgets.slideUpPanelTitle(context, _currMediaItem),
+                Container(
+                  child: (_currOrientation == Orientation.portrait)
+                      ? widgets.slideUpPanelThumbnail(context, _currMediaItem)
+                      : null,
+                ),
+                Container(
+                  child: (_currOrientation == Orientation.portrait)
+                      ? widgets.slideUpPanelTitle(context, _currMediaItem)
+                      : null,
+                ),
+                Container(
+                  child: (_currOrientation == Orientation.landscape)
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            widgets.slideUpPanelThumbnail(
+                                context, _currMediaItem),
+                            widgets.slideUpPanelTitle(context, _currMediaItem)
+                          ],
+                        )
+                      : null,
+                ),
                 widgets.slideUpPanelSeekBar(context, _playbackState,
                     _currMediaItem, _dragPositionSubject),
                 widgets.slideUpPanelMajorControls(context, _playbackState),
