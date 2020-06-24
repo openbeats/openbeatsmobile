@@ -71,10 +71,12 @@ class _ProfileTabState extends State<ProfileTab> {
       child: Container(
         padding: EdgeInsets.symmetric(
             horizontal: MediaQuery.of(context).size.width * 0.15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          physics: BouncingScrollPhysics(),
           children: <Widget>[
+            SizedBox(
+              height: 20.0,
+            ),
             widgets.signInWelcomeText(),
             SizedBox(
               height: 30.0,
@@ -88,7 +90,13 @@ class _ProfileTabState extends State<ProfileTab> {
                 widgets.forgotPasswordButton(),
                 _actionButton(context, false),
               ],
-            )
+            ),
+            SizedBox(
+              height:
+                  (MediaQuery.of(context).orientation == Orientation.landscape)
+                      ? 150.0
+                      : 50.0,
+            ),
           ],
         ),
       ),
@@ -103,10 +111,12 @@ class _ProfileTabState extends State<ProfileTab> {
       child: Container(
         padding: EdgeInsets.symmetric(
             horizontal: MediaQuery.of(context).size.width * 0.15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          physics: BouncingScrollPhysics(),
           children: <Widget>[
+            SizedBox(
+              height: 20.0,
+            ),
             widgets.joinWelcomeText(),
             SizedBox(
               height: 20.0,
@@ -115,7 +125,13 @@ class _ProfileTabState extends State<ProfileTab> {
             widgets.emailAddressTextField(context, _joinEmailFieldController),
             widgets.passwordTextField(
                 context, _joinPasswordFieldController, true),
-            _actionButton(context, true)
+            _actionButton(context, true),
+            SizedBox(
+              height:
+                  (MediaQuery.of(context).orientation == Orientation.landscape)
+                      ? 150.0
+                      : 50.0,
+            ),
           ],
         ),
       ),

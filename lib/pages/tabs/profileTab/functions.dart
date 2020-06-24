@@ -9,7 +9,16 @@ void validateFields(
     BuildContext context,
     bool _isJoin) {
   if (_formKey.currentState.validate()) {
-    _formKey.currentState.save();
+    if (_isJoin) {
+      // getting values
+
+    } else {
+      // getting values
+      String _emailAddress = _emailController.text.trim();
+      String _password = _passwordController.text;
+
+    
+    }
   } else {
     if (_isJoin) {
       Provider.of<ProfileTabData>(context, listen: false)
