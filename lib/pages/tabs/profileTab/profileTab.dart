@@ -9,7 +9,8 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   // controllers for textfields
-  TextEditingController _userNameFieldController = new TextEditingController();
+  TextEditingController _joinUserNameFieldController =
+      new TextEditingController();
   TextEditingController _signInEmailFieldController =
       new TextEditingController();
   TextEditingController _signInPasswordFieldController =
@@ -44,7 +45,7 @@ class _ProfileTabState extends State<ProfileTab> {
     return Container(
       // color: Colors.grey[900],
       height: MediaQuery.of(context).size.height * 0.55,
-      child: TabBarView(children: [_signInContainer(), Container()]),
+      child: TabBarView(children: [_signInContainer(), _joinContainer()]),
     );
   }
 
@@ -63,14 +64,40 @@ class _ProfileTabState extends State<ProfileTab> {
               height: 30.0,
             ),
             widgets.emailAddressTextField(context, _signInEmailFieldController),
-            widgets.passwordTextField(context, _signInPasswordFieldController),
+            widgets.passwordTextField(
+                context, _signInPasswordFieldController, false),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 widgets.forgotPasswordButton(),
-                widgets.actionButton(context),
+                widgets.actionButton(context, false),
               ],
             )
+          ],
+        ),
+      ),
+    );
+  }
+
+  // holds the widgets for the joinPanel
+  Widget _joinContainer() {
+    return Form(
+      child: Container(
+        padding: EdgeInsets.symmetric(
+            horizontal: MediaQuery.of(context).size.width * 0.15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            widgets.joinWelcomeText(),
+            SizedBox(
+              height: 20.0,
+            ),
+            widgets.userNameTextField(_joinUserNameFieldController),
+            widgets.emailAddressTextField(context, _joinEmailFieldController),
+            widgets.passwordTextField(
+                context, _joinPasswordFieldController, true),
+            widgets.actionButton(context, true)
           ],
         ),
       ),
