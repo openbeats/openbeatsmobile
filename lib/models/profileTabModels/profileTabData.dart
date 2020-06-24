@@ -6,6 +6,9 @@ class ProfileTabData extends ChangeNotifier {
   bool _showPasswordSignIn = false;
   // holds the loading flag
   bool _isLoading = false;
+  // holds the autoValidate variable for signIn
+  bool _signInAutoValidate = false;
+  bool _joinAutoValidate = false;
 
   // getter and setter for _showPasswordJoin
   bool getShowPasswordJoin() => _showPasswordJoin;
@@ -25,5 +28,19 @@ class ProfileTabData extends ChangeNotifier {
   bool getIsLoading() => _isLoading;
   void setIsLoading(bool value) {
     _isLoading = value;
+  }
+
+  // getter and setter for autoValidate signIn
+  bool getAutoValidateSignIn() => _signInAutoValidate;
+  void setAutoValidateSignIn(bool value) {
+    _signInAutoValidate = value;
+    notifyListeners();
+  }
+
+  // getter and setter for autoValidate join
+  bool getAutoValidateJoin() => _joinAutoValidate;
+  void setAutoValidateJoin(bool value) {
+    _joinAutoValidate = value;
+    notifyListeners();
   }
 }

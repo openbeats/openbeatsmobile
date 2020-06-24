@@ -73,6 +73,12 @@ Widget userNameTextField(TextEditingController _controller) {
         icon: Icon(Icons.person),
         hintText: "Profile Name",
       ),
+      validator: (String arg) {
+        if (arg.length < 3)
+          return 'Please enter a longer profile name';
+        else
+          return null;
+      },
     ),
   );
 }
@@ -91,6 +97,12 @@ Widget emailAddressTextField(
         icon: Icon(Icons.email),
         hintText: "Email Address",
       ),
+      validator: (String arg) {
+        if (!arg.contains("@") || arg.length < 3)
+          return 'Please enter valid email address';
+        else
+          return null;
+      },
     ),
   );
 }
@@ -122,6 +134,12 @@ Widget passwordTextField(
         ),
         hintText: "Password",
       ),
+      validator: (String arg) {
+        if (arg.length < 6)
+          return 'Please enter password longer\nthan 6 characters';
+        else
+          return null;
+      },
     ),
   );
 }
@@ -132,21 +150,6 @@ Widget forgotPasswordButton() {
     child: GestureDetector(
       child: Text(" Forgot Password?"),
       onTap: () {},
-    ),
-  );
-}
-
-// holds the actionButton
-Widget actionButton(BuildContext context, bool _isJoin) {
-  return Container(
-    alignment: Alignment.centerRight,
-    child: RaisedButton(
-      child: Text((_isJoin) ? "Join" : "Sign In"),
-      color: GlobalThemes().getAppTheme().primaryColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(5),
-      ),
-      onPressed: () {},
     ),
   );
 }
