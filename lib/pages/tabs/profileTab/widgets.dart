@@ -67,11 +67,10 @@ Widget userNameTextField(TextEditingController _controller) {
     child: TextFormField(
       controller: _controller,
       cursorColor: GlobalThemes().getAppTheme().primaryColor,
-      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         border: InputBorder.none,
         alignLabelWithHint: false,
-        icon: Icon(Icons.email),
+        icon: Icon(Icons.person),
         hintText: "Profile Name",
       ),
     ),

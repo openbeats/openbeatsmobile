@@ -81,6 +81,7 @@ class _SearchNowPageState extends State<SearchNowPage> {
             controller: _searchFieldController,
             cursorColor: GlobalThemes().getAppTheme().primaryColor,
             style: TextStyle(fontSize: 18.0),
+            onSubmitted: (String value) => Navigator.pop(context, value),
             onChanged: (String value) async {
               Provider.of<SearchTabModel>(context, listen: false)
                   .setCurrentSearchString(value);
