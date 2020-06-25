@@ -176,10 +176,79 @@ Widget forgotPasswordButton() {
 
 // holds the profileTabProfileView
 Widget profileTabProfileView(BuildContext context) {
+  return Consumer<UserModel>(
+    builder: (context, data, child) {
+      return Container(
+        // color: Colors.grey[900],
+        height: MediaQuery.of(context).size.height * 0.6,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            _profileViewImage(data.getUserDetails()["avatar"]),
+            SizedBox(height: 20.0),
+            _profileViewUserName(data.getUserDetails()["name"]),
+            SizedBox(height: 60.0),
+            _profileViewMetadata()
+          ],
+        ),
+      );
+    },
+  );
+}
+
+// holds the profile image view for the profile view
+Widget _profileViewImage(String _imageUrl) {
   return Container(
-    child: RaisedButton(
-      onPressed: () => functions.logoutUser(context),
-      child: Text("Logout"),
+    height: 80.0,
+    width: 80.0,
+    child: cachedNetworkImageW(_imageUrl),
+  );
+}
+
+// holds the user name widget for the profile view
+Widget _profileViewUserName(String _userName) {
+  return Container(
+    child: Text(
+      _userName,
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 30.0,
+      ),
+    ),
+  );
+}
+
+// holds the row of user metadata for profile view
+Widget _profileViewMetadata() {
+  return Container(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        _templateMetaData(),
+        _templateMetaData(),
+        _templateMetaData()
+      ],
+    ),
+  );
+}
+
+// holds the template metadata option
+Widget _templateMetaData() {
+  return Container(
+    padding: EdgeInsets.all(20.0),
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.white),
+      borderRadius: BorderRadius.circular(5.0),
+    ),
+    child: Column(
+      children: <Widget>[
+        Text("Name", style: TextStyle(fontSize: 14.0)),
+        Text("6000", style: TextStyle(fontSize: 20.0)),
+        Text("hours")
+      ],
     ),
   );
 }
