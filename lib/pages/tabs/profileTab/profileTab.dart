@@ -243,6 +243,13 @@ class _ProfileTabState extends State<ProfileTab>
                   },
                 );
               }
+            } else {
+              // clearing all textfields
+              _signInEmailFieldController.clear();
+              _signInPasswordFieldController.clear();
+              _joinEmailFieldController.clear();
+              _joinPasswordFieldController.clear();
+              _joinUserNameFieldController.clear();
             }
           },
         ),
