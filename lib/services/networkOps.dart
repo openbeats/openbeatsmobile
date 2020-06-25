@@ -204,3 +204,25 @@ Future<dynamic> loginAuthticationHandler(
     _handleExceptionsRaised("TimeoutException", null, true);
   }
 }
+
+// used to get all the collections for the current user
+Future<dynamic> getMyCollections(BuildContext context) async {
+  // constructing api url
+  String _apiUrl = getApiEndpoint() + "/auth/metadata/mycollections";
+  // setting up client to send request with unmodified headers
+  final _httpClient = HttpClient();
+  // setting up the get request to send
+  final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
+  // setting up the authentication headers
+  request.headers.set("x-auth-token",
+      Provider.of<UserModel>(context, listen: false).getUserDetails()["token"]);
+  // sendong request and closing it
+  final response = await request.close();
+  response.transform(utf8.decoder).listen((contents) {
+    // converting the response to JSON
+    var _responseJSON = json.decode(contents.toString());
+    // updating value in userModel
+    Provider.of<UserModel>(context, listen: false)
+        .setUserCollections(_responseJSON);
+  });
+}

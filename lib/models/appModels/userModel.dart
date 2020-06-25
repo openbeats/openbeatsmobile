@@ -10,10 +10,20 @@ class UserModel extends ChangeNotifier {
     "avatar": null
   };
 
+  // holds the users collection data as JSON
+  var _userCollections = {};
+
   // getter and setter for user details
   Map<String, String> getUserDetails() => _userDetails;
   void setUserDetails(Map<String, String> value) {
     _userDetails = value;
+    notifyListeners();
+  }
+
+  // getter and setter for user collections
+  dynamic getUserCollections() => _userCollections;
+  void setUserCollections(var value) {
+    _userCollections = value;
     notifyListeners();
   }
 }

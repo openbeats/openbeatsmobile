@@ -44,6 +44,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       Timer(Duration(seconds: 1), () {
         _modifyCollapsedPanel();
       });
+
+      getMyCollections(context);
     });
     // changing the status bar color
     functions.changeStatusBarColor();
