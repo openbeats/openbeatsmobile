@@ -21,6 +21,9 @@ export 'package:flutter/services.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/scheduler.dart';
 export 'package:google_fonts/google_fonts.dart';
+export 'package:move_to_background/move_to_background.dart';
+export 'package:flushbar/flushbar.dart';
+export 'package:flushbar/flushbar_helper.dart';
 
 // global dart file imports
 export 'package:obsmobile/globals/globalFuncs.dart';
@@ -31,8 +34,6 @@ export 'package:obsmobile/globals/globalScaffoldKeys.dart';
 export 'package:obsmobile/services/audioServiceOps.dart';
 export 'package:obsmobile/services/networkOps.dart';
 export 'package:obsmobile/services/sharedprefOps.dart';
-export 'package:flushbar/flushbar.dart';
-export 'package:flushbar/flushbar_helper.dart';
 
 // file imports
 export 'package:obsmobile/pages/tabs/exploreTab/exploreTab.dart';

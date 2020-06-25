@@ -81,7 +81,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           bottomNavigationBar: _bottomNavBar(),
         ),
       ),
-      onWillPop: () => functions.willPopScopeHandler(),
+      onWillPop: () => functions.willPopScopeHandler(context),
     );
   }
 
@@ -111,7 +111,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             },
             items: allDestinations
                 .map(
-                  (destination) => widgets.bottomNavBarItem(destination, userdata),
+                  (destination) =>
+                      widgets.bottomNavBarItem(destination, userdata),
                 )
                 .toList(),
           ),

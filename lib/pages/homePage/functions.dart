@@ -1,7 +1,7 @@
 import 'package:obsmobile/imports.dart';
 
 // handles the navBackButton input using WillPopScope
-Future<bool> willPopScopeHandler() async {
+Future<bool> willPopScopeHandler(BuildContext context) async {
   // checking if the SlidingUpPanel is open
   if (getSlidingUpPanelController().isPanelOpen) {
     getSlidingUpPanelController().close();
@@ -10,7 +10,39 @@ Future<bool> willPopScopeHandler() async {
     Navigator.of(searchNowPageScaffoldKey.currentContext).pop();
     return false;
   }
-  return true;
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      title: Text("Exit OpenBeats"),
+      content: Text("Are you sure you want to exit the application?"),
+      actions: <Widget>[
+        FlatButton(
+          textColor: Colors.red,
+          onPressed: () {
+            Navigator.of(context).pop();
+            Future.delayed(Duration(milliseconds: 200), () {
+              SystemNavigator.pop();
+            });
+          },
+          child: Text("Exit"),
+        ),
+        FlatButton(
+          textColor: Colors.green,
+          onPressed: () {
+            Navigator.of(context).pop();
+            Future.delayed(Duration(milliseconds: 200), () {
+              MoveToBackground.moveTaskToBack();
+            });
+            return false;
+          },
+          child: Text("Send to Background"),
+        ),
+      ],
+    ),
+  );
 }
 
 // used to change the status bar color
