@@ -1,3 +1,5 @@
+import 'package:obsmobile/imports.dart';
+
 // reformats the views count to plays in the B,M,K format
 String reformatViewstoHumanReadable(String views) {
   // string to return the final count
@@ -85,4 +87,22 @@ String getCurrentTimeStamp(double totalSeconds) {
     }
   } else
     return "00:00";
+}
+
+// used to show snackBar
+void showFlushBar(BuildContext context, Map<String, dynamic> parameters) {
+  Flushbar(
+    title: parameters["title"],
+    flushbarPosition: FlushbarPosition.TOP,
+    message: parameters["message"],
+    margin: EdgeInsets.all(10),
+    borderRadius: 5,
+    routeBlur: 5.0,
+    blockBackgroundInteraction: parameters["blocking"],
+    backgroundColor: parameters["color"],
+    isDismissible: true,
+    icon: Icon(parameters["icon"]),
+    duration: parameters["duration"],
+    shouldIconPulse: true,
+  ).show(context);
 }

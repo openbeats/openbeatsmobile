@@ -28,6 +28,7 @@ class ProfileTabData extends ChangeNotifier {
   bool getIsLoading() => _isLoading;
   void setIsLoading(bool value) {
     _isLoading = value;
+    notifyListeners();
   }
 
   // getter and setter for autoValidate signIn

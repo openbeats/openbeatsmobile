@@ -1,17 +1,37 @@
 import 'package:obsmobile/imports.dart';
+import './functions.dart' as functions;
 
 // holds the appBar for the profileTab
 Widget profileTabAppBar() {
   return AppBar(
     title: Text("Profile"),
-    bottom: TabBar(tabs: [
+  );
+}
+
+// holds the tabs for the profileTab
+Widget profileTabTabs(TabController _tabController) {
+  return TabBar(
+    controller: _tabController,
+    tabs: [
       Tab(
         child: Text("Sign In"),
       ),
       Tab(
         child: Text("Join"),
       )
-    ]),
+    ],
+  );
+}
+
+// hold the keyboard appearence based extra padding
+Widget optionalExtraPadding(BuildContext mainContext) {
+  return Consumer<ScreenHeight>(
+    builder: (context, _res, child) {
+      return SizedBox(
+        height:
+            (_res.isOpen) ? MediaQuery.of(mainContext).size.height * 0.5 : 0.0,
+      );
+    },
   );
 }
 
@@ -150,6 +170,16 @@ Widget forgotPasswordButton() {
     child: GestureDetector(
       child: Text(" Forgot Password?"),
       onTap: () {},
+    ),
+  );
+}
+
+// holds the profileTabProfileView
+Widget profileTabProfileView(BuildContext context) {
+  return Container(
+    child: RaisedButton(
+      onPressed: () => functions.logoutUser(context),
+      child: Text("Logout"),
     ),
   );
 }

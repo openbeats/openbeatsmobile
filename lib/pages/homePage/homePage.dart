@@ -72,6 +72,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     _modifyCollapsedPanel();
+
     return WillPopScope(
       child: KeyboardSizeProvider(
         child: Scaffold(
@@ -95,8 +96,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           splashColor: Colors.transparent,
           highlightColor: Colors.transparent,
         ),
-        child: Consumer<HomePageData>(
-          builder: (context, data, child) => BottomNavigationBar(
+        child: Consumer2<HomePageData, UserModel>(
+          builder: (context, data, userdata, child) => BottomNavigationBar(
             currentIndex: data.getBNavBarCurrIndex(),
             type: BottomNavigationBarType.fixed,
             backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
@@ -110,7 +111,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             },
             items: allDestinations
                 .map(
-                  (destination) => widgets.bottomNavBarItem(destination),
+                  (destination) => widgets.bottomNavBarItem(destination, userdata),
                 )
                 .toList(),
           ),

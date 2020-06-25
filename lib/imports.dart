@@ -31,6 +31,8 @@ export 'package:obsmobile/globals/globalScaffoldKeys.dart';
 export 'package:obsmobile/services/audioServiceOps.dart';
 export 'package:obsmobile/services/networkOps.dart';
 export 'package:obsmobile/services/sharedprefOps.dart';
+export 'package:flushbar/flushbar.dart';
+export 'package:flushbar/flushbar_helper.dart';
 
 // file imports
 export 'package:obsmobile/pages/tabs/exploreTab/exploreTab.dart';
@@ -44,6 +46,7 @@ export 'package:obsmobile/pages/tabs/searchTab/searchNowPage.dart';
 export 'package:obsmobile/models/homePageModels/homePageData.dart';
 export 'package:obsmobile/models/searchTabModels/searchTabModels.dart';
 export 'package:obsmobile/models/profileTabModels/profileTabData.dart';
+export 'package:obsmobile/models/appModels/userModel.dart';
 
 // audio service exports
 import 'package:audio_service/audio_service.dart';

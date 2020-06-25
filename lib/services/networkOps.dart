@@ -184,3 +184,23 @@ Future<String> checkHighResThumbnailAvailability(String videoId) async {
     return _lowResURL;
   }
 }
+
+// login authentication handler
+Future<dynamic> loginAuthticationHandler(
+    Map<String, String> _userData, BuildContext context) async {
+  try {
+    // sending http request
+    var response = await post(getApiEndpoint() + "/auth/login",
+        body: {"email": _userData["email"], "password": _userData["password"]});
+    var responseClassified = _returnResponse(response, context);
+    if (responseClassified["status"] == true) {
+      return responseClassified["data"];
+    }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", null, true);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", null, true);
+  }
+}

@@ -37,6 +37,7 @@ dependencies:
   oktoast: ^2.3.2
   flare_flutter: ^2.0.3
   google_fonts: ^1.1.0
+  flushbar: ^1.10.4
 
 dev_dependencies:
 

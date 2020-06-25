@@ -3,10 +3,27 @@ import 'package:obsmobile/models/homePageModels/bottomNavBarDest.dart';
 import 'package:rxdart/rxdart.dart';
 
 // holds the bottomNavBarItem for the homePage
-BottomNavigationBarItem bottomNavBarItem(Destination destination) {
+BottomNavigationBarItem bottomNavBarItem(
+    Destination destination, UserModel userdata) {
+  // getting the current avatar and user name
+  String _currAvatar = userdata.getUserDetails()["avatar"];
+  String _userName = userdata.getUserDetails()["name"];
   return BottomNavigationBarItem(
-      icon: Icon(destination.icon),
-      title: Text(destination.title),
+      icon: (destination.icon == Icons.person && _currAvatar != null)
+          ? Container(
+              child: cachedNetworkImageW(_currAvatar),
+              height: 30.0,
+              width: 30.0,
+              margin: EdgeInsets.only(bottom: 3.0),
+            )
+          : Icon(destination.icon),
+      title: (destination.icon == Icons.person && _currAvatar != null)
+          ? Text(
+              _userName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            )
+          : Text(destination.title),
       backgroundColor: destination.color);
 }
 

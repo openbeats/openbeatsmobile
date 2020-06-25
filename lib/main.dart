@@ -22,6 +22,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<ProfileTabData>(
             create: (_) => ProfileTabData(),
           ),
+          ChangeNotifierProvider<UserModel>(
+            create: (_) => UserModel(),
+          ),
         ],
         child: HomePage(),
       ),
