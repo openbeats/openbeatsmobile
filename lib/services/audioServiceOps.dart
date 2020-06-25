@@ -275,8 +275,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
     AudioServiceBackground.setMediaItem(_songMediaItem);
 
-    
-
     if (_playing == null) {
       // First time, we want to start playing
       _playing = true;
@@ -310,7 +308,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
     await _audioPlayer.setUrl(_songMediaItem.id);
 
     onPlay();
-
   }
 
   List<MediaControl> getControls() {

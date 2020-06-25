@@ -264,7 +264,9 @@ Widget _slideUpPanelNextSong() {
   return Container(
     child: IconButton(
       icon: Icon(Icons.skip_next),
-      onPressed: () {},
+      onPressed: (AudioService.running && AudioService.queue.length > 1)
+          ? () {}
+          : null,
       iconSize: 30.0,
     ),
   );
@@ -275,7 +277,9 @@ Widget _slideUpPanelPreviousSong() {
   return Container(
     child: IconButton(
       icon: Icon(Icons.skip_previous),
-      onPressed: () {},
+      onPressed: (AudioService.running && AudioService.queue.length > 1)
+          ? () {}
+          : null,
       iconSize: 30.0,
     ),
   );
@@ -286,7 +290,16 @@ Widget _slideUpPanelSeekForwardBtn() {
   return Container(
     child: IconButton(
       icon: Icon(Icons.forward_10),
-      onPressed: () {},
+      onPressed: (AudioService.running)
+          ? () {
+              // getting current position
+              int _currPosition =
+                  AudioService.playbackState.currentPosition.inMilliseconds;
+              // seeking 10 seconds forward
+              AudioService.seekTo(
+                  Duration(milliseconds: (_currPosition + 10000)));
+            }
+          : null,
       iconSize: 30.0,
     ),
   );
@@ -297,7 +310,16 @@ Widget _slideUpPanelSeekBackwardBtn() {
   return Container(
     child: IconButton(
       icon: Icon(Icons.replay_10),
-      onPressed: () {},
+      onPressed: (AudioService.running)
+          ? () {
+              // getting current position
+              int _currPosition =
+                  AudioService.playbackState.currentPosition.inMilliseconds;
+              // seeking 10 seconds forward
+              AudioService.seekTo(
+                  Duration(milliseconds: (_currPosition - 10000)));
+            }
+          : null,
       iconSize: 30.0,
     ),
   );
