@@ -20,7 +20,6 @@ export 'package:flare_flutter/flare_actor.dart';
 export 'package:flutter/services.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:flutter/scheduler.dart';
-export 'package:google_fonts/google_fonts.dart';
 export 'package:move_to_background/move_to_background.dart';
 export 'package:flushbar/flushbar.dart';
 export 'package:flushbar/flushbar_helper.dart';
