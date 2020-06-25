@@ -178,6 +178,10 @@ Widget forgotPasswordButton() {
 Widget profileTabProfileView(BuildContext context) {
   return Consumer<UserModel>(
     builder: (context, data, child) {
+      // removing null values
+      String _avatar = data.getUserDetails()["avatar"];
+      String _name = data.getUserDetails()["name"];
+      if (_name == null) _name = "";
       return Container(
         // color: Colors.grey[900],
         height: MediaQuery.of(context).size.height * 0.6,
@@ -186,9 +190,9 @@ Widget profileTabProfileView(BuildContext context) {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            _profileViewImage(data.getUserDetails()["avatar"]),
+            _profileViewImage(_avatar),
             SizedBox(height: 20.0),
-            _profileViewUserName(data.getUserDetails()["name"]),
+            _profileViewUserName(_name),
             SizedBox(height: 60.0),
           ],
         ),
@@ -253,12 +257,22 @@ Widget _profileViewUserName(String _userName) {
 // }
 
 // holds the logout list tile
-Widget logoutListTile() {
-  return ListTile(
-    leading: Icon(Icons.power_settings_new, color: Colors.red),
-    title: Text("Sign Out",
-        style: TextStyle(
-            color: Colors.red, fontSize: 18.0, fontWeight: FontWeight.bold)),
-    onTap: () {},
+Widget logoutListTile(BuildContext context) {
+  String _userName = Provider.of<UserModel>(context).getUserDetails()["name"];
+  return AnimatedSwitcher(
+    duration: Duration(milliseconds: 300),
+    child: Container(
+      child: (_userName != null)
+          ? ListTile(
+              leading: Icon(Icons.power_settings_new, color: Colors.red),
+              title: Text("Sign Out",
+                  style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold)),
+              onTap: () => functions.logoutUser(context),
+            )
+          : null,
+    ),
   );
 }
