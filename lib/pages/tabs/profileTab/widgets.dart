@@ -183,14 +183,13 @@ Widget profileTabProfileView(BuildContext context) {
         height: MediaQuery.of(context).size.height * 0.6,
         width: MediaQuery.of(context).size.width,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _profileViewImage(data.getUserDetails()["avatar"]),
             SizedBox(height: 20.0),
             _profileViewUserName(data.getUserDetails()["name"]),
             SizedBox(height: 60.0),
-            _profileViewMetadata()
           ],
         ),
       );
@@ -220,35 +219,46 @@ Widget _profileViewUserName(String _userName) {
   );
 }
 
-// holds the row of user metadata for profile view
-Widget _profileViewMetadata() {
-  return Container(
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        _templateMetaData(),
-        _templateMetaData(),
-        _templateMetaData()
-      ],
-    ),
-  );
-}
+// // holds the row of user metadata for profile view
+// Widget _profileViewMetadata() {
+//   return Container(
+//     child: Row(
+//       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//       crossAxisAlignment: CrossAxisAlignment.center,
+//       children: <Widget>[
+//         _templateMetaData(),
+//         _templateMetaData(),
+//         _templateMetaData()
+//       ],
+//     ),
+//   );
+// }
 
-// holds the template metadata option
-Widget _templateMetaData() {
-  return Container(
-    padding: EdgeInsets.all(20.0),
-    decoration: BoxDecoration(
-      border: Border.all(color: Colors.white),
-      borderRadius: BorderRadius.circular(5.0),
-    ),
-    child: Column(
-      children: <Widget>[
-        Text("Name", style: TextStyle(fontSize: 14.0)),
-        Text("6000", style: TextStyle(fontSize: 20.0)),
-        Text("hours")
-      ],
-    ),
+// // holds the template metadata option
+// Widget _templateMetaData() {
+//   return Container(
+//     padding: EdgeInsets.all(20.0),
+//     decoration: BoxDecoration(
+//       border: Border.all(color: Colors.white),
+//       borderRadius: BorderRadius.circular(5.0),
+//     ),
+//     child: Column(
+//       children: <Widget>[
+//         Text("Name", style: TextStyle(fontSize: 14.0)),
+//         Text("6000", style: TextStyle(fontSize: 20.0)),
+//         Text("hours")
+//       ],
+//     ),
+//   );
+// }
+
+// holds the logout list tile
+Widget logoutListTile() {
+  return ListTile(
+    leading: Icon(Icons.power_settings_new, color: Colors.red),
+    title: Text("Sign Out",
+        style: TextStyle(
+            color: Colors.red, fontSize: 18.0, fontWeight: FontWeight.bold)),
+    onTap: () {},
   );
 }

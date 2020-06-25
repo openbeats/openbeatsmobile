@@ -59,9 +59,7 @@ class _ProfileTabState extends State<ProfileTab>
   Widget _profileTabBody() {
     return ListView(
       physics: BouncingScrollPhysics(),
-      children: <Widget>[
-        _profileTabHeader(),
-      ],
+      children: <Widget>[_profileTabHeader(), _appSettings()],
     );
   }
 
@@ -99,15 +97,15 @@ class _ProfileTabState extends State<ProfileTab>
       child: TabBarView(
         controller: _tabController,
         children: [
-          _signInContainer(context),
-          _joinContainer(context),
+          _signInContainer(),
+          _joinContainer(),
         ],
       ),
     );
   }
 
   // holds the widgets for the signInPanel
-  Widget _signInContainer(BuildContext context) {
+  Widget _signInContainer() {
     return Form(
       key: _signInFormKey,
       autovalidate:
@@ -133,7 +131,7 @@ class _ProfileTabState extends State<ProfileTab>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 widgets.forgotPasswordButton(),
-                _actionButton(context, false),
+                _actionButton(false),
               ],
             ),
             SizedBox(
@@ -150,7 +148,7 @@ class _ProfileTabState extends State<ProfileTab>
   }
 
 // holds the widgets for the joinPanel
-  Widget _joinContainer(BuildContext context) {
+  Widget _joinContainer() {
     return Form(
       key: _joinFormKey,
       autovalidate: Provider.of<ProfileTabData>(context).getAutoValidateJoin(),
@@ -172,7 +170,7 @@ class _ProfileTabState extends State<ProfileTab>
             widgets.emailAddressTextField(context, _joinEmailFieldController),
             widgets.passwordTextField(
                 context, _joinPasswordFieldController, true),
-            _actionButton(context, true),
+            _actionButton(true),
             SizedBox(
               height:
                   (MediaQuery.of(context).orientation == Orientation.landscape)
@@ -187,7 +185,7 @@ class _ProfileTabState extends State<ProfileTab>
   }
 
   // holds the actionButton
-  Widget _actionButton(BuildContext context, bool _isJoin) {
+  Widget _actionButton(bool _isJoin) {
     return Container(
       alignment: Alignment.centerRight,
       child: Consumer<ProfileTabData>(
@@ -253,6 +251,18 @@ class _ProfileTabState extends State<ProfileTab>
             }
           },
         ),
+      ),
+    );
+  }
+
+  // holds the application settings listTiles
+  Widget _appSettings() {
+    return Container(
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          widgets.logoutListTile(),
+        ],
       ),
     );
   }
