@@ -208,7 +208,8 @@ Future<dynamic> loginAuthticationHandler(
 // used to get all the collections for the current user
 void getMyCollections(BuildContext context) async {
   // checking if user is actually logged in
-  if (Provider.of<UserModel>(context).getUserDetails()["name"] != null) {
+  if (Provider.of<UserModel>(context, listen: false).getUserDetails()["name"] !=
+      null) {
     // constructing api url
     String _apiUrl = getApiEndpoint() + "/auth/metadata/mycollections";
     // setting up client to send request with unmodified headers
@@ -222,11 +223,11 @@ void getMyCollections(BuildContext context) async {
             .getUserDetails()["token"]);
     // sendong request and closing it
     final response = await request.close();
-
     if (response.statusCode == 200) {
       response.transform(utf8.decoder).listen((contents) {
         // converting the response to JSON
         var _responseJSON = json.decode(contents.toString());
+        print(_responseJSON);
         // updating value in userModel
         Provider.of<UserModel>(context, listen: false)
             .setUserCollections(_responseJSON);
@@ -250,7 +251,8 @@ void getMyCollections(BuildContext context) async {
 // used to get all the playlist of the current user
 void getMyPlaylists(BuildContext context) async {
   // checking if user is actually logged in
-  if (Provider.of<UserModel>(context).getUserDetails()["name"] != null) {
+  if (Provider.of<UserModel>(context, listen: false).getUserDetails()["name"] !=
+      null) {
     // constructing api url
     String _apiUrl =
         getApiEndpoint() + "/playlist/userplaylist/getallplaylistmetadata";
@@ -270,6 +272,7 @@ void getMyPlaylists(BuildContext context) async {
       response.transform(utf8.decoder).listen((contents) {
         // converting the response to JSON
         var _responseJSON = json.decode(contents.toString());
+        print(_responseJSON);
         // updating value in userModel
         Provider.of<UserModel>(context, listen: false)
             .setUserPlaylists(_responseJSON);

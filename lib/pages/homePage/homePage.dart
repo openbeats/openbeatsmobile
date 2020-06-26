@@ -43,9 +43,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       getAllSharedPrefsData(context);
       Timer(Duration(seconds: 1), () {
         _modifyCollapsedPanel();
+        getMyCollections(context);
+        getMyPlaylists(context);
       });
-
-      getMyCollections(context);
     });
     // changing the status bar color
     functions.changeStatusBarColor();
