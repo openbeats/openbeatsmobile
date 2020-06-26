@@ -26,6 +26,9 @@ class _LibraryTabState extends State<LibraryTab> {
           widgets.collectionsTitle(),
           SizedBox(height: 5.0),
           widgets.collectionGridView(context),
+          SizedBox(height: 30.0),
+          widgets.playlistTitle(),
+          SizedBox(height: 5.0),
         ],
       ),
     );

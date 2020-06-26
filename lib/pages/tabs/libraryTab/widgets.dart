@@ -90,3 +90,16 @@ Widget _collectionsGridViewContainer(
     ],
   );
 }
+
+// holds the  title for the playlists listview
+Widget playlistTitle() {
+  return Container(
+    padding: EdgeInsets.only(left: 5.0),
+    child: Text(
+      "Your Playlists",
+      style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+    ),
+  );
+}
+
+// holds the listview to show all user playlists
