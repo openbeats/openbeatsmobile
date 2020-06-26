@@ -27,6 +27,7 @@ Widget collectionGridView(BuildContext context) {
       return Container(
         height: MediaQuery.of(context).size.height * 0.38,
         child: ListView.builder(
+          physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (BuildContext context, int index) =>
               _collectionsGridViewContainer(context, index, data),
