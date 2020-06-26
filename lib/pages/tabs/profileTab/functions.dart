@@ -53,4 +53,6 @@ void logoutUser(BuildContext context) async {
   removeUserDetails();
   // removes user data from the provider models
   Provider.of<UserModel>(context, listen: false).setUserDetails({});
+  Provider.of<UserModel>(context, listen: false).setUserCollections({});
+  Provider.of<UserModel>(context, listen: false).setUserPlaylists({});
 }
