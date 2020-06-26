@@ -25,7 +25,7 @@ Widget collectionGridView(BuildContext context) {
       // getting the list of collections
       var _listOfCollections = data.getUserCollections()["data"];
       return Container(
-        height: MediaQuery.of(context).size.height * 0.38,
+        height: MediaQuery.of(context).size.height * 0.40,
         child: ListView.builder(
           physics: BouncingScrollPhysics(),
           scrollDirection: Axis.horizontal,
