@@ -319,6 +319,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // holds the navigator for teh libraryTab
   Widget _libraryTabNavigator() {
-    return LibraryTab();
+    return Navigator(onGenerateRoute: (RouteSettings routeSettings) {
+      return PageRouteBuilder(
+          maintainState: true,
+          transitionsBuilder:
+              (_, Animation<double> animation, __, Widget child) {
+            return new FadeTransition(opacity: animation, child: child);
+          },
+          pageBuilder: (BuildContext context, _, __) {
+            switch (routeSettings.name) {
+              case '/':
+                return LibraryTab();
+              default:
+                return LibraryTab();
+            }
+          });
+    });
   }
 }

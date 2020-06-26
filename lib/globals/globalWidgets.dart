@@ -26,7 +26,9 @@ Widget cachedNetworkImageW(String imgUrl) {
                 child: Container(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation(Colors.red),
+                  ),
                 ),
               ),
               errorWidget: (context, url, error) => Icon(Icons.error),
