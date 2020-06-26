@@ -19,8 +19,14 @@ class _LibraryTabState extends State<LibraryTab> {
   // holds the body for the searchTab
   Widget _libraryTabBody() {
     return Container(
-      child: Center(
-        child: Text("Library Tab"),
+      child: ListView(
+        physics: BouncingScrollPhysics(),
+        children: <Widget>[
+          SizedBox(height: 10.0),
+          widgets.collectionsTitle(),
+          SizedBox(height: 5.0),
+          widgets.collectionGridView(context),
+        ],
       ),
     );
   }

@@ -20,21 +20,10 @@ class _ProfileTabState extends State<ProfileTab>
       new TextEditingController();
   static TextEditingController _joinPasswordFieldController =
       new TextEditingController();
-  // Map<String, TextEditingController> _textEditingControllers = {
-  //   "_joinUserNameFieldController": _joinUserNameFieldController,
-  //   "_signInEmailFieldController": _signInEmailFieldController,
-  //   "_signInPasswordFieldController": _signInPasswordFieldController,
-  //   "_joinEmailFieldController": _joinEmailFieldController,
-  //   "_joinPasswordFieldController": _joinPasswordFieldController
-  // };
 
   // form keys for auth panels
   static GlobalKey<FormState> _signInFormKey = GlobalKey<FormState>();
   static GlobalKey<FormState> _joinFormKey = GlobalKey<FormState>();
-  // Map<String, GlobalKey<FormState>> _formKeys = {
-  //   "_signInFormKey": _signInFormKey,
-  //   "_joinFormKey": _joinFormKey
-  // };
 
   // holds the tab controller for the authpanel
   TabController _authTabController;
@@ -259,6 +248,7 @@ class _ProfileTabState extends State<ProfileTab>
   Widget _appSettings() {
     return Container(
       child: ListView(
+        physics: BouncingScrollPhysics(),
         shrinkWrap: true,
         children: <Widget>[
           widgets.logoutListTile(context),
