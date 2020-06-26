@@ -207,88 +207,106 @@ Future<dynamic> loginAuthticationHandler(
 
 // used to get all the collections for the current user
 void getMyCollections(BuildContext context) async {
-  // checking if user is actually logged in
-  if (Provider.of<UserModel>(context, listen: false).getUserDetails()["name"] !=
-      null) {
-    // constructing api url
-    String _apiUrl = getApiEndpoint() + "/auth/metadata/mycollections";
-    // setting up client to send request with unmodified headers
-    final _httpClient = HttpClient();
-    // setting up the get request to send
-    final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
-    // setting up the authentication headers
-    request.headers.set(
-        "x-auth-token",
-        Provider.of<UserModel>(context, listen: false)
-            .getUserDetails()["token"]);
-    // sendong request and closing it
-    final response = await request.close();
-    if (response.statusCode == 200) {
-      response.transform(utf8.decoder).listen((contents) {
-        // converting the response to JSON
-        var _responseJSON = json.decode(contents.toString());
-        print(_responseJSON);
-        // updating value in userModel
-        Provider.of<UserModel>(context, listen: false)
-            .setUserCollections(_responseJSON);
-      });
-    } else {
-      showFlushBar(
-        context,
-        {
-          "message": "An error occurred in fetching your collections",
-          "color": Colors.deepOrange,
-          "duration": Duration(seconds: 3),
-          "title": "Network Error",
-          "blocking": true,
-          "icon": Icons.warning,
-        },
-      );
+  try {
+    // checking if user is actually logged in
+    if (Provider.of<UserModel>(context, listen: false)
+            .getUserDetails()["name"] !=
+        null) {
+      // constructing api url
+      String _apiUrl = getApiEndpoint() + "/auth/metadata/mycollections";
+      // setting up client to send request with unmodified headers
+      final _httpClient = HttpClient();
+      // setting up the get request to send
+      final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
+      // setting up the authentication headers
+      request.headers.set(
+          "x-auth-token",
+          Provider.of<UserModel>(context, listen: false)
+              .getUserDetails()["token"]);
+      // sendong request and closing it
+      final response = await request.close();
+      if (response.statusCode == 200) {
+        response.transform(utf8.decoder).listen((contents) {
+          // converting the response to JSON
+          var _responseJSON = json.decode(contents.toString());
+
+          // updating value in userModel
+          Provider.of<UserModel>(context, listen: false)
+              .setUserCollections(_responseJSON);
+        });
+      } else {
+        showFlushBar(
+          context,
+          {
+            "message": "An error occurred in fetching your collections",
+            "color": Colors.deepOrange,
+            "duration": Duration(seconds: 3),
+            "title": "Network Error",
+            "blocking": true,
+            "icon": Icons.warning,
+          },
+        );
+      }
     }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context, false);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context, false);
   }
 }
 
 // used to get all the playlist of the current user
 void getMyPlaylists(BuildContext context) async {
-  // checking if user is actually logged in
-  if (Provider.of<UserModel>(context, listen: false).getUserDetails()["name"] !=
-      null) {
-    // constructing api url
-    String _apiUrl =
-        getApiEndpoint() + "/playlist/userplaylist/getallplaylistmetadata";
-    // setting up client to send request with unmodified headers
-    final _httpClient = HttpClient();
-    // setting up the get request to send
-    final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
-    // setting up the authentication headers
-    request.headers.set(
-        "x-auth-token",
-        Provider.of<UserModel>(context, listen: false)
-            .getUserDetails()["token"]);
-    // sendong request and closing it
-    final response = await request.close();
+  try {
+    // checking if user is actually logged in
+    if (Provider.of<UserModel>(context, listen: false)
+            .getUserDetails()["name"] !=
+        null) {
+      // constructing api url
+      String _apiUrl =
+          getApiEndpoint() + "/playlist/userplaylist/getallplaylistmetadata";
+      // setting up client to send request with unmodified headers
+      final _httpClient = HttpClient();
+      // setting up the get request to send
+      final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
+      // setting up the authentication headers
+      request.headers.set(
+          "x-auth-token",
+          Provider.of<UserModel>(context, listen: false)
+              .getUserDetails()["token"]);
+      // sendong request and closing it
+      final response = await request.close();
 
-    if (response.statusCode == 200) {
-      response.transform(utf8.decoder).listen((contents) {
-        // converting the response to JSON
-        var _responseJSON = json.decode(contents.toString());
-        print(_responseJSON);
-        // updating value in userModel
-        Provider.of<UserModel>(context, listen: false)
-            .setUserPlaylists(_responseJSON);
-      });
-    } else {
-      showFlushBar(
-        context,
-        {
-          "message": "An error occurred in fetching your playlists",
-          "color": Colors.deepOrange,
-          "duration": Duration(seconds: 3),
-          "title": "Network Error",
-          "blocking": true,
-          "icon": Icons.warning,
-        },
-      );
+      if (response.statusCode == 200) {
+        response.transform(utf8.decoder).listen((contents) {
+          // converting the response to JSON
+          var _responseJSON = json.decode(contents.toString());
+
+          // updating value in userModel
+          Provider.of<UserModel>(context, listen: false)
+              .setUserPlaylists(_responseJSON);
+        });
+      } else {
+        showFlushBar(
+          context,
+          {
+            "message": "An error occurred in fetching your playlists",
+            "color": Colors.deepOrange,
+            "duration": Duration(seconds: 3),
+            "title": "Network Error",
+            "blocking": true,
+            "icon": Icons.warning,
+          },
+        );
+      }
     }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context, false);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context, false);
   }
 }
