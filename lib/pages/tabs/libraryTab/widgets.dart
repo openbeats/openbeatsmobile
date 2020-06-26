@@ -91,7 +91,7 @@ Widget _collectionsGridViewContainer(
   );
 }
 
-// holds the  title for the playlists listview
+// holds the title for the playlists listview
 Widget playlistTitle() {
   return Container(
     padding: EdgeInsets.only(left: 5.0),
@@ -103,3 +103,29 @@ Widget playlistTitle() {
 }
 
 // holds the listview to show all user playlists
+Widget playlistListView() {
+  return Consumer<UserModel>(builder: (context, data, child) {
+    // getting the list of collections
+    var _listOfPlaylists = data.getUserPlaylists()["data"];
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: BouncingScrollPhysics(),
+      itemCount: (_listOfPlaylists == null) ? 0 : _listOfPlaylists.length,
+      itemBuilder: (BuildContext context, int index) =>
+          _playlistListViewContainer(context, index, data),
+    );
+  });
+}
+
+// holds the container used to build the listview builder
+Widget _playlistListViewContainer(
+    BuildContext context, int index, UserModel data) {
+  return ListTile(
+    leading: Icon(Icons.music_note),
+    title: Text(data.getUserPlaylists()["data"][index]["name"]),
+    subtitle: Text(
+        data.getUserPlaylists()["data"][index]["totalSongs"].toString() +
+            " songs"),
+    trailing: Icon(Icons.more_vert),
+  );
+}
