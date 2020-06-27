@@ -43,8 +43,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       getAllSharedPrefsData(context);
       Timer(Duration(seconds: 1), () {
         _modifyCollapsedPanel();
-        getMyCollections(context);
-        getMyPlaylists(context);
+        getMyCollections(
+            context,
+            Provider.of<UserModel>(context, listen: false)
+                .getUserDetails()["token"]);
+        getMyPlaylists(
+            context,
+            Provider.of<UserModel>(context, listen: false)
+                .getUserDetails()["token"]);
       });
     });
     // changing the status bar color
@@ -107,8 +113,13 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             unselectedItemColor: Colors.white,
             showUnselectedLabels: false,
             onTap: (index) {
+              // closing any open instance of slidingUpPanel
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();
+
+              // calling method to handle tab change content refreshes
+              functions.handleTabChangeContentRefreshes(context, index);
+
               data.setBNavBarCurrIndex(index);
             },
             items: allDestinations

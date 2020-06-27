@@ -205,13 +205,25 @@ Future<dynamic> loginAuthticationHandler(
   }
 }
 
+// response processing function for httpClient requests
+Future<String> _readResponse(HttpClientResponse response) {
+  final completer = Completer<String>();
+  final contents = StringBuffer();
+  response.transform(utf8.decoder).listen((data) {
+    contents.write(data);
+  }, onDone: () => completer.complete(contents.toString()));
+  return completer.future;
+}
+
 // used to get all the collections for the current user
-void getMyCollections(BuildContext context) async {
+void getMyCollections(BuildContext context, String _token) async {
   try {
+    print("Called");
+    // setting loading indicators
+    Provider.of<LibraryTabData>(context, listen: false)
+        .setUserCollectionLoadingFlag(true);
     // checking if user is actually logged in
-    if (Provider.of<UserModel>(context, listen: false)
-            .getUserDetails()["name"] !=
-        null) {
+    if (_token != null) {
       // constructing api url
       String _apiUrl = getApiEndpoint() + "/auth/metadata/mycollections";
       // setting up client to send request with unmodified headers
@@ -219,21 +231,17 @@ void getMyCollections(BuildContext context) async {
       // setting up the get request to send
       final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
       // setting up the authentication headers
-      request.headers.set(
-          "x-auth-token",
-          Provider.of<UserModel>(context, listen: false)
-              .getUserDetails()["token"]);
+      request.headers.set("x-auth-token", _token);
       // sendong request and closing it
       final response = await request.close();
       if (response.statusCode == 200) {
-        response.transform(utf8.decoder).listen((contents) {
-          // converting the response to JSON
-          var _responseJSON = json.decode(contents.toString());
-
-          // updating value in userModel
-          Provider.of<UserModel>(context, listen: false)
-              .setUserCollections(_responseJSON);
-        });
+        // holds the response as string
+        String _responseString = await _readResponse(response);
+        // converting the response to JSON
+        var _responseJSON = json.decode(_responseString);
+        // updating value in userModel
+        Provider.of<LibraryTabData>(context, listen: false)
+            .setUserCollections(_responseJSON);
       } else {
         showFlushBar(
           context,
@@ -255,15 +263,19 @@ void getMyCollections(BuildContext context) async {
     // timeout exception
     _handleExceptionsRaised("TimeoutException", context, false);
   }
+  // setting loading indicators
+  Provider.of<LibraryTabData>(context, listen: false)
+      .setUserCollectionLoadingFlag(false);
 }
 
 // used to get all the playlist of the current user
-void getMyPlaylists(BuildContext context) async {
+void getMyPlaylists(BuildContext context, String _token) async {
   try {
+    // setting loading indicators
+    Provider.of<LibraryTabData>(context, listen: false)
+        .setUserPlaylistLoadingFlag(true);
     // checking if user is actually logged in
-    if (Provider.of<UserModel>(context, listen: false)
-            .getUserDetails()["name"] !=
-        null) {
+    if (_token != null) {
       // constructing api url
       String _apiUrl =
           getApiEndpoint() + "/playlist/userplaylist/getallplaylistmetadata";
@@ -272,22 +284,20 @@ void getMyPlaylists(BuildContext context) async {
       // setting up the get request to send
       final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
       // setting up the authentication headers
-      request.headers.set(
-          "x-auth-token",
-          Provider.of<UserModel>(context, listen: false)
-              .getUserDetails()["token"]);
+      request.headers.set("x-auth-token", _token);
       // sendong request and closing it
       final response = await request.close();
 
       if (response.statusCode == 200) {
-        response.transform(utf8.decoder).listen((contents) {
-          // converting the response to JSON
-          var _responseJSON = json.decode(contents.toString());
+        // holds the response as string
+        String _responseString = await _readResponse(response);
+        // converting the response to JSON
+        var _responseJSON = json.decode(_responseString);
+        // updating value in userModel
 
-          // updating value in userModel
-          Provider.of<UserModel>(context, listen: false)
-              .setUserPlaylists(_responseJSON);
-        });
+        // updating value in userModel
+        Provider.of<LibraryTabData>(context, listen: false)
+            .setUserPlaylists(_responseJSON);
       } else {
         showFlushBar(
           context,
@@ -309,4 +319,7 @@ void getMyPlaylists(BuildContext context) async {
     // timeout exception
     _handleExceptionsRaised("TimeoutException", context, false);
   }
+  // setting loading indicators
+  Provider.of<LibraryTabData>(context, listen: false)
+      .setUserPlaylistLoadingFlag(false);
 }

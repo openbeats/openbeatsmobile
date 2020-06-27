@@ -25,6 +25,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<UserModel>(
             create: (_) => UserModel(),
           ),
+          ChangeNotifierProvider<LibraryTabData>(
+            create: (_) => LibraryTabData(),
+          ),
         ],
         child: HomePage(),
       ),

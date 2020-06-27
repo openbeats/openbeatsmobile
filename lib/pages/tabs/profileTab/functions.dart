@@ -30,6 +30,7 @@ Future<Map<String, dynamic>> validateFields(
         // storing data in data model
         Provider.of<UserModel>(context, listen: false)
             .setUserDetails(_responseData);
+
         return {"status": true};
       } else
         return {"status": false, "message": "InvalidCredentials"};
@@ -53,6 +54,6 @@ void logoutUser(BuildContext context) async {
   removeUserDetails();
   // removes user data from the provider models
   Provider.of<UserModel>(context, listen: false).setUserDetails({});
-  Provider.of<UserModel>(context, listen: false).setUserCollections({});
-  Provider.of<UserModel>(context, listen: false).setUserPlaylists({});
+  Provider.of<LibraryTabData>(context, listen: false).setUserCollections({});
+  Provider.of<LibraryTabData>(context, listen: false).setUserPlaylists({});
 }

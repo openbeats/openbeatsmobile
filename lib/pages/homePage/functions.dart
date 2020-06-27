@@ -70,3 +70,32 @@ void shouldShowSlideUpPanel() {
     }
   }
 }
+
+// used to handle page content refreshes on tab change
+void handleTabChangeContentRefreshes(BuildContext context, int index) {
+  // getting current user information
+  String _userToken =
+      Provider.of<UserModel>(context, listen: false).getUserDetails()["token"];
+  // filtering tasks that require the user to be logged in
+  if (_userToken != null) {
+    // library page functions
+    if (index == 2) {
+      // getting collections and playlist data stored in models
+
+      // checking if the collections or playlists are empty
+      if (Provider.of<LibraryTabData>(context, listen: false)
+              .getUserCollections()
+              .length ==
+          0) {
+        print("Get Collections");
+        getMyCollections(context, _userToken);
+      }
+      if (Provider.of<LibraryTabData>(context, listen: false)
+              .getUserPlaylists()
+              .length ==
+          0) {
+        getMyPlaylists(context, _userToken);
+      }
+    }
+  }
+}

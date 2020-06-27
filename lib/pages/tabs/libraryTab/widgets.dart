@@ -7,6 +7,13 @@ Widget appBar() {
   );
 }
 
+// holds the loading widget for the page
+Widget _loadingAnimation() {
+  return Center(
+    child: CircularProgressIndicator(),
+  );
+}
+
 // holds the title for the collections gridview
 Widget collectionsTitle() {
   return Container(
@@ -20,19 +27,26 @@ Widget collectionsTitle() {
 
 // holds the collection gridview
 Widget collectionGridView(BuildContext context) {
-  return Consumer<UserModel>(
+  return Consumer<LibraryTabData>(
     builder: (context, data, child) {
-      // getting the list of collections
+      // getting the list of collections and loading flag
       var _listOfCollections = data.getUserCollections()["data"];
+      bool _loadingFlag = data.getUserCollectionLoadingFlag();
       return Container(
         height: MediaQuery.of(context).size.height * 0.40,
-        child: ListView.builder(
-          physics: BouncingScrollPhysics(),
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (BuildContext context, int index) =>
-              _collectionsGridViewContainer(context, index, data),
-          itemCount:
-              (_listOfCollections == null) ? 0 : _listOfCollections.length,
+        child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 600),
+          child: (_loadingFlag)
+              ? _loadingAnimation()
+              : ListView.builder(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (BuildContext context, int index) =>
+                      _collectionsGridViewContainer(context, index, data),
+                  itemCount: (_listOfCollections == null)
+                      ? 0
+                      : _listOfCollections.length,
+                ),
         ),
       );
     },
@@ -41,7 +55,7 @@ Widget collectionGridView(BuildContext context) {
 
 // holds the container used to build the collections gridview
 Widget _collectionsGridViewContainer(
-    BuildContext context, int index, UserModel data) {
+    BuildContext context, int index, LibraryTabData data) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisAlignment: MainAxisAlignment.start,
@@ -104,22 +118,32 @@ Widget playlistTitle() {
 
 // holds the listview to show all user playlists
 Widget playlistListView() {
-  return Consumer<UserModel>(builder: (context, data, child) {
-    // getting the list of collections
+  return Consumer<LibraryTabData>(builder: (context, data, child) {
+    // getting the list of collections and loading flag
     var _listOfPlaylists = data.getUserPlaylists()["data"];
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: BouncingScrollPhysics(),
-      itemCount: (_listOfPlaylists == null) ? 0 : _listOfPlaylists.length,
-      itemBuilder: (BuildContext context, int index) =>
-          _playlistListViewContainer(context, index, data),
+    bool _loadingFlag = data.getUserPlaylistLoadingFlag();
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 300),
+      child: (_loadingFlag)
+          ? Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              child: _loadingAnimation(),
+            )
+          : ListView.builder(
+              shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
+              itemCount:
+                  (_listOfPlaylists == null) ? 0 : _listOfPlaylists.length,
+              itemBuilder: (BuildContext context, int index) =>
+                  _playlistListViewContainer(context, index, data),
+            ),
     );
   });
 }
 
 // holds the container used to build the listview builder
 Widget _playlistListViewContainer(
-    BuildContext context, int index, UserModel data) {
+    BuildContext context, int index, LibraryTabData data) {
   return ListTile(
     leading: Icon(Icons.music_note),
     title: Text(data.getUserPlaylists()["data"][index]["name"]),
