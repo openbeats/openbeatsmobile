@@ -11,7 +11,7 @@ class _LibraryTabState extends State<LibraryTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widgets.appBar(),
+      appBar: widgets.appBar(context),
       body: _libraryTabBody(),
     );
   }

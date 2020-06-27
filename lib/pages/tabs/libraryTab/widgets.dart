@@ -1,9 +1,21 @@
 import 'package:obsmobile/imports.dart';
 
 // holds the appbar for library page
-Widget appBar() {
+Widget appBar(BuildContext context) {
   return AppBar(
     title: Text("Library"),
+    actions: <Widget>[
+      IconButton(
+        icon: Icon(Icons.refresh),
+        onPressed: () {
+          // getting user token
+          String _userToken = Provider.of<UserModel>(context, listen: false)
+              .getUserDetails()["token"];
+          getMyCollections(context, _userToken);
+          getMyPlaylists(context, _userToken);
+        },
+      )
+    ],
   );
 }
 
