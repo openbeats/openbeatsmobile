@@ -193,6 +193,8 @@ class _ProfileTabState extends State<ProfileTab>
             borderRadius: BorderRadius.circular(5),
           ),
           onPressed: () async {
+            // to unfocus the keyboard
+            FocusScope.of(context).unfocus();
             // setting isLoading flag
             data.setIsLoading(true);
             Map<String, dynamic> _authResponse;
