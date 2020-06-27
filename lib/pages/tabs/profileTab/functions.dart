@@ -74,6 +74,17 @@ Future<Map<String, dynamic>> validateFields(
 
 // used to logout the user
 void logoutUser(BuildContext context) async {
+  showFlushBar(
+    context,
+    {
+      "message": "So sad to see you go! 🥺",
+      "color": Colors.deepOrange,
+      "duration": Duration(seconds: 5),
+      "title": "Tata...",
+      "blocking": false,
+      "icon": Icons.check,
+    },
+  );
   // remove user data from the sharedPreferences
   removeUserDetails();
   // removes user data from the provider models
