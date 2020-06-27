@@ -23,6 +23,7 @@ export 'package:flutter/scheduler.dart';
 export 'package:move_to_background/move_to_background.dart';
 export 'package:flushbar/flushbar.dart';
 export 'package:flushbar/flushbar_helper.dart';
+export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 // global dart file imports
 export 'package:obsmobile/globals/globalFuncs.dart';

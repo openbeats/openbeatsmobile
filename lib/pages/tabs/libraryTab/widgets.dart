@@ -28,9 +28,9 @@ Widget _loadingAnimation() {
 
 // holds the title for the collections gridview
 Widget collectionsTitle() {
-  return Container(
-    padding: EdgeInsets.only(left: 5.0),
-    child: Text(
+  return ListTile(
+    dense: true,
+    title: Text(
       "Liked Collections",
       style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
     ),
@@ -44,21 +44,40 @@ Widget collectionGridView(BuildContext context) {
       // getting the list of collections and loading flag and user name
       var _listOfCollections = data.getUserCollections()["data"];
       bool _loadingFlag = data.getUserCollectionLoadingFlag();
-
       return Container(
         height: MediaQuery.of(context).size.height * 0.40,
         child: AnimatedSwitcher(
           duration: Duration(milliseconds: 600),
-          child: (_loadingFlag)
-              ? _loadingAnimation()
-              : ListView.builder(
-                  physics: BouncingScrollPhysics(),
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (BuildContext context, int index) =>
-                      _collectionsGridViewContainer(context, index, data),
-                  itemCount: (_listOfCollections == null)
-                      ? 0
-                      : _listOfCollections.length,
+          child: (_listOfCollections != null && _listOfCollections.length > 0)
+              ? (_loadingFlag)
+                  ? _loadingAnimation()
+                  : ListView.builder(
+                      padding: EdgeInsets.only(left: 12.0),
+                      physics: BouncingScrollPhysics(),
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) =>
+                          _collectionsGridViewContainer(context, index, data),
+                      itemCount: (_listOfCollections == null)
+                          ? 0
+                          : _listOfCollections.length,
+                    )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        FontAwesomeIcons.boxOpen,
+                        size: 40.0,
+                      ),
+                      SizedBox(height: 20.0),
+                      Text(
+                        "You do not seem \n to have any collections",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.grey, fontSize: 20.0),
+                      )
+                    ],
+                  ),
                 ),
         ),
       );
@@ -120,9 +139,9 @@ Widget _collectionsGridViewContainer(
 
 // holds the title for the playlists listview
 Widget playlistTitle() {
-  return Container(
-    padding: EdgeInsets.only(left: 5.0),
-    child: Text(
+  return ListTile(
+    dense: true,
+    title: Text(
       "Your Playlists",
       style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
     ),
@@ -137,18 +156,40 @@ Widget playlistListView() {
     bool _loadingFlag = data.getUserPlaylistLoadingFlag();
     return AnimatedSwitcher(
       duration: Duration(milliseconds: 300),
-      child: (_loadingFlag)
-          ? Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              child: _loadingAnimation(),
-            )
-          : ListView.builder(
-              shrinkWrap: true,
-              physics: BouncingScrollPhysics(),
-              itemCount:
-                  (_listOfPlaylists == null) ? 0 : _listOfPlaylists.length,
-              itemBuilder: (BuildContext context, int index) =>
-                  _playlistListViewContainer(context, index, data),
+      child: (_listOfPlaylists != null && _listOfPlaylists.length > 0)
+          ? (_loadingFlag)
+              ? Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  child: _loadingAnimation(),
+                )
+              : ListView.builder(
+                  shrinkWrap: true,
+                  physics: BouncingScrollPhysics(),
+                  itemCount:
+                      (_listOfPlaylists == null) ? 0 : _listOfPlaylists.length,
+                  itemBuilder: (BuildContext context, int index) =>
+                      _playlistListViewContainer(context, index, data),
+                )
+          : Container(
+              height: MediaQuery.of(context).size.height * 0.40,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Icon(
+                      FontAwesomeIcons.boxOpen,
+                      size: 40.0,
+                    ),
+                    SizedBox(height: 20.0),
+                    Text(
+                      "You do not seem \n to have any playlists",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 20.0),
+                    )
+                  ],
+                ),
+              ),
             ),
     );
   });

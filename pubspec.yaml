@@ -38,6 +38,7 @@ dependencies:
   flare_flutter: ^2.0.3
   flushbar: ^1.10.4
   move_to_background: ^1.0.1
+  font_awesome_flutter: ^8.8.1
 
 dev_dependencies:
 
