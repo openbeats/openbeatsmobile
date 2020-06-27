@@ -158,7 +158,7 @@ Widget playlistListView() {
 Widget _playlistListViewContainer(
     BuildContext context, int index, LibraryTabData data) {
   return ListTile(
-    leading: Icon(Icons.music_note),
+    leading: Icon(Icons.album),
     title: Text(data.getUserPlaylists()["data"][index]["name"]),
     subtitle: Text(
         data.getUserPlaylists()["data"][index]["totalSongs"].toString() +
