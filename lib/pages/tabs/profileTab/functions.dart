@@ -7,7 +7,31 @@ Future<Map<String, dynamic>> validateFields(
   if (parameters["_formKey"].currentState.validate()) {
     if (parameters["_isJoin"]) {
       // getting values
-
+      String _emailAddress =
+          parameters["_emailFieldController"].text.toString().trim();
+      String _password = parameters["_passwordFieldController"].text;
+      String _userName = parameters["_userNameFieldController"].text;
+      // sending data to get login authentication
+      var responseJSON = await joinHandler(
+          {"email": _emailAddress, "password": _password, "name": _userName},
+          context);
+      if (responseJSON["status"] == true) {
+        Map<String, String> _responseData = {
+          "token": responseJSON["data"]["token"],
+          "name": responseJSON["data"]["name"],
+          "email": responseJSON["data"]["email"],
+          "id": responseJSON["data"]["id"],
+          "avatar": responseJSON["data"]["avatar"]
+        };
+        // sending data to store in sharedPreferences
+        storeUserDetails(_responseData);
+        // storing data in data model
+        Provider.of<UserModel>(context, listen: false)
+            .setUserDetails(_responseData);
+        return {"status": true};
+      } else {
+        return {"status": false, "message": responseJSON["data"]};
+      }
     } else {
       // getting values
       String _emailAddress =

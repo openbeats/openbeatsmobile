@@ -205,6 +205,29 @@ Future<dynamic> loginAuthticationHandler(
   }
 }
 
+// join handler
+Future<dynamic> joinHandler(
+    Map<String, String> _userData, BuildContext context) async {
+  try {
+    // sending http request
+    var response = await post(getApiEndpoint() + "/auth/register", body: {
+      "name": _userData["name"],
+      "email": _userData["email"],
+      "password": _userData["password"]
+    });
+    var responseClassified = _returnResponse(response, context);
+    if (responseClassified["status"] == true) {
+      return responseClassified["data"];
+    }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", null, true);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", null, true);
+  }
+}
+
 // response processing function for httpClient requests
 Future<String> _readResponse(HttpClientResponse response) {
   final completer = Completer<String>();

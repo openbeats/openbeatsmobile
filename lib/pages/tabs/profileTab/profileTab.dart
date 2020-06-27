@@ -226,7 +226,18 @@ class _ProfileTabState extends State<ProfileTab>
                     "title": "Invalid Credentials",
                     "blocking": true,
                     "icon": Icons.warning,
-                    "indicatorcolor": Colors.red
+                  },
+                );
+              } else {
+                showFlushBar(
+                  context,
+                  {
+                    "message": _authResponse["message"],
+                    "color": Colors.deepOrange,
+                    "duration": Duration(seconds: 3),
+                    "title": "An error occurred",
+                    "blocking": true,
+                    "icon": Icons.warning,
                   },
                 );
               }
@@ -237,6 +248,33 @@ class _ProfileTabState extends State<ProfileTab>
               _joinEmailFieldController.clear();
               _joinPasswordFieldController.clear();
               _joinUserNameFieldController.clear();
+
+              // showing welcome message
+              if (_isJoin) {
+                showFlushBar(
+                  context,
+                  {
+                    "message": "We sure hope you enjoy our little project! 😃",
+                    "color": Colors.green,
+                    "duration": Duration(seconds: 5),
+                    "title": "Welcome to Openbeats",
+                    "blocking": false,
+                    "icon": Icons.check,
+                  },
+                );
+              } else {
+                showFlushBar(
+                  context,
+                  {
+                    "message": "Great to see you again! 😊",
+                    "color": Colors.green,
+                    "duration": Duration(seconds: 3),
+                    "title": "Welcome back!",
+                    "blocking": false,
+                    "icon": Icons.check,
+                  },
+                );
+              }
             }
           },
         ),
