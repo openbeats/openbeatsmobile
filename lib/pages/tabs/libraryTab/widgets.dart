@@ -41,9 +41,10 @@ Widget collectionsTitle() {
 Widget collectionGridView(BuildContext context) {
   return Consumer<LibraryTabData>(
     builder: (context, data, child) {
-      // getting the list of collections and loading flag
+      // getting the list of collections and loading flag and user name
       var _listOfCollections = data.getUserCollections()["data"];
       bool _loadingFlag = data.getUserCollectionLoadingFlag();
+
       return Container(
         height: MediaQuery.of(context).size.height * 0.40,
         child: AnimatedSwitcher(
@@ -163,5 +164,26 @@ Widget _playlistListViewContainer(
         data.getUserPlaylists()["data"][index]["totalSongs"].toString() +
             " songs"),
     trailing: Icon(Icons.more_vert),
+  );
+}
+
+// holds the login appeal view for library page
+Widget libraryLoginAppeal() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Icon(Icons.traffic, size: 70.0),
+        SizedBox(height: 15.0),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 20.0),
+          child: Text(
+            "Login to access your favorite collections and playlists",
+            style: TextStyle(color: Colors.grey, fontSize: 22.0),
+            textAlign: TextAlign.center,
+          ),
+        )
+      ],
+    ),
   );
 }

@@ -18,21 +18,28 @@ class _LibraryTabState extends State<LibraryTab> {
 
   // holds the body for the searchTab
   Widget _libraryTabBody() {
-    return Container(
-      child: ListView(
-        physics: BouncingScrollPhysics(),
-        children: <Widget>[
-          SizedBox(height: 10.0),
-          widgets.collectionsTitle(),
-          SizedBox(height: 5.0),
-          widgets.collectionGridView(context),
-          SizedBox(height: 30.0),
-          widgets.playlistTitle(),
-          SizedBox(height: 5.0),
-          widgets.playlistListView(),
-          SizedBox(height: 200.0),
-        ],
-      ),
+    return Consumer<UserModel>(
+      builder: (context, data, child) {
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: (data.getUserDetails()["name"] != null)
+              ? ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: <Widget>[
+                    SizedBox(height: 10.0),
+                    widgets.collectionsTitle(),
+                    SizedBox(height: 5.0),
+                    widgets.collectionGridView(context),
+                    SizedBox(height: 30.0),
+                    widgets.playlistTitle(),
+                    SizedBox(height: 5.0),
+                    widgets.playlistListView(),
+                    SizedBox(height: 200.0),
+                  ],
+                )
+              : widgets.libraryLoginAppeal(),
+        );
+      },
     );
   }
 }
