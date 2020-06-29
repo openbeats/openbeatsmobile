@@ -225,7 +225,7 @@ class _ProfileTabState extends State<ProfileTab>
                     "duration": Duration(seconds: 3),
                     "title": "Invalid Credentials",
                     "blocking": true,
-                    "icon": Icons.warning,
+                    "icon": Icon(Icons.warning),
                   },
                 );
               } else {
@@ -237,7 +237,7 @@ class _ProfileTabState extends State<ProfileTab>
                     "duration": Duration(seconds: 3),
                     "title": "An error occurred",
                     "blocking": false,
-                    "icon": Icons.warning,
+                    "icon": Icon(Icons.warning),
                   },
                 );
               }
@@ -259,7 +259,7 @@ class _ProfileTabState extends State<ProfileTab>
                     "duration": Duration(seconds: 5),
                     "title": "Welcome to Openbeats",
                     "blocking": false,
-                    "icon": Icons.check,
+                    "icon": Icon(Icons.check),
                   },
                 );
               } else {
@@ -271,7 +271,7 @@ class _ProfileTabState extends State<ProfileTab>
                     "duration": Duration(seconds: 3),
                     "title": "Welcome back!",
                     "blocking": false,
-                    "icon": Icons.check,
+                    "icon": Icon(Icons.check),
                   },
                 );
               }

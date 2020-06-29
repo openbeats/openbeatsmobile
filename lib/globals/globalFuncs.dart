@@ -94,14 +94,16 @@ void showFlushBar(BuildContext context, Map<String, dynamic> parameters) {
   Flushbar(
     title: parameters["title"],
     flushbarPosition: FlushbarPosition.TOP,
+    forwardAnimationCurve: Curves.ease,
+    reverseAnimationCurve: Curves.ease,
     message: parameters["message"],
-    margin: EdgeInsets.all(10),
+    dismissDirection: FlushbarDismissDirection.HORIZONTAL,
     borderRadius: 5,
     routeBlur: 5.0,
     blockBackgroundInteraction: parameters["blocking"],
     backgroundColor: parameters["color"],
     isDismissible: true,
-    icon: Icon(parameters["icon"]),
+    icon: parameters["icon"],
     duration: parameters["duration"],
     shouldIconPulse: true,
   ).show(context);

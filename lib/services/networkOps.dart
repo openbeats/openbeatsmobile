@@ -274,7 +274,7 @@ void getMyCollections(BuildContext context, String _token) async {
             "duration": Duration(seconds: 3),
             "title": "Network Error",
             "blocking": true,
-            "icon": Icons.warning,
+            "icon": Icon(Icons.warning),
           },
         );
       }
@@ -330,7 +330,7 @@ void getMyPlaylists(BuildContext context, String _token) async {
             "duration": Duration(seconds: 3),
             "title": "Network Error",
             "blocking": true,
-            "icon": Icons.warning,
+            "icon": Icon(Icons.warning),
           },
         );
       }
@@ -408,7 +408,7 @@ void getPlaylistSongs(
           "duration": Duration(seconds: 3),
           "title": "Network Error",
           "blocking": true,
-          "icon": Icons.warning,
+          "icon": Icon(Icons.warning),
         },
       );
     }

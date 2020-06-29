@@ -221,14 +221,32 @@ Widget _playlistListViewContainer(
             " songs"),
     trailing: Icon(Icons.more_vert),
     onTap: () {
-      functions.navigateToPlaylistView(
+      // only navigating if there are songs in playlist
+      if (data.getUserPlaylists()["data"][index]["totalSongs"] > 0) {
+        functions.navigateToPlaylistView(
+            context,
+            {
+              "playlistName": data.getUserPlaylists()["data"][index]["name"],
+              "playlistId": data.getUserPlaylists()["data"][index]["_id"],
+              "thumbnail": data.getUserPlaylists()["data"][index]["thumbnail"]
+            },
+            false);
+      } else {
+        showFlushBar(
           context,
           {
-            "playlistName": data.getUserPlaylists()["data"][index]["name"],
-            "playlistId": data.getUserPlaylists()["data"][index]["_id"],
-            "thumbnail": data.getUserPlaylists()["data"][index]["thumbnail"]
+            "message": "Try adding some songs to the playlist",
+            "color": Colors.deepOrange,
+            "duration": Duration(seconds: 3),
+            "title": "Empty Playlist",
+            "blocking": false,
+            "icon": Icon(
+              FontAwesomeIcons.boxOpen,
+              size: 18.0,
+            ),
           },
-          false);
+        );
+      }
     },
   );
 }
