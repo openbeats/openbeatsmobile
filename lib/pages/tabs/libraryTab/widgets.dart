@@ -93,11 +93,14 @@ Widget _collectionsGridViewContainer(
     BuildContext context, int index, LibraryTabData data) {
   return GestureDetector(
     onTap: () {
-      functions.navigateToPlaylistView(context, {
-        "playlistName": data.getUserCollections()["data"][index]["name"],
-        "playlistId": data.getUserCollections()["data"][index]["_id"],
-        "thumbnail": data.getUserCollections()["data"][index]["thumbnail"]
-      });
+      functions.navigateToPlaylistView(
+          context,
+          {
+            "playlistName": data.getUserCollections()["data"][index]["name"],
+            "playlistId": data.getUserCollections()["data"][index]["_id"],
+            "thumbnail": data.getUserCollections()["data"][index]["thumbnail"]
+          },
+          true);
     },
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,6 +220,16 @@ Widget _playlistListViewContainer(
         data.getUserPlaylists()["data"][index]["totalSongs"].toString() +
             " songs"),
     trailing: Icon(Icons.more_vert),
+    onTap: () {
+      functions.navigateToPlaylistView(
+          context,
+          {
+            "playlistName": data.getUserPlaylists()["data"][index]["name"],
+            "playlistId": data.getUserPlaylists()["data"][index]["_id"],
+            "thumbnail": data.getUserPlaylists()["data"][index]["thumbnail"]
+          },
+          false);
+    },
   );
 }
 

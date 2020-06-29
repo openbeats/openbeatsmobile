@@ -3,7 +3,7 @@ import './widgets.dart' as widgets;
 
 class PlaylistView extends StatefulWidget {
   // holds the passed playlistParameters
-  Map<String, String> playlistParameters;
+  Map<String, dynamic> playlistParameters;
   PlaylistView(this.playlistParameters);
   @override
   _PlaylistViewState createState() => _PlaylistViewState();
@@ -14,8 +14,17 @@ class _PlaylistViewState extends State<PlaylistView> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      // gets the songs for the playlist
-      getCollectionSongs(context, widget.playlistParameters["playlistId"]);
+      if (widget.playlistParameters["isCollection"])
+        // gets the songs for the playlist
+        getCollectionSongs(
+            context, widget.playlistParameters["arguments"]["playlistId"]);
+      else {
+        // getting user token
+        String _userToken = Provider.of<UserModel>(context, listen: false)
+            .getUserDetails()["token"];
+        getPlaylistSongs(context,
+            widget.playlistParameters["arguments"]["playlistId"], _userToken);
+      }
     });
   }
 
@@ -24,7 +33,7 @@ class _PlaylistViewState extends State<PlaylistView> {
     return Scaffold(
       key: playlistViewScaffoldKey,
       appBar: widgets.appBarPlaylistView(
-        widget.playlistParameters["playlistName"],
+        widget.playlistParameters["arguments"]["playlistName"],
       ),
       body: _playlistViewBody(),
     );

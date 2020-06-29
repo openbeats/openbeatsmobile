@@ -372,3 +372,53 @@ void getCollectionSongs(BuildContext context, String _collectionId) async {
     _handleExceptionsRaised("TimeoutException", null, true);
   }
 }
+
+// used to get the songs for a playlist
+void getPlaylistSongs(
+    BuildContext context, String playlistId, String token) async {
+  try {
+    // setting loading indicators
+    Provider.of<PlaylistViewData>(context, listen: false).setIsLoading(true);
+    // constructing api url
+    String _apiUrl =
+        getApiEndpoint() + "/playlist/userplaylist/getplaylist/" + playlistId;
+    // setting up client to send request with unmodified headers
+    final _httpClient = HttpClient();
+    // setting up the get request to send
+    final request = await _httpClient.getUrl(Uri.parse(_apiUrl));
+    // setting up the authentication headers
+    request.headers.set("x-auth-token", token);
+    // sendong request and closing it
+    final response = await request.close();
+
+    if (response.statusCode == 200) {
+      // holds the response as string
+      String _responseString = await _readResponse(response);
+      // converting the response to JSON
+      var _responseJSON = json.decode(_responseString);
+      // updating value in userModel
+      Provider.of<PlaylistViewData>(context, listen: false)
+          .setCurrPlaylistSongs(_responseJSON["data"]["songs"]);
+    } else {
+      showFlushBar(
+        context,
+        {
+          "message": "An error occurred in fetching the playlist",
+          "color": Colors.deepOrange,
+          "duration": Duration(seconds: 3),
+          "title": "Network Error",
+          "blocking": true,
+          "icon": Icons.warning,
+        },
+      );
+    }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context, false);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context, false);
+  }
+  // setting loading indicators
+  Provider.of<PlaylistViewData>(context, listen: false).setIsLoading(false);
+}
