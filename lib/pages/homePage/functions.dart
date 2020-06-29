@@ -9,6 +9,9 @@ Future<bool> willPopScopeHandler(BuildContext context) async {
   } else if (searchNowPageScaffoldKey.currentContext != null) {
     Navigator.of(searchNowPageScaffoldKey.currentContext).pop();
     return false;
+  } else if (playlistViewScaffoldKey.currentContext != null) {
+    Navigator.of(playlistViewScaffoldKey.currentContext).pop();
+    return false;
   }
 
   showDialog(
