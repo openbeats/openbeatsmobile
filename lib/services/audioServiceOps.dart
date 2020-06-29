@@ -23,7 +23,14 @@ class AudioServiceOps {
   }
 
   // used to start playlist playback
-  Future<void> startPlaylistPlayback(mediaParameterList) async {}
+  Future<void> startPlaylistPlayback(
+      List<Map<String, dynamic>> mediaParameterList) async {
+    // starting audio service if it is not started
+    if (await _startAudioService() == true ||
+        await _startAudioService() == false) {
+      AudioService.customAction("startPlaylistPlayback", mediaParameterList);
+    }
+  }
 }
 
 // NOTE: Your entrypoint MUST be a top-level function.
@@ -260,6 +267,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   void startPlaylistPlayback(dynamic args) async {
     // pausing playback if already playing
     if (_playing != null) onPause();
+    print(args);
   }
 
   // starts singleplayback of audio
