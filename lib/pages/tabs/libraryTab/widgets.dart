@@ -249,3 +249,37 @@ Widget appBarPlaylistView(String playListName) {
     ),
   );
 }
+
+// holds the playlistView controls
+Widget playlistViewControls() {
+  return Container(
+    child: ButtonBar(
+      alignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        OutlineButton(
+          child: Text("Shuffle"),
+          borderSide: BorderSide(
+            width: 2.0,
+            color: Colors.blue,
+          ),
+          textColor: Colors.blue,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          onPressed: () {},
+        ),
+        OutlineButton(
+          child: Text("Play All"),
+          borderSide: BorderSide(
+            width: 2.0,
+            color: Colors.green,
+          ),
+          textColor: Colors.green,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          onPressed: () {},
+        ),
+      ],
+    ),
+  );
+}

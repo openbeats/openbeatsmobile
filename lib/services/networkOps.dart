@@ -346,3 +346,29 @@ void getMyPlaylists(BuildContext context, String _token) async {
   Provider.of<LibraryTabData>(context, listen: false)
       .setUserPlaylistLoadingFlag(false);
 }
+
+// used to get the songs from collection id
+void getCollectionSongs(BuildContext context, String _collectionId) async {
+  try {
+    // setting the loading indicator
+    Provider.of<PlaylistViewData>(context, listen: false).setIsLoading(true);
+    // sending http request
+    var _response =
+        await get(getApiEndpoint() + "/playlist/album/" + _collectionId);
+    var _responseClassified = _returnResponse(_response, null);
+    if (_responseClassified["status"] == true &&
+        _responseClassified["data"]["data"]["songs"].length > 0) {
+      // updating provider information
+      Provider.of<PlaylistViewData>(context, listen: false)
+          .setCurrPlaylistSongs(_responseClassified["data"]["data"]["songs"]);
+      // resetting the loading indicator
+      Provider.of<PlaylistViewData>(context, listen: false).setIsLoading(false);
+    }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", null, true);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", null, true);
+  }
+}
