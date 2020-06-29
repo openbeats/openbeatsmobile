@@ -50,6 +50,7 @@ export 'package:obsmobile/models/searchTabModels/searchTabModels.dart';
 export 'package:obsmobile/models/profileTabModels/profileTabData.dart';
 export 'package:obsmobile/models/appModels/userModel.dart';
 export 'package:obsmobile/models/libraryTabModels/libraryTabData.dart';
+export 'package:obsmobile/models/libraryTabModels/playlistViewData.dart';
 
 // audio service exports
 import 'package:audio_service/audio_service.dart';

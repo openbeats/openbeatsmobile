@@ -12,9 +12,27 @@ class PlaylistView extends StatefulWidget {
 class _PlaylistViewState extends State<PlaylistView> {
   @override
   Widget build(BuildContext context) {
-    print(widget.playlistParameters);
     return Scaffold(
-      appBar: widgets.appBarPlaylistView("Sample Title"),
+      appBar: widgets.appBarPlaylistView(
+        widget.playlistParameters["playlistName"],
+      ),
+      body: _playlistViewBody(),
+    );
+  }
+
+  // holds the playlist view body
+  Widget _playlistViewBody() {
+    return Consumer<PlaylistViewData>(
+      builder: (context, data, child) {
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: (data.getIsLoading())
+              ? Center(
+                  child: loadingAnimationW(),
+                )
+              : Container(),
+        );
+      },
     );
   }
 }

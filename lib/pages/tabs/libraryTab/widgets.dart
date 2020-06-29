@@ -93,7 +93,8 @@ Widget _collectionsGridViewContainer(
     onTap: () {
       functions.navigateToPlaylistView(context, {
         "playlistName": data.getUserCollections()["data"][index]["name"],
-        "playlistId": data.getUserCollections()["data"][index]["_id"]
+        "playlistId": data.getUserCollections()["data"][index]["_id"],
+        "thumbnail": data.getUserCollections()["data"][index]["thumbnail"]
       });
     },
     child: Column(

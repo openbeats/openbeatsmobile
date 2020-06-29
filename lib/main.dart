@@ -28,6 +28,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<LibraryTabData>(
             create: (_) => LibraryTabData(),
           ),
+          ChangeNotifierProvider<PlaylistViewData>(
+            create: (_) => PlaylistViewData(),
+          ),
         ],
         child: HomePage(),
       ),
