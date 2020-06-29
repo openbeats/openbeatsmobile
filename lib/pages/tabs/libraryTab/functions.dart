@@ -35,8 +35,8 @@ void initiatePlaylistPlayback(BuildContext context) {
       "views": reformatViewstoHumanReadable(_playlistSongs[i]["views"]),
     });
   }
-  JsonEncoder encoder = new JsonEncoder.withIndent('  ');
-  String prettyprint = encoder.convert(_playlistParameters);
-  debugPrint(prettyprint);
+  // JsonEncoder encoder = new JsonEncoder.withIndent('  ');
+  // String prettyprint = encoder.convert(_playlistParameters);
+  // debugPrint(prettyprint);
   // print(_playlistParameters);
 }
