@@ -46,7 +46,9 @@ Widget collectionGridView(BuildContext context) {
       var _listOfCollections = data.getUserCollections()["data"];
       bool _loadingFlag = data.getUserCollectionLoadingFlag();
       return Container(
-        height: MediaQuery.of(context).size.height * 0.40,
+        height: (MediaQuery.of(context).orientation == Orientation.portrait)
+            ? MediaQuery.of(context).size.height * 0.40
+            : MediaQuery.of(context).size.height * 0.50,
         child: AnimatedSwitcher(
           duration: Duration(milliseconds: 600),
           child: (_listOfCollections != null && _listOfCollections.length > 0)
