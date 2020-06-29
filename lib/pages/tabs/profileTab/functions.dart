@@ -84,7 +84,10 @@ void logoutUser(BuildContext context) async {
       "duration": Duration(seconds: 5),
       "title": "Bye Bye",
       "blocking": false,
-      "icon": Icon(Icons.check),
+      "icon": Icon(
+        FontAwesomeIcons.sadTear,
+        size: 18.0,
+      ),
     },
   );
   // remove user data from the sharedPreferences
