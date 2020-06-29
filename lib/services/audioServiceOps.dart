@@ -21,6 +21,9 @@ class AudioServiceOps {
       AudioService.customAction("startSinglePlayback", mediaParameters);
     }
   }
+
+  // used to start playlist playback
+  Future<void> startPlaylistPlayback(mediaParameterList) async {}
 }
 
 // NOTE: Your entrypoint MUST be a top-level function.
@@ -248,7 +251,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
     super.onCustomAction(name, args);
 
     // execute function based on name
-    if (name == "startSinglePlayback") startSinglePlayback(args);
+    if (name == "startSinglePlayback")
+      startSinglePlayback(args);
+    else if (name == "startPlaylistPlayback") startPlaylistPlayback(args);
+  }
+
+  // starts playlistPlayback of audio
+  void startPlaylistPlayback(dynamic args) async {
+    // pausing playback if already playing
+    if (_playing != null) onPause();
   }
 
   // starts singleplayback of audio

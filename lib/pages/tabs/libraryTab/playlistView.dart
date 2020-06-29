@@ -1,5 +1,6 @@
 import 'package:obsmobile/imports.dart';
 import './widgets.dart' as widgets;
+import './functions.dart' as functions;
 
 class PlaylistView extends StatefulWidget {
   // holds the passed playlistParameters
@@ -89,7 +90,9 @@ class _PlaylistViewState extends State<PlaylistView> {
         child: Icon(Icons.more_vert),
         onTap: () {},
       ),
-      onTap: () {},
+      onTap: () {
+        functions.initiatePlaylistPlayback(context);
+      },
     );
   }
 }
