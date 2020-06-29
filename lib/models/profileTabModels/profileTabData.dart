@@ -9,6 +9,24 @@ class ProfileTabData extends ChangeNotifier {
   // holds the autoValidate variable for signIn
   bool _signInAutoValidate = false;
   bool _joinAutoValidate = false;
+  // holds the height of the authContainerHeight
+  double _authContainerHeight = 0;
+  // used to decide if to show the signIn Panel or signUpPanel
+  bool _showSignInPanel = true;
+
+  // getter and setter for _showSignInPanel
+  bool getShowSignInPanel() => _showSignInPanel;
+  void setShowSignInPanel(bool value) {
+    _showSignInPanel = value;
+    notifyListeners();
+  }
+
+  // getter and setter for _authContainerHeight
+  double getAuthContainerHeight() => _authContainerHeight;
+  void setAuthContainerHeight(double value) {
+    _authContainerHeight = value;
+    notifyListeners();
+  }
 
   // getter and setter for _showPasswordJoin
   bool getShowPasswordJoin() => _showPasswordJoin;

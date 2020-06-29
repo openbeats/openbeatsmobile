@@ -57,17 +57,19 @@ Future<Map<String, dynamic>> validateFields(
 
         return {"status": true};
       } else
-        return {"status": false, "message": "InvalidCredentials"};
+        return {"status": false, "message": "Invalid Credentials"};
     }
   } else {
     if (parameters["_isJoin"]) {
       Provider.of<ProfileTabData>(context, listen: false)
+          .setAuthContainerHeight(MediaQuery.of(context).size.height * 0.55);
+      Provider.of<ProfileTabData>(context, listen: false)
           .setAutoValidateJoin(true);
-      return {"status": false, "message": "InvalidDataProvided"};
+      return {"status": false, "message": "Invalid Data Provided"};
     } else {
       Provider.of<ProfileTabData>(context, listen: false)
           .setAutoValidateSignIn(true);
-      return {"status": false, "message": "InvalidDataProvided"};
+      return {"status": false, "message": "Invalid Data Provided"};
     }
   }
 }
@@ -80,7 +82,7 @@ void logoutUser(BuildContext context) async {
       "message": "So sad to see you go! 🥺",
       "color": Colors.deepOrange,
       "duration": Duration(seconds: 5),
-      "title": "Tata...",
+      "title": "Bye Bye",
       "blocking": false,
       "icon": Icons.check,
     },

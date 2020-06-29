@@ -8,28 +8,50 @@ Widget profileTabAppBar() {
   );
 }
 
-// holds the tabs for the profileTab
-Widget profileTabTabs(TabController _tabController) {
-  return TabBar(
-    controller: _tabController,
-    tabs: [
-      Tab(
-        child: Text("Sign In"),
-      ),
-      Tab(
-        child: Text("Join"),
-      )
-    ],
-  );
-}
-
 // hold the keyboard appearence based extra padding
 Widget optionalExtraPadding(BuildContext mainContext) {
   return Consumer<ScreenHeight>(
     builder: (context, _res, child) {
       return SizedBox(
-        height:
-            (_res.isOpen) ? MediaQuery.of(mainContext).size.height * 0.5 : 0.0,
+        height: (_res.isOpen) ? MediaQuery.of(context).size.height * 0.3 : 0,
+      );
+    },
+  );
+}
+
+// holds the signUp and signIn Panel switcher
+Widget signUpSignInPanelSwitcher(BuildContext context) {
+  // getting the values
+  return Consumer<ProfileTabData>(
+    builder: (context, data, child) {
+      // getting data
+      bool _showSignInPanel = data.getShowSignInPanel();
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(children: [
+          TextSpan(
+            text: (_showSignInPanel)
+                ? "Don't have an account?"
+                : "Already have an account?",
+            style: TextStyle(fontSize: 16.0),
+          ),
+          WidgetSpan(
+            child: GestureDetector(
+              child: Text(
+                (_showSignInPanel) ? " Join" : " Sign In",
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold),
+              ),
+              onTap: () {
+                (_showSignInPanel)
+                    ? data.setShowSignInPanel(false)
+                    : data.setShowSignInPanel(true);
+              },
+            ),
+          )
+        ]),
       );
     },
   );
@@ -113,6 +135,7 @@ Widget emailAddressTextField(
       keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
         border: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
         alignLabelWithHint: false,
         icon: Icon(Icons.email),
         hintText: "Email Address",
@@ -184,10 +207,10 @@ Widget profileTabProfileView(BuildContext context) {
       if (_name == null) _name = "";
       return Container(
         // color: Colors.grey[900],
-        height: MediaQuery.of(context).size.height * 0.6,
+        height: MediaQuery.of(context).size.height * 0.4,
         width: MediaQuery.of(context).size.width,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             _profileViewImage(_avatar),
@@ -255,6 +278,19 @@ Widget _profileViewUserName(String _userName) {
 //     ),
 //   );
 // }
+
+// holds the settings title
+Widget settingsTitle(BuildContext context) {
+  return Container(
+    child: ListTile(
+      dense: true,
+      title: Text(
+        "Settings",
+        style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
 
 // holds the logout list tile
 Widget logoutListTile(BuildContext context) {

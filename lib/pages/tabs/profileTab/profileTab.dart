@@ -33,6 +33,20 @@ class _ProfileTabState extends State<ProfileTab>
     super.initState();
     // initiating tab controller
     _authTabController = TabController(length: 2, vsync: this);
+    // run after build completes
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      // setting the auth container height
+      Provider.of<ProfileTabData>(context, listen: false)
+          .setAuthContainerHeight(MediaQuery.of(context).size.height * 0.6);
+      _authTabController.addListener(() {
+        if (_authTabController.index == 0)
+          Provider.of<ProfileTabData>(context, listen: false)
+              .setAuthContainerHeight(MediaQuery.of(context).size.height * 0.6);
+        else
+          Provider.of<ProfileTabData>(context, listen: false)
+              .setAuthContainerHeight(MediaQuery.of(context).size.height * 0.7);
+      });
+    });
   }
 
   @override
@@ -48,60 +62,37 @@ class _ProfileTabState extends State<ProfileTab>
   Widget _profileTabBody() {
     return ListView(
       physics: BouncingScrollPhysics(),
-      children: <Widget>[_profileTabHeader(), _appSettings()],
-    );
-  }
-
-  // holds the profileTab header content
-  Widget _profileTabHeader() {
-    return Consumer<UserModel>(
-      builder: (context, data, child) => AnimatedSwitcher(
-        duration: Duration(milliseconds: 300),
-        child: (data.getUserDetails()["name"] == null)
-            ? _profileTabAuthView(context, _authTabController)
-            : widgets.profileTabProfileView(context),
-      ),
-    );
-  }
-
-  // holds the profileTabViewAuthView
-  Widget _profileTabAuthView(
-      BuildContext context, TabController _tabController) {
-    return ListView(
-      shrinkWrap: true,
-      physics: BouncingScrollPhysics(),
       children: <Widget>[
-        widgets.profileTabTabs(_tabController),
-        _authPanelTabViews(context, _tabController),
+        _tabHeader(),
+        SizedBox(height: 20.0),
+        _appSettings(),
+        SizedBox(height: 200.0),
+        widgets.optionalExtraPadding(context),
       ],
     );
   }
 
-  // holds the tabviews for the authentication panel
-  Widget _authPanelTabViews(
-      BuildContext context, TabController _tabController) {
-    return Container(
-      // color: Colors.grey[900],
-      height: MediaQuery.of(context).size.height * 0.6,
-      child: TabBarView(
-        controller: _tabController,
-        children: [
-          _signInContainer(),
-          _joinContainer(),
-        ],
-      ),
+  // holds the tab header
+  Widget _tabHeader() {
+    return Consumer2<ProfileTabData, UserModel>(
+      builder: (context, data, userModel, child) {
+        return (userModel.getUserDetails()["name"] == null)
+            ? (data.getShowSignInPanel())
+                ? _signInContainer(data)
+                : _joinContainer(data)
+            : widgets.profileTabProfileView(context);
+      },
     );
   }
 
   // holds the widgets for the signInPanel
-  Widget _signInContainer() {
+  Widget _signInContainer(ProfileTabData data) {
     return Form(
       key: _signInFormKey,
-      autovalidate:
-          Provider.of<ProfileTabData>(context).getAutoValidateSignIn(),
+      autovalidate: data.getAutoValidateSignIn(),
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * 0.15),
+            horizontal: MediaQuery.of(context).size.width * 0.10),
         child: ListView(
           shrinkWrap: true,
           physics: BouncingScrollPhysics(),
@@ -129,7 +120,10 @@ class _ProfileTabState extends State<ProfileTab>
                       ? 150.0
                       : 0.0,
             ),
-            widgets.optionalExtraPadding(context)
+            SizedBox(
+              height: 20.0,
+            ),
+            widgets.signUpSignInPanelSwitcher(context),
           ],
         ),
       ),
@@ -137,13 +131,13 @@ class _ProfileTabState extends State<ProfileTab>
   }
 
 // holds the widgets for the joinPanel
-  Widget _joinContainer() {
+  Widget _joinContainer(ProfileTabData data) {
     return Form(
       key: _joinFormKey,
-      autovalidate: Provider.of<ProfileTabData>(context).getAutoValidateJoin(),
+      autovalidate: data.getAutoValidateJoin(),
       child: Container(
         padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * 0.15),
+            horizontal: MediaQuery.of(context).size.width * 0.10),
         child: ListView(
           shrinkWrap: true,
           physics: BouncingScrollPhysics(),
@@ -166,7 +160,11 @@ class _ProfileTabState extends State<ProfileTab>
                       ? 150.0
                       : 0.0,
             ),
-            widgets.optionalExtraPadding(context)
+            widgets.optionalExtraPadding(context),
+            SizedBox(
+              height: 20.0,
+            ),
+            widgets.signUpSignInPanelSwitcher(context),
           ],
         ),
       ),
@@ -218,7 +216,7 @@ class _ProfileTabState extends State<ProfileTab>
             // resetting the loading flag
             data.setIsLoading(false);
             if (_authResponse["status"] == false) {
-              if (_authResponse["message"] == "InvalidCredentials") {
+              if (_authResponse["message"] == "Invalid Credentials") {
                 showFlushBar(
                   context,
                   {
@@ -238,7 +236,7 @@ class _ProfileTabState extends State<ProfileTab>
                     "color": Colors.deepOrange,
                     "duration": Duration(seconds: 3),
                     "title": "An error occurred",
-                    "blocking": true,
+                    "blocking": false,
                     "icon": Icons.warning,
                   },
                 );
@@ -291,6 +289,7 @@ class _ProfileTabState extends State<ProfileTab>
         physics: BouncingScrollPhysics(),
         shrinkWrap: true,
         children: <Widget>[
+          widgets.settingsTitle(context),
           widgets.logoutListTile(context),
         ],
       ),
