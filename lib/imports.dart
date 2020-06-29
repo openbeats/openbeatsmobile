@@ -42,6 +42,7 @@ export 'package:obsmobile/pages/tabs/profileTab/profileTab.dart';
 export 'package:obsmobile/pages/tabs/searchTab/searchTab.dart';
 export 'package:obsmobile/models/homePageModels/bottomNavBarDest.dart';
 export 'package:obsmobile/pages/tabs/searchTab/searchNowPage.dart';
+export 'package:obsmobile/pages/tabs/libraryTab/playlistView.dart';
 
 // data model imports
 export 'package:obsmobile/models/homePageModels/homePageData.dart';

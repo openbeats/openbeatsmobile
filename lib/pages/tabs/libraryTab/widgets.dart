@@ -1,4 +1,5 @@
 import 'package:obsmobile/imports.dart';
+import './functions.dart' as functions;
 
 // holds the appbar for library page
 Widget appBar(BuildContext context) {
@@ -88,52 +89,60 @@ Widget collectionGridView(BuildContext context) {
 // holds the container used to build the collections gridview
 Widget _collectionsGridViewContainer(
     BuildContext context, int index, LibraryTabData data) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: <Widget>[
-      Card(
-        child: Container(
-          width: MediaQuery.of(context).size.height * 0.25,
-          height: MediaQuery.of(context).size.height * 0.25,
-          child: cachedNetworkImageW(
-              data.getUserCollections()["data"][index]["thumbnail"]),
-        ),
-      ),
-      SizedBox(height: 5.0),
-      Container(
-        padding: EdgeInsets.only(left: 5.0),
-        child: SizedBox(
-          width: 140.0,
-          child: Text(
-            data.getUserCollections()["data"][index]["name"],
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+  return GestureDetector(
+    onTap: () {
+      functions.navigateToPlaylistView(context, {
+        "playlistName": data.getUserCollections()["data"][index]["name"],
+        "playlistId": data.getUserCollections()["data"][index]["_id"]
+      });
+    },
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Card(
+          child: Container(
+            width: MediaQuery.of(context).size.height * 0.25,
+            height: MediaQuery.of(context).size.height * 0.25,
+            child: cachedNetworkImageW(
+                data.getUserCollections()["data"][index]["thumbnail"]),
           ),
         ),
-      ),
-      SizedBox(height: 5.0),
-      Container(
-        padding: EdgeInsets.only(left: 5.0),
-        child: SizedBox(
-          width: 140.0,
-          child: Text(
-            "#" +
-                data
-                    .getUserCollections()["data"][index]["popularityCount"]
-                    .toString() +
-                " global plays",
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14.0,
-                color: Colors.grey),
+        SizedBox(height: 5.0),
+        Container(
+          padding: EdgeInsets.only(left: 5.0),
+          child: SizedBox(
+            width: 140.0,
+            child: Text(
+              data.getUserCollections()["data"][index]["name"],
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+            ),
           ),
         ),
-      )
-    ],
+        SizedBox(height: 5.0),
+        Container(
+          padding: EdgeInsets.only(left: 5.0),
+          child: SizedBox(
+            width: 140.0,
+            child: Text(
+              "#" +
+                  data
+                      .getUserCollections()["data"][index]["popularityCount"]
+                      .toString() +
+                  " global plays",
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.0,
+                  color: Colors.grey),
+            ),
+          ),
+        )
+      ],
+    ),
   );
 }
 
@@ -225,6 +234,17 @@ Widget libraryLoginAppeal() {
           ),
         )
       ],
+    ),
+  );
+}
+
+// playlistView widgets
+// holds the app bar
+Widget appBarPlaylistView(String playListName) {
+  return AppBar(
+    title: Text(
+      playListName,
+      style: TextStyle(fontSize: 20.0),
     ),
   );
 }

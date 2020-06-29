@@ -341,6 +341,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             switch (routeSettings.name) {
               case '/':
                 return LibraryTab();
+              case '/playlistView':
+                return PlaylistView(routeSettings.arguments);
               default:
                 return LibraryTab();
             }
