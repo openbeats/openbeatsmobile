@@ -265,9 +265,67 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // starts playlistPlayback of audio
   void startPlaylistPlayback(dynamic args) async {
+    // starting playback of initial song
     // pausing playback if already playing
     if (_playing != null) onPause();
-    print(args);
+
+    String _defaultThumbnailUrl =
+        "https://img.youtube.com/vi/" + args[0]["videoId"] + "/mqdefault.jpg";
+
+    MediaItem _songMediaItem = MediaItem(
+        id: args[0]["videoId"],
+        album: "OpenBeats Music",
+        title: args[0]['title'],
+        duration: Duration(milliseconds: args[0]['durationInMilliSeconds']),
+        artUri: _defaultThumbnailUrl,
+        extras: {
+          "vidId": args[0]["videoId"],
+          "views": args[0]["views"],
+          "durationString": args[0]["duration"],
+          "repeatSong": false,
+          "repeatQueue": false
+        });
+
+    AudioServiceBackground.setMediaItem(_songMediaItem);
+
+    if (_playing == null) {
+      // First time, we want to start playing
+      _playing = true;
+    } else if (_playing) {
+      // Stop current item
+      await _audioPlayer.stop();
+    }
+    // Load next item
+    _queueIndex = 0;
+    AudioServiceBackground.setMediaItem(_songMediaItem);
+
+    String streamingUrl = await getStreamingUrl(args[0]);
+
+    _defaultThumbnailUrl =
+        await checkHighResThumbnailAvailability(args[0]["videoId"]);
+
+    _songMediaItem = MediaItem(
+        id: streamingUrl,
+        album: "OpenBeats Music",
+        title: args[0]['title'],
+        duration: Duration(milliseconds: args[0]['durationInMilliSeconds']),
+        artUri: _defaultThumbnailUrl,
+        extras: {
+          "vidId": args[0]["videoId"],
+          "views": args[0]["views"],
+          "durationString": args[0]["duration"],
+        });
+
+    AudioServiceBackground.setMediaItem(_songMediaItem);
+
+    await _audioPlayer.setUrl(_songMediaItem.id);
+
+    onPlay();
+
+    // iterating through the songs in the playlist
+    for (int i = 0; i < args.length; i++) {
+      print("Iterating");
+    }
   }
 
   // starts singleplayback of audio
