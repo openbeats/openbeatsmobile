@@ -126,11 +126,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
     // Load next item
     _queueIndex = newPos;
-    AudioServiceBackground.setMediaItem(mediaItem);
+    print(_queueIndex.toString());
+    print(_queue[_queueIndex].title);
+    AudioServiceBackground.setMediaItem(_queue[_queueIndex]);
     _skipState = offset > 0
         ? AudioProcessingState.skippingToNext
         : AudioProcessingState.skippingToPrevious;
-    await _audioPlayer.setUrl(mediaItem.id);
+    await _audioPlayer.setUrl(_queue[_queueIndex].id);
     _skipState = null;
     // Resume playback if we were playing
     if (_playing) {
@@ -264,67 +266,52 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // starts playlistPlayback of audio
-  void startPlaylistPlayback(dynamic args) async {
-    // starting playback of initial song
-    // pausing playback if already playing
-    if (_playing != null) onPause();
-
-    String _defaultThumbnailUrl =
-        "https://img.youtube.com/vi/" + args[0]["videoId"] + "/mqdefault.jpg";
-
-    MediaItem _songMediaItem = MediaItem(
-        id: args[0]["videoId"],
-        album: "OpenBeats Music",
-        title: args[0]['title'],
-        duration: Duration(milliseconds: args[0]['durationInMilliSeconds']),
-        artUri: _defaultThumbnailUrl,
-        extras: {
-          "vidId": args[0]["videoId"],
-          "views": args[0]["views"],
-          "durationString": args[0]["duration"],
-          "repeatSong": false,
-          "repeatQueue": false
-        });
-
-    AudioServiceBackground.setMediaItem(_songMediaItem);
-
-    if (_playing == null) {
-      // First time, we want to start playing
-      _playing = true;
-    } else if (_playing) {
-      // Stop current item
-      await _audioPlayer.stop();
-    }
-    // Load next item
-    _queueIndex = 0;
-    AudioServiceBackground.setMediaItem(_songMediaItem);
-
-    String streamingUrl = await getStreamingUrl(args[0]);
-
-    _defaultThumbnailUrl =
-        await checkHighResThumbnailAvailability(args[0]["videoId"]);
-
-    _songMediaItem = MediaItem(
-        id: streamingUrl,
-        album: "OpenBeats Music",
-        title: args[0]['title'],
-        duration: Duration(milliseconds: args[0]['durationInMilliSeconds']),
-        artUri: _defaultThumbnailUrl,
-        extras: {
-          "vidId": args[0]["videoId"],
-          "views": args[0]["views"],
-          "durationString": args[0]["duration"],
-        });
-
-    AudioServiceBackground.setMediaItem(_songMediaItem);
-
-    await _audioPlayer.setUrl(_songMediaItem.id);
-
-    onPlay();
-
+  void startPlaylistPlayback(dynamic mediaParameters) async {
     // iterating through the songs in the playlist
-    for (int i = 0; i < args.length; i++) {
-      print("Iterating");
+    for (int i = 0; i < mediaParameters.length; i++) {
+      // getting local mediaItem instance
+      Map<String, dynamic> args = {
+        "title": mediaParameters[i]["title"],
+        "thumbnail": mediaParameters[i]["thumbnail"],
+        "duration": mediaParameters[i]["duration"],
+        "durationInMilliSeconds": mediaParameters[i]["durationInMilliSeconds"],
+        "videoId": mediaParameters[i]["videoId"],
+        "channelName": mediaParameters[i]["channelName"],
+        "views": mediaParameters[i]["views"],
+      };
+
+      // for the first song
+      if (i == 0) {
+        startSinglePlayback(args);
+      } else {
+        // setting default thumbnail url
+        String _defaultThumbnailUrl =
+            "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
+
+        // getting streaming url for the song
+        String streamingUrl = await getStreamingUrl(args);
+
+        _defaultThumbnailUrl =
+            await checkHighResThumbnailAvailability(args["videoId"]);
+
+        // constructing media item
+        MediaItem _songMediaItem = MediaItem(
+            id: streamingUrl,
+            album: "OpenBeats Music",
+            title: args['title'],
+            duration: Duration(milliseconds: args['durationInMilliSeconds']),
+            artUri: _defaultThumbnailUrl,
+            extras: {
+              "vidId": args["videoId"],
+              "views": args["views"],
+              "durationString": args["duration"],
+            });
+
+        // adding mediaItem to queue
+        _queue.add(_songMediaItem);
+
+        AudioServiceBackground.setQueue(_queue);
+      }
     }
   }
 
@@ -383,6 +370,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
     AudioServiceBackground.setMediaItem(_songMediaItem);
 
     await _audioPlayer.setUrl(_songMediaItem.id);
+
+    // adding mediaItem to queue
+    _queue.add(_songMediaItem);
+    AudioServiceBackground.setQueue(_queue);
 
     onPlay();
   }
