@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   // used to modify the height of the slidingUpPanelCollapsed
   void _modifyCollapsedPanel() {
-    if (AudioService.running) {
+    if (AudioService.running && AudioService.currentMediaItem != null) {
       if (_collapsedSlideUpPanelHeight == 0.0)
         setState(() {
           _collapsedSlideUpPanelHeight = 70.0;
@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       // fetching all data stored in sharedPrefs
       getAllSharedPrefsData(context);
-      Timer(Duration(seconds: 1), () async {
+      Timer(Duration(seconds: 1), () {
         _modifyCollapsedPanel();
         getMyCollections(
             context,
@@ -51,22 +51,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             context,
             Provider.of<UserModel>(context, listen: false)
                 .getUserDetails()["token"]);
+
         // getting the repeat song status
-        await AudioServiceOps().getMediaRepeatStatus();
+        AudioServiceOps().getMediaRepeatStatus();
         // setting up the audio servie custom event listener
         AudioService.customEventStream.listen((event) {
           if (event == "repeatSongTrue")
             Provider.of<MediaModel>(context, listen: false).setRepeatSong(true);
           else if (event == "repeatSongFalse")
-            Provider.of<MediaModel>(context, listen: false).setRepeatSong(true);
+            Provider.of<MediaModel>(context, listen: false)
+                .setRepeatSong(false);
           else if (event == "repeatQueueTrue")
             Provider.of<MediaModel>(context, listen: false)
                 .setRepeatQueue(true);
           else if (event == "repeatQueueFalse")
             Provider.of<MediaModel>(context, listen: false)
                 .setRepeatQueue(false);
-
-          print("EVENT: " + event);
         });
       });
     });
