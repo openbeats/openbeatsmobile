@@ -68,23 +68,56 @@ Widget collapsedPanelSlideUpPanel() {
   } else
     _icon = Icon(Icons.play_arrow);
 
-  return IconButton(
-      icon: (_processingState != AudioProcessingState.connecting ||
-              _processingState != AudioProcessingState.buffering)
-          ? _icon
-          : Container(
-              height: 20.0,
-              width: 20.0,
-              child: CircularProgressIndicator(),
-            ),
-      onPressed: () {
-        if (AudioService.playbackState != null) {
-          if (AudioService.playbackState.playing)
-            AudioService.pause();
-          else
-            AudioService.play();
-        }
-      });
+  // used to check if a queue is playing
+  bool _isQueue = (AudioService.queue != null && AudioService.queue.length > 1)
+      ? true
+      : false;
+
+  return Container(
+    width: (_isQueue) ? 60.0 : 40.0,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        InkWell(
+          child: (_processingState != AudioProcessingState.connecting ||
+                  _processingState != AudioProcessingState.buffering)
+              ? _icon
+              : Container(
+                  height: 20.0,
+                  width: 20.0,
+                  child: CircularProgressIndicator(),
+                ),
+          onTap: () {
+            if (AudioService.playbackState != null) {
+              if (AudioService.playbackState.playing)
+                AudioService.pause();
+              else
+                AudioService.play();
+            }
+          },
+        ),
+        SizedBox(width: 5.0),
+        Container(
+          margin: EdgeInsets.only(left: 5.0),
+          child: (_isQueue)
+              ? InkWell(
+                  child: (_processingState != AudioProcessingState.connecting ||
+                          _processingState != AudioProcessingState.buffering)
+                      ? Icon(Icons.skip_next)
+                      : Container(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(),
+                        ),
+                  onTap: () {
+                    AudioService.skipToNext();
+                  },
+                )
+              : null,
+        )
+      ],
+    ),
+  );
 }
 
 // holds the slideUpPanel thumbnail viewer

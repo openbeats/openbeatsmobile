@@ -260,9 +260,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
     super.onCustomAction(name, args);
 
     // execute function based on name
-    if (name == "startSinglePlayback")
+    if (name == "startSinglePlayback") {
+      // clearing queue
+      _queue.clear();
       startSinglePlayback(args);
-    else if (name == "startPlaylistPlayback") startPlaylistPlayback(args);
+    } else if (name == "startPlaylistPlayback") {
+      _queue.clear();
+      startPlaylistPlayback(args);
+    }
   }
 
   // starts playlistPlayback of audio
