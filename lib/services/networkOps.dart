@@ -110,7 +110,7 @@ void getSearchSuggestion(BuildContext context) async {
 Future<void> getYTCatSearchResults(BuildContext context, String query) async {
   try {
     // checking if the search results have got any value
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 100; i++) {
       // sending http request
       var response = await get(getApiEndpoint() + "/ytcat?q=" + query);
       var responseClassified = _returnResponse(response, context);
