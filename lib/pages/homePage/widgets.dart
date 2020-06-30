@@ -368,28 +368,27 @@ Widget _slideUpPanelRepeatBtn() {
     builder: (context, data, child) {
       // repeat option currently in action
       String _repeatStatus = "noRepeat";
-      // print(data.getRepeatQueue());
-      // print(data.getRepeatSong());
       if (data.getRepeatQueue()) _repeatStatus = "repeatAll";
       if (data.getRepeatSong()) _repeatStatus = "repeatSong";
       return IconButton(
         icon: Icon(
             (_repeatStatus == "repeatSong") ? Icons.repeat_one : Icons.repeat),
-        onPressed: (_repeatStatus != "noRepeat")
-            ? () {
-                if (_repeatStatus == "repeatAll") {
-                  Provider.of<MediaModel>(context, listen: false)
-                      .setRepeatQueue(true);
-                  Provider.of<MediaModel>(context, listen: false)
-                      .setRepeatSong(false);
-                } else if (_repeatStatus == "repeatSong") {
-                  Provider.of<MediaModel>(context, listen: false)
-                      .setRepeatSong(true);
-                  Provider.of<MediaModel>(context, listen: false)
-                      .setRepeatQueue(false);
-                }
-              }
-            : null,
+        color: (_repeatStatus == "noRepeat") ? Colors.grey : Colors.red,
+        onPressed: () {
+          if (_repeatStatus == "noRepeat") {
+            data.setRepeatQueue(false);
+            data.setRepeatSong(true);
+            AudioServiceOps().setAudioServiceRepeat("repeatSong");
+          } else if (_repeatStatus == "repeatAll") {
+            data.setRepeatQueue(false);
+            data.setRepeatSong(false);
+            AudioServiceOps().setAudioServiceRepeat("noRepeat");
+          } else if (_repeatStatus == "repeatSong") {
+            data.setRepeatSong(false);
+            data.setRepeatQueue(true);
+            AudioServiceOps().setAudioServiceRepeat("repeatAll");
+          }
+        },
       );
     },
   );

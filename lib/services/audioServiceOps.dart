@@ -41,6 +41,17 @@ class AudioServiceOps {
       AudioService.customAction("checkQueueRepeatStatus");
     }
   }
+
+  // set repeat status in AudioBackgroundService
+  void setAudioServiceRepeat(String _repeatStatus) async {
+    // starting audio service if it is not started
+    if (await _startAudioService() == true ||
+        await _startAudioService() == false) {
+      AudioService.customAction("setSongRepeatStatus", {
+        "repeatStatus": _repeatStatus,
+      });
+    }
+  }
 }
 
 // NOTE: Your entrypoint MUST be a top-level function.
@@ -107,6 +118,21 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   void _handlePlaybackCompleted() {
+    if (_repeatSong) {
+      _queueIndex -= 1;
+      onSkipToNext();
+      return null;
+    }
+    if (_repeatQueue) {
+      if (hasNext)
+        onSkipToNext();
+      else {
+        _queueIndex = -1;
+        onSkipToNext();
+      }
+      return null;
+    }
+
     if (hasNext) {
       onSkipToNext();
     } else {
@@ -128,8 +154,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
-    final newPos = _queueIndex + offset;
+    if (_repeatQueue) {
+      if ((_queueIndex == _queue.length - 1) && offset > 0)
+        _queueIndex = -1;
+      else if (_queueIndex == 0 && offset < 0) _queueIndex = _queue.length;
+    } else if (_repeatSong) {
+      _queueIndex -= 1;
+    }
 
+    final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
     if (_playing == null) {
       // First time, we want to start playing
@@ -292,7 +325,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
         AudioServiceBackground.sendCustomEvent("repeatQueueTrue");
       else
         AudioServiceBackground.sendCustomEvent("repeatQueueFalse");
+    } else if (name == "setSongRepeatStatus") setSongRepeatStatus(args);
+  }
+
+  // used to set the song repeat status
+  void setSongRepeatStatus(dynamic args) {
+    print(args["repeatStatus"]);
+    if (args["repeatStatus"] == "noRepeat") {
+      _repeatSong = false;
+      _repeatQueue = false;
+    } else if (args["repeatStatus"] == "repeatAll") {
+      _repeatSong = false;
+      _repeatQueue = true;
+    } else if (args["repeatStatus"] == "repeatSong") {
+      _repeatSong = true;
+      _repeatQueue = false;
     }
+    print("RepeatSong: " + _repeatSong.toString());
+    print("RepeatQueue: " + _repeatQueue.toString());
   }
 
   // starts playlistPlayback of audio
