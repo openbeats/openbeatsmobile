@@ -116,6 +116,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   Future<void> _skip(int offset) async {
     final newPos = _queueIndex + offset;
+
     if (!(newPos >= 0 && newPos < _queue.length)) return;
     if (_playing == null) {
       // First time, we want to start playing
@@ -126,9 +127,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
     // Load next item
     _queueIndex = newPos;
-    print(_queueIndex.toString());
-    print(_queue[_queueIndex].title);
     AudioServiceBackground.setMediaItem(_queue[_queueIndex]);
+
     _skipState = offset > 0
         ? AudioProcessingState.skippingToNext
         : AudioProcessingState.skippingToPrevious;

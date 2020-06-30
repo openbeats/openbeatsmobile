@@ -265,7 +265,9 @@ Widget _slideUpPanelNextSong() {
     child: IconButton(
       icon: Icon(Icons.skip_next),
       onPressed: (AudioService.running && AudioService.queue.length > 1)
-          ? () {}
+          ? () {
+              AudioService.skipToNext();
+            }
           : null,
       iconSize: 30.0,
     ),
@@ -278,7 +280,9 @@ Widget _slideUpPanelPreviousSong() {
     child: IconButton(
       icon: Icon(Icons.skip_previous),
       onPressed: (AudioService.running && AudioService.queue.length > 1)
-          ? () {}
+          ? () {
+              AudioService.skipToPrevious();
+            }
           : null,
       iconSize: 30.0,
     ),

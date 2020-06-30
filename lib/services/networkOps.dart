@@ -141,8 +141,8 @@ Future<String> getStreamingUrl(mediaParameters) async {
           await get(getApiEndpoint() + "/opencc/" + mediaParameters["videoId"]);
       var responseClassified = _returnResponse(response, null);
       if (responseClassified["status"] == true &&
-          responseClassified["data"]["link"].length != 0 &&
-          responseClassified["data"]["link"] != null) {
+          responseClassified["data"]["link"] != null &&
+          responseClassified["data"]["link"].length != 0) {
         // returning the streaming url
         return responseClassified["data"]["link"];
       }
