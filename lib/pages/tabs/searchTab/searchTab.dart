@@ -72,12 +72,18 @@ class _SearchTabState extends State<SearchTab> {
   // holds the searchResults builder widget
   Widget _searchResultsListBuilder(BuildContext context, int index,
       SearchTabModel data, MediaItem _currMediaItem) {
+    // check if this song is the current playing song
+    bool _isPlaying = (_currMediaItem != null &&
+        _currMediaItem.extras["vidId"] ==
+            data.getSearchResults()[index]["videoId"] &&
+        _currMediaItem.playable == false);
+
     return Container(
       child: ListTile(
-        selected: (_currMediaItem != null &&
-            _currMediaItem.extras["vidId"] ==
-                data.getSearchResults()[index]["videoId"]),
-        onTap: () => functions.startSingleSongPlayback(data, index),
+        selected: _isPlaying,
+        onTap: () => (_isPlaying)
+            ? getSlidingUpPanelController().open()
+            : functions.startSingleSongPlayback(data, index),
         leading:
             cachedNetworkImageW(data.getSearchResults()[index]["thumbnail"]),
         title: Text(
@@ -95,9 +101,7 @@ class _SearchTabState extends State<SearchTab> {
         ),
         trailing: GestureDetector(
           child: Icon(Icons.more_vert),
-          onTap: () {
-           
-          },
+          onTap: () {},
         ),
       ),
     );

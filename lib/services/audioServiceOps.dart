@@ -263,7 +263,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (name == "startSinglePlayback") {
       // clearing queue
       _queue.clear();
-      startSinglePlayback(args);
+      startSinglePlayback(args, false);
     } else if (name == "startPlaylistPlayback") {
       _queue.clear();
       startPlaylistPlayback(args);
@@ -287,7 +287,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
       // for the first song
       if (i == 0) {
-        await startSinglePlayback(args);
+        await startSinglePlayback(args, true);
       } else {
         // setting default thumbnail url
         String _defaultThumbnailUrl =
@@ -306,6 +306,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
             title: args['title'],
             duration: Duration(milliseconds: args['durationInMilliSeconds']),
             artUri: _defaultThumbnailUrl,
+            // used to mark if this is a playlist or not
+            playable: true,
             extras: {
               "vidId": args["videoId"],
               "views": args["views"],
@@ -324,7 +326,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // starts singleplayback of audio
-  Future<void> startSinglePlayback(dynamic args) async {
+  Future<void> startSinglePlayback(dynamic args, bool _isPlaylist) async {
     // pausing playback if already playing
     if (_playing != null) onPause();
 
@@ -337,12 +339,12 @@ class AudioPlayerTask extends BackgroundAudioTask {
         title: args['title'],
         duration: Duration(milliseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
+        // used to mark if this is a playlist or not
+        playable: _isPlaylist,
         extras: {
           "vidId": args["videoId"],
           "views": args["views"],
           "durationString": args["duration"],
-          "repeatSong": false,
-          "repeatQueue": false
         });
 
     await AudioServiceBackground.setMediaItem(_songMediaItem);
@@ -369,6 +371,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         title: args['title'],
         duration: Duration(milliseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
+        // used to mark if this is a playlist or not
+        playable: _isPlaylist,
         extras: {
           "vidId": args["videoId"],
           "views": args["views"],

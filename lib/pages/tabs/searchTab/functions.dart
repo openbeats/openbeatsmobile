@@ -43,14 +43,6 @@ void startSingleSongPlayback(SearchTabModel data, int index) {
   // getting the songObject details to send to AudioService
   Map _songObj = data.getSearchResults()[index];
 
-  // checking if the clicked song is the current playing song
-  if (AudioService.running && AudioService.currentMediaItem != null) {
-    if (AudioService.currentMediaItem.extras["vidId"] == _songObj["videoId"]) {
-      getSlidingUpPanelController().open();
-      return null;
-    }
-  }
-
   // constructing the mediaParameters object
   Map<String, dynamic> mediaParameters = {
     "title": _songObj["title"],
