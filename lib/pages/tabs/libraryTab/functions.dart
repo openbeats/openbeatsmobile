@@ -13,7 +13,7 @@ void navigateToPlaylistView(BuildContext context,
 }
 
 // used to start playlist playback
-void initiatePlaylistPlayback(BuildContext context) {
+void initiatePlaylistPlayback(BuildContext context, int index) {
   // holds the playlist songs in structure
   List<Map<String, dynamic>> _playlistParameters =
       new List<Map<String, dynamic>>();
@@ -25,15 +25,23 @@ void initiatePlaylistPlayback(BuildContext context) {
   // looping through each song in the playlist
   for (int i = 0; i < _playlistSongs.length; i++) {
     _playlistParameters.add({
-      "title": _playlistSongs[i]["title"],
-      "thumbnail": _playlistSongs[i]["thumbnail"],
-      "duration": _playlistSongs[i]["duration"],
+      "title": _playlistSongs[index]["title"],
+      "thumbnail": _playlistSongs[index]["thumbnail"],
+      "duration": _playlistSongs[index]["duration"],
       "durationInMilliSeconds":
-          reformatTimeStampToMilliSeconds(_playlistSongs[i]["duration"]),
-      "videoId": _playlistSongs[i]["videoId"],
-      "channelName": _playlistSongs[i]["channelName"],
-      "views": reformatViewstoHumanReadable(_playlistSongs[i]["views"]),
+          reformatTimeStampToMilliSeconds(_playlistSongs[index]["duration"]),
+      "videoId": _playlistSongs[index]["videoId"],
+      "channelName": _playlistSongs[index]["channelName"],
+      "views": reformatViewstoHumanReadable(_playlistSongs[index]["views"]),
     });
+
+    print(index.toString() + " " + _playlistParameters[i]["title"]);
+
+    // incrementing the current index of song in playlist list
+    index += 1;
+
+    // reiterating if it croses the end of list
+    if (index == _playlistSongs.length) index = 0;
   }
   AudioServiceOps().startPlaylistPlayback(_playlistParameters);
 }

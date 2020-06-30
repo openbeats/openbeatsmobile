@@ -91,7 +91,7 @@ class _PlaylistViewState extends State<PlaylistView> {
         onTap: () {},
       ),
       onTap: () {
-        functions.initiatePlaylistPlayback(context);
+        functions.initiatePlaylistPlayback(context, index);
       },
     );
   }

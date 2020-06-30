@@ -282,7 +282,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
       // for the first song
       if (i == 0) {
-        startSinglePlayback(args);
+        await startSinglePlayback(args);
       } else {
         // setting default thumbnail url
         String _defaultThumbnailUrl =
@@ -310,13 +310,16 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // adding mediaItem to queue
         _queue.add(_songMediaItem);
 
-        AudioServiceBackground.setQueue(_queue);
+        print(i.toString());
+        print(i.toString() + " " + _queue[i].title);
+
+        await AudioServiceBackground.setQueue(_queue);
       }
     }
   }
 
   // starts singleplayback of audio
-  void startSinglePlayback(dynamic args) async {
+  Future<void> startSinglePlayback(dynamic args) async {
     // pausing playback if already playing
     if (_playing != null) onPause();
 
@@ -337,7 +340,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "repeatQueue": false
         });
 
-    AudioServiceBackground.setMediaItem(_songMediaItem);
+    await AudioServiceBackground.setMediaItem(_songMediaItem);
 
     if (_playing == null) {
       // First time, we want to start playing
@@ -348,7 +351,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     }
     // Load next item
     _queueIndex = 0;
-    AudioServiceBackground.setMediaItem(_songMediaItem);
+    await AudioServiceBackground.setMediaItem(_songMediaItem);
 
     String streamingUrl = await getStreamingUrl(args);
 
@@ -367,13 +370,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "durationString": args["duration"],
         });
 
-    AudioServiceBackground.setMediaItem(_songMediaItem);
+    await AudioServiceBackground.setMediaItem(_songMediaItem);
 
     await _audioPlayer.setUrl(_songMediaItem.id);
 
     // adding mediaItem to queue
     _queue.add(_songMediaItem);
-    AudioServiceBackground.setQueue(_queue);
+    await AudioServiceBackground.setQueue(_queue);
 
     onPlay();
   }
