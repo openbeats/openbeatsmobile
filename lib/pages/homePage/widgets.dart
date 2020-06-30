@@ -364,7 +364,35 @@ Widget _slideUpPanelSeekBackwardBtn() {
 
 // holds the minor repeatsong button for slideUpPanel
 Widget _slideUpPanelRepeatBtn() {
-  return IconButton(icon: Icon(Icons.repeat), onPressed: null);
+  return Consumer<MediaModel>(
+    builder: (context, data, child) {
+      // repeat option currently in action
+      String _repeatStatus = "noRepeat";
+      // print(data.getRepeatQueue());
+      // print(data.getRepeatSong());
+      if (data.getRepeatQueue()) _repeatStatus = "repeatAll";
+      if (data.getRepeatSong()) _repeatStatus = "repeatSong";
+      return IconButton(
+        icon: Icon(
+            (_repeatStatus == "repeatSong") ? Icons.repeat_one : Icons.repeat),
+        onPressed: (_repeatStatus != "noRepeat")
+            ? () {
+                if (_repeatStatus == "repeatAll") {
+                  Provider.of<MediaModel>(context, listen: false)
+                      .setRepeatQueue(true);
+                  Provider.of<MediaModel>(context, listen: false)
+                      .setRepeatSong(false);
+                } else if (_repeatStatus == "repeatSong") {
+                  Provider.of<MediaModel>(context, listen: false)
+                      .setRepeatSong(true);
+                  Provider.of<MediaModel>(context, listen: false)
+                      .setRepeatQueue(false);
+                }
+              }
+            : null,
+      );
+    },
+  );
 }
 
 // holds the minor favorite button for slideUpPanel
