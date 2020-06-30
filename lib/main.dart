@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<PlaylistViewData>(
             create: (_) => PlaylistViewData(),
           ),
+          ChangeNotifierProvider<MediaModel>(
+            create: (_) => MediaModel(),
+          ),
         ],
         child: HomePage(),
       ),

@@ -31,6 +31,16 @@ class AudioServiceOps {
       AudioService.customAction("startPlaylistPlayback", mediaParameterList);
     }
   }
+
+  // used to fetch the mediaRepeat status from audioBackgroundService
+  Future<void> getMediaRepeatStatus() async {
+    // starting audio service if it is not started
+    if (await _startAudioService() == true ||
+        await _startAudioService() == false) {
+      AudioService.customAction("checkSongRepeatStatus");
+      AudioService.customAction("checkQueueRepeatStatus");
+    }
+  }
 }
 
 // NOTE: Your entrypoint MUST be a top-level function.
@@ -45,6 +55,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
   AudioProcessingState _skipState;
   bool _playing;
   bool _interrupted = false;
+  // repeat flag
+  bool _repeatSong = false;
+  bool _repeatQueue = false;
 
   bool get hasNext => _queueIndex + 1 < _queue.length;
 
@@ -258,7 +271,6 @@ class AudioPlayerTask extends BackgroundAudioTask {
   @override
   Future<dynamic> onCustomAction(String name, dynamic args) async {
     super.onCustomAction(name, args);
-
     // execute function based on name
     if (name == "startSinglePlayback") {
       // clearing queue
@@ -267,6 +279,19 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else if (name == "startPlaylistPlayback") {
       _queue.clear();
       startPlaylistPlayback(args);
+    }
+
+    // repeat status conditionals
+    if (name == "checkSongRepeatStatus") {
+      if (_repeatSong)
+        AudioServiceBackground.sendCustomEvent("repeatSongTrue");
+      else
+        AudioServiceBackground.sendCustomEvent("repeatSongFalse");
+    } else if (name == "checkQueueRepeatStatus") {
+      if (_repeatQueue)
+        AudioServiceBackground.sendCustomEvent("repeatQueueTrue");
+      else
+        AudioServiceBackground.sendCustomEvent("repeatQueueFalse");
     }
   }
 
