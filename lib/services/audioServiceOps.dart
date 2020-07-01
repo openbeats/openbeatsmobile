@@ -119,24 +119,15 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   void _handlePlaybackCompleted() {
     if (_repeatSong) {
-      _queueIndex -= 1;
       onSkipToNext();
-      return null;
-    }
-    if (_repeatQueue) {
-      if (hasNext)
-        onSkipToNext();
-      else {
-        _queueIndex = -1;
-        onSkipToNext();
-      }
-      return null;
-    }
-
-    if (hasNext) {
+    } else if (_repeatQueue) {
       onSkipToNext();
     } else {
-      onStop();
+      if (hasNext) {
+        onSkipToNext();
+      } else {
+        onStop();
+      }
     }
   }
 
@@ -154,15 +145,30 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onSkipToPrevious() => _skip(-1);
 
   Future<void> _skip(int offset) async {
-    if (_repeatQueue) {
-      if ((_queueIndex == _queue.length - 1) && offset > 0)
-        _queueIndex = -1;
-      else if (_queueIndex == 0 && offset < 0) _queueIndex = _queue.length;
-    } else if (_repeatSong) {
-      _queueIndex -= 1;
+    // holds the new position of the queueIndex after offset
+    int newPos = _queueIndex + offset;
+
+    // conditionals for the repeat queue and repeat song management
+    // if repeat song is activated
+    if (_repeatSong) {
+      // nullifying the effect of the skip
+      newPos -= offset;
+    } else if (_repeatQueue) {
+      // check if the queue has more than one element
+      if (_queue.length > 1) {
+        // check if it is the right corner of the queue
+        if (newPos == _queue.length)
+          newPos = 0;
+        // check if it is the left corner of queue
+        else if (newPos < 0) newPos = _queue.length - 1;
+      }
+      // if the queue has only one element
+      else {
+        // nullifying the effect of the skip
+        newPos -= offset;
+      }
     }
 
-    final newPos = _queueIndex + offset;
     if (!(newPos >= 0 && newPos < _queue.length)) return;
     if (_playing == null) {
       // First time, we want to start playing
