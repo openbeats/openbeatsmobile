@@ -161,10 +161,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           minHeight: (_res.isOpen) ? 0.0 : _collapsedSlideUpPanelHeight,
           maxHeight: MediaQuery.of(context).size.height,
           parallaxEnabled: true,
-          isDraggable:
-              (MediaQuery.of(context).orientation == Orientation.portrait)
-                  ? true
-                  : false,
           collapsed: _slideUpPanelCollapsed(),
           panel: _slideUpPanel(),
           body: _underneathSlideUpPanel(),
