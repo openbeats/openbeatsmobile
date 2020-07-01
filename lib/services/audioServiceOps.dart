@@ -387,11 +387,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
             title: args['title'],
             duration: Duration(milliseconds: args['durationInMilliSeconds']),
             artUri: _defaultThumbnailUrl,
-            // used to mark if this is a playlist or not
-            playable: true,
             extras: {
               "vidId": args["videoId"],
-              "views": args["views"],
+              "playlist": "true",
               "durationString": args["duration"],
             });
 
@@ -420,11 +418,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
         title: args['title'],
         duration: Duration(milliseconds: args['durationInMilliSeconds']),
         artUri: _defaultThumbnailUrl,
-        // used to mark if this is a playlist or not
-        playable: _isPlaylist,
         extras: {
           "vidId": args["videoId"],
-          "views": args["views"],
+          "playlist": _isPlaylist.toString(),
           "durationString": args["duration"],
         });
 
@@ -456,7 +452,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
         playable: _isPlaylist,
         extras: {
           "vidId": args["videoId"],
-          "views": args["views"],
+          "playlist": _isPlaylist.toString(),
           "durationString": args["duration"],
         });
 

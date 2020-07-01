@@ -81,8 +81,7 @@ class _PlaylistViewState extends State<PlaylistView> {
     bool _isPlaying = (_currMediaItem != null &&
         _currMediaItem.extras["vidId"] ==
             data.getCurrPlaylistSongs()[index]["_id"] &&
-        _currMediaItem.playable == true);
-
+        _currMediaItem.extras["playlist"] == "true");
     return ListTile(
       selected: _isPlaying,
       leading: cachedNetworkImageW(

@@ -76,9 +76,7 @@ class _SearchTabState extends State<SearchTab> {
     bool _isPlaying = (_currMediaItem != null &&
         _currMediaItem.extras["vidId"] ==
             data.getSearchResults()[index]["videoId"] &&
-        _currMediaItem.playable == false);
-    // print(_currMediaItem.playable);
-
+        _currMediaItem.extras["playlist"] == "false");
     return Container(
       child: ListTile(
         selected: _isPlaying,
