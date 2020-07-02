@@ -33,7 +33,8 @@ Future<bool> willPopScopeHandler(BuildContext context) async {
           child: Text("Exit"),
         ),
         FlatButton(
-          textColor: Colors.green,
+          textColor: Colors.white,
+          color: Colors.green,
           onPressed: () {
             Navigator.of(context).pop();
             Future.delayed(Duration(milliseconds: 200), () {
