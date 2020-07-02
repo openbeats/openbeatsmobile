@@ -11,7 +11,7 @@ BottomNavigationBarItem bottomNavBarItem(
   return BottomNavigationBarItem(
       icon: (destination.icon == Icons.person && _currAvatar != null)
           ? Container(
-              child: cachedNetworkImageW(_currAvatar,60.0),
+              child: cachedNetworkImageW(_currAvatar, 60.0),
               height: 30.0,
               width: 30.0,
               margin: EdgeInsets.only(bottom: 3.0),
@@ -131,7 +131,7 @@ Widget slideUpPanelThumbnail(BuildContext context, MediaItem _currMediaItem) {
     width: _dimensions,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(5.0),
-      child: cachedNetworkImageW(_currMediaItem?.artUri,60.0),
+      child: cachedNetworkImageW(_currMediaItem?.artUri, 60.0),
     ),
   );
 }
@@ -251,7 +251,7 @@ Widget slideUpPanelMinorControls(BuildContext context) {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        _slideUpPanelFavBtn(),
+        _slideUpPanelAddToPlaylist(),
         _slideUpPanelShuffleBtn(),
         _slideUpPanelRepeatBtn(),
         _slideUpPanelQueueBtn()
@@ -396,9 +396,9 @@ Widget _slideUpPanelRepeatBtn() {
   );
 }
 
-// holds the minor favorite button for slideUpPanel
-Widget _slideUpPanelFavBtn() {
-  return IconButton(icon: Icon(Icons.favorite_border), onPressed: null);
+// holds the minor addToPlaylist for slideUpPanel
+Widget _slideUpPanelAddToPlaylist() {
+  return IconButton(icon: Icon(Icons.playlist_add), onPressed: null);
 }
 
 // holds the minor shuffle button for slideUpPanel
