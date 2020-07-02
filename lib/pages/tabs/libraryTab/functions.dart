@@ -35,13 +35,14 @@ void initiatePlaylistPlayback(BuildContext context, int index) {
       "views": reformatViewstoHumanReadable(_playlistSongs[index]["views"]),
     });
 
-    print(index.toString() + " " + _playlistParameters[i]["title"]);
-
     // incrementing the current index of song in playlist list
     index += 1;
 
     // reiterating if it croses the end of list
     if (index == _playlistSongs.length) index = 0;
   }
-  AudioServiceOps().startPlaylistPlayback(_playlistParameters);
+  AudioServiceOps().startPlaylistPlayback({
+    "token":Provider.of<UserModel>(context,listen: false).getUserDetails()["token"],
+    "_songObj":_playlistSongs
+  });
 }

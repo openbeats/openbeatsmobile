@@ -22,8 +22,7 @@ class AudioServiceOps {
   }
 
   // used to start playlist playback
-  Future<void> startPlaylistPlayback(
-      List<Map<String, dynamic>> mediaParameterList) async {
+  Future<void> startPlaylistPlayback(mediaParameterList) async {
     // starting audio service if it is not started
     if (await _startAudioService() == true ||
         await _startAudioService() == false) {
@@ -351,30 +350,36 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // starts playlistPlayback of audio
-  void startPlaylistPlayback(dynamic mediaParameters) async {
-    // iterating through the songs in the playlist
-    for (int i = 0; i < mediaParameters.length; i++) {
-      // getting local mediaItem instance
-      Map<String, dynamic> args = {
-        "title": mediaParameters[i]["title"],
-        "thumbnail": mediaParameters[i]["thumbnail"],
-        "duration": mediaParameters[i]["duration"],
-        "durationInMilliSeconds": mediaParameters[i]["durationInMilliSeconds"],
-        "videoId": mediaParameters[i]["videoId"],
-        "channelName": mediaParameters[i]["channelName"],
-        "views": mediaParameters[i]["views"],
-      };
+  void startPlaylistPlayback(dynamic params) async {
+    var songs = params["_songObj"];
 
+    // iterating through the songs in the playlist
+    for (int i = 0; i < songs.length; i++) {
+      var args = songs[i];
+      // // getting local mediaItem instance
+      // Map<String, dynamic> args = {
+      //   "title": mediaParameters[i]["title"],
+      //   "thumbnail": mediaParameters[i]["thumbnail"],
+      //   "duration": mediaParameters[i]["duration"],
+      //   "durationInMilliSeconds": mediaParameters[i]["durationInMilliSeconds"],
+      //   "videoId": mediaParameters[i]["videoId"],
+      //   "channelName": mediaParameters[i]["channelName"],
+      //   "views": mediaParameters[i]["views"],
+      // };
+      print(i);
+      print(args.length);
       // for the first song
       if (i == 0) {
-        await startSinglePlayback(args, true);
+        await startSinglePlayback(
+            {"token": params["token"], "_songObj": args}, true);
       } else {
         // setting default thumbnail url
         String _defaultThumbnailUrl =
             "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
         // getting streaming url for the song
-        String streamingUrl = await getStreamingUrl(args);
+        String streamingUrl =
+            await getStreamingUrl({"token": params["token"], "_songObj": args});
 
         _defaultThumbnailUrl =
             await checkHighResThumbnailAvailability(args["videoId"]);
@@ -384,7 +389,9 @@ class AudioPlayerTask extends BackgroundAudioTask {
             id: streamingUrl,
             album: "OpenBeats Music",
             title: args['title'],
-            duration: Duration(milliseconds: args['durationInMilliSeconds']),
+            duration: Duration(
+                milliseconds:
+                    reformatTimeStampToMilliSeconds(args["duration"])),
             artUri: _defaultThumbnailUrl,
             extras: {
               "vidId": args["videoId"],
@@ -409,6 +416,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     if (_playing != null) onPause();
 
     var args = params["_songObj"];
+    print(args);
 
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
