@@ -10,6 +10,15 @@ class UserModel extends ChangeNotifier {
     "avatar": null
   };
 
+  // holds the recently played list
+  List<dynamic> _recentlyPlayedList;
+
+  // getter and setter for the _recentlyPlayedList
+  List<dynamic> getRecentlyPlayedList() => _recentlyPlayedList;
+  void setRecentlyPlayedList(List<dynamic> value) {
+    _recentlyPlayedList = value;
+  }
+
   // getter and setter for user details
   Map<String, String> getUserDetails() => _userDetails;
   void setUserDetails(Map<String, String> value) {

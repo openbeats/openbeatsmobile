@@ -430,3 +430,8 @@ void getPlaylistSongs(
   // setting loading indicators
   Provider.of<PlaylistViewData>(context, listen: false).setIsLoading(false);
 }
+
+// used to get the list of recently played songs
+void getRecentlyPlayed(){
+  
+}
