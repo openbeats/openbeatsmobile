@@ -289,7 +289,23 @@ Widget settingsTitle(BuildContext context) {
       dense: true,
       title: Text(
         "Settings",
-        style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
+// holds the hardware settings title
+Widget hardwareSettingsTitle(BuildContext context) {
+  return Container(
+    child: ListTile(
+      dense: true,
+      title: Text(
+        "HARDWARE",
+        style: TextStyle(
+            fontSize: 14.0,
+            color: Colors.grey[700],
+            fontWeight: FontWeight.bold),
       ),
     ),
   );
