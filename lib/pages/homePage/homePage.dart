@@ -130,6 +130,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             unselectedItemColor: Colors.white,
             showUnselectedLabels: false,
             onTap: (index) {
+              vibrateDevice();
               // closing any open instance of slidingUpPanel
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();
@@ -165,9 +166,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           panel: _slideUpPanel(),
           body: _underneathSlideUpPanel(),
           onPanelSlide: (double position) {
-            if (position > 0.4)
+            if (position > 0.4) {
               _bottomAppBarAnimController.reverse();
-            else if (position < 0.4) _bottomAppBarAnimController.forward();
+            } else if (position < 0.4) {
+              _bottomAppBarAnimController.forward();
+            }
           },
         );
       },

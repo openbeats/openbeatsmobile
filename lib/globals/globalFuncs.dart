@@ -108,3 +108,10 @@ void showFlushBar(BuildContext context, Map<String, dynamic> parameters) {
     shouldIconPulse: true,
   ).show(context);
 }
+
+// used to activate vibration motors
+void vibrateDevice() async {
+  if (await Vibration.hasVibrator()) { 
+    Vibration.vibrate(duration: 1);
+  }
+}

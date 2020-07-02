@@ -88,4 +88,3 @@ Widget searchInstructionText(BuildContext context) {
         : null,
   );
 }
-

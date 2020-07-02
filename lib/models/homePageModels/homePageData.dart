@@ -4,6 +4,15 @@ class HomePageData extends ChangeNotifier {
   // holds the current index of the bottomNavBar
   int _bNavBarCurrIndex = 0;
   double _collapsedSlideUpPanelHeight = 70.0;
+  // holds the margin of the slideUpPanel
+  double _slideUpPanelMargin = 10.0;
+
+  // getter and setter for _slideUpPanelMargin
+  double getSlideUpPanelMargin() => _slideUpPanelMargin;
+  void setSlideUpPanelMargin(double value) {
+    _slideUpPanelMargin = value;
+    notifyListeners();
+  }
 
   // getter and setter for _bNvBarCurrIndex
   int getBNavBarCurrIndex() => _bNavBarCurrIndex;

@@ -39,6 +39,8 @@ dependencies:
   flushbar: ^1.10.4
   move_to_background: ^1.0.1
   font_awesome_flutter: ^8.8.1
+  google_fonts: ^1.1.0
+  vibration: ^1.4.0
 
 
 dev_dependencies:

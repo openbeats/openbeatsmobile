@@ -64,14 +64,15 @@ Widget signInWelcomeText() {
       children: [
         TextSpan(
           text: "hello!\n",
-          style: TextStyle(
+          style: GoogleFonts.nunito(
               fontWeight: FontWeight.bold,
               fontSize: 60.0,
               color: GlobalThemes().getAppTheme().primaryColor),
         ),
         TextSpan(
           text: "Sign In with your account",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+          style:
+              GoogleFonts.nunito(fontWeight: FontWeight.bold, fontSize: 20.0),
         ),
       ],
     ),
@@ -92,11 +93,13 @@ Widget joinWelcomeText() {
         ),
         TextSpan(
           text: "To get your own",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+          style:
+              GoogleFonts.nunito(fontWeight: FontWeight.bold, fontSize: 20.0),
         ),
         TextSpan(
           text: " account",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+          style:
+              GoogleFonts.nunito(fontWeight: FontWeight.bold, fontSize: 20.0),
         ),
       ],
     ),

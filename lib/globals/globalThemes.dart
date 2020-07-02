@@ -17,7 +17,7 @@ class GlobalThemes {
         ),
       ),
     ),
-    primaryColor: Color(0xFFF32C2C),
+    primaryColor: Color(0xFFFF4F4F),
     accentColor: Colors.redAccent,
     primarySwatch: Colors.red,
     bottomAppBarColor: Color(0xFF212229),
