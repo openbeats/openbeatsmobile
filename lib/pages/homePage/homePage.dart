@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             unselectedItemColor: Colors.white,
             showUnselectedLabels: false,
             onTap: (index) {
-              vibrateDevice();
+              vibrateDevice(context);
               // closing any open instance of slidingUpPanel
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();

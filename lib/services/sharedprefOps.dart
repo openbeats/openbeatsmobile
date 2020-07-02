@@ -20,6 +20,12 @@ void getAllSharedPrefsData(context) async {
   };
   // sending data to store in application model
   Provider.of<UserModel>(context, listen: false).setUserDetails(_userDetails);
+
+  // getting haptic feedback data
+  if (prefs.getBool("hapticFeedback") != null) {
+    Provider.of<ProfileTabData>(context, listen: false)
+        .setHapticFeedback(prefs.getBool("hapticFeedback"));
+  }
 }
 
 // update the sharedpreferences list of search history
@@ -50,4 +56,11 @@ void removeUserDetails() async {
   prefs.setString("email", null);
   prefs.setString("id", null);
   prefs.setString("avatar", null);
+}
+
+// sets the vibration feedback settings in shared preferences
+void setHapticFeedBackSetting(bool value) async {
+  // getting sharedPreferences instance
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setBool("hapticFeedback", value);
 }

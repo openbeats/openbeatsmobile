@@ -13,6 +13,15 @@ class ProfileTabData extends ChangeNotifier {
   double _authContainerHeight = 0;
   // used to decide if to show the signIn Panel or signUpPanel
   bool _showSignInPanel = true;
+  // holds the hapticfeedback mode
+  bool _hapticFeedback = true;
+
+  // getter and setter for the _hapticFeedback
+  bool getHapticFeedback() => _hapticFeedback;
+  void setHapticFeedback(bool value) {
+    _hapticFeedback = value;
+    notifyListeners();
+  }
 
   // getter and setter for _showSignInPanel
   bool getShowSignInPanel() => _showSignInPanel;

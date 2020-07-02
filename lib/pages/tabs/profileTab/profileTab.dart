@@ -290,6 +290,7 @@ class _ProfileTabState extends State<ProfileTab>
         shrinkWrap: true,
         children: <Widget>[
           widgets.settingsTitle(context),
+          widgets.vibrationListTile(context),
           widgets.logoutListTile(context),
         ],
       ),

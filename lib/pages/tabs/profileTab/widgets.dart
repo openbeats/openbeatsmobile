@@ -40,7 +40,7 @@ Widget signUpSignInPanelSwitcher(BuildContext context) {
               child: Text(
                 (_showSignInPanel) ? " Join" : " Sign In",
                 style: TextStyle(
-                    color: Colors.red,
+                    color: GlobalThemes().getAppTheme().primaryColor,
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold),
               ),
@@ -295,6 +295,38 @@ Widget settingsTitle(BuildContext context) {
   );
 }
 
+// holds the vibration list tile
+Widget vibrationListTile(BuildContext context) {
+  return AnimatedSwitcher(
+    duration: Duration(milliseconds: 300),
+    child: Container(
+      child: ListTile(
+        leading: Icon(
+          Icons.vibration,
+        ),
+        title: Text(
+          "Vibration Feedback",
+          style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        ),
+        subtitle: Text("Toggles the haptic feedback feature"),
+        trailing: Container(
+          width: 55.0,
+          child: Switch(
+            value: Provider.of<ProfileTabData>(context).getHapticFeedback(),
+            onChanged: (bool value) {
+              // sending data to shared preferences
+              setHapticFeedBackSetting(value);
+              Provider.of<ProfileTabData>(context, listen: false)
+                  .setHapticFeedback(value);
+            },
+            activeColor: GlobalThemes().getAppTheme().primaryColor,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 // holds the logout list tile
 Widget logoutListTile(BuildContext context) {
   String _userName = Provider.of<UserModel>(context).getUserDetails()["name"];
@@ -306,7 +338,7 @@ Widget logoutListTile(BuildContext context) {
               leading: Icon(Icons.power_settings_new, color: Colors.red),
               title: Text("Sign Out",
                   style: TextStyle(
-                      color: Colors.red,
+                      color: GlobalThemes().getAppTheme().primaryColor,
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold)),
               onTap: () => functions.logoutUser(context),

@@ -110,8 +110,11 @@ void showFlushBar(BuildContext context, Map<String, dynamic> parameters) {
 }
 
 // used to activate vibration motors
-void vibrateDevice() async {
-  if (await Vibration.hasVibrator()) { 
+void vibrateDevice(BuildContext context) async {
+  // getting haptic feedback choice
+  bool _hapticFeedback =
+      Provider.of<ProfileTabData>(context, listen: false).getHapticFeedback();
+  if (await Vibration.hasVibrator() && _hapticFeedback) {
     Vibration.vibrate(duration: 1);
   }
 }

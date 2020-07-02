@@ -92,10 +92,8 @@ class _SearchNowPageState extends State<SearchNowPage> {
               suffixIcon: (_searchFieldController.text.length == 0)
                   ? null
                   : GestureDetector(
-                      child: Icon(
-                        Icons.clear,
-                        color: Colors.red,
-                      ),
+                      child: Icon(Icons.clear,
+                          color: GlobalThemes().getAppTheme().primaryColor),
                       onTap: () {
                         Provider.of<SearchTabModel>(context, listen: false)
                             .setCurrentSearchString("");

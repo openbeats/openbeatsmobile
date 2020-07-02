@@ -23,7 +23,7 @@ Future<bool> willPopScopeHandler(BuildContext context) async {
       content: Text("Are you sure you want to exit the application?"),
       actions: <Widget>[
         FlatButton(
-          textColor: Colors.red,
+          textColor: GlobalThemes().getAppTheme().primaryColor,
           onPressed: () {
             Navigator.of(context).pop();
             Future.delayed(Duration(milliseconds: 200), () {

@@ -205,14 +205,14 @@ Widget slideUpPanelSeekBar(BuildContext context, PlaybackState _state,
               Text(
                 _currPositionTimeStamp,
                 style: TextStyle(
-                  color: Colors.red,
+                  color: GlobalThemes().getAppTheme().primaryColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               Text(
                 _currDurationTimeStamp,
                 style: TextStyle(
-                  color: Colors.red,
+                  color: GlobalThemes().getAppTheme().primaryColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -373,7 +373,9 @@ Widget _slideUpPanelRepeatBtn() {
       return IconButton(
         icon: Icon(
             (_repeatStatus == "repeatSong") ? Icons.repeat_one : Icons.repeat),
-        color: (_repeatStatus == "noRepeat") ? Colors.grey : Colors.red,
+        color: (_repeatStatus == "noRepeat")
+            ? Colors.grey
+            : GlobalThemes().getAppTheme().primaryColor,
         onPressed: () {
           if (_repeatStatus == "noRepeat") {
             data.setRepeatQueue(false);

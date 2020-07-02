@@ -30,7 +30,7 @@ void _handleExceptionsRaised(
         _userMessage,
         style: TextStyle(color: Colors.white),
       ),
-      backgroundColor: Colors.red,
+      backgroundColor: GlobalThemes().getAppTheme().primaryColor,
       duration: Duration(seconds: 10),
       action: SnackBarAction(
           label: "Close",
