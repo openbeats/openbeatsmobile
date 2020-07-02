@@ -24,16 +24,7 @@ void initiatePlaylistPlayback(BuildContext context, int index) {
 
   // looping through each song in the playlist
   for (int i = 0; i < _playlistSongs.length; i++) {
-    _playlistParameters.add({
-      "title": _playlistSongs[index]["title"],
-      "thumbnail": _playlistSongs[index]["thumbnail"],
-      "duration": _playlistSongs[index]["duration"],
-      "durationInMilliSeconds":
-          reformatTimeStampToMilliSeconds(_playlistSongs[index]["duration"]),
-      "videoId": _playlistSongs[index]["videoId"],
-      "channelName": _playlistSongs[index]["channelName"],
-      "views": reformatViewstoHumanReadable(_playlistSongs[index]["views"]),
-    });
+    _playlistParameters.add(_playlistSongs[index]);
 
     // incrementing the current index of song in playlist list
     index += 1;
@@ -42,7 +33,8 @@ void initiatePlaylistPlayback(BuildContext context, int index) {
     if (index == _playlistSongs.length) index = 0;
   }
   AudioServiceOps().startPlaylistPlayback({
-    "token":Provider.of<UserModel>(context,listen: false).getUserDetails()["token"],
-    "_songObj":_playlistSongs
+    "token": Provider.of<UserModel>(context, listen: false)
+        .getUserDetails()["token"],
+    "_songObj": _playlistParameters
   });
 }

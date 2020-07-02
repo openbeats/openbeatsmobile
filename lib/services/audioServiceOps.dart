@@ -356,18 +356,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // iterating through the songs in the playlist
     for (int i = 0; i < songs.length; i++) {
       var args = songs[i];
-      // // getting local mediaItem instance
-      // Map<String, dynamic> args = {
-      //   "title": mediaParameters[i]["title"],
-      //   "thumbnail": mediaParameters[i]["thumbnail"],
-      //   "duration": mediaParameters[i]["duration"],
-      //   "durationInMilliSeconds": mediaParameters[i]["durationInMilliSeconds"],
-      //   "videoId": mediaParameters[i]["videoId"],
-      //   "channelName": mediaParameters[i]["channelName"],
-      //   "views": mediaParameters[i]["views"],
-      // };
-      print(i);
-      print(args.length);
+
       // for the first song
       if (i == 0) {
         await startSinglePlayback(
