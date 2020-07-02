@@ -404,9 +404,11 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // starts singleplayback of audio
-  Future<void> startSinglePlayback(dynamic args, bool _isPlaylist) async {
+  Future<void> startSinglePlayback(dynamic params, bool _isPlaylist) async {
     // pausing playback if already playing
     if (_playing != null) onPause();
+
+    var args = params["_songObj"];
 
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
@@ -415,7 +417,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         id: args["videoId"],
         album: "OpenBeats Music",
         title: args['title'],
-        duration: Duration(milliseconds: args['durationInMilliSeconds']),
+        duration: Duration(
+            milliseconds: reformatTimeStampToMilliSeconds(args["duration"])),
         artUri: _defaultThumbnailUrl,
         extras: {
           "vidId": args["videoId"],
@@ -436,7 +439,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     _queueIndex = 0;
     await AudioServiceBackground.setMediaItem(_songMediaItem);
 
-    String streamingUrl = await getStreamingUrl(args);
+    String streamingUrl = await getStreamingUrl(params);
 
     _defaultThumbnailUrl =
         await checkHighResThumbnailAvailability(args["videoId"]);
@@ -445,7 +448,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         id: streamingUrl,
         album: "OpenBeats Music",
         title: args['title'],
-        duration: Duration(milliseconds: args['durationInMilliSeconds']),
+        duration: Duration(
+            milliseconds: reformatTimeStampToMilliSeconds(args["duration"])),
         artUri: _defaultThumbnailUrl,
         // used to mark if this is a playlist or not
         playable: _isPlaylist,

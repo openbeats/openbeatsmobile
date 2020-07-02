@@ -26,6 +26,7 @@ export 'package:flushbar/flushbar_helper.dart';
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 export 'package:google_fonts/google_fonts.dart';
 export 'package:vibration/vibration.dart';
+export 'dart:convert';
 
 // global dart file imports
 export 'package:obsmobile/globals/globalFuncs.dart';

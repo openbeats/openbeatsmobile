@@ -82,7 +82,7 @@ class _SearchTabState extends State<SearchTab> {
         selected: _isPlaying,
         onTap: () => (_isPlaying)
             ? getSlidingUpPanelController().open()
-            : functions.startSingleSongPlayback(data, index),
+            : functions.startSingleSongPlayback(context, data, index),
         leading: cachedNetworkImageW(
             data.getSearchResults()[index]["thumbnail"], 60.0),
         title: Text(

@@ -134,11 +134,19 @@ Future<void> getYTCatSearchResults(BuildContext context, String query) async {
 // used to get the streamingUrl
 Future<String> getStreamingUrl(mediaParameters) async {
   try {
+    // converting the media parameters to send as info to opencc
+    var _bytes = utf8.encode(mediaParameters["_songObj"].toString());
+    var _base64Str = base64.encode(_bytes);
     // checking if the search results have got any value
     for (int i = 0; i < 5; i++) {
       // sending http request
-      var response =
-          await get(getApiEndpoint() + "/opencc/" + mediaParameters["videoId"]);
+      var response = await get(
+          getApiEndpoint() +
+              "/opencc/" +
+              mediaParameters["_songObj"]["videoId"] +
+              "?info=" +
+              _base64Str,
+          headers: {"x-auth-token": mediaParameters["token"]});
       var responseClassified = _returnResponse(response, null);
       if (responseClassified["status"] == true &&
           responseClassified["data"]["link"] != null &&
