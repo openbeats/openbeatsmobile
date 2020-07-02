@@ -50,7 +50,7 @@ Widget collectionGridView(BuildContext context) {
             ? MediaQuery.of(context).size.height * 0.40
             : MediaQuery.of(context).size.height * 0.50,
         child: AnimatedSwitcher(
-          duration: Duration(milliseconds: 600),
+          duration: Duration(milliseconds: 500),
           child: (_listOfCollections != null && _listOfCollections.length > 0)
               ? (_loadingFlag)
                   ? _loadingAnimation()
@@ -170,7 +170,7 @@ Widget playlistListView() {
     var _listOfPlaylists = data.getUserPlaylists()["data"];
     bool _loadingFlag = data.getUserPlaylistLoadingFlag();
     return AnimatedSwitcher(
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 500),
       child: (_listOfPlaylists != null && _listOfPlaylists.length > 0)
           ? (_loadingFlag)
               ? Container(

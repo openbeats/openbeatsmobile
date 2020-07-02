@@ -37,7 +37,7 @@ class _SearchTabState extends State<SearchTab> {
       child: Consumer<SearchTabModel>(
         builder: (context, data, child) {
           return AnimatedSwitcher(
-            duration: Duration(milliseconds: 300),
+            duration: Duration(milliseconds: 500),
             child: (data.getLoadingFlag())
                 ? loadingAnimationW()
                 : (data.getSearchResults().length > 0)

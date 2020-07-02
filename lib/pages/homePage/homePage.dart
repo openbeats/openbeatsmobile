@@ -209,7 +209,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   getCurrentTimeStamp(
                       _currMediaItem?.duration?.inSeconds?.toDouble());
           return AnimatedSwitcher(
-            duration: Duration(milliseconds: 200),
+            duration: Duration(milliseconds: 100),
             child: (_thumnbNailUrl == null)
                 ? Container(
                     key: ValueKey<int>(1),

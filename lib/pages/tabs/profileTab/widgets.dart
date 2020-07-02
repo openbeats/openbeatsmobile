@@ -298,7 +298,7 @@ Widget settingsTitle(BuildContext context) {
 // holds the vibration list tile
 Widget vibrationListTile(BuildContext context) {
   return AnimatedSwitcher(
-    duration: Duration(milliseconds: 300),
+    duration: Duration(milliseconds: 500),
     child: Container(
       child: ListTile(
         leading: Icon(
@@ -331,7 +331,7 @@ Widget vibrationListTile(BuildContext context) {
 Widget logoutListTile(BuildContext context) {
   String _userName = Provider.of<UserModel>(context).getUserDetails()["name"];
   return AnimatedSwitcher(
-    duration: Duration(milliseconds: 300),
+    duration: Duration(milliseconds: 500),
     child: Container(
       child: (_userName != null)
           ? ListTile(

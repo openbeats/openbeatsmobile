@@ -5,10 +5,9 @@ class AudioServiceOps {
   Future<bool> _startAudioService() async {
     return await AudioService.start(
       backgroundTaskEntrypoint: _audioPlayerTaskEntrypoint,
-      androidNotificationChannelName: 'OBSMobile',
+      androidNotificationChannelName: 'OBSPlayback',
       androidStopForegroundOnPause: true,
-      androidNotificationColor: 0xFF2196f3,
-      androidNotificationIcon: 'mipmap/ic_launcher',
+      androidNotificationIcon: 'drawable/ic_stat_logoicon2',
       androidEnableQueue: true,
     );
   }

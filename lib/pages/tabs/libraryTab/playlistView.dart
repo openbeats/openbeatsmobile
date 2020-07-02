@@ -45,7 +45,7 @@ class _PlaylistViewState extends State<PlaylistView> {
     return Consumer<PlaylistViewData>(
       builder: (context, data, child) {
         return AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: 500),
           child: (data.getIsLoading())
               ? Center(
                   child: loadingAnimationW(),

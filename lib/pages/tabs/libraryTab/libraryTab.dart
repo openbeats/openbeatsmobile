@@ -22,7 +22,7 @@ class _LibraryTabState extends State<LibraryTab> {
     return Consumer<UserModel>(
       builder: (context, data, child) {
         return AnimatedSwitcher(
-          duration: Duration(milliseconds: 300),
+          duration: Duration(milliseconds: 500),
           child: (data.getUserDetails()["name"] != null)
               ? ListView(
                   physics: BouncingScrollPhysics(),
