@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       onTap: () {
                         getSlidingUpPanelController().open();
                       },
-                      leading: cachedNetworkImageW(_thumnbNailUrl),
+                      leading: cachedNetworkImageW(_thumnbNailUrl, 60.0),
                       title: Text(
                         _title,
                         maxLines: 2,

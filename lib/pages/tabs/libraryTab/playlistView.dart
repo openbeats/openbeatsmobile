@@ -85,7 +85,7 @@ class _PlaylistViewState extends State<PlaylistView> {
     return ListTile(
       selected: _isPlaying,
       leading: cachedNetworkImageW(
-        data.getCurrPlaylistSongs()[index]["thumbnail"],
+        data.getCurrPlaylistSongs()[index]["thumbnail"],60.0
       ),
       title: Text(
         data.getCurrPlaylistSongs()[index]["title"],

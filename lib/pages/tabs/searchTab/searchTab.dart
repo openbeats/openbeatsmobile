@@ -37,7 +37,7 @@ class _SearchTabState extends State<SearchTab> {
       child: Consumer<SearchTabModel>(
         builder: (context, data, child) {
           return AnimatedSwitcher(
-            duration: Duration(milliseconds: 500),
+            duration: Duration(milliseconds: 600),
             child: (data.getLoadingFlag())
                 ? loadingAnimationW()
                 : (data.getSearchResults().length > 0)
@@ -83,8 +83,8 @@ class _SearchTabState extends State<SearchTab> {
         onTap: () => (_isPlaying)
             ? getSlidingUpPanelController().open()
             : functions.startSingleSongPlayback(data, index),
-        leading:
-            cachedNetworkImageW(data.getSearchResults()[index]["thumbnail"]),
+        leading: cachedNetworkImageW(
+            data.getSearchResults()[index]["thumbnail"], 60.0),
         title: Text(
           data.getSearchResults()[index]["title"],
           maxLines: 2,
@@ -100,7 +100,65 @@ class _SearchTabState extends State<SearchTab> {
         ),
         trailing: GestureDetector(
           child: Icon(Icons.more_vert),
-          onTap: () {},
+          onTap: () {
+            showModalBottomSheet(
+                context: homePageScaffoldKey.currentContext,
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20.0),
+                      topLeft: Radius.circular(20.0)),
+                ),
+                backgroundColor: GlobalThemes().getAppTheme().bottomAppBarColor,
+                builder: (BuildContext bc) {
+                  return Container(
+                    child: new Wrap(
+                      alignment: WrapAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          margin: EdgeInsets.only(top: 20.0),
+                          alignment: Alignment.center,
+                          child: cachedNetworkImageW(
+                              data.getSearchResults()[index]["thumbnail"],
+                              100.0),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                          width: 200.0,
+                          child: Text(
+                            data.getSearchResults()[index]["title"],
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontSize: 14.0, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        ListTile(
+                          leading: new Icon(Icons.playlist_add),
+                          title: new Text('Add to Playlist'),
+                          onTap: () {
+                            Navigator.pop(bc);
+                          },
+                        ),
+                        ListTile(
+                          leading: new Icon(Icons.queue),
+                          title: new Text('Add to Queue'),
+                          onTap: () {
+                            Navigator.pop(bc);
+                          },
+                        ),
+                        ListTile(
+                          leading: new Icon(Icons.share),
+                          title: new Text('Share'),
+                          onTap: () {
+                            Navigator.pop(bc);
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                });
+          },
         ),
       ),
     );

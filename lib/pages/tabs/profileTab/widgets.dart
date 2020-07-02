@@ -232,7 +232,7 @@ Widget _profileViewImage(String _imageUrl) {
   return Container(
     height: 80.0,
     width: 80.0,
-    child: cachedNetworkImageW(_imageUrl),
+    child: cachedNetworkImageW(_imageUrl,60.0),
   );
 }
 

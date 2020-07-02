@@ -12,11 +12,11 @@ Widget loadingAnimationW() {
 }
 
 // holds the cachedNetworkImage for the entire application
-Widget cachedNetworkImageW(String imgUrl) {
+Widget cachedNetworkImageW(String imgUrl, double size) {
   return (imgUrl != null)
       ? Container(
-          width: 60,
-          height: 60,
+          width: size,
+          height: size,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(5.0),
             child: CachedNetworkImage(

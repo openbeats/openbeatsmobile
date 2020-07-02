@@ -111,7 +111,7 @@ Widget _collectionsGridViewContainer(
             width: MediaQuery.of(context).size.height * 0.25,
             height: MediaQuery.of(context).size.height * 0.25,
             child: cachedNetworkImageW(
-                data.getUserCollections()["data"][index]["thumbnail"]),
+                data.getUserCollections()["data"][index]["thumbnail"],60.0),
           ),
         ),
         SizedBox(height: 5.0),

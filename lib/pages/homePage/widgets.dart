@@ -11,7 +11,7 @@ BottomNavigationBarItem bottomNavBarItem(
   return BottomNavigationBarItem(
       icon: (destination.icon == Icons.person && _currAvatar != null)
           ? Container(
-              child: cachedNetworkImageW(_currAvatar),
+              child: cachedNetworkImageW(_currAvatar,60.0),
               height: 30.0,
               width: 30.0,
               margin: EdgeInsets.only(bottom: 3.0),
@@ -131,7 +131,7 @@ Widget slideUpPanelThumbnail(BuildContext context, MediaItem _currMediaItem) {
     width: _dimensions,
     child: ClipRRect(
       borderRadius: BorderRadius.circular(5.0),
-      child: cachedNetworkImageW(_currMediaItem?.artUri),
+      child: cachedNetworkImageW(_currMediaItem?.artUri,60.0),
     ),
   );
 }
