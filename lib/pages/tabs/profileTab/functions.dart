@@ -28,6 +28,8 @@ Future<Map<String, dynamic>> validateFields(
         // storing data in data model
         Provider.of<UserModel>(context, listen: false)
             .setUserDetails(_responseData);
+        // storing user token in audioService
+        AudioServiceOps().setUserToken(_responseData["token"]);
         return {"status": true};
       } else {
         return {"status": false, "message": responseJSON["data"]};
@@ -54,7 +56,8 @@ Future<Map<String, dynamic>> validateFields(
         // storing data in data model
         Provider.of<UserModel>(context, listen: false)
             .setUserDetails(_responseData);
-
+        // storing user token in audioService
+        AudioServiceOps().setUserToken(_responseData["token"]);
         return {"status": true};
       } else
         return {"status": false, "message": "Invalid Credentials"};
@@ -96,4 +99,6 @@ void logoutUser(BuildContext context) async {
   Provider.of<UserModel>(context, listen: false).setUserDetails({});
   Provider.of<LibraryTabData>(context, listen: false).setUserCollections({});
   Provider.of<LibraryTabData>(context, listen: false).setUserPlaylists({});
+  // removes user token from the audio service
+  AudioServiceOps().setUserToken("");
 }

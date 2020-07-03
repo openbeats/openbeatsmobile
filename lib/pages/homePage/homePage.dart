@@ -51,9 +51,15 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             context,
             Provider.of<UserModel>(context, listen: false)
                 .getUserDetails()["token"]);
-
         // getting the repeat song status
         AudioServiceOps().getMediaRepeatStatus();
+        // setting the user token in audio service
+        String _userToken = Provider.of<UserModel>(context, listen: false)
+            .getUserDetails()["token"];
+        if (_userToken != null)
+          AudioServiceOps().setUserToken(_userToken);
+        else
+          AudioServiceOps().setUserToken("");
         // setting up the audio servie custom event listener
         AudioService.customEventStream.listen((event) {
           if (event == "repeatSongTrue")

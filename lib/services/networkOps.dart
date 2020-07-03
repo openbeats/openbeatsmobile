@@ -132,8 +132,10 @@ Future<void> getYTCatSearchResults(BuildContext context, String query) async {
 }
 
 // used to get the streamingUrl
-Future<String> getStreamingUrl(mediaParameters) async {
+Future<String> getStreamingUrl(
+    mediaParameters, bool shouldAddRecentlyEntry, String token) async {
   try {
+    print("Token:" + token);
     // converting the media parameters to send as info to opencc
     var _bytes = utf8.encode(mediaParameters["_songObj"].toString());
     var _base64Str = base64.encode(_bytes);
@@ -146,7 +148,7 @@ Future<String> getStreamingUrl(mediaParameters) async {
               mediaParameters["_songObj"]["videoId"] +
               "?info=" +
               _base64Str,
-          headers: {"x-auth-token": mediaParameters["token"]});
+          headers: {"x-auth-token": (shouldAddRecentlyEntry) ? token : ""});
       var responseClassified = _returnResponse(response, null);
       if (responseClassified["status"] == true &&
           responseClassified["data"]["link"] != null &&
@@ -432,6 +434,4 @@ void getPlaylistSongs(
 }
 
 // used to get the list of recently played songs
-void getRecentlyPlayed(){
-  
-}
+void getRecentlyPlayed() {}

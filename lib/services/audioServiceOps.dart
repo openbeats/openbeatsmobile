@@ -50,6 +50,17 @@ class AudioServiceOps {
       });
     }
   }
+
+  // used to set the user token on sign in or on application start
+  void setUserToken(String token) async {
+    // starting audio service if it is not started
+    if (await _startAudioService() == true ||
+        await _startAudioService() == false) {
+      AudioService.customAction("setUserToken", {
+        "userToken": token,
+      });
+    }
+  }
 }
 
 // NOTE: Your entrypoint MUST be a top-level function.
@@ -67,6 +78,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
   // repeat flag
   bool _repeatSong = false;
   bool _repeatQueue = false;
+  // stores the user's auth token if they are signed in
+  String _userToken = "";
 
   bool get hasNext => _queueIndex + 1 < _queue.length;
 
@@ -316,7 +329,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     } else if (name == "startPlaylistPlayback") {
       _queue.clear();
       startPlaylistPlayback(args);
-    }
+    } else if (name == "setUserToken") _userToken = args["userToken"];
 
     // repeat status conditionals
     if (name == "checkSongRepeatStatus") {
@@ -350,7 +363,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
   }
 
   // starts playlistPlayback of audio
-  void startPlaylistPlayback(dynamic params) async {
+  Future<void> startPlaylistPlayback(dynamic params) async {
     var songs = params["_songObj"];
 
     // iterating through the songs in the playlist
@@ -367,8 +380,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
             "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
         // getting streaming url for the song
-        String streamingUrl =
-            await getStreamingUrl({"token": params["token"], "_songObj": args});
+        String streamingUrl = await getStreamingUrl(
+            {"token": params["token"], "_songObj": args}, true, _userToken);
 
         _defaultThumbnailUrl =
             await checkHighResThumbnailAvailability(args["videoId"]);
@@ -404,12 +417,14 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // pausing playback if already playing
     if (_playing != null) onPause();
 
+    // getting the song object from the parameters passed
     var args = params["_songObj"];
-    print(args);
 
+    // setting default thumbnail
     String _defaultThumbnailUrl =
         "https://img.youtube.com/vi/" + args["videoId"] + "/mqdefault.jpg";
 
+    // creating temporary mediaItem instance
     MediaItem _songMediaItem = MediaItem(
         id: args["videoId"],
         album: "OpenBeats Music",
@@ -423,6 +438,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
           "durationString": args["duration"],
         });
 
+    // setting temporary media item to show response to user
     await AudioServiceBackground.setMediaItem(_songMediaItem);
 
     if (_playing == null) {
@@ -436,7 +452,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
     _queueIndex = 0;
     await AudioServiceBackground.setMediaItem(_songMediaItem);
 
-    String streamingUrl = await getStreamingUrl(params);
+    String streamingUrl = await getStreamingUrl(params, true, _userToken);
 
     _defaultThumbnailUrl =
         await checkHighResThumbnailAvailability(args["videoId"]);
