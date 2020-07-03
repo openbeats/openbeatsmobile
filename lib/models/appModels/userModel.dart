@@ -11,12 +11,14 @@ class UserModel extends ChangeNotifier {
   };
 
   // holds the recently played list
-  List<dynamic> _recentlyPlayedList;
+  var _recentlyPlayedList;
 
   // getter and setter for the _recentlyPlayedList
-  List<dynamic> getRecentlyPlayedList() => _recentlyPlayedList;
-  void setRecentlyPlayedList(List<dynamic> value) {
+  dynamic getRecentlyPlayedList() => _recentlyPlayedList;
+  void setRecentlyPlayedList(dynamic value) {
     _recentlyPlayedList = value;
+    print(value);
+    notifyListeners();
   }
 
   // getter and setter for user details

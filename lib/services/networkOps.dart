@@ -434,4 +434,38 @@ void getPlaylistSongs(
 }
 
 // used to get the list of recently played songs
-void getRecentlyPlayed() {}
+void getRecentlyPlayed(BuildContext context) async {
+  try {
+    print("Function called");
+    // setting loading flag for recently played view
+    Provider.of<ExploreTabData>(context, listen: false)
+        .setRecentlyPlayedLoading(true);
+
+    // getting user token
+    String _userToken = Provider.of<UserModel>(context, listen: false)
+        .getUserDetails()["token"];
+
+    // checking if user is logged in
+    if (_userToken != null) {
+      // sending GET request to get user playlist
+      var _response = await get(
+          getApiEndpoint() + "/auth/metadata/recentlyplayed",
+          headers: {"x-auth-token": _userToken});
+      var _responseJSON = _returnResponse(_response, context);
+      // check if status true is returned
+      if (_responseJSON["status"] == true)
+        // updating data in data model
+        Provider.of<UserModel>(context, listen: false)
+            .setRecentlyPlayedList(_responseJSON["data"]["data"]);
+    }
+  } on SocketException {
+    // no internet connection
+    _handleExceptionsRaised("SocketException", context, false);
+  } on TimeoutException {
+    // timeout exception
+    _handleExceptionsRaised("TimeoutException", context, false);
+  }
+  // setting loading flag for recently played view
+  Provider.of<ExploreTabData>(context, listen: false)
+      .setRecentlyPlayedLoading(false);
+}

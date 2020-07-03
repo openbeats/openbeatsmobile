@@ -20,7 +20,10 @@ class _ExploreTabState extends State<ExploreTab> {
   Widget _exploreTabBody() {
     return ListView(
       physics: BouncingScrollPhysics(),
-      children: <Widget>[],
+      children: <Widget>[
+        widgets.recentlyPlayedTitle(),
+        // widgets.recentlyPlayedView(),
+      ],
     );
   }
 }

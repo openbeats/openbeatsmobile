@@ -34,6 +34,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider<MediaModel>(
             create: (_) => MediaModel(),
           ),
+          ChangeNotifierProvider<ExploreTabData>(
+            create: (_) => ExploreTabData(),
+          ),
         ],
         child: HomePage(),
       ),

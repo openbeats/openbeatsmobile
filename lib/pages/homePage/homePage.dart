@@ -51,6 +51,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             context,
             Provider.of<UserModel>(context, listen: false)
                 .getUserDetails()["token"]);
+        // // getting recently played data
+        // getRecentlyPlayed(context);
         // getting the repeat song status
         AudioServiceOps().getMediaRepeatStatus();
         // setting the user token in audio service
@@ -137,6 +139,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             showUnselectedLabels: false,
             onTap: (index) {
               vibrateDevice(context);
+              // reloading recently played data
+              getRecentlyPlayed(context);
               // closing any open instance of slidingUpPanel
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();
