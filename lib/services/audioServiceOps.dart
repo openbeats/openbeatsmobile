@@ -347,7 +347,7 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   // used to set the song repeat status
   void setSongRepeatStatus(dynamic args) {
-    print(args["repeatStatus"]);
+    // print(args["repeatStatus"]);
     if (args["repeatStatus"] == "noRepeat") {
       _repeatSong = false;
       _repeatQueue = false;
@@ -358,8 +358,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
       _repeatSong = true;
       _repeatQueue = false;
     }
-    print("RepeatSong: " + _repeatSong.toString());
-    print("RepeatQueue: " + _repeatQueue.toString());
+    // print("RepeatSong: " + _repeatSong.toString());
+    // print("RepeatQueue: " + _repeatQueue.toString());
   }
 
   // starts playlistPlayback of audio
@@ -404,8 +404,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // adding mediaItem to queue
         _queue.add(_songMediaItem);
 
-        print(i.toString());
-        print(i.toString() + " " + _queue[i].title);
+        // print(i.toString());
+        // print(i.toString() + " " + _queue[i].title);
 
         await AudioServiceBackground.setQueue(_queue);
       }

@@ -17,7 +17,7 @@ class UserModel extends ChangeNotifier {
   dynamic getRecentlyPlayedList() => _recentlyPlayedList;
   void setRecentlyPlayedList(dynamic value) {
     _recentlyPlayedList = value;
-    print(value);
+    // print(value);
     notifyListeners();
   }
 

@@ -93,7 +93,7 @@ void handleTabChangeContentRefreshes(BuildContext context, int index) {
               .getUserCollections()
               .length ==
           0) {
-        print("Get Collections");
+        // print("Get Collections");
         getMyCollections(context, _userToken);
       }
       if (Provider.of<LibraryTabData>(context, listen: false)

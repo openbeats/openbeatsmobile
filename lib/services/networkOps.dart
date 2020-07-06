@@ -135,7 +135,7 @@ Future<void> getYTCatSearchResults(BuildContext context, String query) async {
 Future<String> getStreamingUrl(
     mediaParameters, bool shouldAddRecentlyEntry, String token) async {
   try {
-    print("Token:" + token);
+    // print("Token:" + token);
     // converting the media parameters to send as info to opencc
     var _bytes = utf8.encode(mediaParameters["_songObj"].toString());
     var _base64Str = base64.encode(_bytes);
@@ -251,7 +251,7 @@ Future<String> _readResponse(HttpClientResponse response) {
 // used to get all the collections for the current user
 void getMyCollections(BuildContext context, String _token) async {
   try {
-    print("Called");
+    // print("Called");
     // setting loading indicators
     Provider.of<LibraryTabData>(context, listen: false)
         .setUserCollectionLoadingFlag(true);
@@ -436,7 +436,7 @@ void getPlaylistSongs(
 // used to get the list of recently played songs
 void getRecentlyPlayed(BuildContext context) async {
   try {
-    print("Function called");
+    print("getRecentlyPlayed Called");
     // setting loading flag for recently played view
     Provider.of<ExploreTabData>(context, listen: false)
         .setRecentlyPlayedLoading(true);
@@ -457,6 +457,7 @@ void getRecentlyPlayed(BuildContext context) async {
         // updating data in data model
         Provider.of<UserModel>(context, listen: false)
             .setRecentlyPlayedList(_responseJSON["data"]["data"]);
+      print("getRecentlyPlayed got Response");
     }
   } on SocketException {
     // no internet connection
@@ -468,4 +469,5 @@ void getRecentlyPlayed(BuildContext context) async {
   // setting loading flag for recently played view
   Provider.of<ExploreTabData>(context, listen: false)
       .setRecentlyPlayedLoading(false);
+  print("Provider Set");
 }

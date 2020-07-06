@@ -37,7 +37,7 @@ Widget recentlyPlayedView() {
     builder: (context, data, userModelData, child) {
       // getting the list of collections and loading flag and user name
       var _listOfSongs = userModelData.getRecentlyPlayedList();
-      print(_listOfSongs[0]);
+      // print(_listOfSongs[0]);
       bool _loadingFlag = data.getRecentlyPlayedLoading();
       return Container(
         height: (MediaQuery.of(context).orientation == Orientation.portrait)
