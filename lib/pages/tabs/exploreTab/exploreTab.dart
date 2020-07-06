@@ -22,7 +22,7 @@ class _ExploreTabState extends State<ExploreTab> {
       physics: BouncingScrollPhysics(),
       children: <Widget>[
         widgets.recentlyPlayedTitle(),
-        // widgets.recentlyPlayedView(),
+        widgets.recentlyPlayedView(),
       ],
     );
   }

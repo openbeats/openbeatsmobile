@@ -451,13 +451,14 @@ void getRecentlyPlayed(BuildContext context) async {
       var _response = await get(
           getApiEndpoint() + "/auth/metadata/recentlyplayed",
           headers: {"x-auth-token": _userToken});
+
       var _responseJSON = _returnResponse(_response, context);
       // check if status true is returned
       if (_responseJSON["status"] == true)
         // updating data in data model
         Provider.of<UserModel>(context, listen: false)
             .setRecentlyPlayedList(_responseJSON["data"]["data"]);
-      print("getRecentlyPlayed got Response");
+      print(_responseJSON);
     }
   } on SocketException {
     // no internet connection

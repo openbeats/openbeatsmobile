@@ -51,8 +51,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             context,
             Provider.of<UserModel>(context, listen: false)
                 .getUserDetails()["token"]);
-        // // getting recently played data
-        // getRecentlyPlayed(context);
+        // getting recently played data
+        getRecentlyPlayed(context);
         // getting the repeat song status
         AudioServiceOps().getMediaRepeatStatus();
         // setting the user token in audio service
