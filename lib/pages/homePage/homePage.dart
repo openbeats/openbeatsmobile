@@ -137,10 +137,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             selectedItemColor: GlobalThemes().getAppTheme().primaryColor,
             unselectedItemColor: Colors.white,
             showUnselectedLabels: false,
-            onTap: (index) {
+            onTap: (index) async {
               vibrateDevice(context);
               // perform page specific actions
-              functions.pageSpecificBottomNavActions(context, index);
+              await functions.pageSpecificBottomNavActions(context, index);
               // closing any open instance of slidingUpPanel
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();

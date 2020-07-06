@@ -108,16 +108,20 @@ void handleTabChangeContentRefreshes(BuildContext context, int index) {
 }
 
 // used to perform page specific bottomNav actions
-void pageSpecificBottomNavActions(BuildContext context, int index) {
+Future<void> pageSpecificBottomNavActions(BuildContext context, int index) {
   if (index == 0) {
     getRecentlyPlayed(context);
   } else if (index == 1) {
+    // getting previous page index
+    int _previousPageIndex =
+        Provider.of<HomePageData>(context, listen: false).getBNavBarCurrIndex();
     // check if the search page is already in view
-    if (searchTabScaffoldKey != null) {
+    if (searchTabScaffoldKey != null && _previousPageIndex == index) {
       if (ModalRoute.of(searchTabScaffoldKey.currentContext).isCurrent) {
         searchTabFunctions
             .navigateToSearchNowPage(searchTabScaffoldKey.currentContext);
       }
     }
   }
+  return null;
 }
