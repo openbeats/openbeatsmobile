@@ -14,6 +14,8 @@ void navigateToPlaylistView(BuildContext context,
 
 // used to start playlist playback
 void initiatePlaylistPlayback(BuildContext context, int index) {
+  // initiating haptic feedback
+  vibrateDevice(context);
   // holds the playlist songs in structure
   List<Map<String, dynamic>> _playlistParameters =
       new List<Map<String, dynamic>>();

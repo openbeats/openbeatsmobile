@@ -41,6 +41,8 @@ Future<void> navigateToSearchNowPage(BuildContext context) async {
 // used to start single song playback
 void startSingleSongPlayback(
     BuildContext context, SearchTabModel data, int index) {
+  // initiating device vibration
+  vibrateDevice(context);
   // getting the songObject details to send to AudioService
   Map _songObj = data.getSearchResults()[index];
 
