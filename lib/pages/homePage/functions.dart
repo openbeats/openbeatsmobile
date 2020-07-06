@@ -7,10 +7,12 @@ Future<bool> willPopScopeHandler(BuildContext context) async {
     getSlidingUpPanelController().close();
     return false;
   } else if (searchNowPageScaffoldKey.currentContext != null) {
-    Navigator.of(searchNowPageScaffoldKey.currentContext).pop();
+    if (ModalRoute.of(searchNowPageScaffoldKey.currentContext).isCurrent)
+      Navigator.of(searchNowPageScaffoldKey.currentContext).pop();
     return false;
   } else if (playlistViewScaffoldKey.currentContext != null) {
-    Navigator.of(playlistViewScaffoldKey.currentContext).pop();
+    if (ModalRoute.of(playlistViewScaffoldKey.currentContext).isCurrent)
+      Navigator.of(playlistViewScaffoldKey.currentContext).pop();
     return false;
   }
 
