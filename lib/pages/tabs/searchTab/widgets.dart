@@ -28,6 +28,7 @@ Widget searchSuggestionsListBuilder(
     leading: Icon(Icons.search),
     title: Text(_searchSuggestionTitle),
     onTap: () {
+      vibrateDevice(homePageScaffoldKey.currentContext);
       Navigator.pop(context, _searchSuggestionTitle);
     },
   );

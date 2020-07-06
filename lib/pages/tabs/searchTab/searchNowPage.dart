@@ -63,7 +63,10 @@ class _SearchNowPageState extends State<SearchNowPage> {
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.search),
-          onPressed: () => Navigator.pop(context, _searchFieldController.text),
+          onPressed: () {
+            vibrateDevice(homePageScaffoldKey.currentContext);
+            Navigator.pop(context, _searchFieldController.text);
+          },
         )
       ],
     );
@@ -81,7 +84,9 @@ class _SearchNowPageState extends State<SearchNowPage> {
             controller: _searchFieldController,
             cursorColor: GlobalThemes().getAppTheme().primaryColor,
             style: TextStyle(fontSize: 18.0),
-            onSubmitted: (String value) => Navigator.pop(context, value),
+            onSubmitted: (String value) {
+              Navigator.pop(context, value);
+            },
             onChanged: (String value) async {
               Provider.of<SearchTabModel>(context, listen: false)
                   .setCurrentSearchString(value);
