@@ -15,15 +15,29 @@ Widget appBar() {
 
 // holds the recently played title
 Widget recentlyPlayedTitle() {
-  return ListTile(
-    dense: true,
-    title: Text(
-      "Recently Played",
-      style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
-    ),
-    trailing: GestureDetector(
-      onTap: () {},
-      child: Text("View All"),
+  return Container(
+    child: Consumer<UserModel>(
+      builder: (context, data, child) {
+        // flag to see if user is logged in
+        bool _isUserLoggedIn =
+            (data.getUserDetails()["name"] == null) ? false : true;
+        return Container(
+          child: (_isUserLoggedIn)
+              ? ListTile(
+                  dense: true,
+                  title: Text(
+                    "Recently Played",
+                    style:
+                        TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+                  ),
+                  trailing: GestureDetector(
+                    onTap: () {},
+                    child: Text("View All"),
+                  ),
+                )
+              : null,
+        );
+      },
     ),
   );
 }
@@ -41,20 +55,29 @@ Widget recentlyPlayedView() {
     builder: (context, data, userModelData, child) {
       // getting the list of collections and loading flag and user name
       var _listOfSongs = userModelData.getRecentlyPlayedList();
+      print(_listOfSongs);
       bool _loadingFlag = data.getRecentlyPlayedLoading();
+      bool _isUserLoggedIn =
+          (userModelData.getUserDetails()["name"] == null) ? false : true;
       return Container(
-        height: MediaQuery.of(context).size.height * 0.4,
-        child: (_loadingFlag)
-            ? _loadingAnimation()
-            : ListView.builder(
-                physics: BouncingScrollPhysics(),
-                padding: EdgeInsets.only(left: 10.0, right: 10.0),
-                scrollDirection: Axis.horizontal,
-                itemCount: _listOfSongs.length,
-                itemBuilder: (context, index) =>
-                    _recentlyPlayedGridViewContainer(
-                        context, index, data, userModelData),
-              ),
+        child: (_isUserLoggedIn)
+            ? Container(
+                height: MediaQuery.of(context).size.height * 0.4,
+                child: (_loadingFlag)
+                    ? _loadingAnimation()
+                    : (_listOfSongs == null || _listOfSongs.length != 0)
+                        ? ListView.builder(
+                            physics: BouncingScrollPhysics(),
+                            padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _listOfSongs.length,
+                            itemBuilder: (context, index) =>
+                                _recentlyPlayedGridViewContainer(
+                                    context, index, data, userModelData),
+                          )
+                        : null,
+              )
+            : null,
       );
     },
   );
