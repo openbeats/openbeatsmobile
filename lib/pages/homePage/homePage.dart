@@ -139,12 +139,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             showUnselectedLabels: false,
             onTap: (index) {
               vibrateDevice(context);
-              // reloading recently played data
-              getRecentlyPlayed(context);
+              // perform page specific actions
+              functions.pageSpecificBottomNavActions(context, index);
               // closing any open instance of slidingUpPanel
               if (getSlidingUpPanelController().isPanelOpen)
                 getSlidingUpPanelController().close();
-
               // calling method to handle tab change content refreshes
               functions.handleTabChangeContentRefreshes(context, index);
 

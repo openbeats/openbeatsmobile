@@ -1,4 +1,5 @@
 import 'package:obsmobile/imports.dart';
+import '../tabs/searchTab/functions.dart' as searchTabFunctions;
 
 // handles the navBackButton input using WillPopScope
 Future<bool> willPopScopeHandler(BuildContext context) async {
@@ -101,6 +102,21 @@ void handleTabChangeContentRefreshes(BuildContext context, int index) {
               .length ==
           0) {
         getMyPlaylists(context, _userToken);
+      }
+    }
+  }
+}
+
+// used to perform page specific bottomNav actions
+void pageSpecificBottomNavActions(BuildContext context, int index) {
+  if (index == 0) {
+    getRecentlyPlayed(context);
+  } else if (index == 1) {
+    // check if the search page is already in view
+    if (searchTabScaffoldKey != null) {
+      if (ModalRoute.of(searchTabScaffoldKey.currentContext).isCurrent) {
+        searchTabFunctions
+            .navigateToSearchNowPage(searchTabScaffoldKey.currentContext);
       }
     }
   }
