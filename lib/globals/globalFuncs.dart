@@ -114,7 +114,9 @@ void vibrateDevice(BuildContext context) async {
   // getting haptic feedback choice
   bool _hapticFeedback =
       Provider.of<ProfileTabData>(context, listen: false).getHapticFeedback();
-  if (await Vibration.hasVibrator() && _hapticFeedback) {
+  if (await Vibration.hasVibrator() &&
+      _hapticFeedback &&
+      await Vibration.hasCustomVibrationsSupport()) {
     Vibration.vibrate(duration: 1);
   }
 }
